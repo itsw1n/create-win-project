@@ -2,11 +2,10 @@
 import inquirer from 'inquirer'
 import chalk from 'chalk'
 import ora from 'ora'
-import fs from 'fs-extra'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { generateProject } from './lib/generator.js'
-
+import { composeStack, FRONTENDS, BACKENDS } from './lib/constants.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -39,15 +38,21 @@ const answers = await inquirer.prompt([
   },
   {
     type: 'list',
-    name: 'stack',
-    message: 'Pick your stack:',
-    choices: [
-      { name: 'Next.js + Supabase           (fullstack, no separate backend)', value: 'nextjs-supabase' },
-      { name: 'Next.js + PostgreSQL (Prisma) (fullstack, no separate backend)', value: 'nextjs-postgresql' },
-      { name: 'Next.js + Spring Boot         (Next.js frontend + Java backend)', value: 'nextjs-springboot' },
-      { name: 'React + Spring Boot           (SPA frontend + Java backend)', value: 'react-springboot' },
-      { name: 'React + Supabase              (SPA, no separate backend)', value: 'react-supabase' },
-    ],
+    name: 'frontend',
+    message: 'Pick your frontend:',
+    choices: Object.entries(FRONTENDS).map(([key, f]) => ({
+      name: f.label,
+      value: key,
+    })),
+  },
+  {
+    type: 'list',
+    name: 'backend',
+    message: 'Pick your backend/database:',
+    choices: (a) => FRONTENDS[a.frontend].allows.map((key) => ({
+      name: BACKENDS[key].label,
+      value: key,
+    })),
   },
   {
     type: 'list',
@@ -75,7 +80,7 @@ const answers = await inquirer.prompt([
     name: 'docker',
     message: 'Include Docker?',
     default: true,
-    when: (a) => ['react-springboot', 'nextjs-springboot', 'nextjs-postgresql'].includes(a.stack),
+    when: (a) => composeStack(a.frontend, a.backend, a).needsDocker,
   },
   {
     type: 'confirm',
@@ -94,7 +99,7 @@ const answers = await inquirer.prompt([
     name: 'packageName',
     message: 'Java package name? (e.g. com.yourname)',
     default: 'com.app',
-    when: (a) => ['react-springboot', 'nextjs-springboot'].includes(a.stack),
+    when: (a) => a.backend === 'springboot',
     validate: (v) => {
       if (!v.trim()) return 'Package name is required'
       if (!/^[a-z]+(\.[a-z]+)+$/.test(v)) return 'Use format: com.yourname'
@@ -104,9 +109,11 @@ const answers = await inquirer.prompt([
 ])
 
 // auto-enable docker for Spring Boot combos
-if (['react-springboot', 'nextjs-springboot'].includes(answers.stack)) {
+if (composeStack(answers.frontend, answers.backend, answers).needsDocker) {
   answers.docker = answers.docker ?? true
 }
+
+const stack = composeStack(answers.frontend, answers.backend, answers)
 
 // ─── Confirm ─────────────────────────────────────────────────────────────────
 
@@ -114,7 +121,7 @@ console.log('')
 console.log(chalk.bold('  Summary'))
 console.log(chalk.gray('  ───────────────────────────'))
 console.log(`  ${chalk.cyan('Name:')}        ${answers.projectName}`)
-console.log(`  ${chalk.cyan('Stack:')}       ${answers.stack}`)
+console.log(`  ${chalk.cyan('Stack:')}       ${stack.label}`)
 console.log(`  ${chalk.cyan('Styling:')}     ${answers.styling}`)
 console.log(`  ${chalk.cyan('Testing:')}     ${answers.testing}`)
 console.log(`  ${chalk.cyan('Docker:')}      ${answers.docker ? 'yes' : 'no'}`)
@@ -122,6 +129,13 @@ console.log(`  ${chalk.cyan('Makefile:')}    ${answers.makefile ? 'yes' : 'no'}`
 console.log(`  ${chalk.cyan('CI/CD:')}       ${answers.githubActions ? 'yes' : 'no'}`)
 if (answers.packageName) {
   console.log(`  ${chalk.cyan('Package:')}     ${answers.packageName}`)
+}
+if (stack.constraints.length) {
+  console.log('')
+  console.log(chalk.gray('  Key constraints:'))
+  for (const rule of stack.constraints.slice(0, 3)) {
+    console.log(chalk.gray(`  • ${rule}`))
+  }
 }
 console.log('')
 
@@ -153,12 +167,16 @@ try {
   console.log(chalk.gray(`  cp .env.example .env`))
   console.log(chalk.gray(`  # Fill in your .env values`))
 
-  if (['react-springboot', 'nextjs-springboot', 'nextjs-postgresql'].includes(answers.stack) && answers.docker) {
+  if (answers.makefile) {
     console.log(chalk.gray(`  make dev`))
-  } else if (['nextjs-supabase', 'react-supabase'].includes(answers.stack)) {
+  } else if (stack.needsDocker && answers.docker) {
+    console.log(chalk.gray(`  docker compose up --build`))
+  } else if (stack.isSupabase) {
     console.log(chalk.gray(`  npx supabase start`))
     console.log(chalk.gray(`  npm run dev`))
   } else {
+    console.log(chalk.gray(`  docker compose up -d db`))
+    console.log(chalk.gray(`  npx prisma migrate dev`))
     console.log(chalk.gray(`  npm run dev`))
   }
 
