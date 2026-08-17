@@ -2,7 +2,7 @@
 
 > **Purpose:** This document is both a personal reference/learning note and an architectural rulebook for AI/agentic coding in a production Next.js application.
 >
-> **Core philosophy:** Start simple. Keep boundaries clear. Add architectural layers only when complexity justifies them.
+> **Core philosophy:** Medium is the floor. Keep boundaries clear. Add architectural layers only when complexity justifies them.
 
 ---
 
@@ -63,7 +63,7 @@ These are the rules an AI coding agent should follow unless the project explicit
 16. Prefer feature-based organization as the application grows.
 17. Do not create architectural layers merely for ceremony.
 18. Follow existing project conventions before introducing a new pattern.
-19. Small features should stay small.
+19. Medium is the default — every feature gets a Service layer, large features escalate to Repositories.
 20. Complexity should earn abstraction.
 
 ---
@@ -411,7 +411,7 @@ Ask whether the browser actually needs an HTTP endpoint.
 
 # 11. Data Approach C: Server Component → Data Function
 
-For a small feature, a separate Query layer may be unnecessary.
+For a simple read that needs only one table lookup, a separate Query layer may be unnecessary.
 
 Example:
 
@@ -425,7 +425,7 @@ export default async function SettingsPage() {
 }
 ```
 
-This can be acceptable for a genuinely small feature if the project's conventions allow it.
+This can be acceptable for a genuinely simple data access if the project's conventions allow it.
 
 As complexity grows, extract:
 
@@ -817,13 +817,13 @@ Different entry points can reuse the same application operation.
 
 # 21. When Should You Add a Service?
 
-Start with:
+Medium is the default:
 
 ```text
-Action → Database
+Action → Service → Database
 ```
 
-Add a Service when:
+Add or keep a Service when:
 
 - business rules become non-trivial
 - the operation is reused
@@ -832,31 +832,20 @@ Add a Service when:
 - the operation needs independent testing
 - the operation involves multiple repositories/external systems
 
-Then:
-
-```text
-Action → Service → Database
-```
+A feature should not go below the Service layer.
 
 ---
 
 # 22. When Should You Add a Repository?
 
-Start simple when appropriate.
+In Medium architecture the Service handles DB access directly.
 
 ```ts
+// service
 await db.user.findMany();
 ```
 
-Introduce a Repository when database access becomes:
-
-- complex
-- repeated
-- shared
-- transaction-heavy
-- database-specific
-- difficult to isolate
-- useful to hide behind a stable interface
+Escalate to Large (add a Repository) when database access becomes: complex, repeated, shared, transaction-heavy, database-specific, difficult to isolate, or useful to hide behind a stable interface.
 
 Do not create a repository merely because:
 
@@ -870,23 +859,7 @@ Ask:
 
 # 23. Progressive Architecture
 
-Architecture should grow with complexity.
-
-## Small
-
-```text
-Action → Database
-```
-
-or:
-
-```text
-Server Component → Database
-```
-
-if appropriate.
-
----
+Architecture should grow with complexity. Medium is the floor — every feature gets a Service layer.
 
 ## Medium
 
@@ -899,8 +872,6 @@ or:
 ```text
 Server Component → Query → Database
 ```
-
----
 
 ## Large
 
@@ -1567,21 +1538,18 @@ Database
 
 ---
 
-# 41. Small Feature Rule
+# 41. Default Architecture: Medium
 
-Do not create every folder automatically.
-
-Example:
+Medium is the floor. Every feature uses `features/[name]/` with `{components, actions, services, schemas}` + `types.ts`:
 
 ```text
-features/profile/
+features/[name]/
 ├── components/
-│   └── ProfileForm.tsx
-└── actions/
-    └── updateProfile.ts
+├── actions/
+├── services/
+├── schemas/
+└── types.ts
 ```
-
-This may be enough.
 
 Flow:
 
@@ -1590,12 +1558,12 @@ ProfileForm
     ↓
 Action
     ↓
+Service
+    ↓
 Database
 ```
 
-That is not "bad architecture."
-
-It is appropriate architecture for a small operation.
+That is the consistent shape for every feature. It is not "bad architecture" — it is the architecture. Add a Repository only in Large architecture when the feature escalates.
 
 ---
 
@@ -2205,25 +2173,19 @@ If there is no meaningful answer, keep the feature simpler.
 
 ## Rule J — Follow progressive architecture
 
-Start:
-
-```text
-Action → Database
-```
-
-If complexity appears:
+Start every feature at Medium:
 
 ```text
 Action → Service → Database
 ```
 
-If database complexity/reuse appears:
+If database complexity/reuse appears, escalate to Large:
 
 ```text
 Action → Service → Repository → Database
 ```
 
-Do not start at the maximum level by default.
+Do not start at the maximum level by default, but never go below Medium.
 
 ---
 
@@ -2301,52 +2263,15 @@ directly from another unrelated entry point unless there is a documented reason.
 When an AI agent receives a request, use this sequence.
 
 ```text
-                    NEW FEATURE
-                        │
-                        ▼
-                Is it UI only?
-                  │         │
-                 YES        NO
-                  │          │
-                  ▼          ▼
-              Component    Need data?
-                              │
-                              ▼
-                       Read or Mutation?
-                         │          │
-                       READ       WRITE
-                         │          │
-                         ▼          ▼
-                 Initial page?   Own UI?
-                    │   │          │   │
-                   YES  NO       YES   NO
-                    │    │        │     │
-                    ▼    ▼        ▼     ▼
-                 Server API    Action  API
-                 Component       │      │
-                    │            └──┬───┘
-                    ▼               ▼
-                  Query          Service?
-                    │             │
-                    │        ┌────┴────┐
-                    │       NO        YES
-                    │        │          │
-                    │        ▼          ▼
-                    │       DB       Service
-                    │                   │
-                    └──────────┐        ▼
-                               │    Repository?
-                               │        │
-                               │   ┌────┴────┐
-                               │  NO        YES
-                               │   │          │
-                               └── DB    Repository
-                                              │
-                                              ▼
-                                           Database
+NEW FEATURE → UI only? YES → Component
+NO → Need data? → Read? → Initial page? YES → Server Component → Query → DB
+                                        NO → API → Query → DB
+                        Write? → Own UI? YES → Action → Service → DB (Medium, default)
+                                 NO → API → Service → DB
+                        Data access complex/shared? → escalate to Repository (Large)
 ```
 
-This is a decision aid, not a mandatory code-generation template.
+Medium (Service) is the default for every feature with logic. Escalate to Large (Repository) only when DB access complexity justifies it. A decision aid, not a mandatory code-generation template.
 
 ---
 
@@ -2364,7 +2289,7 @@ The agent should ask internally:
 7. Am I creating an API unnecessarily?
 8. Am I bypassing an existing Service/Repository?
 9. Does this belong to a feature?
-10. Can the feature remain simpler?
+10. Is this escalation justified (does the logic warrant a Repository/Query)?
 ```
 
 ---
@@ -2456,7 +2381,7 @@ Would the abstraction improve maintainability?
 
 If no:
 
-> Direct database access may be acceptable in a small/simple feature.
+> In Medium architecture the Service handles DB access directly. Add a Repository only when the feature escalates to Large and these factors apply.
 
 ---
 
@@ -2479,7 +2404,22 @@ Page / Server Component
     Database
 ```
 
-## Write from your UI
+## Write from your UI — Medium (default)
+
+```text
+Client/Form
+        │
+        ▼
+  Server Action
+        │
+        ▼
+     Service
+        │
+        ▼
+    Database
+```
+
+## Write from your UI — Large (escalated)
 
 ```text
 Client/Form
@@ -2497,7 +2437,22 @@ Client/Form
     Database
 ```
 
-## External API
+## External API — Medium
+
+```text
+External Client
+        │
+        ▼
+     API Route
+        │
+        ▼
+     Service
+        │
+        ▼
+    Database
+```
+
+## External API — Large (escalated)
 
 ```text
 External Client
@@ -2605,7 +2560,7 @@ External Client
 
 ---
 
-# 66. Small vs Large: The Critical Rule
+# 66. Medium vs Large: The Critical Rule
 
 Do not interpret the previous diagram as:
 
@@ -2614,12 +2569,6 @@ Do not interpret the previous diagram as:
 Instead:
 
 ```text
-SMALL
-────────────────────
-
-Action → Database
-
-
 MEDIUM
 ────────────────────
 
@@ -2638,33 +2587,37 @@ READ
 Server Component → Query → Repository → Database
 ```
 
-The architecture is **progressive**.
+Medium is the floor. The architecture is **progressive**: start every feature at Medium, escalate to Large when the feature's logic justifies it.
 
 ---
 
 # 67. Example: Simple Profile Update
 
-Do not over-engineer this:
+Still Medium, not thinner:
 
 ```text
 features/profile/
 ├── components/
 │   └── ProfileForm.tsx
-└── actions/
-    └── updateProfile.ts
+├── actions/
+│   └── updateProfile.ts
+└── services/
+    └── profileService.ts
 ```
 
-Possible flow:
+Flow:
 
 ```text
 ProfileForm
     ↓
 updateProfile Action
     ↓
+profileService.updateProfile()
+    ↓
 Database
 ```
 
-If this remains simple, leave it that way.
+No Repository needed for a simple operation — keep the Service/DTO shape consistent.
 
 ---
 
@@ -2774,7 +2727,7 @@ If the answer is obvious, the architecture is doing its job.
 
 ## Principle 11
 
-> **Start simple and let complexity earn additional layers.**
+> **Start at Medium and let complexity earn additional layers.**
 
 ## Principle 12
 

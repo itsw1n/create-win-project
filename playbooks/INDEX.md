@@ -52,86 +52,54 @@ Maps stack choices to playbooks, templates, and generated files.
 | github-actions.md   | Frontend/backend CI, path filters, caching        |
 | pr-template.md      | PR checklist template                             |
 
-### /combo-rules — per stack combination
-| File                  | What it covers                                    |
-|-----------------------|---------------------------------------------------|
-| react-springboot.md   | Full monorepo: React + Spring Boot + PostgreSQL   |
-| react-supabase.md     | SPA: React + Supabase (no backend service)        |
-| nextjs-supabase.md    | Next.js as full-stack with Supabase               |
-| nextjs-postgresql.md  | Next.js + Prisma + PostgreSQL                     |
-| nextjs-springboot.md  | Next.js frontend + Spring Boot backend            |
-
 ---
 
-## CLI Stack → Playbook Mapping
+## How the Stack Is Composed
 
-### Combo 1: React + Spring Boot
-```
-combo-rules/react-springboot.md
-universal/ (all 6)
-stack/react-vite.md
-stack/springboot.md
-database/postgresql.md
-migration/flyway.md
-styling/[choice]
-devops/docker.md
-devops/makefile.md       → Full 3-service Makefile
-devops/github-actions.md → ci-frontend.yml + ci-backend.yml
-devops/pr-template.md
-```
+The CLI asks **which frontend** (Next.js / React + Vite) then **which backend/database**
+(Supabase / Spring Boot / PostgreSQL). The generator composes the playbook list from
+`lib/constants.js` — no per-combo docs are maintained. Combo-specific integration
+knowledge lives as data in the `CONSTRAINTS` table.
 
-### Combo 2: React + Supabase
 ```
-combo-rules/react-supabase.md
-universal/ (all 6)
-stack/react-vite.md
-database/supabase.md
-migration/supabase-cli.md
-styling/[choice]
-devops/github-actions.md → ci-frontend.yml only
-devops/pr-template.md
+universal/ (all 6)          → always
+stack/[frontend].md         → from the chosen frontend
+stack/[backend].md          → Spring Boot only
+database/[db].md            → Supabase / PostgreSQL
+migration/[tool].md         → supabase-cli / prisma / flyway
+styling/[choice].md         → tailwind / css-modules
+devops/…                    → docker, makefile, github-actions, pr-template (conditional)
 ```
 
-### Combo 3: Next.js + Supabase
-```
-combo-rules/nextjs-supabase.md
-universal/ (all 6)
-stack/nextjs.md
-database/supabase.md
-migration/supabase-cli.md
-styling/tailwind-extensions.md   → always Tailwind for Next.js
-devops/github-actions.md → ci-nextjs.yml
-devops/pr-template.md
-```
+Per the CLI answers, real project files are also generated (not just docs):
+`Makefile`, `docker-compose.yml` (+ `docker-compose.prod.yml` for Spring Boot),
+backend/frontend Dockerfiles, nginx.conf (React), `.env.example`, `.editorconfig`.
 
-### Combo 4: Next.js + PostgreSQL
-```
-combo-rules/nextjs-postgresql.md
-universal/ (all 6)
-stack/nextjs.md
-database/postgresql.md
-migration/prisma.md
-styling/tailwind-extensions.md
-devops/docker.md         → PostgreSQL only
-devops/makefile.md       → Prisma Makefile
-devops/github-actions.md → ci-nextjs.yml
-devops/pr-template.md
-```
+### Allowed frontend × backend pairs
+| Frontend     | Allowed backends                    |
+|--------------|-------------------------------------|
+| Next.js      | Supabase, Spring Boot, PostgreSQL   |
+| React + Vite | Supabase, Spring Boot               |
 
-### Combo 5: Next.js + Spring Boot
-```
-combo-rules/nextjs-springboot.md
-universal/ (all 6)
-stack/nextjs.md
-stack/springboot.md
-database/postgresql.md
-migration/flyway.md
-styling/tailwind-extensions.md
-devops/docker.md         → 3 services (Next.js + Spring Boot + PostgreSQL)
-devops/makefile.md       → Full 3-service Makefile
-devops/github-actions.md → ci-frontend.yml + ci-backend.yml
-devops/pr-template.md
-```
+### Generated RULES.md
+A short **index** (concern → playbook section), built automatically from the selected
+playbooks' headings. Full detail always lives in the copied `/playbooks/`.
+
+### playbooks-compact/ — shipped form of the big stack playbooks
+`playbooks-compact/` holds rewrite-trimmed copies of the two largest stack playbooks
+(`stack/nextjs.md`, `stack/springboot.md`). The generator **prefers the compact copy**
+when it exists and falls back to the full `playbooks/` file otherwise:
+
+- Same section headings **1:1** — every RULES.md `§ N` reference resolves identically.
+- Same rules + code examples — codegen behavior is unchanged.
+- Prose/ASCII diagrams condensed into short direct directives.
+- Measured (chars/tokens): nextjs.md 60k→46k (~77%), springboot.md 38k→37k (98%).
+  Combined the two playbooks drop from ~4.7k to ~2.7k lines. Spring Boot's file is
+  almost all code, so its prose trim buys little — the real win is nextjs.md.
+  Full versions stay here as the authoritative reference.
+
+To refresh a compact copy, rewrite it against the current full playbook.
+`lib/playbooks.js#resolvePlaybook` decides which file ships.
 
 ---
 
@@ -141,34 +109,43 @@ devops/pr-template.md
 Q1: Project name?
     → Sets {{PROJECT_NAME}}, {{PACKAGE_NAME}}
 
-Q2: Stack?
-    → react-springboot
-    → react-supabase
-    → nextjs-supabase
-    → nextjs-postgresql
-    → nextjs-springboot
-    → Resolves: combo-rules file + playbook list
+Q2: Frontend?
+    → nextjs (Next.js)
+    → react  (React + Vite)
 
-Q3: Styling?
+Q2a: Architecture depth? — **Next.js only**
+    → medium (default) → Service layer, no Repository —
+                        `features/[name]/{components, actions, services, schemas}` + types.ts
+    → large            → Service + Repository —
+                        `features/[name]/{components, actions, services, queries, repositories, schemas}` + types.ts
+    (Rule set only — directory scaffolding is identical; the choice shapes AGENTS.md + playbook rules)
+
+Q3: Backend/database?
+    → supabase   → database/supabase.md + migration/supabase-cli.md
+    → springboot → stack/springboot.md + database/postgresql.md + migration/flyway.md
+    → postgres   → database/postgresql.md + migration/prisma.md
+    (choices filtered by the frontend — see Allowed Pairs above)
+
+Q4: Styling?
     → tailwind    → tailwind-extensions.md
     → css-modules → css-modules-extensions.md
     (Next.js projects default to Tailwind)
 
-Q4: Testing setup?
+Q5: Testing setup?
     → full    → Vitest + RTL + Playwright
     → basic   → Vitest + RTL only
     → none    → skip
 
-Q5: Docker?
+Q6: Docker?
     → yes → devops/docker.md
-    → no  → skip (auto-yes for Spring Boot combos)
+    → no  → skip (auto-yes when the backend needs Docker)
 
-Q6: Makefile?
-    → yes → devops/makefile.md (correct variant)
-    → no  → skip (auto-yes for Spring Boot combos)
+Q7: Makefile?
+    → yes → devops/makefile.md
+    → no  → skip
 
-Q7: CI/CD?
-    → yes → devops/github-actions.md (correct variant)
+Q8: CI/CD?
+    → yes → devops/github-actions.md + devops/pr-template.md
     → no  → skip
 ```
 
@@ -179,8 +156,8 @@ Q7: CI/CD?
 ```
 Every project gets:
   CONTEXT.md            → project name, stack, decisions
-  RULES.md              → merged relevant playbooks
-  AGENTS.md             → folder map + agent instructions
+  RULES.md              → index-style map of every selected playbook section
+  AGENTS.md             → combo constraints + folder map + agent instructions
   PROGRESS.md           → empty, ready to fill
   .env.example          → stack-appropriate variables
   .editorconfig         → 2sp JS/TS, 4sp Java, tabs Makefile
@@ -191,23 +168,22 @@ Every project gets:
     PULL_REQUEST_TEMPLATE.md
     workflows/           → CI per selected services
   README.md             → stack-appropriate template
+  playbooks/            → ONLY the selected playbooks (no irrelevant ones)
 
-React + Spring Boot also gets:
-  Makefile              → full 3-service
-  docker-compose.yml    → dev
-  docker-compose.prod.yml → prod
-  frontend/Dockerfile.dev
-  frontend/Dockerfile
-  frontend/nginx.conf
-  backend/Dockerfile.dev
-  backend/Dockerfile
+When Makefile is selected:
+  Makefile              → full 3-service (Spring Boot),
+                          Supabase CLI (Supabase),
+                          Prisma (PostgreSQL) variants
 
-Next.js + Supabase also gets:
-  Makefile              → simplified (Supabase CLI)
+When Docker is selected:
+  docker-compose.yml    → 3-service dev (Spring Boot),
+                          PostgreSQL-only dev (Prisma)
+  docker-compose.prod.yml → production (Spring Boot only)
+  backend/Dockerfile + Dockerfile.dev   → Spring Boot only
+  frontend/Dockerfile + Dockerfile.dev + nginx.conf → React + Vite only
 
-Next.js + PostgreSQL also gets:
-  Makefile              → Prisma variant
-  docker-compose.yml    → PostgreSQL only
+Spring Boot backend projects also get:
+  backend/              → Java package folders via {{PACKAGE_PATH}}
 ```
 
 ---
@@ -217,29 +193,30 @@ Next.js + PostgreSQL also gets:
 {{PROJECT_NAME}}         → my-project
 {{PROJECT_DESCRIPTION}}  → one-line description
 {{PACKAGE_NAME}}         → com/username (Spring Boot only)
+{{PACKAGE_PATH}}         → com/username as folder path
 {{STYLE_MODE}}           → TAILWIND or CSS_MODULES
+{{ARCHITECTURE}}         → MEDIUM or LARGE (Next.js only)
+{{STACK}}                → nextjs-supabase etc.
 {{YEAR}}                 → current year
-{{AUTHOR}}               → git config user.name
 ```
 
 ---
 
-## Playbook Merge Order (for RULES.md)
+## RULES.md Generation Order
 ```
-1. combo-rules/[combo].md         → combo overview + what to skip
-2. universal/coding-rules.md
-3. universal/git-conventions.md
-4. universal/typescript.md
-5. universal/error-handling.md
-6. universal/testing.md
-7. universal/folder-structure.md
-8. stack/[frontend].md
-9. stack/[backend].md (if applicable)
-10. database/[db].md
-11. migration/[tool].md
-12. styling/[choice].md
-13. devops/docker.md (if applicable)
-14. devops/makefile.md (if applicable)
-15. devops/github-actions.md
-16. devops/pr-template.md
+1. universal/coding-rules.md
+2. universal/git-conventions.md
+3. universal/typescript.md
+4. universal/error-handling.md
+5. universal/testing.md
+6. universal/folder-structure.md
+7. stack/[frontend].md
+8. stack/[backend].md (if applicable)
+9. database/[db].md
+10. migration/[tool].md
+11. styling/[choice].md
+12. devops/docker.md (if applicable)
+13. devops/makefile.md (if applicable)
+14. devops/github-actions.md
+15. devops/pr-template.md
 ```

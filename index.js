@@ -66,6 +66,17 @@ const answers = await inquirer.prompt([
   },
   {
     type: 'list',
+    name: 'architecture',
+    message: 'Architecture depth?',
+    choices: [
+      { name: 'Medium  — Service layer, no Repository  (recommended)', value: 'medium' },
+      { name: 'Large   — Service + Repository layers', value: 'large' },
+    ],
+    default: 'medium',
+    when: (a) => a.frontend === 'nextjs',
+  },
+  {
+    type: 'list',
     name: 'testing',
     message: 'Testing setup?',
     choices: [
@@ -123,6 +134,9 @@ console.log(chalk.gray('  ──────────────────
 console.log(`  ${chalk.cyan('Name:')}        ${answers.projectName}`)
 console.log(`  ${chalk.cyan('Stack:')}       ${stack.label}`)
 console.log(`  ${chalk.cyan('Styling:')}     ${answers.styling}`)
+if (stack.isNextjs) {
+  console.log(`  ${chalk.cyan('Architecture:')} ${stack.architecture === 'large' ? 'Large (Service + Repository)' : 'Medium (Service layer)'}`)
+}
 console.log(`  ${chalk.cyan('Testing:')}     ${answers.testing}`)
 console.log(`  ${chalk.cyan('Docker:')}      ${answers.docker ? 'yes' : 'no'}`)
 console.log(`  ${chalk.cyan('Makefile:')}    ${answers.makefile ? 'yes' : 'no'}`)
