@@ -1117,7 +1117,7 @@ Prefer `simple + explicit + consistent` over `complex + abstract + theoretically
 
 ## Zustand — Client UI State
 
-Use for state that persists across components but is not server data.
+Use Zustand **when** this project has shared UI state that persists across components but is not server data. If the project has no such need, this section does not apply — the rules are optional.
 
 ```typescript
 // src/stores/uiStore.ts
@@ -1141,7 +1141,7 @@ Never put server data in Zustand. Never put UI state in TanStack Query.
 
 ## TanStack Query — Server State (Client-Side)
 
-Use when client components fetch and cache server data.
+Use TanStack Query **when** this project has cached server state on the client. If the project has no such need, this section does not apply — the rules are optional.
 
 ```typescript
 // features/users/hooks/useUsers.ts
@@ -1198,6 +1198,8 @@ const queryClient = new QueryClient({
 # 74. Forms
 
 ## React Hook Form + Zod
+
+Use React Hook Form + Zod **when** this project has forms. If the project has no such need, this section does not apply — the rules are optional.
 
 ### Schema First
 
@@ -1272,6 +1274,8 @@ Server action validation?       → same schema file, import on both client and 
 
 ## t3-env Setup
 
+Use t3-env **when** this project has env validation needs. If the project has no such need, this section does not apply — the rules are optional.
+
 <!-- snippet:nextjs-env -->
 ```typescript
 // src/env.ts
@@ -1306,7 +1310,7 @@ Import everywhere: `import { env } from '@/env'`. Build fails if a required vari
 
 # 76. URL State Management (nuqs)
 
-Use for state that belongs in the URL: filters, search, pagination, tabs.
+Use nuqs **when** this project has URL state (filters, search, pagination, tabs) that belongs in the URL. If the project has no such need, this section does not apply — the rules are optional.
 
 ```typescript
 'use client'
