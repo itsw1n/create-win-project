@@ -112,6 +112,16 @@ const answers = await inquirer.prompt([
       return true
     },
   },
+  {
+    type: 'checkbox',
+    name: 'expectedConcerns',
+    message: 'Expected optional concerns? (advisory only — all stay available)',
+    choices: () => {
+      const opts = new Set()
+      for (const m of catalog.manifests) for (const c of (m.concerns || [])) if (!c.required) opts.add(c.id)
+      return [...opts].map((id) => ({ name: id, value: id }))
+    },
+  },
 ])
 
 // auto-enable docker for Spring Boot combos
