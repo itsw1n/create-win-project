@@ -5,9 +5,10 @@ import ora from 'ora'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { generateProject } from './lib/generator.js'
-import { composeStack, FRONTENDS, BACKENDS } from './lib/constants.js'
+import { loadCatalog, resolveStack, frontendChoices, backendChoicesFor } from './lib/catalog.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const catalog = await loadCatalog(path.join(__dirname, 'playbooks'))
 
 // ─── Banner ──────────────────────────────────────────────────────────────────
 
@@ -40,19 +41,13 @@ const answers = await inquirer.prompt([
     type: 'list',
     name: 'frontend',
     message: 'Pick your frontend:',
-    choices: Object.entries(FRONTENDS).map(([key, f]) => ({
-      name: f.label,
-      value: key,
-    })),
+    choices: frontendChoices(catalog),
   },
   {
     type: 'list',
     name: 'backend',
     message: 'Pick your backend/database:',
-    choices: (a) => FRONTENDS[a.frontend].allows.map((key) => ({
-      name: BACKENDS[key].label,
-      value: key,
-    })),
+    choices: (a) => backendChoicesFor(catalog, a.frontend),
   },
   {
     type: 'list',
@@ -91,7 +86,7 @@ const answers = await inquirer.prompt([
     name: 'docker',
     message: 'Include Docker?',
     default: true,
-    when: (a) => composeStack(a.frontend, a.backend, a).needsDocker,
+    when: (a) => { const fe = catalog.byId[a.frontend]; const be = catalog.byId[a.backend]; return (be?.needsDocker ?? fe?.needsDocker ?? false) },
   },
   {
     type: 'confirm',
@@ -120,11 +115,11 @@ const answers = await inquirer.prompt([
 ])
 
 // auto-enable docker for Spring Boot combos
-if (composeStack(answers.frontend, answers.backend, answers).needsDocker) {
+if (resolveStack(answers, catalog).needsDocker) {
   answers.docker = answers.docker ?? true
 }
 
-const stack = composeStack(answers.frontend, answers.backend, answers)
+const stack = resolveStack(answers, catalog)
 
 // ─── Confirm ─────────────────────────────────────────────────────────────────
 
