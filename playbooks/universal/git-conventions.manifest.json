@@ -1,0 +1,10 @@
+{
+  "id": "git-conventions",
+  "kind": "universal",
+  "label": "Git Conventions",
+  "required": true,
+  "folders": [],
+  "concerns": [
+    { "id": "git", "required": true, "sections": ["Branch Structure", "Commit Convention", "Daily Workflow"] }
+  ]
+}

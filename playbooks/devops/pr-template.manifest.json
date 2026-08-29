@@ -1,0 +1,10 @@
+{
+  "id": "pr-template",
+  "kind": "devops",
+  "label": "PR Template",
+  "required": false,
+  "folders": [],
+  "concerns": [
+    { "id": "pr", "required": true, "sections": ["PR checklist"] }
+  ]
+}

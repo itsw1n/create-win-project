@@ -1,0 +1,10 @@
+{
+  "id": "css-modules",
+  "kind": "styling",
+  "label": "CSS Modules",
+  "required": false,
+  "folders": [],
+  "concerns": [
+    { "id": "styling", "required": true, "sections": ["CSS vars", "Responsive"] }
+  ]
+}

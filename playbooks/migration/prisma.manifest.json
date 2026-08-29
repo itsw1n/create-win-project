@@ -1,0 +1,11 @@
+{
+  "id": "prisma",
+  "kind": "migration",
+  "label": "Prisma",
+  "appliesTo": { "backend": ["postgres"] },
+  "required": true,
+  "folders": ["prisma/migrations"],
+  "concerns": [
+    { "id": "migration", "required": true, "sections": ["Setup", "prisma/schema.prisma"] }
+  ]
+}

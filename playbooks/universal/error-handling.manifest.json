@@ -1,0 +1,10 @@
+{
+  "id": "error-handling",
+  "kind": "universal",
+  "label": "Error Handling",
+  "required": true,
+  "folders": [],
+  "concerns": [
+    { "id": "errors", "required": true, "sections": ["API Error Response Shape", "Error Code Registry", "Security Rules for Errors"] }
+  ]
+}

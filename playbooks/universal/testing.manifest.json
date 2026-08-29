@@ -1,0 +1,11 @@
+{
+  "id": "testing",
+  "kind": "universal",
+  "label": "Testing",
+  "required": true,
+  "folders": [],
+  "concerns": [
+    { "id": "testing", "required": true, "sections": ["Testing Layers", "Frontend: Vitest Setup", "Backend: JUnit + Spring Boot"] },
+    { "id": "validation", "required": false, "when": "Project has forms to test", "playbook": "universal/testing.md", "sections": ["Frontend: Zod Schema Testing"] }
+  ]
+}

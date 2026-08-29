@@ -1,0 +1,12 @@
+{
+  "id": "postgresql",
+  "kind": "database",
+  "label": "PostgreSQL (Prisma)",
+  "appliesTo": { "backend": ["postgres"] },
+  "required": true,
+  "folders": ["prisma/migrations"],
+  "env": ["DATABASE_URL"],
+  "concerns": [
+    { "id": "schema", "required": true, "sections": ["Core Rules", "Standard Table Pattern", "Column Conventions"] }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "id": "supabase",
+  "kind": "database",
+  "label": "Supabase",
+  "appliesTo": { "backend": ["supabase"] },
+  "required": true,
+  "folders": ["supabase/migrations"],
+  "env": ["NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_ANON_KEY", "SUPABASE_SERVICE_ROLE_KEY"],
+  "concerns": [
+    { "id": "rls", "required": true, "sections": ["Row Level Security (RLS)", "Which Client to Use"] },
+    { "id": "auth", "required": true, "sections": ["Supabase Auth Patterns"] }
+  ]
+}
