@@ -219,4 +219,20 @@ Spring Boot backend projects also get:
 13. devops/makefile.md (if applicable)
 14. devops/github-actions.md
 15. devops/pr-template.md
+
+---
+
+## Manifest Model (how generation is driven)
+
+Each playbook has a co-located `<name>.manifest.json` describing it to the CLI:
+
+- `id`, `kind` (frontend/backend/database/migration/styling/devops/universal), `label`
+- `appliesTo` — which frontend/backend pairs it belongs to (drives interview + pairing)
+- `required` — always included for matching stacks
+- `folders`, `deps`, `devDeps`, `env` — scaffold inputs (Phase 2)
+- `constraints` — combo rules (replaces the old `CONSTRAINTS` table)
+- `concerns` — `[{ id, required, when, sections, playbook? }]`; `required:false` concerns are optional and appear only in RULES.md's optional group
+- `snippets` — `{ targetPath: "snippet:<tag>" }` (Phase 2 extraction)
+
+`lib/catalog.js#resolveStack` reads these (never hardcoded tables) to build the stack descriptor. `RULES.md` is generated from `concerns`; `AGENTS.md` stays lean and always-loaded.
 ```
