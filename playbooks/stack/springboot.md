@@ -9,24 +9,11 @@ Used in: React + Spring Boot, Next.js + Spring Boot combos.
 
 # 1. The One-Sentence Mental Model
 
-```
-HTTP Request
-     │
-     ▼
-Controller        ← entry point only, HTTP concern
-     │
-     ▼
-Service           ← business logic lives here
-     │
-     ▼
-Repository        ← database access lives here
-     │
-     ▼
-Database
+```text
+HTTP Request → Controller (entry point, HTTP only) → Service (business logic) → Repository (DB access) → Database
 ```
 
-This is a **responsibility map**, not a rule that every feature needs every layer.
-Small features can skip layers. Complexity earns abstraction.
+Responsibility map, NOT a rule that every feature needs every layer. Small features can skip layers. Complexity earns abstraction.
 
 ---
 
@@ -49,35 +36,22 @@ Small features can skip layers. Complexity earns abstraction.
 
 # 3. The Most Important Distinction: Entry Point vs Business Operation
 
-```
-CONTROLLER
-= How an HTTP request enters server-side application code
-= Entry point only
-
-SERVICE
-= What the application actually does
-= Business operation
-
-REPOSITORY
-= How persistent data is accessed
-= Database concern only
+```text
+CONTROLLER  = how an HTTP request enters server-side application code  (entry point only)
+SERVICE     = what the application actually does                       (business operation)
+REPOSITORY  = how persistent data is accessed                          (database concern only)
 ```
 
 Example:
 
-```
+```text
 POST /api/orders
-     │
-     ▼
-OrderController.createOrder()     ← entry point, parses HTTP request
-     │
-     ▼
-OrderService.createOrder()        ← business: validate, calculate, orchestrate
-     │
-     ├── InventoryRepository      ← DB: check stock
-     ├── PricingService           ← logic: calculate total
-     ├── OrderRepository          ← DB: save order
-     └── NotificationService      ← logic: send email
+  → OrderController.createOrder()   ← entry point, parses HTTP request
+  → OrderService.createOrder()      ← business: validate, calculate, orchestrate
+        ├── InventoryRepository     ← DB: check stock
+        ├── PricingService          ← logic: calculate total
+        ├── OrderRepository         ← DB: save order
+        └── NotificationService     ← logic: send email
 ```
 
 The Controller is not the business operation. It is the entry point.
@@ -88,17 +62,9 @@ The Controller is not the business operation. It is the entry point.
 
 ## Controller — HTTP Only
 
-What it does:
-- Parse the HTTP request
-- Call the appropriate service method
-- Wrap result in ApiResponse
-- Return ResponseEntity
+What it does: parse the HTTP request, call the appropriate service method, wrap result in ApiResponse, return ResponseEntity.
 
-What it does NOT do:
-- Business logic
-- Direct repository calls
-- Complex conditionals
-- Data transformation beyond DTO mapping
+What it does NOT do: business logic, direct repository calls, complex conditionals, data transformation beyond DTO mapping.
 
 ```java
 // ✅ correct controller
@@ -141,18 +107,9 @@ public ResponseEntity<?> create(@RequestBody CreateUserRequest request) {
 
 ## Service — Business Logic Only
 
-What it does:
-- Enforce business rules
-- Orchestrate multiple repositories
-- Call other services when needed
-- Throw AppException for business rule violations
-- Transform data between layers
+What it does: enforce business rules, orchestrate multiple repositories, call other services when needed, throw AppException for business rule violations, transform data between layers.
 
-What it does NOT do:
-- Parse HTTP requests
-- Return ResponseEntity
-- Have @RequestMapping
-- Know about HTTP status codes directly
+What it does NOT do: parse HTTP requests, return ResponseEntity, have @RequestMapping, know HTTP status codes directly.
 
 ```java
 // ✅ correct service
@@ -194,15 +151,9 @@ public class UserService {
 
 ## Repository — DB Only
 
-What it does:
-- Extends JpaRepository for standard CRUD
-- Adds custom @Query methods when needed
-- Returns Entity or Optional<Entity>
+What it does: extends JpaRepository for standard CRUD, adds custom @Query methods when needed, returns Entity or Optional<Entity>.
 
-What it does NOT do:
-- Business logic
-- Data transformation
-- Exception throwing
+What it does NOT do: business logic, data transformation, exception throwing.
 
 ```java
 // ✅ correct repository
@@ -329,111 +280,60 @@ Rules:
 
 # 5. Do I Need a Service?
 
-```
-Is there business logic beyond "save this to DB"?
-  YES → Service needed
-
-Do multiple repositories need to be coordinated?
-  YES → Service needed
-
-Does this operation need to throw a business exception?
-  YES → Service needed
-
-Is this literally just "find by id, return DTO"?
-  NO → Controller can be thin, service is still correct layer
-       but keep it — consistency matters more than skipping layers
+```text
+Business logic beyond "save this to DB"?             YES → Service needed
+Multiple repositories coordinated?                   YES → Service needed
+Operation must throw a business exception?           YES → Service needed
+Literally just "find by id, return DTO"?             Keep the service anyway — consistency beats skipping layers
 ```
 
 ---
 
 # 6. Do I Need a Repository Method?
 
-```
-Does JpaRepository already have this?
-  findById(), findAll(), save(), delete(), existsById()
-  YES → use it directly, don't add a method
-
-Does it need a WHERE clause?
-  YES → add findBy[Field] or findBy[Field]And[Field] method
-        Spring Data generates the query automatically
-
-Is the Spring Data method name too long or complex?
-  YES → add @Query method
-
-Does it need pagination?
-  YES → return Page<Entity> and accept Pageable parameter
+```text
+JpaRepository already has it (findById/findAll/save/delete/existsById)?  → use it directly, don't add a method
+Needs a WHERE clause?   → add findBy[Field] or findBy[Field]And[Field]; Spring Data generates the query
+Spring Data method name too long/complex?           → add @Query method
+Needs pagination?                                   → return Page<Entity>, accept Pageable parameter
 ```
 
 ---
 
 # 7. When Should You Throw AppException?
 
+```text
+Resource not found?          → AppException("RESOURCE_NOT_FOUND", HttpStatus.NOT_FOUND)
+Business rule violated?      → AppException("SPECIFIC_CODE", HttpStatus.CONFLICT or BAD_REQUEST)
+Unauthorized action?         → AppException("FORBIDDEN", HttpStatus.FORBIDDEN)
+Invalid state?               → AppException("INVALID_STATE", HttpStatus.BAD_REQUEST)
+Unexpected technical error?  → let it bubble to GlobalExceptionHandler as Exception; never throw INTERNAL_ERROR manually
 ```
-Resource not found?
-  → throw new AppException("RESOURCE_NOT_FOUND", HttpStatus.NOT_FOUND)
 
-Business rule violated?
-  → throw new AppException("SPECIFIC_CODE", HttpStatus.CONFLICT or BAD_REQUEST)
-
-Unauthorized action?
-  → throw new AppException("FORBIDDEN", HttpStatus.FORBIDDEN)
-
-Invalid state?
-  → throw new AppException("INVALID_STATE", HttpStatus.BAD_REQUEST)
-
-Unexpected technical error?
-  → let it bubble up to GlobalExceptionHandler as Exception
-  → never throw INTERNAL_ERROR manually
-
-Never:
-  → throw new RuntimeException(...)
-  → throw new IllegalArgumentException(...)
-  → throw new Exception(...)
-```
+Never: `RuntimeException(...)`, `IllegalArgumentException(...)`, plain `Exception(...)`.
 
 ---
 
 # 8. Package Structure
 
-```
+```text
 src/main/java/com/app/
-├── [feature]/                          one package per domain
+├── [feature]/                        one package per domain
 │   ├── [Feature]Controller.java
 │   ├── [Feature]Service.java
 │   ├── [Feature]Repository.java
-│   ├── dto/
-│   │   ├── [Create/Update]Request.java
-│   │   └── [Feature]Response.java
-│   └── entity/
-│       └── [Feature].java
-│
-├── auth/                               always present
-│   ├── AuthController.java
-│   ├── AuthService.java
-│   ├── dto/
-│   │   ├── LoginRequest.java
-│   │   ├── RegisterRequest.java
-│   │   └── AuthResponse.java
-│   └── entity/
-│       ├── User.java
-│       └── RefreshToken.java
-│
-├── config/
-│   ├── SecurityConfig.java
-│   ├── CorsConfig.java
-│   └── AppConfig.java
-│
+│   ├── dto/             [Create/Update]Request.java, [Feature]Response.java
+│   └── entity/          [Feature].java
+├── auth/                              always present
+│   ├── AuthController.java, AuthService.java
+│   ├── dto/             LoginRequest.java, RegisterRequest.java, AuthResponse.java
+│   └── entity/          User.java, RefreshToken.java
+├── config/             SecurityConfig.java, CorsConfig.java, AppConfig.java
 └── common/
-    ├── exception/
-    │   ├── AppException.java
-    │   └── GlobalExceptionHandler.java
-    ├── response/
-    │   └── ApiResponse.java
-    ├── jwt/
-    │   ├── JwtService.java
-    │   └── JwtFilter.java
-    └── audit/
-        └── BaseEntity.java
+    ├── exception/      AppException.java, GlobalExceptionHandler.java
+    ├── response/       ApiResponse.java
+    ├── jwt/            JwtService.java, JwtFilter.java
+    └── audit/          BaseEntity.java
 ```
 
 ---
@@ -441,54 +341,26 @@ src/main/java/com/app/
 # 9. Progressive Complexity
 
 ## Small Feature (simple CRUD)
-```
-One Controller + One Service + One Repository
-No extra abstraction needed
 
-com/app/category/
-  CategoryController.java
-  CategoryService.java
-  CategoryRepository.java
-  dto/
-    CreateCategoryRequest.java
-    CategoryResponse.java
-  entity/
-    Category.java
+```text
+One Controller + One Service + One Repository. No extra abstraction needed.
+com/app/category/  CategoryController/Service/Repository + dto/(CreateCategoryRequest, CategoryResponse) + entity/Category
 ```
 
 ## Medium Feature (multiple concerns)
-```
-One Controller + One Service + Multiple Repositories
-When the feature touches 2-3 tables
 
-com/app/order/
-  OrderController.java
-  OrderService.java          ← orchestrates multiple repos
-  OrderRepository.java
-  OrderItemRepository.java
-  dto/
-    CreateOrderRequest.java
-    OrderResponse.java
-    OrderItemResponse.java
-  entity/
-    Order.java
-    OrderItem.java
+```text
+One Controller + One Service + Multiple Repositories. Feature touches 2-3 tables.
+com/app/order/  OrderController, OrderService (orchestrates repos), OrderRepository, OrderItemRepository
+                + dto/(CreateOrderRequest, OrderResponse, OrderItemResponse) + entity/(Order, OrderItem)
 ```
 
 ## Large Feature (complex domain)
-```
-Multiple Services when business logic is too big for one class
-When a service method exceeds ~50 lines with real logic
-When sub-domains emerge within the feature
 
-com/app/order/
-  OrderController.java
-  OrderService.java          ← orchestrates sub-services
-  PricingService.java        ← pricing logic only
-  InventoryService.java      ← stock checking only
-  NotificationService.java   ← notification logic only
-  OrderRepository.java
-  ...
+```text
+Multiple Services when business logic is too big for one class, a service method exceeds ~50 lines of real logic,
+or sub-domains emerge.
+com/app/order/  OrderController, OrderService (orchestrates), PricingService, InventoryService, NotificationService, OrderRepository...
 ```
 
 Rule: start with small, evolve to medium or large only when needed.
@@ -498,6 +370,7 @@ Rule: start with small, evolve to medium or large only when needed.
 # 10. Anti-Patterns
 
 ## Anti-Pattern: Business Logic in Controller
+
 ```java
 // ❌
 @PostMapping("/login")
@@ -520,6 +393,7 @@ public ResponseEntity<ApiResponse<AuthResponse>> login(
 ```
 
 ## Anti-Pattern: Repository Call in Controller
+
 ```java
 // ❌ controller calling repository directly
 @GetMapping("/{id}")
@@ -537,6 +411,7 @@ public ResponseEntity<ApiResponse<UserResponse>> getUser(@PathVariable String id
 ```
 
 ## Anti-Pattern: Exposing Entity in Response
+
 ```java
 // ❌ entity directly returned — exposes password, internal IDs, etc.
 @GetMapping("/me")
@@ -553,6 +428,7 @@ public ResponseEntity<ApiResponse<UserResponse>> getMe(
 ```
 
 ## Anti-Pattern: Field Injection
+
 ```java
 // ❌ field injection — hidden dependencies, hard to test
 @Service
@@ -570,6 +446,7 @@ public class UserService {
 ```
 
 ## Anti-Pattern: Raw RuntimeException
+
 ```java
 // ❌ uncontrolled exception — leaks internals, wrong HTTP status
 throw new RuntimeException("User not found with id: " + id);
@@ -580,22 +457,18 @@ throw new AppException("USER_NOT_FOUND", HttpStatus.NOT_FOUND,
 ```
 
 ## Anti-Pattern: Fat Service
+
 ```java
 // ❌ one service doing everything
 @Service
 public class UserService {
-    // user CRUD...
-    // password reset logic...
-    // email sending...
-    // role management...
-    // audit logging...
-    // report generation...
-    // 800 lines of mixed concerns
+    // user CRUD... password reset logic... email sending... role management...
+    // audit logging... report generation... 800 lines of mixed concerns
 }
 
-// ✅ split by responsibility when a service exceeds ~150 lines with real logic
-UserService.java           → user CRUD
-PasswordService.java       → password reset flow
+// ✅ split by responsibility when a service exceeds ~150 lines of real logic
+UserService.java          → user CRUD
+PasswordService.java      → password reset flow
 UserNotificationService.java → notifications for user events
 ```
 
@@ -604,6 +477,7 @@ UserNotificationService.java → notifications for user events
 # 11. Pagination Pattern
 
 ## Repository
+
 ```java
 Page<User> findAll(Pageable pageable);
 
@@ -614,6 +488,7 @@ Page<User> search(@Param("query") String query, Pageable pageable);
 ```
 
 ## Service
+
 ```java
 public Page<UserResponse> getAll(int page, int size, String sortBy) {
     Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
@@ -622,6 +497,7 @@ public Page<UserResponse> getAll(int page, int size, String sortBy) {
 ```
 
 ## Controller
+
 ```java
 @GetMapping
 public ResponseEntity<ApiResponse<Page<UserResponse>>> getAll(
@@ -635,6 +511,7 @@ public ResponseEntity<ApiResponse<Page<UserResponse>>> getAll(
 ```
 
 ## Response Shape
+
 ```json
 {
   "success": true,
@@ -651,6 +528,7 @@ public ResponseEntity<ApiResponse<Page<UserResponse>>> getAll(
 ```
 
 ## Frontend Consumption (React)
+
 ```typescript
 // features/users/hooks/useUsers.ts
 export function useUsers({ page = 0, size = 20 } = {}) {
@@ -667,6 +545,7 @@ export function useUsers({ page = 0, size = 20 } = {}) {
 # 12. Role-Based Authorization
 
 ## Method-Level (preferred for feature-specific rules)
+
 ```java
 // Enable in SecurityConfig
 @Configuration
@@ -685,6 +564,7 @@ public Page<UserResponse> getAll(Pageable pageable) { ... }
 ```
 
 ## Route-Level (for broad protection)
+
 ```java
 // SecurityConfig — broad rules
 .authorizeHttpRequests(auth -> auth
@@ -696,6 +576,7 @@ public Page<UserResponse> getAll(Pageable pageable) { ... }
 ```
 
 ## Custom Auth Check in Service
+
 ```java
 public UserResponse getById(String requesterId, String targetId) {
     User requester = userRepository.findById(requesterId)
@@ -714,6 +595,7 @@ public UserResponse getById(String requesterId, String targetId) {
 ```
 
 ## Role Enum Pattern
+
 ```java
 public enum Role {
     USER, ADMIN, MODERATOR;
@@ -729,6 +611,7 @@ public enum Role {
 # 13. Validation
 
 ## Bean Validation on Request DTOs
+
 ```java
 public record CreateUserRequest(
     @NotBlank(message = "Name is required")
@@ -750,6 +633,7 @@ public record CreateUserRequest(
 ```
 
 ## Always Use @Valid on Controller Parameters
+
 ```java
 public ResponseEntity<?> create(@Valid @RequestBody CreateUserRequest request) {
     // if @Valid fails → GlobalExceptionHandler catches MethodArgumentNotValidException
@@ -758,6 +642,7 @@ public ResponseEntity<?> create(@Valid @RequestBody CreateUserRequest request) {
 ```
 
 ## Custom Validator (when needed)
+
 ```java
 @Constraint(validatedBy = UniqueEmailValidator.class)
 @Target(ElementType.FIELD)
@@ -848,6 +733,7 @@ log.info("Full request body: {}", request);     // never — may contain passwor
 # 16. Testing Strategy
 
 ## Unit Test — Service Layer
+
 ```java
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -885,6 +771,7 @@ class UserServiceTest {
 ```
 
 ## Integration Test — Controller Layer
+
 ```java
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
@@ -928,9 +815,9 @@ class UserControllerIntegrationTest {
 ```
 
 ## Test Naming Convention
-```
-methodName_whenCondition_thenExpected
 
+```text
+methodName_whenCondition_thenExpected
 create_whenEmailAvailable_returnsUserResponse
 create_whenEmailTaken_throwsAppException
 getById_whenUserExists_returnsUserResponse
@@ -940,23 +827,18 @@ login_whenWrongPassword_throwsAppException
 ```
 
 ## What To Test Per Layer
-```
+
+```text
 Service (unit tests):
-  → Every public method
-  → Success path
-  → Every AppException case
-  → Mock all dependencies
+  → Every public method, success path, every AppException case; mock all dependencies
 
 Controller (integration tests):
-  → Every endpoint
-  → 2xx success case
-  → 4xx error cases (400, 401, 403, 404, 409)
+  → Every endpoint; 2xx success case; 4xx error cases (400, 401, 403, 404, 409)
   → Verify response shape matches ApiResponse contract
   → Verify sensitive fields never appear in response
 
 Repository:
-  → Only test custom @Query methods
-  → Standard JpaRepository methods: trust Spring Data
+  → Only test custom @Query methods; trust Spring Data for standard methods
 ```
 
 ---
@@ -1001,18 +883,14 @@ public UserResponse create(CreateUserRequest request) {
 }
 ```
 
-When to use @Async:
-- Email sending
-- Push notifications
-- Audit logging
-- External webhook calls
-- Any operation where the user doesn't need to wait for the result
+When to use @Async: email sending, push notifications, audit logging, external webhook calls — any operation where the user doesn't need to wait for the result.
 
 ---
 
 # 18. Common Patterns
 
 ## Soft Delete
+
 ```java
 // Entity
 @Column(nullable = false)
@@ -1040,6 +918,7 @@ public void delete(String id) {
 ```
 
 ## Search + Filter
+
 ```java
 // Repository
 @Query("""
@@ -1062,6 +941,7 @@ public Page<UserResponse> search(String query, String role, int page, int size) 
 ```
 
 ## File Upload
+
 ```java
 @PostMapping("/avatar")
 public ResponseEntity<ApiResponse<String>> uploadAvatar(
@@ -1288,8 +1168,8 @@ logging:
 
 # 23. Agent Decision Tree
 
-```
-New feature needed?
+```text
+New feature?
   → Create package com/app/[feature]/
   → Add Controller + Service + Repository + dto/ + entity/
   → Start with small pattern — add complexity only when needed
@@ -1340,53 +1220,19 @@ Need to send email / notification?
 
 # 24. Agent Quick Reference
 
-```
-New feature?
-  → com/app/[feature]/ + Controller + Service + Repository + dto/ + entity/
-
-New endpoint?
-  → Controller (HTTP) → Service (logic) → Repository (DB)
-  → Document in docs/api/endpoints.md
-
-New error?
-  → throw new AppException("CODE", HttpStatus.XXX)
-  → Add to docs/api/errors.md
-
-Schema change?
-  → New Flyway migration V{n}__description.sql
-  → NEVER edit existing migration
-
-Business logic?
-  → Service ONLY — never Controller, never Repository
-
-DB query?
-  → Repository @Query method or Spring Data method name
-
-Authorization?
-  → @PreAuthorize on method OR SecurityConfig for routes
-
-Multiple writes?
-  → @Transactional on Service method
-
-Pagination?
-  → Pageable + Page<Entity> in Repository
-  → PageRequest.of(page, size, Sort.by(...)) in Service
-
-Password?
-  → NEVER in response DTO
-  → Always BCrypt encoded on save
-
-Async operation?
-  → @Async on method in dedicated service
-
-Test a new service method?
-  → @ExtendWith(MockitoExtension.class)
-  → Mock all dependencies
-  → Test success + every AppException case
-
-Test a new endpoint?
-  → @SpringBootTest + @AutoConfigureMockMvc
-  → @ActiveProfiles("test")
-  → Test 2xx + all 4xx cases
-  → Verify password never in response
+```text
+New feature?          → com/app/[feature]/ + Controller + Service + Repository + dto/ + entity/
+New endpoint?         → Controller (HTTP) → Service (logic) → Repository (DB); document in docs/api/endpoints.md
+New error?            → throw new AppException("CODE", HttpStatus.XXX); add to docs/api/errors.md
+Schema change?        → New Flyway migration V{n}__description.sql; NEVER edit existing migration
+Business logic?       → Service ONLY — never Controller, never Repository
+DB query?             → Repository @Query method or Spring Data method name
+Authorization?        → @PreAuthorize on method OR SecurityConfig for routes
+Multiple writes?      → @Transactional on Service method
+Pagination?           → Pageable + Page<Entity> in Repository; PageRequest.of(...) in Service
+Password?             → NEVER in response DTO; always BCrypt encoded on save
+Async operation?      → @Async on method in dedicated service
+Test a new service method? → @ExtendWith(MockitoExtension.class); mock all dependencies; success + every AppException case
+Test a new endpoint?  → @SpringBootTest + @AutoConfigureMockMvc; @ActiveProfiles("test")
+                      → 2xx + all 4xx cases; verify password never in response
 ```

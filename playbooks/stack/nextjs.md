@@ -1,54 +1,28 @@
 # Next.js — Production Architecture & Agent Rules
 
-> **Purpose:** This document is both a personal reference/learning note and an architectural rulebook for AI/agentic coding in a production Next.js application.
->
+> **Purpose:** Architectural rulebook for AI/agentic coding in a production Next.js application.
 > **Core philosophy:** Medium is the floor. Keep boundaries clear. Add architectural layers only when complexity justifies them.
 
 ---
 
 # 1. The One-Sentence Mental Model
 
-A useful default mental model is:
-
 ```text
-                    NEXT.JS APPLICATION
-                           │
-             ┌─────────────┴─────────────┐
-             │                           │
-          SERVER                       CLIENT
-             │                           │
-    Server Components             Client Components
-             │                           │
-        Reads / UI                 Interaction
-             │                           │
-          Queries               Actions / API
-             │                           │
-             └─────────────┬─────────────┘
-                           ▼
-                    APPLICATION LAYER
-                           │
-                           ▼
-                     SERVICES
-                           │
-                           ▼
-                    REPOSITORIES
-                           │
-                           ▼
-                     DATABASE
+SERVER UI (Server Components: initial data + reads)  ─┐
+CLIENT UI (Client Components: interaction) ──────────┤→ SERVICES → REPOSITORIES → DATABASE
+CLIENT mutations (Server Actions / API routes) ──────┘
 ```
 
-This is a **responsibility map**, not a rule that every feature must contain every layer.
+Responsibility map, NOT a rule that every feature must contain every layer.
 
 ---
 
 # 2. Golden Rules
 
-These are the rules an AI coding agent should follow unless the project explicitly says otherwise.
-
 1. **Server Components are the default.**
 2. Use `"use client"` only when browser/client behavior is actually required.
 3. Keep Client Components as small as practical.
-4. Do not access the database directly from Client Components.
+4. Never access the database directly from Client Components.
 5. Use Server Components for initial/server-rendered data when appropriate.
 6. Use Server Actions for mutations initiated by your own UI when appropriate.
 7. Use API routes when an actual HTTP interface is required.
@@ -70,51 +44,14 @@ These are the rules an AI coding agent should follow unless the project explicit
 
 # 3. The Most Important Distinction: Entry Point vs Business Operation
 
-A major source of confusion is mixing these concepts.
-
 ```text
-ACTION
-=
-How a request from your Next.js UI enters server-side application code.
-
-API
-=
-How an HTTP request enters server-side application code.
-
-SERVICE / USE CASE
-=
-What the application actually does.
-
-REPOSITORY
-=
-How persistent data is accessed.
-
-DATABASE
-=
-Where persistent data lives.
+ACTION / API = how a request enters server-side application code  (entry point)
+SERVICE / USE CASE = what the application actually does           (business operation)
+REPOSITORY = how persistent data is accessed
+DATABASE = where persistent data lives
 ```
 
-For example:
-
-```text
-Web Form
-   │
-   ▼
-Server Action
-   │
-   ▼
-createUser()
-   │
-   ▼
-User Repository
-   │
-   ▼
-Database
-```
-
-The Action is not the business operation.
-
-The Action is the **entry point**.
+Example: `Form → Server Action → createUser() Service → User Repository → Database`. The Action is the entry point, not the business operation.
 
 ---
 
@@ -122,11 +59,7 @@ The Action is the **entry point**.
 
 ## What they are
 
-Server Components are React components that execute on the server.
-
-They are the default in the Next.js App Router.
-
-They are particularly useful for:
+React components that execute on the server. Default in the Next.js App Router. Use for:
 
 - Initial page data
 - Server-side rendering
@@ -146,42 +79,13 @@ export default async function UsersPage() {
 }
 ```
 
-The page does not need to call its own API just to get the initial users.
-
-Preferred:
-
-```text
-Server Component
-      │
-      ▼
-Query
-      │
-      ▼
-Repository
-      │
-      ▼
-Database
-```
-
-when those layers are justified.
+The page must NOT call its own API just to get initial users. Preferred read path: `Server Component → Query → Repository → Database`.
 
 ---
 
 # 5. Client Components
 
-A Client Component is used when browser-side behavior is required.
-
-Typical reasons:
-
-- `useState`
-- `useEffect`
-- event handlers
-- browser APIs
-- interactive forms
-- drag and drop
-- client-side state
-- client-side subscriptions
-- browser-only libraries
+Use when browser-side behavior is required: `useState`, `useEffect`, event handlers, browser APIs, interactive forms, drag and drop, client-side state, client-side subscriptions, browser-only libraries.
 
 Example:
 
@@ -204,121 +108,46 @@ export function UserSearch() {
 
 ## Rule
 
-Do not add `"use client"` because:
-
-> "This component is part of a page."
-
-Add it because:
-
-> "This component actually needs to execute client-side."
+Do NOT add `"use client"` because "this component is part of a page." Add it only because this component actually needs to execute client-side.
 
 ---
 
 # 6. Do Not Make Everything Client-Side
 
-Avoid:
-
-```tsx
-"use client";
-
-export default function HugePage() {
-  // everything is client-side
-}
-```
-
-when only one small part needs interaction.
-
-Prefer:
+Do not mark a whole page `"use client"` when only one small part needs interaction. Prefer keeping the client boundary small:
 
 ```text
-UsersPage                         SERVER
-│
-├── UserList                      SERVER
-├── UserCard                      SERVER
-├── UserStats                     SERVER
-└── UserSearch                    CLIENT
+UsersPage (SERVER) → UserList (SERVER) / UserCard (SERVER) / UserStats (SERVER) / UserSearch (CLIENT only)
 ```
-
-This keeps the Client Component boundary small.
 
 ---
 
 # 7. Client Components Can Still Cause Server Operations
 
-A Client Component executing in the browser does not mean the entire operation must happen in the browser.
-
-For example:
+A Client Component executing in the browser does not mean the entire operation happens in the browser. The browser initiates only; the DB stays server-side:
 
 ```text
-CLIENT
-UserForm
-   │
-   │ submit
-   ▼
-SERVER
-Server Action
-   │
-   ▼
-Service
-   │
-   ▼
-Repository
-   │
-   ▼
-Database
+CLIENT UserForm → SERVER Server Action → Service → Repository → Database
 ```
-
-The browser is only initiating the operation.
-
-The database remains server-side.
 
 ---
 
 # 8. Data Reading: The First Decision
 
-When you need data, ask:
-
-> **Who needs the data and when?**
-
-Use this decision tree:
+Ask: **Who needs the data and when?**
 
 ```text
-                NEED DATA?
-                    │
-          ┌─────────┴─────────┐
-          │                   │
-    Initial/page         Browser-driven
-       data                 fetch?
-          │                   │
-          ▼                   ▼
-   Server Component        API/query
-          │                   │
-          ▼                   ▼
-        Query               Query
-          │                   │
-          ▼                   ▼
-      Repository          Repository
-          │                   │
-          └─────────┬─────────┘
-                    ▼
-                 Database
+Initial/page data   → Server Component → Query → Repository → Database
+Browser-driven         fetch → API/query → Repository → Database
 ```
 
-Again, not every box requires a separate file.
+Not every box requires a separate file.
 
 ---
 
 # 9. Data Approach A: Server Component → Query
 
-Use this when the page needs data for its initial/server-rendered UI.
-
-Example:
-
-```text
-/users
-```
-
-Page:
+Use when the page needs data for its initial/server-rendered UI (e.g. `/users`).
 
 ```tsx
 export default async function UsersPage() {
@@ -328,68 +157,13 @@ export default async function UsersPage() {
 }
 ```
 
-Flow:
-
-```text
-Browser
-   │
-   ▼
-Next.js Server Component
-   │
-   ▼
-getUsers()
-   │
-   ▼
-Repository
-   │
-   ▼
-Database
-```
-
-The browser does not need to call:
-
-```text
-/api/users
-```
-
-just to render the initial page.
+Flow: `Browser → Next.js Server Component → getUsers() → Repository → Database`. No `/api/users` call needed to render the initial page.
 
 ---
 
 # 10. Data Approach B: Client → API → Query
 
-Use this when the browser needs to independently request data.
-
-Examples:
-
-- Search
-- Autocomplete
-- Infinite scrolling
-- Client-controlled pagination
-- Polling
-- Data that refreshes independently
-- Consumers that require HTTP
-
-Flow:
-
-```text
-Client Component
-      │
-      │ fetch()
-      ▼
-API Route
-      │
-      ▼
-Query
-      │
-      ▼
-Repository
-      │
-      ▼
-Database
-```
-
-Example:
+Use when the browser independently requests data: search, autocomplete, infinite scroll, client-controlled pagination, polling, independently refreshing data, HTTP-only consumers.
 
 ```tsx
 "use client";
@@ -403,17 +177,13 @@ async function searchUsers(query: string) {
 }
 ```
 
-Do not automatically use an API just because the component is a Client Component.
-
-Ask whether the browser actually needs an HTTP endpoint.
+Do NOT automatically use an API just because the component is a Client Component. Ask whether the browser actually needs an HTTP endpoint.
 
 ---
 
 # 11. Data Approach C: Server Component → Data Function
 
-For a simple read that needs only one table lookup, a separate Query layer may be unnecessary.
-
-Example:
+A separate Query layer is unnecessary for a simple read regardless of project size — call the repository/data function directly from the server component.
 
 ```tsx
 export default async function SettingsPage() {
@@ -425,45 +195,15 @@ export default async function SettingsPage() {
 }
 ```
 
-This can be acceptable for a genuinely simple data access if the project's conventions allow it.
-
-As complexity grows, extract:
-
-```text
-getCurrentUser()
-```
-
-or:
-
-```text
-getSettings()
-```
-
-into a Query.
+This is acceptable for simple reads if project conventions allow. As complexity grows, extract `getCurrentUser()` / `getSettings()` into a Query.
 
 ---
 
 # 12. What Is a Query?
 
-A Query is a read operation.
+A Query is a **read operation**. Examples: `getUser()`, `getUsers()`, `getCurrentUser()`, `getOrder()`, `searchUsers()`, `getDashboardData()`.
 
-Examples:
-
-```text
-getUser()
-getUsers()
-getCurrentUser()
-getOrder()
-getOrders()
-searchUsers()
-getDashboardData()
-```
-
-A Query answers:
-
-> **What data does the application need?**
-
-Example:
+A Query answers: **What data does the application need?**
 
 ```ts
 // features/users/queries/getUsers.ts
@@ -473,65 +213,21 @@ export async function getUsers() {
 }
 ```
 
-Queries should normally be read-oriented.
-
-Do not hide major writes inside functions that are supposed to be queries.
+Queries are read-oriented. Do NOT hide major writes inside query-named functions.
 
 ---
 
 # 13. What Is a Mutation?
 
-A Mutation changes data.
+A Mutation **changes data**. Examples: `createUser()`, `updateUser()`, `deleteUser()`, `createOrder()`, `cancelOrder()`, `addItemToCart()`.
 
-Examples:
-
-```text
-createUser()
-updateUser()
-deleteUser()
-
-createOrder()
-cancelOrder()
-refundOrder()
-
-addItemToCart()
-removeItemFromCart()
-```
-
-A mutation describes:
-
-> **What changes in the system?**
-
-It is different from the question:
-
-> **How did the request enter the system?**
-
-A mutation can be triggered by:
-
-```text
-Server Action
-API
-Background Job
-CLI
-Webhook
-```
+A mutation answers: **What changes in the system?** (not "How did the request enter?"). A mutation can be triggered by Server Action, API, Background Job, CLI, or Webhook.
 
 ---
 
 # 14. What Is a Server Action?
 
-A Server Action is a server-side entry point commonly used by your own Next.js UI.
-
-Typical responsibilities:
-
-1. Receive input
-2. Authenticate
-3. Authorize
-4. Validate
-5. Call the application/service operation
-6. Revalidate or redirect when appropriate
-
-Example:
+A server-side entry point used by your own Next.js UI. Responsibilities: receive input → authenticate → authorize → validate → call the application/service operation → revalidate or redirect.
 
 ```ts
 "use server";
@@ -564,45 +260,19 @@ export async function createUserAction(formData: FormData) {
 
 # 15. What Should NOT Be in a Server Action?
 
-Avoid this:
-
-```ts
-"use server";
-
-export async function createUserAction(formData: FormData) {
-  // 500 lines of:
-  // business rules
-  // pricing
-  // subscription checks
-  // database operations
-  // email logic
-  // audit logic
-  // organization logic
-  // etc.
-}
-```
-
-Instead:
+NOT an Action: 500 lines of business rules, pricing, subscription checks, DB operations, email/audit/organization logic.
 
 ```text
-Action
-  ↓
-Service
-  ↓
-Repository
+Action → Service → Repository
 ```
 
-The Action coordinates.
-
-The Service performs the application operation.
+The Action coordinates. The Service performs the application operation.
 
 ---
 
 # 16. What Is a Service?
 
 A Service/Use Case represents a meaningful application operation.
-
-Example:
 
 ```ts
 export async function createUser(input: CreateUserInput) {
@@ -623,19 +293,13 @@ export async function createUser(input: CreateUserInput) {
 }
 ```
 
-The Service answers:
-
-> **What should the system do?**
-
-It should not be tightly coupled to a particular UI.
+The Service answers: **What should the system do?** It must not be tightly coupled to a particular UI.
 
 ---
 
 # 17. What Is a Repository?
 
 A Repository handles data access.
-
-Example:
 
 ```ts
 export const userRepository = {
@@ -657,43 +321,20 @@ export const userRepository = {
 };
 ```
 
-The Repository answers:
-
-> **How does the application access persistent data?**
+The Repository answers: **How does the application access persistent data?**
 
 ---
 
 # 18. Query vs Repository
 
-These are not the same thing.
-
-Repository:
+Not the same thing.
 
 ```text
-How do I access the database?
+Repository: How do I access the database?   → userRepository.findActiveByOrganization(id)
+Query:      What data does the application need? → getActiveUsersForOrganization(id)
 ```
 
-Query:
-
-```text
-What data does the application need?
-```
-
-Example:
-
-```ts
-// Repository
-userRepository.findActiveByOrganization(id);
-```
-
-versus:
-
-```ts
-// Query
-getActiveUsersForOrganization(id);
-```
-
-A Query can compose multiple repository operations.
+A Query can compose multiple repository operations:
 
 ```ts
 export async function getDashboardData(organizationId: string) {
@@ -719,274 +360,90 @@ export async function getDashboardData(organizationId: string) {
 
 # 19. Mutation Decision Tree
 
-When changing data:
+Mutating data:
 
 ```text
-                NEED TO MUTATE?
-                     │
-                     ▼
-             Is it your own UI?
-                │       │
-               YES      NO
-                │        │
-                ▼        ▼
-          Server Action  API
-                │        │
-                └───┬────┘
-                    ▼
-                 Service
-                    │
-                    ▼
-               Repository
-                    │
-                    ▼
-                 Database
-```
-
-Interpretation:
-
-### Your own Next.js UI
-
-Prefer a Server Action when it fits the operation.
-
-```text
-Form
- ↓
-Server Action
- ↓
-Service
- ↓
-Repository
- ↓
-Database
-```
-
-### External consumer
-
-Use an API/HTTP entry point.
-
-```text
-Mobile App
- ↓
-API
- ↓
-Service
- ↓
-Repository
- ↓
-Database
+Own Next.js UI? → Server Action → Service → Repository → Database
+External consumer (mobile, webhook, third party)? → API → Service → Repository → Database
 ```
 
 ---
 
 # 20. Why Actions and APIs Should Share Services
 
-Suppose both a web application and mobile application can create users.
-
-Bad:
-
-```text
-Web Action
-   ↓
-Business Logic A
-
-Mobile API
-   ↓
-Business Logic B
-```
-
-This can drift.
-
-Better:
+Web Action and Mobile API must NOT each own separate business logic — they drift. Share the same application operation:
 
 ```text
 Web UI ──────────┐
-                 │
-Mobile API ──────┼──→ createUser()
-                 │         │
-Background Job ──┘         ▼
-                       Repository
-                           │
-                           ▼
-                        Database
+Mobile API ──────┼──→ createUser() Service → Repository → Database
+Background Job ──┘
 ```
-
-Different entry points can reuse the same application operation.
 
 ---
 
 # 21. When Should You Add a Service?
 
-Medium is the default:
-
-```text
-Action → Service → Database
-```
-
-Add or keep a Service when:
-
-- business rules become non-trivial
-- the operation is reused
-- multiple entry points need the same operation
-- the operation requires multiple coordinated steps
-- the operation needs independent testing
-- the operation involves multiple repositories/external systems
-
-A feature should not go below the Service layer.
+Medium is the default: `Action → Service → Database`. Add a Service when: business rules become non-trivial; the operation is reused; multiple entry points need it; it requires multiple coordinated steps; it needs independent testing; it involves multiple repositories/external systems.
 
 ---
 
 # 22. When Should You Add a Repository?
 
-In Medium architecture the Service handles DB access directly.
-
-```ts
-// service
-await db.user.findMany();
-```
-
-Escalate to Large (add a Repository) when database access becomes: complex, repeated, shared, transaction-heavy, database-specific, difficult to isolate, or useful to hide behind a stable interface.
-
-Do not create a repository merely because:
-
-> "Repositories are part of clean architecture."
-
-Ask:
-
-> **Is this abstraction hiding complexity, or only adding indirection?**
+In Large architecture, every feature uses a Repository. In Medium architecture, DB access goes through the Service directly: `await db.user.findMany();`. Introduce a Repository when DB access becomes complex, repeated, shared, transaction-heavy, database-specific, difficult to isolate, or useful behind a stable interface. Do NOT create one merely because "repositories are part of clean architecture." Ask: **Is this abstraction hiding complexity, or only adding indirection?**
 
 ---
 
 # 23. Progressive Architecture
 
-Architecture should grow with complexity. Medium is the floor — every feature gets a Service layer.
+Medium is the floor — every feature gets a Service layer. Escalate to Large when the feature's complexity justifies it.
 
 ## Medium
 
 ```text
-Action → Service → Database
-```
-
-or:
-
-```text
-Server Component → Query → Database
+Action → Service → Database        or        Server Component → Query → Database
 ```
 
 ## Large
 
 ```text
-Action/API
-    ↓
-Service
-    ↓
-Repository
-    ↓
-Database
+Action/API → Service → Repository → Database
+
+Server Component → Query → Repository → Database  (reads)
 ```
 
-For reads:
-
-```text
-Server Component
-    ↓
-Query
-    ↓
-Repository
-    ↓
-Database
-```
-
-The diagram is a **preferred responsibility flow**, not a mandatory number of files.
+The diagram is a preferred responsibility flow, not a mandatory number of files.
 
 ---
 
 # 24. The "Do I Need Another Layer?" Test
 
-Before creating a layer, ask:
+Ask: **What problem does this layer solve?**
 
-> **What problem does this layer solve?**
+Good: "This Service contains business rules used by three entry points." / "This Repository hides complex DB transactions." / "This Query combines five data sources into one dashboard read."
 
-Good answer:
-
-> "This Service contains business rules used by three entry points."
-
-Good answer:
-
-> "This Repository hides complex database transactions."
-
-Good answer:
-
-> "This Query combines five data sources into one dashboard read."
-
-Bad answer:
-
-> "Because enterprise architecture says I need one."
-
-Bad answer:
-
-> "Because every function needs a Service."
+Bad: "Because enterprise architecture says I need one." / "Because every function needs a Service."
 
 ---
 
 # 25. Folder Structure: Large Production System
 
-A practical feature-oriented structure:
+Feature-oriented structure:
 
 ```text
 src/
-│
-├── app/
-│   ├── (dashboard)/
-│   │   ├── users/
-│   │   │   └── page.tsx
-│   │   ├── orders/
-│   │   │   └── page.tsx
-│   │   └── settings/
-│   │       └── page.tsx
-│   │
-│   ├── api/
-│   │   ├── users/
-│   │   │   └── route.ts
-│   │   └── webhooks/
-│   │       └── route.ts
-│   │
-│   ├── layout.tsx
-│   ├── loading.tsx
-│   ├── error.tsx
-│   └── not-found.tsx
-│
-├── components/
-│   ├── ui/
-│   │   ├── Button.tsx
-│   │   ├── Input.tsx
-│   │   ├── Modal.tsx
-│   │   └── Table.tsx
-│   │
-│   └── shared/
-│       ├── Header.tsx
-│       └── EmptyState.tsx
-│
-├── features/
-│   ├── users/
-│   ├── orders/
-│   ├── billing/
-│   ├── notifications/
-│   └── authentication/
-│
-├── lib/
-│   ├── db/
-│   │   └── client.ts
-│   ├── auth/
-│   ├── logger/
-│   └── cache/
-│
+├── app/            routing + route-level composition (page/layout/loading/error/not-found, route.ts)
+│   ├── (dashboard)/users|orders|settings/page.tsx
+│   ├── api/        users/route.ts, webhooks/route.ts
+│   ├── layout.tsx  loading.tsx  error.tsx  not-found.tsx
+├── components/ui/          Button, Input, Modal, Table
+├── components/shared/      Header, EmptyState
+├── features/               users/ orders/ billing/ notifications/ authentication/
+├── lib/                    db/, auth/, logger/, cache/
 ├── config/
-│
 └── types/
 ```
 
-This is a starting point. Do not blindly copy every folder into every project.
+Starting point. Do not blindly copy every folder into every project.
 
 ---
 
@@ -994,65 +451,19 @@ This is a starting point. Do not blindly copy every folder into every project.
 
 ## Purpose
 
-`app/` owns Next.js routing and route-level composition.
+`app/` owns Next.js routing and route-level composition. Put here: `page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`, `not-found.tsx`, `route.ts`, route-level metadata and composition. Example: `app/users/page.tsx`.
 
-Put here:
-
-```text
-page.tsx
-layout.tsx
-loading.tsx
-error.tsx
-not-found.tsx
-route.ts
-route-level metadata
-route-level composition
-```
-
-Example:
-
-```text
-app/users/page.tsx
-```
-
-The page should primarily answer:
-
-> **What UI belongs at this route?**
-
-It should not become the home of all business logic.
-
----
+The page answers: **What UI belongs at this route?** It must NOT become the home of all business logic.
 
 ## Do NOT use `app/` as a dumping ground
 
-Avoid:
-
-```text
-app/
-├── businessLogic.ts
-├── userService.ts
-├── randomHelpers.ts
-├── databaseStuff.ts
-└── giantUtils.ts
-```
-
-Move feature/application logic to the appropriate feature or infrastructure layer.
+Avoid `app/businessLogic.ts`, `app/userService.ts`, `app/randomHelpers.ts`, `app/databaseStuff.ts`, `app/giantUtils.ts`. Move feature/application logic to the appropriate feature or infrastructure layer.
 
 ---
 
 # 27. `features/` Folder
 
-This is where feature-specific application code lives.
-
-Example:
-
-```text
-features/users/
-```
-
-Owns the user feature.
-
-Possible structure:
+Feature-specific application code. Example: `features/users/`.
 
 ```text
 features/users/
@@ -1073,38 +484,11 @@ Not every feature needs every folder.
 
 ## PUT HERE
 
-Feature-specific UI:
-
-```text
-UserList
-UserCard
-UserForm
-UserSearch
-UserTable
-```
+Feature-specific UI: `UserList`, `UserCard`, `UserForm`, `UserSearch`, `UserTable`.
 
 ## DO NOT PUT HERE
 
-Avoid:
-
-- database access
-- complex business rules
-- direct secret/server infrastructure
-- unrelated features
-
-Example:
-
-```text
-features/users/components/UserForm.tsx
-```
-
-can manage UI state and submit an Action.
-
-It should not contain:
-
-```ts
-db.user.create(...)
-```
+Database access, complex business rules, direct secret/server infrastructure, unrelated features. `features/users/components/UserForm.tsx` manages UI state and submits an Action — it must not contain `db.user.create(...)`.
 
 ---
 
@@ -1112,27 +496,11 @@ db.user.create(...)
 
 ## PUT HERE
 
-Feature-specific read operations:
-
-```text
-getUser
-getUsers
-searchUsers
-getUserStats
-getDashboardData
-```
+Feature-specific read operations: `getUser`, `getUsers`, `searchUsers`, `getUserStats`, `getDashboardData`.
 
 ## DO NOT PUT HERE
 
-Avoid:
-
-- mutations
-- deleting records
-- updating records
-- UI components
-- HTTP handlers
-
-Example:
+Mutations, deleting records, updating records, UI components, HTTP handlers.
 
 ```ts
 export async function getUsers() {
@@ -1146,57 +514,15 @@ export async function getUsers() {
 
 ## PUT HERE
 
-Server Actions that are entry points for your UI.
-
-Examples:
+Server Actions that are entry points for your UI: `createUser.ts`, `updateUser.ts`, `deleteUser.ts`, `inviteUser.ts`. Responsibilities:
 
 ```text
-createUser.ts
-updateUser.ts
-deleteUser.ts
-inviteUser.ts
-```
-
-Typical responsibilities:
-
-```text
-receive input
-    ↓
-authenticate
-    ↓
-authorize
-    ↓
-validate
-    ↓
-call service
-    ↓
-revalidate / redirect
+receive input → authenticate → authorize → validate → call service → revalidate / redirect
 ```
 
 ## DO NOT PUT HERE
 
-Avoid:
-
-- huge business logic
-- reusable domain operations
-- database implementation details when a repository exists
-- duplicate logic that another entry point needs
-
-Bad:
-
-```text
-Action
-└── 400 lines of business rules
-```
-
-Good:
-
-```text
-Action
-└── 20-50 lines coordinating the operation
-```
-
-There is no magical line-count limit; responsibility matters more than line count.
+Huge business logic, reusable domain operations, DB implementation details when a repository exists, duplicate logic another entry point needs. Bad: Action = 400 lines of business rules. Good: Action = 20-50 lines coordinating the operation. There is no magical line-count limit; responsibility matters more than line count.
 
 ---
 
@@ -1204,27 +530,11 @@ There is no magical line-count limit; responsibility matters more than line coun
 
 ## PUT HERE
 
-Business/application operations:
-
-```text
-createUser
-cancelOrder
-approveInvoice
-processPayment
-inviteMember
-```
+Business/application operations: `createUser`, `cancelOrder`, `approveInvoice`, `processPayment`, `inviteMember`.
 
 ## DO NOT PUT HERE
 
-Avoid:
-
-- React components
-- browser event handlers
-- route definitions
-- UI-specific rendering logic
-- HTTP-specific details unless the service is explicitly an integration service
-
-Services should be reusable from multiple entry points when appropriate.
+React components, browser event handlers, route definitions, UI-specific rendering logic, HTTP-specific details (unless it is explicitly an integration service). Services should be reusable from multiple entry points when appropriate.
 
 ---
 
@@ -1232,34 +542,11 @@ Services should be reusable from multiple entry points when appropriate.
 
 ## PUT HERE
 
-Database/data-access operations:
-
-```text
-findUser
-findByEmail
-createUser
-updateUser
-deleteUser
-findOrders
-```
+Database/data-access operations: `findUser`, `findByEmail`, `createUser`, `updateUser`, `deleteUser`, `findOrders`.
 
 ## DO NOT PUT HERE
 
-Avoid:
-
-- UI decisions
-- authorization decisions that belong at the application boundary
-- rendering
-- HTTP request/response handling
-- business workflows
-
-The repository should answer:
-
-> How do we persist/retrieve this data?
-
-Not:
-
-> Is the user allowed to do this?
+UI decisions, authorization decisions that belong at the application boundary, rendering, HTTP request/response handling, business workflows. Answer "how do we persist/retrieve this data?", never "is the user allowed to do this?".
 
 ---
 
@@ -1267,16 +554,7 @@ Not:
 
 ## PUT HERE
 
-Validation schemas:
-
-```text
-CreateUserSchema
-UpdateUserSchema
-SearchUsersSchema
-CreateOrderSchema
-```
-
-Example:
+Validation schemas: `CreateUserSchema`, `UpdateUserSchema`, `SearchUsersSchema`, `CreateOrderSchema`.
 
 ```ts
 export const CreateUserSchema = z.object({
@@ -1287,19 +565,13 @@ export const CreateUserSchema = z.object({
 
 ## DO NOT PUT HERE
 
-Avoid:
-
-- database queries
-- business workflows
-- UI rendering
+Database queries, business workflows, UI rendering.
 
 ---
 
 # 34. `features/*/types.ts`
 
-Use for feature-specific TypeScript types.
-
-Example:
+Feature-specific TypeScript types.
 
 ```ts
 export type UserSummary = {
@@ -1309,144 +581,41 @@ export type UserSummary = {
 };
 ```
 
-Do not put unrelated application logic in type files.
+No unrelated application logic in type files.
 
 ---
 
 # 35. `components/ui/`
 
-This is for generic reusable UI primitives.
-
-Examples:
-
-```text
-Button
-Input
-Modal
-Dialog
-Table
-Dropdown
-Tabs
-Card
-```
-
-These should not know about:
-
-```text
-User
-Order
-Billing
-Database
-```
-
-Prefer:
-
-```tsx
-<Button>Save</Button>
-```
-
-rather than:
-
-```tsx
-<UserDatabaseSaveButton />
-```
-
-The latter is feature-specific and belongs closer to the feature.
+Generic reusable UI primitives: `Button`, `Input`, `Modal`, `Dialog`, `Table`, `Dropdown`, `Tabs`, `Card`. They must not know about `User`, `Order`, `Billing`, `Database`. Prefer `<Button>Save</Button>` over `<UserDatabaseSaveButton />` (feature-specific → closer to the feature).
 
 ---
 
 # 36. `components/shared/`
 
-Use for UI shared across multiple features but not generic enough to be a pure UI primitive.
-
-Examples:
-
-```text
-Header
-Sidebar
-EmptyState
-Pagination
-PageHeader
-UserAvatar
-```
-
-Be careful: if something is only used by one feature, keep it inside that feature.
+UI shared across multiple features but not generic enough for pure primitives: `Header`, `Sidebar`, `EmptyState`, `Pagination`, `PageHeader`, `UserAvatar`. If only used by one feature, keep it inside that feature.
 
 ---
 
 # 37. `lib/`
 
-Use `lib/` for truly shared infrastructure/utilities.
-
-Good examples:
-
-```text
-db client
-authentication infrastructure
-logger
-cache infrastructure
-shared infrastructure helpers
-```
-
-Example:
-
-```text
-lib/db/client.ts
-lib/auth/
-lib/logger/
-```
+Truly shared infrastructure/utilities: db client, authentication infrastructure, logger, cache infrastructure (`lib/db/client.ts`, `lib/auth/`, `lib/logger/`).
 
 ## Do NOT turn `lib/` into a dumping ground
 
-Avoid:
-
-```text
-lib/
-├── users.ts
-├── orders.ts
-├── billing.ts
-├── random.ts
-├── helper.ts
-├── stuff.ts
-└── businessLogic.ts
-```
-
-If code belongs to a feature, prefer the feature.
+Avoid `lib/users.ts`, `lib/orders.ts`, `lib/billing.ts`, `lib/random.ts`, `lib/helper.ts`, `lib/stuff.ts`, `lib/businessLogic.ts`. If code belongs to a feature, prefer the feature.
 
 ---
 
 # 38. `app/api/`
 
-Use for actual HTTP endpoints.
-
-Good examples:
+Actual HTTP endpoints: `app/api/users/route.ts`, `app/api/webhooks/stripe/route.ts`. The route handler is an entry point:
 
 ```text
-app/api/users/route.ts
-app/api/webhooks/stripe/route.ts
+HTTP Request → API Route → Authentication → Validation → Service → Repository → Database
 ```
 
-The route handler should be an entry point.
-
-Typical flow:
-
-```text
-HTTP Request
-    ↓
-API Route
-    ↓
-Authentication
-    ↓
-Validation
-    ↓
-Service
-    ↓
-Repository
-    ↓
-Database
-```
-
-Do not put the entire business workflow inside `route.ts`.
+Do NOT put the entire business workflow inside `route.ts`.
 
 ---
 
@@ -1474,67 +643,17 @@ Do not put the entire business workflow inside `route.ts`.
 
 ```text
 features/users/
-│
-├── components/
-│   ├── UserList.tsx
-│   ├── UserCard.tsx
-│   ├── UserForm.tsx
-│   └── UserSearch.tsx
-│
-├── queries/
-│   ├── getUser.ts
-│   ├── getUsers.ts
-│   └── searchUsers.ts
-│
-├── actions/
-│   ├── createUser.ts
-│   ├── updateUser.ts
-│   └── deleteUser.ts
-│
-├── services/
-│   └── userService.ts
-│
-├── repositories/
-│   └── userRepository.ts
-│
-├── schemas/
-│   └── userSchema.ts
-│
+├── components/   UserList.tsx UserCard.tsx UserForm.tsx UserSearch.tsx
+├── queries/      getUser.ts getUsers.ts searchUsers.ts
+├── actions/      createUser.ts updateUser.ts deleteUser.ts
+├── services/     userService.ts
+├── repositories/ userRepository.ts
+├── schemas/      userSchema.ts
 └── types.ts
 ```
 
-Page:
-
-```text
-app/users/page.tsx
-        │
-        ▼
-getUsers()
-        │
-        ▼
-User Repository
-        │
-        ▼
-Database
-```
-
-Mutation:
-
-```text
-UserForm
-        │
-        ▼
-createUser Action
-        │
-        ▼
-userService.createUser()
-        │
-        ▼
-userRepository.create()
-        │
-        ▼
-Database
-```
+Read: `app/users/page.tsx → getUsers() → User Repository → Database`.
+Mutation: `UserForm → createUser Action → userService.createUser() → userRepository.create() → Database`.
 
 ---
 
@@ -1551,25 +670,13 @@ features/[name]/
 └── types.ts
 ```
 
-Flow:
-
-```text
-ProfileForm
-    ↓
-Action
-    ↓
-Service
-    ↓
-Database
-```
-
-That is the consistent shape for every feature. It is not "bad architecture" — it is the architecture. Add a Repository only in Large architecture when the feature escalates.
+Flow: `Form → Action → Service → Database`. Uses a Repository only in Large architecture. Every feature — however simple — uses this shape. Consistency beats skipping layers.
 
 ---
 
 # 42. Medium Feature
 
-Suppose creating an order requires business rules.
+Creating an order requires business rules:
 
 ```text
 features/orders/
@@ -1580,210 +687,60 @@ features/orders/
 └── types.ts
 ```
 
-Flow:
-
-```text
-OrderForm
-    ↓
-createOrder Action
-    ↓
-orderService.createOrder()
-    ↓
-Database
-```
-
-Add a Repository later if database access becomes complex/shared.
+Flow: `OrderForm → createOrder Action → orderService.createOrder() → Database`. Add a Repository later if DB access becomes complex/shared.
 
 ---
 
 # 43. Large Feature
 
-For complex billing:
+Complex billing:
 
 ```text
 features/billing/
-├── components/
-├── queries/
-├── actions/
-├── services/
-├── repositories/
-├── schemas/
-└── types.ts
+├── components/ queries/ actions/ services/ repositories/ schemas/ types.ts
 ```
-
-Flow:
 
 ```text
-Web UI ──────────┐
-Mobile API ──────┼──→ Billing Service
-Background Job ──┘           │
-                             ▼
-                        Repository
-                             │
-                             ▼
-                         Database
+Web UI / Mobile API / Background Job → Billing Service → Repository → Database
 ```
 
-This is justified because the feature is actually complex.
+Justified because the feature is actually complex.
 
 ---
 
 # 44. Architecture Anti-Pattern: Layer Explosion
 
-Do NOT automatically create:
-
-```text
-controller/
-service/
-use-case/
-domain-service/
-repository/
-dao/
-gateway/
-adapter/
-manager/
-handler/
-```
-
-for a simple CRUD operation.
-
-If you need six files to change one database field, the architecture may be too complicated for that feature.
+Do NOT automatically create controller/, service/, use-case/, domain-service/, repository/, dao/, gateway/, adapter/, manager/, handler/ for a simple CRUD operation. If you need six files to change one DB field, the architecture is too complicated for that feature.
 
 ---
 
 # 45. Architecture Anti-Pattern: Everything in `lib/`
 
-Bad:
-
-```text
-lib/
-├── createUser.ts
-├── updateUser.ts
-├── getOrders.ts
-├── billing.ts
-├── notifications.ts
-└── randomHelpers.ts
-```
-
-Prefer:
-
-```text
-features/
-├── users/
-├── orders/
-├── billing/
-└── notifications/
-```
-
-Feature ownership should be clear.
+Bad: `lib/{createUser,updateUser,getOrders,billing,notifications,randomHelpers}.ts`. Prefer `features/{users,orders,billing,notifications}/`. Feature ownership should be clear.
 
 ---
 
 # 46. Architecture Anti-Pattern: API for Everything
 
-Avoid:
-
-```text
-Server Component
-    ↓
-fetch("/api/users")
-    ↓
-API
-    ↓
-Service
-    ↓
-Repository
-    ↓
-Database
-```
-
-if the Server Component could simply use:
-
-```text
-Server Component
-    ↓
-Query
-    ↓
-Repository
-    ↓
-Database
-```
-
-Do not introduce HTTP when you don't need HTTP.
+Do NOT use `Server Component → fetch("/api/users") → API → Service → Repository → Database` when the server component could simply use `Server Component → Query → Repository → Database`. Do not introduce HTTP when you don't need HTTP.
 
 ---
 
 # 47. Architecture Anti-Pattern: Everything Is `"use client"`
 
-Avoid:
-
-```text
-"use client"
-```
-
-at the top of large component trees unless the entire tree truly requires client execution.
-
-Prefer:
-
-```text
-Server Page
-│
-├── Server Header
-├── Server Data Display
-├── Server Table
-└── Client Interactive Control
-```
+Do not put `"use client"` at the top of large component trees unless the entire tree truly requires client execution. Prefer a Server Page composed of server sections with a small client interactive control.
 
 ---
 
 # 48. Architecture Anti-Pattern: Business Logic in Components
 
-Avoid:
-
-```tsx
-"use client";
-
-export function Checkout() {
-
-  // pricing calculation
-  // subscription rules
-  // authorization
-  // inventory rules
-  // database logic
-  // payment logic
-
-  return ...;
-}
-```
-
-Prefer:
-
-```text
-Checkout UI
-    ↓
-Action
-    ↓
-Checkout Service
-    ↓
-Repositories / external services
-```
-
-The UI should coordinate UI behavior, not become the business system.
+Do NOT put pricing, subscription rules, authorization, inventory, DB, and payment logic inside a client `Checkout()` component. Prefer `Checkout UI → Action → Checkout Service → Repositories / external services`. The UI coordinates UI behavior, not the business system.
 
 ---
 
 # 49. Architecture Anti-Pattern: Business Logic in API Routes
 
-Avoid:
-
-```ts
-export async function POST(request: Request) {
-
-  // 300 lines of business logic
-}
-```
-
-Prefer:
+Bad: 300 lines of business logic in `POST`. Good:
 
 ```ts
 export async function POST(request: Request) {
@@ -1803,65 +760,17 @@ The API route is an entry point.
 
 # 50. Authorization
 
-Never rely only on the UI.
-
-This is not security:
-
-```tsx
-{user.isAdmin && <DeleteButton />}
-```
-
-The UI check improves UX.
-
-The server must enforce authorization:
-
-```ts
-if (!currentUser.isAdmin) {
-  throw new Error("Forbidden");
-}
-```
-
-Think:
-
-```text
-UI permission
-     +
-Server authorization
-```
-
-The server is the security boundary.
+Never rely only on the UI. `{user.isAdmin && <DeleteButton />}` improves UX but is NOT security. The server must enforce: `if (!currentUser.isAdmin) { throw new Error("Forbidden"); }`. Think UI permission + server authorization. The server is the security boundary.
 
 ---
 
 # 51. Validation
 
-Validate untrusted input at boundaries.
-
-Examples:
+Validate untrusted input at boundaries: FormData, API body, URL params, search params, cookies, webhook payloads, external API responses.
 
 ```text
-FormData
-API body
-URL parameters
-Search parameters
-Cookies
-Webhook payloads
-External API responses
+Untrusted Input → Validation → Trusted Application Input → Service
 ```
-
-Pattern:
-
-```text
-Untrusted Input
-      ↓
-Validation
-      ↓
-Trusted Application Input
-      ↓
-Service
-```
-
-Example:
 
 ```ts
 const input = CreateUserSchema.parse({
@@ -1874,393 +783,105 @@ const input = CreateUserSchema.parse({
 
 # 52. Do Not Confuse Authentication and Authorization
 
-Authentication:
-
-> Who are you?
-
-Authorization:
-
-> Are you allowed to do this?
-
-Typical Action flow:
+Authentication = who are you? Authorization = are you allowed to do this?
 
 ```text
-Request
-  ↓
-Authentication
-  ↓
-Authorization
-  ↓
-Validation
-  ↓
-Service
+Request → Authentication → Authorization → Validation → Service
 ```
 
-Do not assume that knowing the user's identity means they are allowed to perform the operation.
+Knowing the user's identity does not mean they are allowed to perform the operation.
 
 ---
 
 # 53. Multiple Entry Points
 
-A mature system may have:
+A mature system may have Web UI, Mobile App, Admin UI, Background Jobs, Webhooks, CLI. These are entry points. The application operation should be reusable — do not copy business rules into every entry point.
 
 ```text
-Web UI
-Mobile App
-Admin UI
-Background Jobs
-Webhooks
-CLI
+Web UI / Mobile API / Admin UI / Background Job / Webhook → Service → Repository → Database
 ```
-
-These are entry points.
-
-The application operation should ideally be reusable.
-
-```text
-Web UI ────────────┐
-Mobile API ────────┤
-Admin UI ──────────┼──→ Service / Use Case
-Background Job ────┤           │
-Webhook ───────────┘           ▼
-                           Repository
-                                │
-                                ▼
-                             Database
-```
-
-Do not copy business rules into every entry point.
 
 ---
 
 # 54. Dependency Direction
 
-Prefer this direction:
-
-```text
-UI
- │
- ▼
-Entry Point
- │
- ▼
-Application / Service
- │
- ▼
-Repository
- │
- ▼
-Infrastructure
-```
-
-Avoid lower-level infrastructure deciding how the UI should behave.
-
-For example, a Repository should not say:
-
-```text
-"Show this modal."
-```
-
-A Service should not render React.
-
-A Component should not contain database persistence rules.
+Prefer: `UI → Entry Point → Service → Repository → Infrastructure`. Nothing lower decides how the UI behaves. A Repository must not say "show this modal"; a Service must not render React; a Component must not contain DB persistence rules.
 
 ---
 
 # 55. Keep Boundaries Explicit
 
-Good:
-
-```text
-UserForm
-   ↓
-createUserAction()
-   ↓
-userService.createUser()
-   ↓
-userRepository.create()
-```
-
-Harder to maintain:
-
-```text
-UserForm
-   ↓
-random helper
-   ↓
-random db call
-   ↓
-another helper
-   ↓
-API
-   ↓
-different business logic
-```
-
-Naming and boundaries should make the flow obvious.
+Good: `UserForm → createUserAction() → userService.createUser() → userRepository.create()`. Hard to maintain: `UserForm → random helper → random db call → another helper → API → different business logic`. Naming and boundaries should make the flow obvious.
 
 ---
 
 # 56. Agentic Coding Rules
 
-The following section is specifically intended to be followed by an AI coding agent.
+Rules specifically for an AI coding agent.
 
 ## Rule A — Inspect before changing
 
-Before implementing a feature:
-
-1. Inspect the relevant route.
-2. Inspect the feature folder.
-3. Inspect existing Actions.
-4. Inspect existing Queries.
-5. Inspect existing Services.
-6. Inspect existing Repositories.
-7. Inspect existing schemas/types.
-8. Follow the project's existing conventions.
-
-Do not invent a parallel architecture if an existing one already solves the problem.
-
----
+Before implementing: inspect the route, feature folder, existing Actions, Queries, Services, Repositories, schemas/types. Follow existing conventions. Never invent a parallel architecture if one exists.
 
 ## Rule B — Reuse before creating
 
-Before creating:
-
-```text
-createUser()
-getUser()
-updateUser()
-```
-
-search for existing equivalents.
-
-Do not create duplicate operations.
-
----
+Before creating `createUser()` / `getUser()` / `updateUser()`, search for existing equivalents. Never create duplicate operations.
 
 ## Rule C — Preserve feature ownership
 
-If the change belongs to Users:
-
-```text
-features/users/
-```
-
-If it belongs to Billing:
-
-```text
-features/billing/
-```
-
-Do not put feature-specific logic into global folders merely for convenience.
-
----
+If the change belongs to Users put it in `features/users/`; Billing → `features/billing/`. Never put feature logic in global folders merely for convenience.
 
 ## Rule D — Server by default
 
-When generating a component:
-
-```text
-START AS SERVER COMPONENT
-```
-
-Only add:
-
-```tsx
-"use client";
-```
-
-if client behavior is required.
-
----
+When generating a component: start as a Server Component. Only add `"use client"` if client behavior is required.
 
 ## Rule E — Keep client boundaries narrow
 
-If only a button needs interactivity:
-
-```text
-Page                 SERVER
-└── InteractiveButton CLIENT
-```
-
-Do not automatically convert the entire page to Client Components.
-
----
+If only a button needs interactivity, keep it as `Page (SERVER) + InteractiveButton (CLIENT)`. Do not convert the whole page.
 
 ## Rule F — Choose reads correctly
 
-For initial page/server data:
-
-```text
-Server Component
-    ↓
-Query
-```
-
-For browser-driven independent fetching:
-
-```text
-Client
-    ↓
-API
-    ↓
-Query
-```
-
-Do not create an API merely to allow a Server Component to access its own database.
-
----
+Initial page/server data → `Server Component → Query`. Browser-driven independent fetching → `Client → API → Query`. Never create an API merely so a Server Component can reach its own DB.
 
 ## Rule G — Choose mutations correctly
 
-For your own Next.js UI:
-
-```text
-UI
- ↓
-Server Action
-```
-
-For external HTTP consumers:
-
-```text
-Client
- ↓
-API
-```
-
-Then:
-
-```text
-Action/API
-    ↓
-Service
-    ↓
-Repository
-```
-
-when those layers are justified.
-
----
+Own Next.js UI → `UI → Server Action`. External HTTP consumers → `Client → API`. Then `Action/API → Service → Repository` when those layers are justified.
 
 ## Rule H — Keep entry points thin
 
-Actions and API routes should coordinate.
-
-Move substantial business logic into Services/Use Cases.
-
----
+Actions and API routes coordinate. Move substantial business logic into Services/Use Cases.
 
 ## Rule I — Don't over-engineer
 
-Before creating:
-
-```text
-service
-repository
-query
-adapter
-use-case
-```
-
-ask:
-
-> What complexity does this abstraction solve?
-
-If there is no meaningful answer, keep the feature simpler.
-
----
+Before creating service/repository/query/adapter/use-case, ask "what complexity does this abstraction solve?" If no meaningful answer, keep the feature simpler.
 
 ## Rule J — Follow progressive architecture
 
-Start every feature at Medium:
-
-```text
-Action → Service → Database
-```
-
-If database complexity/reuse appears, escalate to Large:
-
-```text
-Action → Service → Repository → Database
-```
-
-Do not start at the maximum level by default, but never go below Medium.
-
----
+Start every feature at Medium: `Action → Service → Database`. Escalate to Large when DB complexity/reuse appears: `Action → Service → Repository → Database`. Do not start at the maximum level by default, but never go below Medium.
 
 ## Rule K — Never put secrets in client code
 
-Never expose:
-
-```text
-database credentials
-private API keys
-service-role credentials
-server secrets
-```
-
-to Client Components.
-
----
+Never expose database credentials, private API keys, service-role credentials, or server secrets to Client Components.
 
 ## Rule L — Authorization is server-side
 
-Never rely on:
-
-```text
-disabled button
-hidden button
-client-side role check
-```
-
-as the security boundary.
-
-Enforce authorization in server-side code.
-
----
+Never rely on a disabled button, hidden button, or client-side role check as the security boundary. Enforce authorization in server-side code.
 
 ## Rule M — Validate external input
 
-Do not pass unvalidated user/API input into business operations.
-
-Use the project's validation mechanism.
-
----
+Never pass unvalidated user/API input into business operations. Use the project's validation mechanism.
 
 ## Rule N — Do not duplicate business operations
 
-If both an Action and API need:
-
-```text
-createOrder()
-```
-
-reuse the same Service/Use Case when appropriate.
-
----
+If both an Action and API need `createOrder()`, reuse the same Service/Use Case when appropriate.
 
 ## Rule O — Do not bypass architecture without reason
 
-If the feature already uses:
-
-```text
-userService.createUser()
-```
-
-do not add:
-
-```text
-db.user.create()
-```
-
-directly from another unrelated entry point unless there is a documented reason.
+If the feature uses `userService.createUser()`, do not call `db.user.create()` directly from another entry point without a documented reason.
 
 ---
 
 # 57. Agent Decision Tree
-
-When an AI agent receives a request, use this sequence.
 
 ```text
 NEW FEATURE → UI only? YES → Component
@@ -2277,197 +898,64 @@ Medium (Service) is the default for every feature with logic. Escalate to Large 
 
 # 58. Before Adding a File
 
-The agent should ask internally:
-
-```text
-1. What responsibility does this file have?
-2. Which layer owns that responsibility?
-3. Does an existing file already do this?
-4. Is this abstraction actually needed?
-5. Am I duplicating business logic?
-6. Am I making a Client Component unnecessarily?
-7. Am I creating an API unnecessarily?
-8. Am I bypassing an existing Service/Repository?
-9. Does this belong to a feature?
-10. Is this escalation justified (does the logic warrant a Repository/Query)?
-```
+Ask: what responsibility does this file have? Which layer owns it? Does an existing file already do this? Is this abstraction needed? Am I duplicating business logic? Am I making a Client Component unnecessarily? Am I creating an API unnecessarily? Am I bypassing an existing Service/Repository? Does this belong to a feature? Is this escalation justified (does the logic warrant a Repository/Query)?
 
 ---
 
 # 59. Before Adding `"use client"`
 
-Ask:
-
-```text
-Does this component use:
-- useState?
-- useEffect?
-- browser APIs?
-- event handlers?
-- client-side state?
-- client-only libraries?
-- interactive behavior?
-```
-
-If no:
-
-> Keep it a Server Component.
+Does this component use: `useState`? `useEffect`? browser APIs? event handlers? client-side state? client-only libraries? interactive behavior? If no → keep it a Server Component.
 
 ---
 
 # 60. Before Creating an API Route
 
-Ask:
-
-```text
-Who consumes this endpoint?
-```
-
-Good answers:
-
-```text
-Mobile app
-External service
-Third-party client
-Webhook
-Browser needs independent HTTP fetching
-```
-
-Weak answer:
-
-> "Because all backend calls should use APIs."
-
-For a Server Component reading its own database, an API may be unnecessary.
+Ask: **Who consumes this endpoint?** Good answers: mobile app, external service, third-party client, webhook, browser needing independent HTTP fetching. Weak answer: "because all backend calls should use APIs." For a Server Component reading its own database, an API may be unnecessary.
 
 ---
 
 # 61. Before Creating a Service
 
-Ask:
-
-```text
-Is there meaningful business/application logic?
-
-Is the operation reused?
-
-Are multiple entry points calling it?
-
-Does the operation coordinate multiple steps?
-
-Does separating it improve testing/maintainability?
-```
-
-If no:
-
-> Keep it simpler.
+Is there meaningful business/application logic? Is the operation reused? Are multiple entry points calling it? Does it coordinate multiple steps? Does separating it improve testing/maintainability? If no → keep it simpler.
 
 ---
 
 # 62. Before Creating a Repository
 
-Ask:
-
-```text
-Is database access complex?
-
-Is it reused?
-
-Does it hide meaningful persistence details?
-
-Are there transactions or multiple database operations?
-
-Would the abstraction improve maintainability?
-```
-
-If no:
-
-> In Medium architecture the Service handles DB access directly. Add a Repository only when the feature escalates to Large and these factors apply.
+Is DB access complex? Reused? Does it hide meaningful persistence details? Are there transactions or multiple DB operations? Would the abstraction improve maintainability? In Medium architecture the Service handles DB access directly; add a Repository when the feature escalates to Large and these factors apply.
 
 ---
 
 # 63. Recommended Code Flow
 
-For a mature feature:
-
 ## Read
 
 ```text
-Page / Server Component
-        │
-        ▼
-      Query
-        │
-        ▼
-   Repository
-        │
-        ▼
-    Database
+Server Component → Query → Repository → Database
 ```
 
 ## Write from your UI — Medium (default)
 
 ```text
-Client/Form
-        │
-        ▼
-  Server Action
-        │
-        ▼
-     Service
-        │
-        ▼
-    Database
+Form → Server Action → Service → Database
 ```
 
 ## Write from your UI — Large (escalated)
 
 ```text
-Client/Form
-        │
-        ▼
-  Server Action
-        │
-        ▼
-     Service
-        │
-        ▼
-   Repository
-        │
-        ▼
-    Database
+Form → Server Action → Service → Repository → Database
 ```
 
 ## External API — Medium
 
 ```text
-External Client
-        │
-        ▼
-     API Route
-        │
-        ▼
-     Service
-        │
-        ▼
-    Database
+External Client → API Route → Service → Database
 ```
 
 ## External API — Large (escalated)
 
 ```text
-External Client
-        │
-        ▼
-     API Route
-        │
-        ▼
-     Service
-        │
-        ▼
-   Repository
-        │
-        ▼
-    Database
+External Client → API Route → Service → Repository → Database
 ```
 
 ---
@@ -2475,34 +963,12 @@ External Client
 # 64. Complete Visual Map
 
 ```text
-                         BROWSER
-                            │
-              ┌─────────────┴─────────────┐
-              │                           │
-         SERVER UI                   CLIENT UI
-              │                           │
-      Server Components            Client Components
-              │                           │
-         Initial data                 Interaction
-              │                           │
-              ▼                           ▼
-           Queries                  Actions / API
-              │                           │
-              └─────────────┬─────────────┘
-                            ▼
-                    APPLICATION LAYER
-                            │
-                            ▼
-                       SERVICES
-                            │
-                            ▼
-                      REPOSITORIES
-                            │
-                            ▼
-                       INFRASTRUCTURE
-                            │
-                            ▼
-                         DATABASE
+BROWSER
+  ├─ SERVER UI (Server Components: initial data) ──────┐
+  └─ CLIENT UI (Client Components: interaction) ───────┤
+     CLIENT mutations (Actions / API) ─────────────────┤→ Queries/Services
+                                                       ▼
+                                  REPOSITORIES → INFRASTRUCTURE → DATABASE
 ```
 
 ---
@@ -2510,151 +976,45 @@ External Client
 # 65. Full Architecture Diagram
 
 ```text
-┌────────────────────────────────────────────────────────────┐
-│                         UI LAYER                           │
-│                                                            │
-│  Next.js Pages / Layouts                                   │
-│  Server Components                                         │
-│  Client Components                                         │
-│  Feature Components                                        │
-└────────────────────────────┬───────────────────────────────┘
-                             │
-                  ┌──────────┴──────────┐
-                  │                     │
-                READ                  WRITE
-                  │                     │
-                  ▼                     ▼
-               Queries          Server Actions / API
-                  │                     │
-                  └──────────┬──────────┘
-                             ▼
-┌────────────────────────────────────────────────────────────┐
-│                  APPLICATION LAYER                          │
-│                                                            │
-│  Services / Use Cases                                      │
-│                                                            │
-│  createUser()                                              │
-│  updateUser()                                              │
-│  createOrder()                                              │
-│  cancelOrder()                                              │
-└────────────────────────────┬───────────────────────────────┘
-                             │
-                             ▼
-┌────────────────────────────────────────────────────────────┐
-│                    DATA ACCESS                             │
-│                                                            │
-│  Repositories                                               │
-│                                                            │
-│  userRepository                                             │
-│  orderRepository                                            │
-│  billingRepository                                          │
-└────────────────────────────┬───────────────────────────────┘
-                             │
-                             ▼
-┌────────────────────────────────────────────────────────────┐
-│                   INFRASTRUCTURE                           │
-│                                                            │
-│ PostgreSQL / MySQL / Redis / External APIs / Queues        │
-└────────────────────────────────────────────────────────────┘
+UI LAYER:        Pages/Layouts, Server Components, Client Components, Feature Components
+                    ├─ READ → Queries
+                    └─ WRITE → Server Actions / API
+APPLICATION:     Services / Use Cases (createUser, updateUser, createOrder, cancelOrder)
+DATA ACCESS:     Repositories (userRepository, orderRepository, billingRepository)
+INFRASTRUCTURE:  PostgreSQL / MySQL / Redis / External APIs / Queues
 ```
 
 ---
 
 # 66. Medium vs Large: The Critical Rule
 
-Do not interpret the previous diagram as:
-
-> Every feature must have every layer.
-
-Instead:
+The diagram is NOT "every feature must have every layer." Medium is the floor; escalate to Large when justified.
 
 ```text
-MEDIUM
-────────────────────
-
-Action → Service → Database
-
-
-LARGE
-────────────────────
-
-Action/API → Service → Repository → Database
-
-
-READ
-────────────────────
-
-Server Component → Query → Repository → Database
+MEDIUM             →  Action → Service → Database
+LARGE              →  Action/API → Service → Repository → Database
+READ (both)        →  Server Component → Query → Repository → Database
 ```
 
-Medium is the floor. The architecture is **progressive**: start every feature at Medium, escalate to Large when the feature's logic justifies it.
+The architecture is progressive: start every feature at Medium, escalate to Large when the feature's logic justifies it.
 
 ---
 
 # 67. Example: Simple Profile Update
 
-Still Medium, not thinner:
-
-```text
-features/profile/
-├── components/
-│   └── ProfileForm.tsx
-├── actions/
-│   └── updateProfile.ts
-└── services/
-    └── profileService.ts
-```
-
-Flow:
-
-```text
-ProfileForm
-    ↓
-updateProfile Action
-    ↓
-profileService.updateProfile()
-    ↓
-Database
-```
-
-No Repository needed for a simple operation — keep the Service/DTO shape consistent.
+Still Medium, not thinner: `features/profile/` with `components/ProfileForm.tsx` + `actions/updateProfile.ts` + `services/profileService.ts`, flowing `ProfileForm → updateProfile Action → profileService.updateProfile() → Database`. No Repository needed for a simple operation — keep the Service/DTO shape consistent.
 
 ---
 
 # 68. Example: Complex Order Creation
 
-Suppose creating an order requires:
+Creating an order requires authentication, authorization, inventory validation, pricing, discounts, tax, payment, order creation, audit log, notifications.
 
 ```text
-authentication
-authorization
-inventory validation
-pricing rules
-discounts
-tax calculation
-payment
-order creation
-audit log
-notifications
-```
-
-Now:
-
-```text
-OrderForm
-    ↓
-createOrder Action
-    ↓
-Order Service
-    ├── Inventory
-    ├── Pricing
-    ├── Payment
-    ├── Orders Repository
-    ├── Audit Repository
-    └── Notification Service
-             │
-             ▼
-          Database / External APIs
+OrderForm → createOrder Action → Order Service
+   ├── Inventory / Pricing / Payment
+   ├── Orders Repository / Audit Repository
+   └── Notification Service → Database / External APIs
 ```
 
 This is where layered architecture pays off.
@@ -2663,23 +1023,7 @@ This is where layered architecture pays off.
 
 # 69. Production Architecture Is About Boundaries
 
-The purpose of the architecture is not to create many folders.
-
-The purpose is to create predictable boundaries.
-
-A developer should be able to answer:
-
-```text
-Where is the UI?
-Where is the read operation?
-Where is the mutation entry point?
-Where is the business logic?
-Where is the database access?
-Where is the validation?
-Where is authorization enforced?
-```
-
-If the answer is obvious, the architecture is doing its job.
+The purpose is not to create many folders; it is to create predictable boundaries. A developer should be able to answer: where is the UI? the read operation? the mutation entry point? the business logic? the DB access? the validation? where is authorization enforced? If obvious — the architecture is doing its job.
 
 ---
 
@@ -2737,108 +1081,42 @@ If the answer is obvious, the architecture is doing its job.
 
 # 71. Agent Quick Reference
 
-When modifying the project:
-
 ```text
-UI?
-  → components
-
-Initial/server read?
-  → Server Component + Query
-
-Browser-independent read?
-  → API + Query
-
-Own UI mutation?
-  → Server Action
-
-External mutation?
-  → API
-
-Business logic?
-  → Service / Use Case
-
-Database access?
-  → Repository when justified
-
-Validation?
-  → Schema / boundary validation
-
-Authentication?
-  → Server
-
-Authorization?
-  → Server
-
-Feature-specific?
-  → features/<feature>/
-
-Generic UI?
-  → components/ui/
-
-Cross-feature UI?
-  → components/shared/
-
-Shared infrastructure?
-  → lib/
-
-Routing?
-  → app/
+UI?                    → components
+Initial/server read?   → Server Component + Query
+Browser-independent read? → API + Query
+Own UI mutation?       → Server Action
+External mutation?     → API
+Business logic?        → Service / Use Case
+Database access?       → Repository when justified
+Validation?            → Schema / boundary validation
+Authentication?        → Server
+Authorization?         → Server
+Feature-specific?      → features/<feature>/
+Generic UI?            → components/ui/
+Cross-feature UI?      → components/shared/
+Shared infrastructure? → lib/
+Routing?               → app/
 ```
 
 ---
 
 # 72. Final Agent Rule
 
-Before writing code, determine:
-
 ```text
-WHAT IS THE RESPONSIBILITY?
-        ↓
-WHICH LAYER OWNS IT?
-        ↓
-DOES THAT LAYER ALREADY EXIST?
-        ↓
-CAN EXISTING CODE BE REUSED?
-        ↓
-DOES THIS FEATURE ACTUALLY NEED ANOTHER ABSTRACTION?
-        ↓
-IMPLEMENT THE SIMPLEST CORRECT DESIGN
+WHAT IS THE RESPONSIBILITY? → WHICH LAYER OWNS IT? → DOES THAT LAYER ALREADY EXIST?
+→ CAN EXISTING CODE BE REUSED? → DOES THIS FEATURE ACTUALLY NEED ANOTHER ABSTRACTION?
+→ IMPLEMENT THE SIMPLEST CORRECT DESIGN
 ```
 
-The agent should prefer:
-
-```text
-simple + explicit + consistent
-```
-
-over:
-
-```text
-complex + abstract + theoretically pure
-```
-
-And prefer:
-
-```text
-clear responsibility boundaries
-```
-
-over:
-
-```text
-maximum number of layers
-```
-
-**The goal is not to build the most architecturally elaborate system.**
-
-**The goal is to build a system that remains understandable when it becomes large.**
+Prefer `simple + explicit + consistent` over `complex + abstract + theoretically pure`, and `clear responsibility boundaries` over `maximum number of layers`. The goal is not the most architecturally elaborate system — it is a system that remains understandable when it becomes large.
 
 ---
 
 # 73. State Management
 
 ## Zustand — Client UI State
+
 Use Zustand **when** this project has shared UI state that persists across components but is not server data. If the project has no such need, this section does not apply — the rules are optional.
 
 ```typescript
@@ -2856,28 +1134,13 @@ export const useUIStore = create<UIState>((set) => ({
 }))
 ```
 
-### When to use Zustand vs TanStack Query
-```
-Zustand:
-  → Sidebar open/close
-  → Active tab, selected item
-  → User preferences (theme, locale)
-  → Auth state (current user, access token)
-  → Wizard step state
-  → Any UI state that multiple components share
-
-TanStack Query:
-  → Data from the server (users, posts, orders)
-  → Anything that can go stale
-  → Anything that needs caching or refetching
-  → Anything fetched from an API or DB
-```
+Zustand: sidebar, active tab, selected item, user preferences (theme/locale), auth state, wizard steps — UI state shared across components.
+TanStack Query: server data (users, posts, orders), anything that can go stale or needs caching/refetching, anything fetched from an API or DB.
 
 Never put server data in Zustand. Never put UI state in TanStack Query.
 
----
-
 ## TanStack Query — Server State (Client-Side)
+
 Use TanStack Query **when** this project has cached server state on the client. If the project has no such need, this section does not apply — the rules are optional.
 
 ```typescript
@@ -2910,23 +1173,10 @@ export function useCreateUser() {
 }
 ```
 
-### Query Key Convention
-```typescript
-// [resource] — list of all
-['users']
+Query key convention: `['users']` (all), `['users', id]` (single), `['users', 'filtered', filters]` (filtered), `['auth', 'session']` / `['dashboard', 'stats']` (non-resource).
 
-// [resource, id] — single item
-['users', 'abc123']
+Stale time defaults:
 
-// [resource, 'filtered', filters] — filtered list
-['users', 'filtered', { role: 'ADMIN' }]
-
-// [feature, action] — non-resource queries
-['auth', 'session']
-['dashboard', 'stats']
-```
-
-### Stale Time Defaults
 ```typescript
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -2938,15 +1188,9 @@ const queryClient = new QueryClient({
   },
 })
 
-// Override per query:
-// Real-time data (notifications, live status)
-staleTime: 0
-
-// Slow-changing data (user profile, settings)
-staleTime: 1000 * 60 * 30    // 30 minutes
-
-// Static data (categories, countries)
-staleTime: Infinity
+// Real-time data (notifications, live status) → staleTime: 0
+// Slow-changing data (profile, settings)       → staleTime: 1000 * 60 * 30
+// Static data (categories, countries)          → staleTime: Infinity
 ```
 
 ---
@@ -2958,6 +1202,7 @@ staleTime: Infinity
 Use React Hook Form + Zod **when** this project has forms. If the project has no such need, this section does not apply — the rules are optional.
 
 ### Schema First
+
 ```typescript
 // features/auth/schemas/login.schema.ts
 import { z } from 'zod'
@@ -2971,6 +1216,7 @@ export type LoginInput = z.infer<typeof loginSchema>
 ```
 
 ### Form Component
+
 ```typescript
 // features/auth/components/LoginForm/LoginForm.tsx
 'use client'
@@ -3015,15 +1261,11 @@ export function LoginForm() {
 ```
 
 ### Zod Schema Placement
-```
-Feature-specific form?
-  → features/[name]/schemas/[name].schema.ts
 
-Shared across multiple features?
-  → src/schemas/[name].schema.ts
-
-Server action validation?
-  → Same schema file, import on both client and server
+```text
+Feature-specific form?          → features/[name]/schemas/[name].schema.ts
+Shared across multiple features?→ src/schemas/[name].schema.ts
+Server action validation?       → same schema file, import on both client and server
 ```
 
 ---
@@ -3062,12 +1304,7 @@ export const env = createEnv({
 })
 ```
 
-Import everywhere:
-```typescript
-import { env } from '@/env'
-// Build fails if required variable is missing
-const secret = env.JWT_SECRET
-```
+Import everywhere: `import { env } from '@/env'`. Build fails if a required variable is missing.
 
 ---
 
@@ -3094,19 +1331,10 @@ export function UserFilters() {
 ```
 
 ### Zustand vs nuqs Decision
-```
-nuqs (URL state):
-  → Search query
-  → Pagination (page, limit)
-  → Active filters (role, status, date range)
-  → Selected tab that should survive refresh
-  → Anything shareable via URL
 
-Zustand (in-memory state):
-  → Modal open/close
-  → Sidebar state
-  → Wizard steps
-  → Anything that should reset on page refresh
+```text
+nuqs (URL):       search, pagination (page/limit), active filters, selected tab that should survive refresh, anything shareable via URL
+Zustand (memory): modal open/close, sidebar state, wizard steps, anything that should reset on page refresh
 ```
 
 ---
@@ -3178,11 +1406,12 @@ export function ThemeToggle() {
 }
 ```
 
-Tailwind dark mode config:
+Tailwind: `darkMode: 'class'` (controlled by next-themes):
+
 ```typescript
 // tailwind.config.ts
 export default {
-  darkMode: 'class',   // 'class' strategy — controlled by next-themes
+  darkMode: 'class',
 }
 ```
 
@@ -3190,48 +1419,31 @@ export default {
 
 # 79. Agent Quick Reference (Extended)
 
-```
-New client state (UI)?
-  → Zustand store in src/stores/[name]Store.ts
-
-New server data fetch (client component)?
-  → TanStack Query hook in features/[name]/hooks/
-  → Cache key: [resource] or [resource, id]
-
-New server data fetch (server component)?
-  → Direct query in async server component
-  → No TanStack Query needed
-
-New form?
-  → Zod schema first in features/[name]/schemas/
-  → React Hook Form + zodResolver
-  → Validate on server too (server action re-validates)
-
-New server action?
-  → next-safe-action with schema
-  → features/[name]/actions/[name].action.ts
-  → Call revalidatePath after mutation
-
-New env variable?
-  → Add to src/env.ts (t3-env)
-  → Add to .env.example with comment
-  → Server-only → server: {}
-  → Client-safe → client: {} with NEXT_PUBLIC_ prefix
-
-URL-based filter/search/pagination?
-  → nuqs useQueryState
-
-Dark mode?
-  → next-themes ThemeProvider in app/providers.tsx
-  → Tailwind darkMode: 'class'
-  → Toggle via useTheme()
+```text
+New client state (UI)?            → Zustand store in src/stores/[name]Store.ts
+New server data fetch (client)?   → TanStack Query hook in features/[name]/hooks/
+                                  → Cache key: [resource] or [resource, id]
+New server data fetch (server)?   → Direct query in async server component, no TanStack Query
+New form?                         → Zod schema first in features/[name]/schemas/
+                                  → React Hook Form + zodResolver
+                                  → Validate on server too (server action re-validates)
+New server action?                → next-safe-action with schema
+                                  → features/[name]/actions/[name].action.ts
+                                  → Call revalidatePath after mutation
+New env variable?                 → Add to src/env.ts (t3-env)
+                                  → Add to .env.example with comment
+                                  → Server-only → server: {}; client-safe → client: {} with NEXT_PUBLIC_
+URL-based filter/search/pagination? → nuqs useQueryState
+Dark mode?                        → next-themes ThemeProvider in app/providers.tsx
+                                  → Tailwind darkMode: 'class'
+                                  → Toggle via useTheme()
 ```
 
 ---
 
 # 80. Server-side Fetch Helper
 
-Use a shared `fetch` helper for Server Components that read data from an external HTTP API (e.g. Spring Boot).
+Shared `fetch` helper for Server Components that read from an external HTTP API (e.g. Spring Boot).
 
 ```typescript
 // lib/fetch.ts
@@ -3276,14 +1488,16 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
 ```
 
 ### Rules
+
 - **Server Components only.** Never import `lib/fetch.ts` from a Client Component — secrets and cookies belong on the server.
 - **Redirect on 401** in the caller, never in the helper — the helper only throws structured errors.
-- **Map status → error.code** so callers can route on `error.code`, not `error.message`.
+- **Map status → error.code** so callers route on `error.code`, not `error.message`.
 - **No caching by default** (`revalidate: 0`) unless the endpoint is static — override per call when safe.
 - **Fall back to a host override** so local dev (`localhost:8080`) and Docker (`http://backend:8080`) both work.
 
 ### Agent Quick Reference
-```
+
+```text
 Server Component needs data from Spring Boot?
   → await apiFetch<T>('/api/v1/users')
   → See stack/nextjs.md § 80 Server-side Fetch Helper
@@ -3291,3 +1505,4 @@ Server Component needs data from Spring Boot?
 Spring Boot returns an error?
   → apiFetch throws { status, code, message }
   → Route on error.code — see universal/error-handling.md
+```
