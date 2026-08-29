@@ -3029,6 +3029,7 @@ Server action validation?
 # 75. Environment Variables
 
 ## t3-env Setup
+<!-- snippet:nextjs-env -->
 ```typescript
 // src/env.ts
 import { createEnv } from '@t3-oss/env-nextjs'

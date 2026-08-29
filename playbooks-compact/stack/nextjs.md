@@ -1272,6 +1272,7 @@ Server action validation?       → same schema file, import on both client and 
 
 ## t3-env Setup
 
+<!-- snippet:nextjs-env -->
 ```typescript
 // src/env.ts
 import { createEnv } from '@t3-oss/env-nextjs'
