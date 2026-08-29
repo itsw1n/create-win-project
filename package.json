@@ -7,6 +7,13 @@
   "bin": {
     "create-win-project": "./index.js"
   },
+  "files": [
+    "index.js",
+    "lib",
+    "playbooks",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "start": "node index.js",
     "test": "vitest run"
