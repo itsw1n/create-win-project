@@ -1,0 +1,29 @@
+{
+  "id": "react",
+  "kind": "frontend",
+  "label": "React + Vite",
+  "appliesTo": { "backend": ["supabase", "springboot"] },
+  "port": 5173,
+  "needsDocker": false,
+  "frontendDir": "frontend",
+  "required": true,
+  "folders": [
+    "frontend/src/app", "frontend/src/pages", "frontend/src/features", "frontend/src/components/ui",
+    "frontend/src/components/shared", "frontend/src/components/layout", "frontend/src/components/forms",
+    "frontend/src/stores", "frontend/src/lib", "frontend/src/hooks", "frontend/src/types",
+    "frontend/src/constants", "frontend/e2e", "frontend/public"
+  ],
+  "deps": { "react": "^18", "react-dom": "^18" },
+  "devDeps": { "vite": "^5", "typescript": "^5", "@vitejs/plugin-react": "^4" },
+  "env": ["VITE_API_URL"],
+  "constraints": [
+    "SPA exposes everything to the browser — never use the service role key client-side",
+    "Full Docker: React + backend + PostgreSQL for Spring Boot combos"
+  ],
+  "concerns": [
+    { "id": "data-flow", "required": true, "sections": ["Data Flow", "Feature API Pattern"] },
+    { "id": "validation", "required": false, "when": "Project has forms / runtime input", "sections": ["Zustand Store Pattern"] },
+    { "id": "query", "required": false, "when": "Client needs cached server state", "sections": ["lib/queryClient.ts Pattern"] },
+    { "id": "state", "required": false, "when": "Shared UI state", "sections": ["Zustand Store Pattern"] }
+  ]
+}

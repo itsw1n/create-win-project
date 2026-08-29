@@ -1,0 +1,31 @@
+{
+  "id": "nextjs",
+  "kind": "frontend",
+  "label": "Next.js",
+  "appliesTo": { "backend": ["supabase", "springboot", "postgres"] },
+  "port": 3000,
+  "needsDocker": false,
+  "frontendDir": "",
+  "required": true,
+  "folders": [
+    "src/app", "src/features", "src/components/ui", "src/components/shared",
+    "src/components/layout", "src/lib", "src/stores", "src/hooks", "src/types",
+    "src/schemas", "src/constants", "e2e", "public"
+  ],
+  "deps": { "next": "^15", "react": "^18", "react-dom": "^18" },
+  "devDeps": { "typescript": "^5", "@types/react": "^18", "@types/node": "^20" },
+  "env": ["NEXT_PUBLIC_API_URL"],
+  "constraints": [
+    "Server Components default; use client only where browser behavior is required",
+    "Medium default: Action → Service → Database; add Repository only when DB access is complex"
+  ],
+  "concerns": [
+    { "id": "server-client", "required": true, "sections": ["Server vs Client", "Rule E — Keep client boundaries narrow"] },
+    { "id": "validation", "required": false, "when": "Project has forms / runtime input", "sections": ["React Hook Form + Zod", "Zod Schema Placement"] },
+    { "id": "query", "required": false, "when": "Client needs cached server state", "sections": ["TanStack Query"] },
+    { "id": "state", "required": false, "when": "Shared non-server UI state", "sections": ["Zustand"] },
+    { "id": "env", "required": false, "when": "Validating env vars", "sections": ["t3-env"] },
+    { "id": "url-state", "required": false, "when": "Filter/search state belongs in URL", "sections": ["nuqs"] }
+  ],
+  "snippets": { "src/lib/env.ts": "snippet:nextjs-env" }
+}

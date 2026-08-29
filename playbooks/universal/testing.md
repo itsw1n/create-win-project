@@ -167,6 +167,9 @@ describe('LoginForm', () => {
 ---
 
 ## Frontend: Zod Schema Testing
+
+Test Zod schemas **when** this project has forms to test. If the project has no such need, this section does not apply — the rules are optional.
+
 ```typescript
 // features/auth/schemas/login.schema.test.ts
 import { loginSchema } from './login.schema'

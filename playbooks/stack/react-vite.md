@@ -154,6 +154,9 @@ export default api
 ---
 
 ## lib/queryClient.ts Pattern
+
+Use TanStack Query **when** this project has cached server state on the client. If the project has no such need, this section does not apply — the rules are optional.
+
 ```typescript
 import { QueryClient } from '@tanstack/react-query'
 
@@ -266,6 +269,9 @@ export function useCreateUser() {
 ---
 
 ## Zustand Store Pattern
+
+Use Zustand **when** this project has shared UI state that persists across components but is not server data. If the project has no such need, this section does not apply — the rules are optional.
+
 ```typescript
 // stores/authStore.ts
 import { create } from 'zustand'

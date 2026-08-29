@@ -1,0 +1,10 @@
+{
+  "id": "docker",
+  "kind": "devops",
+  "label": "Docker",
+  "required": false,
+  "folders": [],
+  "concerns": [
+    { "id": "docker", "required": true, "sections": ["Dev/prod compose", "Dockerfiles"] }
+  ]
+}

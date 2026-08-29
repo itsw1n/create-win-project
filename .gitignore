@@ -1,6 +1,9 @@
 # Dependencies
 node_modules/
 
+# Demo testing output
+.demo/
+
 # Logs
 *.log
 npm-debug.log*

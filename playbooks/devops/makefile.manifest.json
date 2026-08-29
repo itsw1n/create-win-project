@@ -1,0 +1,10 @@
+{
+  "id": "makefile",
+  "kind": "devops",
+  "label": "Makefile",
+  "required": false,
+  "folders": [],
+  "concerns": [
+    { "id": "makefile", "required": true, "sections": ["Full Makefile per combo"] }
+  ]
+}

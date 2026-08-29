@@ -1,0 +1,11 @@
+{
+  "id": "flyway",
+  "kind": "migration",
+  "label": "Flyway",
+  "appliesTo": { "backend": ["springboot"] },
+  "required": true,
+  "folders": ["backend/src/main/resources/db/migration"],
+  "concerns": [
+    { "id": "migration", "required": true, "sections": ["File Naming", "Standard Table Pattern"] }
+  ]
+}

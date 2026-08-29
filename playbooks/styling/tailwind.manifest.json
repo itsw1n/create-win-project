@@ -1,0 +1,11 @@
+{
+  "id": "tailwind",
+  "kind": "styling",
+  "label": "Tailwind CSS + shadcn/ui",
+  "file": "styling/tailwind-extensions.md",
+  "required": false,
+  "folders": [],
+  "concerns": [
+    { "id": "styling", "required": true, "sections": ["cn()", "shadcn/ui", "Responsive"] }
+  ]
+}

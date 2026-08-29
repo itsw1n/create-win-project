@@ -136,6 +136,9 @@ function getUserName<T extends User>(user: T): string {
 ---
 
 ## Zod for Runtime Validation
+
+Use Zod for runtime validation **when** this project has runtime validation needs (form input, API responses, external data). If the project has no such need, this section does not apply — the rules are optional.
+
 TypeScript types are compile-time only. Use Zod at runtime boundaries.
 
 ```typescript
