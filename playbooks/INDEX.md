@@ -85,21 +85,19 @@ backend/frontend Dockerfiles, nginx.conf (React), `.env.example`, `.editorconfig
 A short **index** (concern → playbook section), built automatically from the selected
 playbooks' headings. Full detail always lives in the copied `/playbooks/`.
 
-### playbooks-compact/ — shipped form of the big stack playbooks
-`playbooks-compact/` holds rewrite-trimmed copies of the two largest stack playbooks
-(`stack/nextjs.md`, `stack/springboot.md`). The generator **prefers the compact copy**
-when it exists and falls back to the full `playbooks/` file otherwise:
+### Shipped stack playbooks are the lean copies
+The stack playbooks in `playbooks/stack/` (`nextjs.md`, `springboot.md`) **are** the
+lean, token-friendly copies that get shipped into generated projects — there is no
+separate compact directory. They keep every rule section heading **1:1** (so every
+RULES.md `§ N` reference resolves) and the same rules + code examples; only prose/ASCII
+diagrams are condensed. `nextjs.md` drops from ~3.3k to ~1.5k lines to avoid agent
+context/token burn.
 
-- Same section headings **1:1** — every RULES.md `§ N` reference resolves identically.
-- Same rules + code examples — codegen behavior is unchanged.
-- Prose/ASCII diagrams condensed into short direct directives.
-- Measured (chars/tokens): nextjs.md 60k→46k (~77%), springboot.md 38k→37k (98%).
-  Combined the two playbooks drop from ~4.7k to ~2.7k lines. Spring Boot's file is
-  almost all code, so its prose trim buys little — the real win is nextjs.md.
-  Full versions stay here as the authoritative reference.
+The verbose full versions are preserved as reference at `~/Documents/nextjs.full.md`
+and `~/Documents/springboot.full.md` if you ever need the untrimmed diagrams/examples.
 
-To refresh a compact copy, rewrite it against the current full playbook.
-`lib/playbooks.js#resolvePlaybook` decides which file ships.
+`lib/playbooks.js#resolvePlaybook` joins `playbooks/<file>` directly — the shipped file
+is the lean one.
 
 ---
 
