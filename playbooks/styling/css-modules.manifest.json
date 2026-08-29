@@ -2,6 +2,7 @@
   "id": "css-modules",
   "kind": "styling",
   "label": "CSS Modules",
+  "file": "styling/css-modules-extensions.md",
   "required": false,
   "folders": [],
   "concerns": [

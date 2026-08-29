@@ -2,6 +2,7 @@
   "id": "tailwind",
   "kind": "styling",
   "label": "Tailwind CSS + shadcn/ui",
+  "file": "styling/tailwind-extensions.md",
   "required": false,
   "folders": [],
   "concerns": [

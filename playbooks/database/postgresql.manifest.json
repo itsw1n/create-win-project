@@ -1,8 +1,8 @@
 {
-  "id": "postgresql",
+  "id": "postgres",
   "kind": "database",
   "label": "PostgreSQL (Prisma)",
-  "appliesTo": { "backend": ["postgres"] },
+  "appliesTo": { "backend": ["postgres", "springboot"] },
   "required": true,
   "folders": ["prisma/migrations"],
   "env": ["DATABASE_URL"],
