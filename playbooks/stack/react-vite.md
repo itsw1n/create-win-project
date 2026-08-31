@@ -105,77 +105,6 @@ Backend REST API
 
 ---
 
-## lib/axios.ts Pattern
-```typescript
-import axios from 'axios'
-import { AppError } from '@/lib/errors'
-import { useAuthStore } from '@/stores/authStore'
-
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-  headers: { 'Content-Type': 'application/json' },
-  withCredentials: true,
-})
-
-// Request interceptor — attach access token
-api.interceptors.request.use((config) => {
-  const token = useAuthStore.getState().accessToken
-  if (token) config.headers.Authorization = `Bearer ${token}`
-  return config
-})
-
-// Response interceptor — handle errors + 401 refresh
-api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const original = error.config
-
-    if (error.response?.status === 401 && !original._retry) {
-      original._retry = true
-      try {
-        const { accessToken } = await refreshToken()
-        useAuthStore.getState().setAccessToken(accessToken)
-        original.headers.Authorization = `Bearer ${accessToken}`
-        return api(original)
-      } catch {
-        useAuthStore.getState().clearAuth()
-        window.location.href = '/login'
-      }
-    }
-
-    const { code, message } = error.response?.data ?? {}
-    throw new AppError(code ?? 'UNKNOWN_ERROR', message ?? 'Something went wrong', error.response?.status ?? 500)
-  }
-)
-
-export default api
-```
-
----
-
-## lib/queryClient.ts Pattern
-
-Use TanStack Query **when** this project has cached server state on the client. If the project has no such need, this section does not apply — the rules are optional.
-
-```typescript
-import { QueryClient } from '@tanstack/react-query'
-
-export const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5,    // 5 minutes
-      retry: 1,
-      refetchOnWindowFocus: false,
-    },
-    mutations: {
-      retry: 0,
-    },
-  },
-})
-```
-
----
-
 ## lib/errors.ts Pattern
 ```typescript
 export class AppError extends Error {
@@ -438,9 +367,16 @@ New constant?
   → src/constants/index.ts
 
 Protected route?
-  → Wrap in <PrivateRoute /> in router.tsx
 
-Error in component?
-  → Catch in hook, not component
-  → Route on error.code, not error.message
-```
+---
+
+## Optional Concerns
+
+The following concerns are indexed in `RULES.md`. Read only the one relevant to your task.
+
+| Concern | Playbook |
+|---|---|
+| Axios HTTP client | `concerns/axios.md` |
+| TanStack Query (server state) | `concerns/tanstack-query.md` |
+| Zustand (client state) | `concerns/zustand.md` |
+| React Hook Form + Zod (forms) | `concerns/zod.md` |

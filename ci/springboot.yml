@@ -1,0 +1,51 @@
+name: CI — Backend
+
+on:
+  push:
+    branches: [dev, main]
+    paths:
+      - backend/**
+  pull_request:
+    branches: [dev, main]
+    paths:
+      - backend/**
+
+jobs:
+  ci-backend:
+    name: Test, Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
+          cache: maven
+      - name: Run tests
+        run: ./mvnw test
+        env:
+          SPRING_PROFILES_ACTIVE: test
+          DB_URL: jdbc:postgresql://localhost:5432/testdb
+          DB_USERNAME: postgres
+          DB_PASSWORD: postgres
+          JWT_SECRET: test-secret-value-at-least-32-characters
+          JWT_REFRESH_SECRET: test-refresh-secret-at-least-32-chars
+      - name: Build JAR
+        run: ./mvnw package -DskipTests

@@ -5,7 +5,10 @@ import ora from 'ora'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { generateProject } from './lib/generator.js'
-import { loadCatalog, resolveStack, frontendChoices, backendChoicesFor } from './lib/catalog.js'
+import {
+  loadCatalog, resolveStack,
+  frontendChoices, backendChoicesFor, stylingChoicesFor, supportsArchitecture,
+} from './lib/catalog.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const catalog = await loadCatalog(path.join(__dirname, 'playbooks'))
@@ -20,6 +23,7 @@ console.log('')
 // ─── Interview ───────────────────────────────────────────────────────────────
 
 const answers = await inquirer.prompt([
+  // ── Always-on ──────────────────────────────────────────────────────────
   {
     type: 'input',
     name: 'projectName',
@@ -35,8 +39,10 @@ const answers = await inquirer.prompt([
     type: 'input',
     name: 'projectDescription',
     message: 'One-line description?',
-    default: 'A web application',
+    default: 'A new application',
   },
+
+  // ── Stack selection (catalog-driven) ───────────────────────────────────
   {
     type: 'list',
     name: 'frontend',
@@ -49,50 +55,76 @@ const answers = await inquirer.prompt([
     message: 'Pick your backend/database:',
     choices: (a) => backendChoicesFor(catalog, a.frontend),
   },
+
+  // ── Styling: only shown when frontend has >1 option (catalog-driven) ───
   {
     type: 'list',
     name: 'styling',
     message: 'Styling approach?',
-    choices: [
-      { name: 'Tailwind CSS + shadcn/ui  (recommended)', value: 'tailwind' },
-      { name: 'CSS Modules', value: 'css-modules' },
-    ],
-    default: 'tailwind',
+    choices: (a) => stylingChoicesFor(catalog, a.frontend),
+    when: (a) => stylingChoicesFor(catalog, a.frontend).length > 1,
   },
+
+  // ── Architecture: only shown when frontend supports it (manifest flag) ─
   {
     type: 'list',
     name: 'architecture',
     message: 'Architecture depth?',
     choices: [
       { name: 'Medium  — Service layer, no Repository  (recommended)', value: 'medium' },
-      { name: 'Large   — Service + Repository layers', value: 'large' },
+      { name: 'Large   — Service + Repository layers',                  value: 'large' },
     ],
     default: 'medium',
-    when: (a) => a.frontend === 'nextjs',
+    when: (a) => supportsArchitecture(catalog, a.frontend),
   },
+
+  // ── Testing ────────────────────────────────────────────────────────────
   {
     type: 'list',
     name: 'testing',
     message: 'Testing setup?',
-    choices: [
-      { name: 'Full    (Vitest + React Testing Library + Playwright)', value: 'full' },
-      { name: 'Basic   (Vitest + React Testing Library)', value: 'basic' },
-      { name: 'None', value: 'none' },
-    ],
-    default: 'full',
+    choices: (a) => {
+      const fe = catalog.byId[a.frontend]
+      if (fe?.platform === 'mobile') {
+        return [
+          { name: 'Basic  (Jest + React Native Testing Library)', value: 'basic' },
+          { name: 'None',                                          value: 'none' },
+        ]
+      }
+      return [
+        { name: 'Full   (Vitest + React Testing Library + Playwright)', value: 'full' },
+        { name: 'Basic  (Vitest + React Testing Library)',               value: 'basic' },
+        { name: 'None',                                                  value: 'none' },
+      ]
+    },
+    default: (a) => {
+      const fe = catalog.byId[a.frontend]
+      return fe?.platform === 'mobile' ? 'basic' : 'full'
+    },
   },
+
+  // ── DevOps extras ──────────────────────────────────────────────────────
   {
     type: 'confirm',
     name: 'docker',
     message: 'Include Docker?',
     default: true,
-    when: (a) => { const fe = catalog.byId[a.frontend]; const be = catalog.byId[a.backend]; return (be?.needsDocker ?? fe?.needsDocker ?? false) },
+    when: (a) => {
+      const fe = catalog.byId[a.frontend]
+      const be = catalog.byId[a.backend]
+      return (be?.needsDocker ?? fe?.needsDocker ?? false)
+    },
   },
   {
     type: 'confirm',
     name: 'makefile',
     message: 'Include Makefile?',
     default: true,
+    when: (a) => {
+      // Makefile is useful for web stacks; less relevant for bare mobile
+      const fe = catalog.byId[a.frontend]
+      return fe?.platform !== 'mobile'
+    },
   },
   {
     type: 'confirm',
@@ -100,6 +132,8 @@ const answers = await inquirer.prompt([
     message: 'Include GitHub Actions CI?',
     default: true,
   },
+
+  // ── Spring Boot specific ───────────────────────────────────────────────
   {
     type: 'input',
     name: 'packageName',
@@ -112,42 +146,50 @@ const answers = await inquirer.prompt([
       return true
     },
   },
+
+  // ── Optional concerns (filtered to current stack) ──────────────────────
   {
     type: 'checkbox',
     name: 'expectedConcerns',
     message: 'Expected optional concerns? (advisory only — all stay available)',
-    choices: () => {
+    choices: (a) => {
+      const stack = resolveStack({ ...a, styling: a.styling || catalog.byId[a.frontend]?.stylingOptions?.[0] }, catalog)
       const opts = new Set()
-      for (const m of catalog.manifests) for (const c of (m.concerns || [])) if (!c.required) opts.add(c.id)
+      for (const c of stack.concerns) if (!c.required) opts.add(c.id)
       return [...opts].map((id) => ({ name: id, value: id }))
     },
   },
 ])
 
-// auto-enable docker for Spring Boot combos
-if (resolveStack(answers, catalog).needsDocker) {
+// ── Auto-resolve docker for stacks that need it ───────────────────────────────
+if (resolveStack({ ...answers, styling: answers.styling || catalog.byId[answers.frontend]?.stylingOptions?.[0] || 'tailwind' }, catalog).needsDocker) {
   answers.docker = answers.docker ?? true
 }
 
-const stack = resolveStack(answers, catalog)
+const stack = resolveStack({ ...answers, styling: answers.styling || catalog.byId[answers.frontend]?.stylingOptions?.[0] || 'tailwind' }, catalog)
 
 // ─── Confirm ─────────────────────────────────────────────────────────────────
 
 console.log('')
 console.log(chalk.bold('  Summary'))
 console.log(chalk.gray('  ───────────────────────────'))
-console.log(`  ${chalk.cyan('Name:')}        ${answers.projectName}`)
-console.log(`  ${chalk.cyan('Stack:')}       ${stack.label}`)
-console.log(`  ${chalk.cyan('Styling:')}     ${answers.styling}`)
-if (stack.isNextjs) {
+console.log(`  ${chalk.cyan('Name:')}         ${answers.projectName}`)
+console.log(`  ${chalk.cyan('Stack:')}        ${stack.label}`)
+console.log(`  ${chalk.cyan('Platform:')}     ${stack.platform}`)
+if (stack.styleId) {
+  console.log(`  ${chalk.cyan('Styling:')}      ${catalog.byId[stack.styleId]?.label || stack.styleId}`)
+}
+if (stack.platform === 'web' && supportsArchitecture(catalog, answers.frontend)) {
   console.log(`  ${chalk.cyan('Architecture:')} ${stack.architecture === 'large' ? 'Large (Service + Repository)' : 'Medium (Service layer)'}`)
 }
-console.log(`  ${chalk.cyan('Testing:')}     ${answers.testing}`)
-console.log(`  ${chalk.cyan('Docker:')}      ${answers.docker ? 'yes' : 'no'}`)
-console.log(`  ${chalk.cyan('Makefile:')}    ${answers.makefile ? 'yes' : 'no'}`)
-console.log(`  ${chalk.cyan('CI/CD:')}       ${answers.githubActions ? 'yes' : 'no'}`)
+console.log(`  ${chalk.cyan('Testing:')}      ${answers.testing}`)
+if (stack.platform !== 'mobile') {
+  console.log(`  ${chalk.cyan('Docker:')}       ${answers.docker ? 'yes' : 'no'}`)
+  console.log(`  ${chalk.cyan('Makefile:')}     ${answers.makefile ? 'yes' : 'no'}`)
+}
+console.log(`  ${chalk.cyan('CI/CD:')}        ${answers.githubActions ? 'yes' : 'no'}`)
 if (answers.packageName) {
-  console.log(`  ${chalk.cyan('Package:')}     ${answers.packageName}`)
+  console.log(`  ${chalk.cyan('Package:')}      ${answers.packageName}`)
 }
 if (stack.constraints.length) {
   console.log('')
@@ -159,12 +201,7 @@ if (stack.constraints.length) {
 console.log('')
 
 const { confirm } = await inquirer.prompt([
-  {
-    type: 'confirm',
-    name: 'confirm',
-    message: 'Generate project?',
-    default: true,
-  },
+  { type: 'confirm', name: 'confirm', message: 'Generate project?', default: true },
 ])
 
 if (!confirm) {
@@ -183,19 +220,21 @@ try {
   console.log('')
   console.log(chalk.bold(`  Next steps:`))
   console.log(chalk.gray(`  cd ${answers.projectName}`))
-  console.log(chalk.gray(`  cp .env.example .env`))
-  console.log(chalk.gray(`  # Fill in your .env values`))
 
-  if (answers.makefile) {
+  if (stack.isMobile) {
+    console.log(chalk.gray(`  cp .env.example .env`))
+    console.log(chalk.gray(`  # Fill in your .env values`))
+    console.log(chalk.gray(`  npm install`))
+    console.log(chalk.gray(`  npx expo start`))
+  } else if (answers.makefile) {
+    console.log(chalk.gray(`  cp .env.example .env`))
+    console.log(chalk.gray(`  # Fill in your .env values`))
     console.log(chalk.gray(`  make dev`))
-  } else if (stack.needsDocker && answers.docker) {
-    console.log(chalk.gray(`  docker compose up --build`))
   } else if (stack.isSupabase) {
     console.log(chalk.gray(`  npx supabase start`))
     console.log(chalk.gray(`  npm run dev`))
   } else {
     console.log(chalk.gray(`  docker compose up -d db`))
-    console.log(chalk.gray(`  npx prisma migrate dev`))
     console.log(chalk.gray(`  npm run dev`))
   }
 

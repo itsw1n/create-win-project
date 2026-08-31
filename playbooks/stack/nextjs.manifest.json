@@ -2,11 +2,16 @@
   "id": "nextjs",
   "kind": "frontend",
   "label": "Next.js",
+  "platform": "web",
   "appliesTo": { "backend": ["supabase", "springboot", "postgres"] },
   "port": 3000,
   "needsDocker": false,
   "frontendDir": "",
-  "required": true,
+  "supportsArchitecture": true,
+  "stylingOptions": ["tailwind", "css-modules"],
+  "scripts": { "dev": "next dev", "build": "next build", "test": "vitest run" },
+  "ciTemplate": "nextjs",
+  "envPrefix": "NEXT_PUBLIC_",
   "folders": [
     "src/app", "src/features", "src/components/ui", "src/components/shared",
     "src/components/layout", "src/lib", "src/stores", "src/hooks", "src/types",
@@ -15,17 +20,20 @@
   "deps": { "next": "^15", "react": "^18", "react-dom": "^18" },
   "devDeps": { "typescript": "^5", "@types/react": "^18", "@types/node": "^20" },
   "env": ["NEXT_PUBLIC_API_URL"],
+  "clientEnv": ["NEXT_PUBLIC_API_URL"],
   "constraints": [
     "Server Components default; use client only where browser behavior is required",
     "Medium default: Action → Service → Database; add Repository only when DB access is complex"
   ],
   "concerns": [
-    { "id": "server-client", "required": true, "sections": ["Server vs Client", "Rule E — Keep client boundaries narrow"] },
-    { "id": "validation", "required": false, "when": "Project has forms / runtime input", "sections": ["React Hook Form + Zod", "Zod Schema Placement"] },
-    { "id": "query", "required": false, "when": "Client needs cached server state", "sections": ["TanStack Query"] },
-    { "id": "state", "required": false, "when": "Shared non-server UI state", "sections": ["Zustand"] },
-    { "id": "env", "required": false, "when": "Validating env vars", "sections": ["t3-env"] },
-    { "id": "url-state", "required": false, "when": "Filter/search state belongs in URL", "sections": ["nuqs"] }
+    { "id": "server-client", "required": true, "playbook": "stack/nextjs.md", "sections": ["Server vs Client", "Rule E — Keep client boundaries narrow"] },
+    { "id": "validation", "required": false, "when": "Project has forms / runtime input", "playbook": "concerns/zod.md", "sections": ["Schema First, Always", "Zod Schema Placement"] },
+    { "id": "query", "required": false, "when": "Client needs cached server state", "playbook": "concerns/tanstack-query.md", "sections": ["Read Hook", "Mutation Hook"] },
+    { "id": "state", "required": false, "when": "Shared non-server UI state", "playbook": "concerns/zustand.md", "sections": ["Store Setup"] },
+    { "id": "env", "required": false, "when": "Validating env vars at build time", "playbook": "concerns/t3-env.md", "sections": ["Setup"] },
+    { "id": "url-state", "required": false, "when": "Filter/search/pagination state belongs in URL", "playbook": "concerns/nuqs.md", "sections": ["Basic Usage"] },
+    { "id": "safe-action", "required": false, "when": "Type-safe server actions with auth middleware", "playbook": "concerns/next-safe-action.md", "sections": ["Setup", "Defining an Action"] },
+    { "id": "dark-mode", "required": false, "when": "Project needs dark mode toggle", "playbook": "concerns/next-themes.md", "sections": ["Provider Setup"] }
   ],
   "snippets": { "src/lib/env.ts": "snippet:nextjs-env" }
 }
