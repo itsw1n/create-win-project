@@ -1,0 +1,71 @@
+# docker-compose.yml — {{PROJECT_NAME}} ({{STACK}}) — Dev
+services:
+
+  frontend:
+    container_name: {{PROJECT_NAME}}-frontend
+    build:
+      context: {{FRONTEND_DIR}}
+      dockerfile: {{FRONTEND_DOCKERFILE}}
+    ports:
+      - "{{FRONTEND_PORT}}:{{FRONTEND_PORT}}"
+    volumes:
+      - {{FRONTEND_DIR}}:/app
+      - /app/node_modules
+    environment:
+      - {{ENV_PREFIX}}API_URL=${{ENV_PREFIX}}API_URL
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  backend:
+    container_name: {{PROJECT_NAME}}-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend:/app
+      - maven-cache:/root/.m2
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - DATABASE_URL=jdbc:postgresql://db:5432/${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  db:
+    container_name: {{PROJECT_NAME}}-db
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres-data:
+    name: {{PROJECT_NAME}}-postgres-data
+  maven-cache:
+    name: {{PROJECT_NAME}}-maven-cache
+
+networks:
+  app-network:
+    name: {{PROJECT_NAME}}-network

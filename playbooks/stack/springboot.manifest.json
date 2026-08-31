@@ -5,6 +5,7 @@
   "appliesTo": { "frontend": ["nextjs", "react", "react-native"] },
   "port": 8080,
   "needsDocker": true,
+  "makefileTemplate": "springboot",
   "folders": [
     "backend/src/main/java/{{PACKAGE_PATH}}/auth/dto",
     "backend/src/main/java/{{PACKAGE_PATH}}/auth/entity",
