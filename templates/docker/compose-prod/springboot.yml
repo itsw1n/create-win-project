@@ -1,0 +1,66 @@
+# docker-compose.prod.yml — {{PROJECT_NAME}} ({{STACK}}) — Prod
+services:
+
+  frontend:
+    container_name: {{PROJECT_NAME}}-frontend-prod
+    build:
+      context: {{FRONTEND_DIR}}
+      dockerfile: {{FRONTEND_DOCKERFILE_PROD}}
+      target: production
+    ports:
+      - "{{FRONTEND_PROD_PORT}}"
+    environment:
+      - {{ENV_PREFIX}}API_URL=${{ENV_PREFIX}}API_URL
+    depends_on:
+      - backend
+    networks:
+      - app-network
+    restart: always
+
+  backend:
+    container_name: {{PROJECT_NAME}}-backend-prod
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: production
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - DATABASE_URL=jdbc:postgresql://db:5432/${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-network
+    restart: always
+
+  db:
+    container_name: {{PROJECT_NAME}}-db-prod
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - postgres-data-prod:/var/lib/postgresql/data
+    networks:
+      - app-network
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres-data-prod:
+    name: {{PROJECT_NAME}}-postgres-data-prod
+
+networks:
+  app-network:
+    name: {{PROJECT_NAME}}-network-prod

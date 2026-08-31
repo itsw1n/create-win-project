@@ -12,6 +12,10 @@
   "scripts": { "dev": "vite", "build": "vite build", "test": "vitest run" },
   "ciTemplate": "vite",
   "envPrefix": "VITE_",
+  "dockerTemplate": "vite",
+  "agentsTemplate": "react-vite",
+  "readmeTemplate": "react-vite",
+  "gitignoreTemplate": "react-vite",
   "folders": [
     "frontend/src/app", "frontend/src/pages", "frontend/src/features",
     "frontend/src/components/ui", "frontend/src/components/shared",

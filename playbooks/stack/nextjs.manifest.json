@@ -12,6 +12,10 @@
   "scripts": { "dev": "next dev", "build": "next build", "test": "vitest run" },
   "ciTemplate": "nextjs",
   "envPrefix": "NEXT_PUBLIC_",
+  "dockerTemplate": "nextjs",
+  "agentsTemplate": "nextjs",
+  "readmeTemplate": "nextjs",
+  "gitignoreTemplate": "nextjs",
   "folders": [
     "src/app", "src/features", "src/components/ui", "src/components/shared",
     "src/components/layout", "src/lib", "src/stores", "src/hooks", "src/types",
