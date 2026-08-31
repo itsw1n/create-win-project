@@ -12,6 +12,7 @@
     "lib",
     "playbooks",
     "ci",
+    "templates",
     "README.md",
     "LICENSE"
   ],
