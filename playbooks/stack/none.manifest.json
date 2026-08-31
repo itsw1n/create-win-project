@@ -1,0 +1,18 @@
+{
+  "id": "none",
+  "kind": "backend",
+  "label": "None / BYO API",
+  "appliesTo": { "frontend": ["react-native"] },
+  "port": 0,
+  "needsDocker": false,
+  "folders": [],
+  "deps": {},
+  "devDeps": {},
+  "env": [],
+  "clientEnv": [],
+  "constraints": [
+    "No backend scaffolded — connect your own API via the apiClient in lib/apiClient.ts",
+    "Set EXPO_PUBLIC_API_BASE_URL in .env to point to your API"
+  ],
+  "concerns": []
+}
