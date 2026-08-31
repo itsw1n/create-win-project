@@ -8,6 +8,8 @@
 Stack: {{STACK}}
 Full snapshot → `CONTEXT.md`.
 
+> **Scaffold flexibility:** This structure is advisory — every folder/file (`src/stores`, `src/hooks`, `e2e/`, `supabase/`, etc.) is optional. Suggest adding a folder/file when its `when` condition applies, or removing it when unused for 2+ features. Don't treat empty `.gitkeep` folders as required.
+
 ## Key Constraints (always-on)
 {{CONSTRAINTS}}
 
