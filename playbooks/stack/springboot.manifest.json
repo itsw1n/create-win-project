@@ -2,10 +2,9 @@
   "id": "springboot",
   "kind": "backend",
   "label": "Spring Boot",
-  "appliesTo": { "frontend": ["nextjs", "react"] },
+  "appliesTo": { "frontend": ["nextjs", "react", "react-native"] },
   "port": 8080,
   "needsDocker": true,
-  "required": true,
   "folders": [
     "backend/src/main/java/{{PACKAGE_PATH}}/auth/dto",
     "backend/src/main/java/{{PACKAGE_PATH}}/auth/entity",
@@ -19,13 +18,15 @@
     "backend/src/test/java/{{PACKAGE_PATH}}"
   ],
   "deps": {},
+  "devDeps": {},
   "env": ["DATABASE_URL", "JWT_SECRET", "JWT_REFRESH_SECRET"],
+  "clientEnv": [],
   "constraints": [
     "Spring Boot owns ALL business logic, auth (JWT), and data access",
     "Auth tokens come from Spring Boot and are attached to every request"
   ],
   "concerns": [
-    { "id": "layers", "required": true, "sections": ["Controller — HTTP Only", "Service — Business Logic Only", "Repository — DB Only"] },
-    { "id": "security", "required": true, "sections": ["Custom Auth Check in Service", "Bean Validation on Request DTOs"] }
+    { "id": "layers", "required": true, "playbook": "stack/springboot.md", "sections": ["Controller — HTTP Only", "Service — Business Logic Only", "Repository — DB Only"] },
+    { "id": "security", "required": true, "playbook": "stack/springboot.md", "sections": ["Custom Auth Check in Service", "Bean Validation on Request DTOs"] }
   ]
 }

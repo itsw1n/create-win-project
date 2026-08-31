@@ -2,28 +2,36 @@
   "id": "react",
   "kind": "frontend",
   "label": "React + Vite",
+  "platform": "web",
   "appliesTo": { "backend": ["supabase", "springboot"] },
   "port": 5173,
   "needsDocker": false,
   "frontendDir": "frontend",
-  "required": true,
+  "supportsArchitecture": false,
+  "stylingOptions": ["tailwind", "css-modules"],
+  "scripts": { "dev": "vite", "build": "vite build", "test": "vitest run" },
+  "ciTemplate": "vite",
+  "envPrefix": "VITE_",
   "folders": [
-    "frontend/src/app", "frontend/src/pages", "frontend/src/features", "frontend/src/components/ui",
-    "frontend/src/components/shared", "frontend/src/components/layout", "frontend/src/components/forms",
-    "frontend/src/stores", "frontend/src/lib", "frontend/src/hooks", "frontend/src/types",
-    "frontend/src/constants", "frontend/e2e", "frontend/public"
+    "frontend/src/app", "frontend/src/pages", "frontend/src/features",
+    "frontend/src/components/ui", "frontend/src/components/shared",
+    "frontend/src/components/layout", "frontend/src/components/forms",
+    "frontend/src/stores", "frontend/src/lib", "frontend/src/hooks",
+    "frontend/src/types", "frontend/src/constants", "frontend/e2e", "frontend/public"
   ],
   "deps": { "react": "^18", "react-dom": "^18" },
   "devDeps": { "vite": "^5", "typescript": "^5", "@vitejs/plugin-react": "^4" },
   "env": ["VITE_API_URL"],
+  "clientEnv": ["VITE_API_URL"],
   "constraints": [
     "SPA exposes everything to the browser — never use the service role key client-side",
     "Full Docker: React + backend + PostgreSQL for Spring Boot combos"
   ],
   "concerns": [
-    { "id": "data-flow", "required": true, "sections": ["Data Flow", "Feature API Pattern"] },
-    { "id": "validation", "required": false, "when": "Project has forms / runtime input", "sections": ["Zustand Store Pattern"] },
-    { "id": "query", "required": false, "when": "Client needs cached server state", "sections": ["lib/queryClient.ts Pattern"] },
-    { "id": "state", "required": false, "when": "Shared UI state", "sections": ["Zustand Store Pattern"] }
+    { "id": "data-flow", "required": true, "playbook": "stack/react-vite.md", "sections": ["Data Flow", "Feature API Pattern"] },
+    { "id": "http-client", "required": true, "playbook": "concerns/axios.md", "sections": ["One Shared Client", "Service Calls apiClient, Hook Calls Service"] },
+    { "id": "validation", "required": false, "when": "Project has forms / runtime input", "playbook": "concerns/zod.md", "sections": ["Schema First, Always", "Web Form (React Hook Form)"] },
+    { "id": "query", "required": false, "when": "Client needs cached server state", "playbook": "concerns/tanstack-query.md", "sections": ["Read Hook", "Mutation Hook"] },
+    { "id": "state", "required": false, "when": "Shared UI state across pages", "playbook": "concerns/zustand.md", "sections": ["Store Setup"] }
   ]
 }
