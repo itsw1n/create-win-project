@@ -4,6 +4,7 @@
   "label": "Supabase",
   "appliesTo": { "backend": ["supabase"] },
   "required": true,
+  "makefileTemplate": "supabase",
   "folders": ["supabase/migrations"],
   "env": ["SUPABASE_URL", "SUPABASE_ANON_KEY", "SUPABASE_SERVICE_ROLE_KEY"],
   "clientEnv": ["SUPABASE_URL", "SUPABASE_ANON_KEY"],

@@ -12,6 +12,9 @@
   "scripts": { "dev": "expo start", "build": "expo export", "test": "jest --passWithNoTests" },
   "ciTemplate": "expo",
   "envPrefix": "EXPO_PUBLIC_",
+  "agentsTemplate": "react-native",
+  "readmeTemplate": "react-native",
+  "gitignoreTemplate": "react-native",
   "folders": [
     "app", "features", "components/ui", "components/shared",
     "stores", "lib", "config", "types", "schemas"

@@ -4,6 +4,7 @@
   "label": "PostgreSQL (Prisma)",
   "appliesTo": { "backend": ["postgres", "springboot"] },
   "required": true,
+  "makefileTemplate": "postgres",
   "folders": ["prisma/migrations"],
   "env": ["DATABASE_URL"],
   "concerns": [
