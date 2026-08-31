@@ -165,6 +165,101 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 ```
 
+## Branching & Release — `main` / `dev` with `release-please` + `sync-dev`
+
+Branching model enforced by `.github/workflows`:
+
+```
+feature/*, fix/*, chore/*  →  PR → dev  →  when stable  →  PR dev→main  →  tag
+      (CI must pass)            (CI must pass)             (auto-sync main→dev)
+```
+
+- `main` — stable/releaseable only. No direct push. Only merged from `dev` via promote PR (`--no-ff`).
+- `dev` — integration branch. All `feature/`, `fix/`, `chore/` branches branch **off `dev`** (never off `main`) and merge back into `dev`.
+- When `dev` is stable, open PR `dev → main`. That merge is the release.
+
+CI gate (all must pass before merge — see Frontend/Backend/Next.js CI above):
+
+- `typecheck` (`tsc --noEmit`) if project uses TypeScript
+- `lint` (`npm run lint`) + `format:check` (`prettier --check .`)
+- `build` (`npm run build`)
+  - Expo: `expo export --platform android` with dummy `EXPO_PUBLIC_*` in CI (no secrets)
+  - Next.js: `next build` with `NEXT_PUBLIC_*` from `secrets` if SSR needs Supabase
+
+Release — `release-please` (`googleapis/release-please-action` on `push: main`):
+
+```yaml
+# .github/workflows/release.yml
+name: Release
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: googleapis/release-please-action@v4
+        with:
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+          release-type: node
+```
+
+Conventional commits drive semver: `feat` → minor, `fix` → patch, `BREAKING CHANGE`/`!` → major. The action bumps `package.json`/`package-lock.json`, updates `CHANGELOG.md`, and tags `vX.Y.Z` — these are **commits on `main` only**, so `dev` falls behind.
+
+Sync — `sync-dev` heals the divergence (`on: release.published`):
+
+```yaml
+# .github/workflows/sync-dev.yml
+name: Sync dev with main
+on:
+  release:
+    types: [published]
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0, token: ${{ secrets.RELEASE_PLEASE_TOKEN || github.token }} }
+      - run: |
+          behind=$(gh api repos/${{ github.repository }}/compare/dev...main --jq '.behind_by' 2>/dev/null || echo 0)
+          echo "dev_behind=$behind" >> "$GITHUB_ENV"
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN || github.token }}
+      - if: env.dev_behind > 0
+        run: |
+          BRANCH="sync/dev-realign-${GITHUB_REF_NAME#v}"
+          git checkout -b "$BRANCH" origin/main
+          git merge origin/dev --no-edit -m "chore: realign dev with main"
+          git push origin "$BRANCH"
+          echo "sync_branch=$BRANCH" >> "$GITHUB_ENV"
+      - if: env.dev_behind > 0
+        run: |
+          PR=$(gh pr create --base dev --head "${{ env.sync_branch }}" --title "sync: realign dev with main" --body "Auto after ${{ env.sync_branch }}" | sed -E 's#.*/pull/([0-9]+).*#\1#')
+          gh pr merge --auto --merge "$PR"
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN || github.token }}
+```
+
+- Creates branch `sync/dev-realign-<version>` from `main`, merges `dev`, opens + auto-merges PR into `dev` (`RELEASE_PLEASE_TOKEN`). Branch left for manual cleanup (unique per version, safe to re-run).
+- Only needed if you use `release-please` (POS does). If release is dumb `PATCH+1` tag-only (old carwebsite), no sync needed.
+
+Branch protection (apply in GitHub UI → Settings → Branches → Add rule for `main` and `dev`):
+
+- Require a pull request before merging (1 approval, `dismiss stale`).
+- Require status checks to pass before merging → select `Typecheck`, `Lint & format`, and `Build`.
+- Do not allow bypass; restrict who can push.
+
+When to add `sync-dev`:
+
+- Smart tags (`release-please`) → add `ci.yml` + `release.yml` + `sync-dev.yml`.
+- Dumb tags (`PATCH+1` only) → `ci.yml` + `release.yml` only, no `sync-dev`.
+
 ---
 
 ## Agent Rules

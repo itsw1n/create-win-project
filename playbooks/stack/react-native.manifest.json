@@ -1,0 +1,55 @@
+{
+  "id": "react-native",
+  "kind": "frontend",
+  "label": "React Native (Expo)",
+  "platform": "mobile",
+  "appliesTo": { "backend": ["supabase", "springboot", "none"] },
+  "port": 8081,
+  "needsDocker": false,
+  "frontendDir": "",
+  "supportsArchitecture": false,
+  "stylingOptions": ["nativewind"],
+  "scripts": { "dev": "expo start", "build": "expo export", "test": "jest --passWithNoTests" },
+  "ciTemplate": "expo",
+  "envPrefix": "EXPO_PUBLIC_",
+  "folders": [
+    "app", "features", "components/ui", "components/shared",
+    "stores", "lib", "config", "types", "schemas"
+  ],
+  "deps": {
+    "expo": "~52.0.0",
+    "expo-router": "~4.0.0",
+    "expo-secure-store": "~14.0.0",
+    "react": "18.3.2",
+    "react-native": "0.76.0",
+    "nativewind": "^4.0.0",
+    "@tanstack/react-query": "^5",
+    "zustand": "^5",
+    "react-hook-form": "^7",
+    "@hookform/resolvers": "^3",
+    "zod": "^3",
+    "axios": "^1"
+  },
+  "devDeps": {
+    "typescript": "^5",
+    "@types/react": "~18.3.0",
+    "tailwindcss": "^3.4.0"
+  },
+  "env": ["EXPO_PUBLIC_API_BASE_URL"],
+  "clientEnv": ["EXPO_PUBLIC_API_BASE_URL"],
+  "constraints": [
+    "No server boundary — every network call is a client-side side effect",
+    "Expo managed workflow — no native build config required",
+    "File-based routing via Expo Router (same mental model as Next.js App Router)",
+    "NativeWind for styling — Tailwind classes work on RN components",
+    "Auth tokens must use expo-secure-store — never AsyncStorage"
+  ],
+  "concerns": [
+    { "id": "navigation", "required": true, "playbook": "stack/react-native.md", "sections": ["Navigation — Expo Router"] },
+    { "id": "styling", "required": true, "playbook": "concerns/nativewind.md", "sections": ["Key Differences from Web Tailwind", "Basic Component"] },
+    { "id": "http-client", "required": true, "playbook": "concerns/axios.md", "sections": ["One Shared Client", "Service Calls apiClient, Hook Calls Service"] },
+    { "id": "query", "required": true, "playbook": "concerns/tanstack-query.md", "sections": ["Read Hook", "Mutation Hook", "QueryClient Setup"] },
+    { "id": "state", "required": false, "when": "Shared state across multiple screens", "playbook": "concerns/zustand.md", "sections": ["Store Setup", "Auth Store Pattern"] },
+    { "id": "validation", "required": false, "when": "Project has forms", "playbook": "concerns/zod.md", "sections": ["Schema First, Always", "React Native Form (React Hook Form + Controller)"] }
+  ]
+}

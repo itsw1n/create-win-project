@@ -1113,340 +1113,32 @@ Prefer `simple + explicit + consistent` over `complex + abstract + theoretically
 
 ---
 
-# 73. State Management
-
-## Zustand — Client UI State
-
-Use Zustand **when** this project has shared UI state that persists across components but is not server data. If the project has no such need, this section does not apply — the rules are optional.
-
-```typescript
-// src/stores/uiStore.ts
-import { create } from 'zustand'
-
-type UIState = {
-  sidebarOpen: boolean
-  toggleSidebar: () => void
-}
-
-export const useUIStore = create<UIState>((set) => ({
-  sidebarOpen: false,
-  toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
-}))
-```
-
-Zustand: sidebar, active tab, selected item, user preferences (theme/locale), auth state, wizard steps — UI state shared across components.
-TanStack Query: server data (users, posts, orders), anything that can go stale or needs caching/refetching, anything fetched from an API or DB.
-
-Never put server data in Zustand. Never put UI state in TanStack Query.
-
-## TanStack Query — Server State (Client-Side)
-
-Use TanStack Query **when** this project has cached server state on the client. If the project has no such need, this section does not apply — the rules are optional.
-
-```typescript
-// features/users/hooks/useUsers.ts
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-
-// Cache key convention: ['resource', id?, filters?]
-export const userKeys = {
-  all: ['users'] as const,
-  byId: (id: string) => ['users', id] as const,
-  filtered: (filters: UserFilters) => ['users', 'filtered', filters] as const,
-}
-
-export function useUsers(filters?: UserFilters) {
-  return useQuery({
-    queryKey: filters ? userKeys.filtered(filters) : userKeys.all,
-    queryFn: () => userApi.getAll(filters),
-    staleTime: 1000 * 60 * 5,   // 5 minutes
-  })
-}
-
-export function useCreateUser() {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: userApi.create,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: userKeys.all })
-    },
-  })
-}
-```
-
-Query key convention: `['users']` (all), `['users', id]` (single), `['users', 'filtered', filters]` (filtered), `['auth', 'session']` / `['dashboard', 'stats']` (non-resource).
-
-Stale time defaults:
-
-```typescript
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5,   // 5min — most data
-      retry: 1,
-      refetchOnWindowFocus: false,
-    },
-  },
-})
-
-// Real-time data (notifications, live status) → staleTime: 0
-// Slow-changing data (profile, settings)       → staleTime: 1000 * 60 * 30
-// Static data (categories, countries)          → staleTime: Infinity
-```
 
 ---
 
-# 74. Forms
+# 73. Optional Concerns
 
-## React Hook Form + Zod
+The following concerns are indexed in `RULES.md`. Read only the one relevant to your task.
 
-Use React Hook Form + Zod **when** this project has forms. If the project has no such need, this section does not apply — the rules are optional.
-
-### Schema First
-
-```typescript
-// features/auth/schemas/login.schema.ts
-import { z } from 'zod'
-
-export const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-})
-
-export type LoginInput = z.infer<typeof loginSchema>
-```
-
-### Form Component
-
-```typescript
-// features/auth/components/LoginForm/LoginForm.tsx
-'use client'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { loginSchema, type LoginInput } from '@/features/auth/schemas/login.schema'
-
-export function LoginForm() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    setError,
-  } = useForm<LoginInput>({
-    resolver: zodResolver(loginSchema),
-  })
-
-  const onSubmit = async (data: LoginInput) => {
-    try {
-      await loginAction(data)
-    } catch (error) {
-      if (isAppError(error) && error.code === 'INVALID_CREDENTIALS') {
-        setError('email', { message: 'Invalid email or password' })
-      }
-    }
-  }
-
-  return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <input {...register('email')} />
-      {errors.email && <span>{errors.email.message}</span>}
-
-      <input type="password" {...register('password')} />
-      {errors.password && <span>{errors.password.message}</span>}
-
-      <button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? 'Logging in...' : 'Login'}
-      </button>
-    </form>
-  )
-}
-```
-
-### Zod Schema Placement
-
-```text
-Feature-specific form?          → features/[name]/schemas/[name].schema.ts
-Shared across multiple features?→ src/schemas/[name].schema.ts
-Server action validation?       → same schema file, import on both client and server
-```
+| Concern | Playbook |
+|---|---|
+| Zustand (client state) | `concerns/zustand.md` |
+| TanStack Query (server state, client-side) | `concerns/tanstack-query.md` |
+| React Hook Form + Zod (forms + validation) | `concerns/zod.md` |
+| t3-env (env validation) | `concerns/t3-env.md` |
+| nuqs (URL state) | `concerns/nuqs.md` |
+| next-safe-action (typed server actions) | `concerns/next-safe-action.md` |
+| next-themes (dark mode) | `concerns/next-themes.md` |
+| Server-side fetch helper | See § 74 below |
 
 ---
 
-# 75. Environment Variables
+# 74. Server-side Fetch Helper
 
-## t3-env Setup
-
-Use t3-env **when** this project has env validation needs. If the project has no such need, this section does not apply — the rules are optional.
-
-<!-- snippet:nextjs-env -->
-```typescript
-// src/env.ts
-import { createEnv } from '@t3-oss/env-nextjs'
-import { z } from 'zod'
-
-export const env = createEnv({
-  server: {
-    DATABASE_URL: z.string().url(),
-    JWT_SECRET: z.string().min(32),
-    SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
-  },
-  client: {
-    NEXT_PUBLIC_SUPABASE_URL: z.string().url().optional(),
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().optional(),
-    NEXT_PUBLIC_API_URL: z.string().url().optional(),
-  },
-  runtimeEnv: {
-    DATABASE_URL: process.env.DATABASE_URL,
-    JWT_SECRET: process.env.JWT_SECRET,
-    SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
-    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
-  },
-})
-```
-
-Import everywhere: `import { env } from '@/env'`. Build fails if a required variable is missing.
-
----
-
-# 76. URL State Management (nuqs)
-
-Use nuqs **when** this project has URL state (filters, search, pagination, tabs) that belongs in the URL. If the project has no such need, this section does not apply — the rules are optional.
+Shared `fetch` helper for Server Components reading from an external HTTP API (e.g. Spring Boot).
 
 ```typescript
-'use client'
-import { useQueryState, parseAsInteger, parseAsString } from 'nuqs'
-
-export function UserFilters() {
-  const [search, setSearch] = useQueryState('search', parseAsString.withDefault(''))
-  const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
-  const [role, setRole] = useQueryState('role', parseAsString)
-
-  return (
-    <div>
-      <input value={search} onChange={(e) => setSearch(e.target.value)} />
-      {/* URL updates automatically: /users?search=john&page=2&role=ADMIN */}
-    </div>
-  )
-}
-```
-
-### Zustand vs nuqs Decision
-
-```text
-nuqs (URL):       search, pagination (page/limit), active filters, selected tab that should survive refresh, anything shareable via URL
-Zustand (memory): modal open/close, sidebar state, wizard steps, anything that should reset on page refresh
-```
-
----
-
-# 77. Server Actions (next-safe-action)
-
-```typescript
-// features/users/actions/createUser.action.ts
-'use server'
-import { action } from '@/lib/safe-action'
-import { createUserSchema } from '@/features/users/schemas/user.schema'
-
-export const createUserAction = action
-  .schema(createUserSchema)
-  .action(async ({ parsedInput: { name, email, password } }) => {
-    // Input is already validated by Zod
-    const user = await userService.create({ name, email, password })
-    revalidatePath('/users')
-    return { user }
-  })
-```
-
-```typescript
-// lib/safe-action.ts
-import { createSafeActionClient } from 'next-safe-action'
-
-export const action = createSafeActionClient()
-
-// With auth:
-export const authAction = createSafeActionClient({
-  async middleware() {
-    const user = await getCurrentUser()
-    if (!user) throw new Error('UNAUTHORIZED')
-    return { user }
-  },
-})
-```
-
----
-
-# 78. Dark Mode (next-themes)
-
-```typescript
-// app/providers.tsx
-'use client'
-import { ThemeProvider } from 'next-themes'
-
-export function Providers({ children }: { children: React.ReactNode }) {
-  return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      {children}
-    </ThemeProvider>
-  )
-}
-```
-
-```typescript
-// components/ui/ThemeToggle.tsx
-'use client'
-import { useTheme } from 'next-themes'
-
-export function ThemeToggle() {
-  const { theme, setTheme } = useTheme()
-  return (
-    <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
-      Toggle theme
-    </button>
-  )
-}
-```
-
-Tailwind: `darkMode: 'class'` (controlled by next-themes):
-
-```typescript
-// tailwind.config.ts
-export default {
-  darkMode: 'class',
-}
-```
-
----
-
-# 79. Agent Quick Reference (Extended)
-
-```text
-New client state (UI)?            → Zustand store in src/stores/[name]Store.ts
-New server data fetch (client)?   → TanStack Query hook in features/[name]/hooks/
-                                  → Cache key: [resource] or [resource, id]
-New server data fetch (server)?   → Direct query in async server component, no TanStack Query
-New form?                         → Zod schema first in features/[name]/schemas/
-                                  → React Hook Form + zodResolver
-                                  → Validate on server too (server action re-validates)
-New server action?                → next-safe-action with schema
-                                  → features/[name]/actions/[name].action.ts
-                                  → Call revalidatePath after mutation
-New env variable?                 → Add to src/env.ts (t3-env)
-                                  → Add to .env.example with comment
-                                  → Server-only → server: {}; client-safe → client: {} with NEXT_PUBLIC_
-URL-based filter/search/pagination? → nuqs useQueryState
-Dark mode?                        → next-themes ThemeProvider in app/providers.tsx
-                                  → Tailwind darkMode: 'class'
-                                  → Toggle via useTheme()
-```
-
----
-
-# 80. Server-side Fetch Helper
-
-Shared `fetch` helper for Server Components that read from an external HTTP API (e.g. Spring Boot).
-
-```typescript
-// lib/fetch.ts
+// src/lib/fetch.ts
 import 'server-only'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8080'
@@ -1462,10 +1154,7 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
 
   try {
     response = await fetch(`${API_URL}${path}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(init?.headers ?? {}),
-      },
+      headers: { 'Content-Type': 'application/json', ...(init?.headers ?? {}) },
       next: { revalidate: 0 },
       ...init,
     })
@@ -1489,20 +1178,7 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
 
 ### Rules
 
-- **Server Components only.** Never import `lib/fetch.ts` from a Client Component — secrets and cookies belong on the server.
-- **Redirect on 401** in the caller, never in the helper — the helper only throws structured errors.
-- **Map status → error.code** so callers route on `error.code`, not `error.message`.
-- **No caching by default** (`revalidate: 0`) unless the endpoint is static — override per call when safe.
-- **Fall back to a host override** so local dev (`localhost:8080`) and Docker (`http://backend:8080`) both work.
-
-### Agent Quick Reference
-
-```text
-Server Component needs data from Spring Boot?
-  → await apiFetch<T>('/api/v1/users')
-  → See stack/nextjs.md § 80 Server-side Fetch Helper
-
-Spring Boot returns an error?
-  → apiFetch throws { status, code, message }
-  → Route on error.code — see universal/error-handling.md
-```
+- **Server Components only.** Never import `lib/fetch.ts` from a Client Component.
+- **Redirect on 401** in the caller — the helper only throws structured errors.
+- **Route on `error.code`**, never `error.message` — codes are stable.
+- **No caching by default** (`revalidate: 0`) — override per call when safe.
