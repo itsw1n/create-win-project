@@ -1,0 +1,17 @@
+# =============================================================================
+# docker-compose.yml — create-win-project CLI (clone & run, no host Node)
+# Usage:
+#   docker compose run --rm app              # interactive interview
+#   docker compose run --rm app npm test     # tests without host Node
+#   docker compose run --rm --entrypoint sh app  # shell
+# =============================================================================
+services:
+  app:
+    build: .
+    image: create-win-project:dev
+    stdin_open: true
+    tty: true
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - ./.demo:/app/.demo

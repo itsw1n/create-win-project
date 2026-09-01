@@ -47,3 +47,33 @@ audit: ## Full audit — identity checks and hardcoded prefixes across all lib/ 
 .PHONY: templates
 templates: ## List all template files
 	@find templates/ -type f | sort 2>/dev/null || echo "  No templates/ folder found"
+
+# =============================================================================
+# Docker — clone & run without host Node (CI-aligned: node:20-alpine)
+# =============================================================================
+
+.PHONY: docker-build
+docker-build: ## Build Docker image (no host Node needed)
+	@docker build -t create-win-project:dev .
+
+.PHONY: docker-run
+docker-run: ## Run CLI in Docker (interactive)
+	@docker compose run --rm app
+
+.PHONY: docker-demo
+docker-demo: ## Run CLI in Docker, output to .demo/
+	@mkdir -p .demo
+	@docker compose run --rm app
+
+.PHONY: docker-test
+docker-test: ## Run tests in Docker (no host Node needed)
+	@docker compose run --rm --entrypoint npm app test
+
+.PHONY: docker-shell
+docker-shell: ## Shell into Docker container
+	@docker compose run --rm --entrypoint sh app
+
+.PHONY: docker-clean
+docker-clean: ## Remove Docker image and .demo/
+	@docker rmi create-win-project:dev 2>/dev/null || true
+	@rm -rf .demo
