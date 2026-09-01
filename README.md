@@ -35,8 +35,26 @@ The result: new contributors (human *and* agent) get guardrails from minute one,
 
 ## Quick start
 
+### Option A — No host Node (Docker, zero conflict)
+
+```bash
+git clone https://github.com/itsw1n/create-win-project && cd create-win-project
+make docker-build   # or: docker compose build
+make docker-run     # or: docker compose run --rm app
+# tests without host Node
+make docker-test    # or: docker compose run --rm --entrypoint npm app test
+```
+
+Requires only Docker + Compose (no `node`/`npm` on host). Image is CI-aligned `node:20-alpine`.
+See `make help` for all Docker targets (`docker-demo`, `docker-shell`, `docker-clean`).
+
+### Option B — Host Node
+
 ```bash
 npx create-win-project
+# or from source
+npm install && npm test
+node index.js
 ```
 
 Answer a few questions (project name, frontend, backend, styling, extras) and a ready-to-run project appears in `./<your-project>`.
