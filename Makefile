@@ -1,79 +1,57 @@
 # =============================================================================
-# Makefile — create-win-project CLI
+# Makefile — create-win-project CLI (fully dockerized, no host Node needed)
+# Image is CI-aligned: node:20-alpine
+# All commands run inside Docker via `docker compose run`
 # =============================================================================
 
-# Variables
-NODE := node
+IMAGE   := create-win-project:dev
+COMPOSE := docker compose
 
 .DEFAULT_GOAL := help
 
+# ─── Help — grouped by ##@ category ──────────────────────────────────────────
 .PHONY: help
-help: ## Show all available commands
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
-		| awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+help: ## Show all available commands (grouped)
+	@awk 'BEGIN {FS=":.*##"} /^##@/ {printf "\n\033[1m%s\033[0m\n", substr($$0,5); next} /^[a-zA-Z0-9_.-]+:.*##/ {printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+
+##@ Core (Docker - no host Node needed)
+
+.PHONY: build
+build: ## Build Docker image
+	@docker build -t $(IMAGE) .
 
 .PHONY: run
-run: ## Run the CLI
-	@$(NODE) index.js
+run: ## Run the CLI (interactive)
+	@$(COMPOSE) run --rm app
 
 .PHONY: demo
-demo: ## Run the CLI in .demo/ for testing (project lands in .demo/<project name>)
+demo: ## Run the CLI to .demo/ for testing
 	@mkdir -p .demo
-	@cd .demo && $(NODE) ../index.js
+	@$(COMPOSE) run --rm app
 
-.PHONY: clean
-clean: ## Delete all generated demo projects (.demo/)
-	@rm -rf .demo
 .PHONY: test
 test: ## Run all tests
-	@npx vitest run
+	@$(COMPOSE) run --rm --entrypoint npm app test
 
-.PHONY: fix-templates
-fix-templates: ## Audit files.js for remaining isXxx identity checks
-	@echo "Remaining identity checks in lib/files.js:"
-	@grep -n "isNextjs\|isReact\|isSpringBoot\|isSupabase\|isPrisma" lib/files.js \
-		|| echo "  None found ✓"
+.PHONY: shell
+shell: ## Open shell inside container
+	@$(COMPOSE) run --rm --entrypoint sh app
+
+.PHONY: clean
+clean: ## Remove .demo/ and Docker image
+	@docker rmi $(IMAGE) 2>/dev/null || true
+	@rm -rf .demo
+
+##@ Checks (all inside Docker)
 
 .PHONY: audit
-audit: ## Full audit — identity checks and hardcoded prefixes across all lib/ files
-	@echo "=== Identity checks in lib/ ==="
-	@grep -rn "isNextjs\|isReact\|isSpringBoot\|isSupabase\|isPrisma" lib/ \
-		|| echo "  None found ✓"
-	@echo ""
-	@echo "=== Hardcoded env prefixes in lib/ ==="
-	@grep -rn "NEXT_PUBLIC_\|VITE_\|EXPO_PUBLIC_" lib/ \
-		|| echo "  None found ✓"
+audit: ## Audit lib/ for identity checks and hardcoded env prefixes
+	@$(COMPOSE) run --rm --entrypoint sh app -c 'echo "=== Identity checks in lib/ ==="; grep -rn "isNextjs\|isReact\|isSpringBoot\|isSupabase\|isPrisma" lib/ || echo "  None found ✓"; echo ""; echo "=== Hardcoded env prefixes in lib/ ==="; grep -rn "NEXT_PUBLIC_\|VITE_\|EXPO_PUBLIC_" lib/ || echo "  None found ✓"'
+
+.PHONY: fix-templates
+fix-templates: ## Check lib/files.js for leftover identity checks
+	@$(COMPOSE) run --rm --entrypoint sh app -c 'echo "Remaining identity checks in lib/files.js:"; grep -n "isNextjs\|isReact\|isSpringBoot\|isSupabase\|isPrisma" lib/files.js || echo "  None found ✓"'
 
 .PHONY: templates
 templates: ## List all template files
-	@find templates/ -type f | sort 2>/dev/null || echo "  No templates/ folder found"
-
-# =============================================================================
-# Docker — clone & run without host Node (CI-aligned: node:20-alpine)
-# =============================================================================
-
-.PHONY: docker-build
-docker-build: ## Build Docker image (no host Node needed)
-	@docker build -t create-win-project:dev .
-
-.PHONY: docker-run
-docker-run: ## Run CLI in Docker (interactive)
-	@docker compose run --rm app
-
-.PHONY: docker-demo
-docker-demo: ## Run CLI in Docker, output to .demo/
-	@mkdir -p .demo
-	@docker compose run --rm app
-
-.PHONY: docker-test
-docker-test: ## Run tests in Docker (no host Node needed)
-	@docker compose run --rm --entrypoint npm app test
-
-.PHONY: docker-shell
-docker-shell: ## Shell into Docker container
-	@docker compose run --rm --entrypoint sh app
-
-.PHONY: docker-clean
-docker-clean: ## Remove Docker image and .demo/
-	@docker rmi create-win-project:dev 2>/dev/null || true
-	@rm -rf .demo
+	@$(COMPOSE) run --rm --entrypoint sh app -c 'find templates/ -type f | sort 2>/dev/null || echo "  No templates/ folder found"'
