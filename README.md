@@ -35,27 +35,18 @@ The result: new contributors (human *and* agent) get guardrails from minute one,
 
 ## Quick start
 
-### Option A — No host Node (Docker, zero conflict)
+Clone and run — no host Node needed (everything is dockerized):
 
 ```bash
 git clone https://github.com/itsw1n/create-win-project && cd create-win-project
-make docker-build   # or: docker compose build
-make docker-run     # or: docker compose run --rm app
-# tests without host Node
-make docker-test    # or: docker compose run --rm --entrypoint npm app test
+make build   # builds node:20-alpine image (CI-aligned)
+make run     # interactive CLI
+make test    # run tests
 ```
 
-Requires only Docker + Compose (no `node`/`npm` on host). Image is CI-aligned `node:20-alpine`.
-See `make help` for all Docker targets (`docker-demo`, `docker-shell`, `docker-clean`).
+All `make` commands run inside Docker — see `make help` for grouped list (`Core`, `Checks`).
 
-### Option B — Host Node
-
-```bash
-npx create-win-project
-# or from source
-npm install && npm test
-node index.js
-```
+If you already have Node 20+, you can still use `npx create-win-project` directly, but `make` always uses Docker for zero conflict.
 
 Answer a few questions (project name, frontend, backend, styling, extras) and a ready-to-run project appears in `./<your-project>`.
 
