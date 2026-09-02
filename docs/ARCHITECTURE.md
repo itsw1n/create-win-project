@@ -1,70 +1,98 @@
 # Architecture
 
-`create-win-project` is an interactive CLI that scaffolds a production-ready web
-app. Its defining property is a **manifest-driven, lean documentation layer** for
-AI coding agents: the generated project ships a small always-on `AGENTS.md` and a
-lazy `RULES.md` index instead of one giant rule file that burns context on every
-prompt.
+`create-win-project` composes a validated project specification into two coordinated outputs:
 
-## Generation flow
+1. a small executable application that establishes the stack's real conventions;
+2. a task-routed documentation layer for humans and coding agents.
 
-1. `index.js` runs an `inquirer` interview (project name, description, frontend,
-   backend, styling, optional extras).
-2. `lib/catalog.js` → `loadCatalog` reads every `playbooks/**/*.manifest.json`;
-   `resolveStack` merges the chosen frontend + backend + styling into a single
-   **stack descriptor** (folders, `deps`, `devDeps`, `env`, `snippets`, `concerns`).
-3. `lib/generator.js` → `generateProject`:
-   - scaffolds the folder tree,
-   - writes root files (`CONTEXT.md`, `AGENTS.md`, `README.md`, `.gitignore`,
-     `.editorconfig`, `.prettierrc`, `package.json`, `.env.example`),
-   - optionally writes `Makefile`, `docker-compose.yml`, and GitHub Actions CI,
-   - copies the selected playbooks (lean) into `playbooks/`,
-   - extracts snippet files (e.g. `src/lib/env.ts`) from playbook markers,
-   - builds `RULES.md` as a lazy index.
-4. `lib/playbooks.js` → `buildRulesIndex` produces a two-group `RULES.md`
-   (**Always-on Invariants** + **Optional Concerns**), each row linking to a
-   `playbooks/<file>#§ N` section.
+Executable behavior, tests, and framework configuration are the source of truth. Playbooks explain and extend that behavior; they must not contradict it.
+
+## Generation pipeline
+
+```text
+CLI interview
+    ↓
+validated answers
+    ↓
+manifest catalog + compatibility resolver
+    ↓
+resolved stack descriptor
+    ├── runnable framework files
+    ├── optional CI / Docker / Makefile files
+    ├── project context and documentation
+    └── selected playbooks + RULES.md router
+    ↓
+generated-project contract tests
+```
+
+### CLI boundary
+
+`index.js` owns interaction and presentation. It gathers project identity, frontend, backend, styling, architecture depth, testing depth, and optional operational tooling. It does not contain stack dependency tables.
+
+`generateProject()` validates the same answers again because it is also an exported programmatic API. A caller cannot bypass destination-name, Java-package, or testing-profile validation by skipping the CLI.
+
+### Catalog and resolution
+
+`lib/catalog.js` loads co-located `*.manifest.json` files, validates their basic schema, checks compatibility, and merges selected capabilities into one stack descriptor.
+
+Manifests declare:
+
+- identity and compatibility (`id`, `kind`, `appliesTo`);
+- dependencies and scripts;
+- semantic environment names and which ones are client-visible;
+- folders and optional templates;
+- constraints shown to the agent;
+- concerns and their playbook sections.
+
+Client environment variables are semantic in manifests (`API_URL`) and receive exactly one framework prefix during resolution (`NEXT_PUBLIC_API_URL`, `VITE_API_URL`, or `EXPO_PUBLIC_API_URL`). Public prefixes always mean the value is shipped to the client.
+
+### Runnable scaffold
+
+`lib/scaffold.js` owns the minimum executable vertical slice:
+
+- Next.js: App Router page/layout, health route, strict TypeScript, flat ESLint config, tests, optional Playwright, security headers, and Supabase SSR plumbing when selected.
+- React + Vite: real `frontend/` workspace, entry point, Vite/TypeScript/ESLint/test configuration, and optional Supabase client.
+- Expo: Expo Router entry/layout/screen, secure Supabase storage adapter when selected, TypeScript, Jest, and export configuration.
+- Spring Boot: Maven application, deny-by-default Spring Security configuration, public health endpoint, PostgreSQL/Flyway configuration, MVC test, and executable JAR packaging.
+
+This module intentionally generates a small working example. Domain-specific features are added after product context is known; the generator does not invent business entities.
+
+### Repository and operational files
+
+`lib/generator.js` coordinates writes and refuses to merge into a non-empty destination. It adds documentation, selected playbooks, CI, Docker, Makefile, environment examples, and repository conventions around the runnable foundation.
+
+The first `npm install` creates the lockfile. Generated CI uses `npm ci`, so the lockfile must be committed before CI is enabled.
 
 ## Documentation model
 
-| File | Role |
-|------|------|
-| `AGENTS.md` | Small, always loaded. Tells the agent *where the rules live*. |
-| `RULES.md` | Lazy index — `concern → playbook §`. Read only the section you touch. |
-| `playbooks/` | The rule content (lean copies shipped into the project). |
-| `CONTEXT.md` | Project context + any advisory "expected concerns". |
+| File | Responsibility |
+|------|----------------|
+| `AGENTS.md` | Small always-on command, workflow, safety, and definition-of-done contract. |
+| `CONTEXT.md` | Product goals, boundaries, decisions, and project-specific facts. |
+| `RULES.md` | Generated concern-to-playbook section router. |
+| `playbooks/` | Reusable standards, recipes, rationale, and stack guidance. |
+| `docs/` | Documentation for the generated product, not generic framework teaching. |
 
-Verbose full playbooks are kept outside the repo (e.g. `~/Documents/*.full.md`)
-so the shipped copies stay token-friendly.
+Manifest section names are checked against Markdown headings. Numbered headings are normalized for matching, and generated contract tests reject unresolved `RULES.md` entries.
 
-## Stacks, backends, styling
+## Testing strategy
 
-- **Frontends:** Next.js (App Router), React + Vite, Spring Boot
-- **Backends:** Supabase, PostgreSQL, Spring Boot, or none
-- **Styling:** Tailwind CSS, CSS Modules
+The generator itself has three verification levels:
 
-Optional concerns (validation/Zod, data fetching, state, env validation, URL
-state, forms) are listed in `RULES.md` but **never mandated** — an advisory
-interview prompt only annotates `CONTEXT.md`.
+1. unit tests for catalog composition and template rendering;
+2. an eight-combination generated-output matrix that checks required files, environment naming, playbook routing, testing profiles, and overwrite safety;
+3. periodic install/build smoke checks that execute each generated stack's own validation commands.
 
-## Extending
+Canonical Markdown code examples should progressively move into extracted fixtures so examples compile against the versions they teach.
 
-Add a stack, backend, or concern by dropping a `*.manifest.json` describing:
+## Extension workflow
 
-```jsonc
-{
-  "id": "nextjs",
-  "kind": "frontend",
-  "label": "Next.js",
-  "appliesTo": { "backend": ["supabase", "springboot", "postgresql"] },
-  "folders": ["src/app", "src/features"],
-  "deps": { "next": "^15", "react": "^19" },
-  "env": ["NEXT_PUBLIC_API_URL"],
-  "concerns": [
-    { "id": "validation", "required": false, "when": "runtime validation needed",
-      "sections": ["Zod for Runtime Validation"] }
-  ]
-}
-```
+When adding a stack or capability:
 
-No code changes are required — the catalog drives everything.
+1. Add or update its manifest and playbook.
+2. Add the smallest runnable files needed in `lib/scaffold.js` or a focused scaffold module.
+3. Add the combination to the generated-output matrix.
+4. Run install, lint/typecheck, tests, and production build for the new fixture.
+5. Update this architecture document if ownership or the generation pipeline changed.
+
+Do not advertise a capability solely because a playbook mentions it. A generated capability must have executable configuration and contract coverage.

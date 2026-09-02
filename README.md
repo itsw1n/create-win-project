@@ -1,6 +1,6 @@
 # create-win-project
 
-> Production-ready project scaffolding for AI-assisted teams. Generate a Next.js / React / Spring Boot app that ships with a **lean, manifest-driven `AGENTS.md`**, a **lazy `RULES.md`**, and a curated set of engineering playbooks — so your coding agent knows the rules without burning context on a 3,000-line doc.
+> Runnable project scaffolding for AI-assisted teams. Generate a tested Next.js, React/Vite, Expo, or Spring Boot foundation with a small `AGENTS.md`, task-routed `RULES.md`, and curated engineering playbooks.
 
 [![CI](https://github.com/itsw1n/create-win-project/actions/workflows/ci.yml/badge.svg)](https://github.com/itsw1n/create-win-project/actions/workflows/ci.yml)
 [![Node](https://img.shields.io/badge/node-20%2B-green)](https://nodejs.org)
@@ -12,7 +12,7 @@
 
 ## About
 
-`create-win-project` is a scaffolding CLI that turns a short interview into a complete, opinionated project — folders, `package.json`, env template, CI, Docker, and a documentation layer your AI coding agent can actually use.
+`create-win-project` turns a short interview into a small working application—not merely an empty folder tree. Generated stacks include framework source, configuration, environment examples, tests, CI, optional Docker support, and guidance an agent can route by task.
 
 Most scaffolds dump a giant `CLAUDE.md`/`AGENTS.md` that eats tokens on every prompt. This tool does the opposite:
 
@@ -24,13 +24,15 @@ The result: new contributors (human *and* agent) get guardrails from minute one,
 
 ## Features
 
-- **Three stacks** — Next.js (App Router), React + Vite, Spring Boot.
+- **Three frontend families** — Next.js App Router, React + Vite, and React Native with Expo Router.
 - **Backends** — Supabase, PostgreSQL, Spring Boot, or none.
 - **Styling** — Tailwind CSS or CSS Modules.
 - **Lean agent docs** — `AGENTS.md` (always on) + `RULES.md` (lazy index) generated for every project.
-- **Manifest-driven** — 20 `*.manifest.json` files drive folders, dependencies, env vars, snippets, and concern wiring. No hardcoded tables.
+- **Manifest-driven composition** — co-located `*.manifest.json` files drive compatibility, dependencies, environment variables, and concern wiring; focused scaffold code owns executable framework files.
 - **Optional concerns, never mandated** — validation/Zod, data fetching, state, env validation, URL state, and forms are listed but never forced; an advisory prompt only annotates `CONTEXT.md`.
-- **Real plumbing** — `package.json`, `.env.example`, and `src/lib/env.ts` are generated from manifest fields.
+- **Runnable foundations** — real entry points, TypeScript/lint/test/build configuration, health endpoints, and Spring Boot packaging.
+- **Authentication baseline** — Supabase SSR projects generate browser/server clients, Proxy session refresh, and the PKCE callback route.
+- **Safety checks** — non-empty destinations are never silently overwritten; manifest and generated-output contracts are tested.
 - **Optional extras** — Makefile, Docker Compose, and GitHub Actions CI, toggled by the interview.
 
 ## Quick start
@@ -48,14 +50,21 @@ All `make` commands run inside Docker — see `make help` for grouped list (`Cor
 
 If you already have Node 20+, you can still use `npx create-win-project` directly, but `make` always uses Docker for zero conflict.
 
-Answer a few questions (project name, frontend, backend, styling, extras) and a ready-to-run project appears in `./<your-project>`.
+Answer a few questions and a ready-to-install project appears in `./<your-project>`.
 
 ```bash
-# then, inside the new project
+# Next.js or Expo
 cd your-project
 npm install
 npm run dev
+
+# React + Vite uses its frontend workspace
+cd your-project/frontend
+npm install
+npm run dev
 ```
+
+The generated `README.md` and `docs/guides/setup.md` contain the exact commands for the selected backend, environment file, and optional Docker services.
 
 ## What you get
 
@@ -67,7 +76,7 @@ npm run dev
 | `playbooks/` | The curated rule playbooks (shipped lean). |
 | `package.json` | Generated from the selected stack's manifest. |
 | `.env.example` | Generated from the stack's declared env vars. |
-| `src/lib/env.ts` | Typed env access, extracted from the env playbook snippet. |
+| Framework source/config | A working page or screen, health endpoint where applicable, strict TypeScript, lint, tests, and build scripts. |
 | `Makefile` / `docker-compose.yml` / `.github/workflows` | Optional, interview-toggled. |
 
 ## How it works
@@ -80,17 +89,18 @@ The generator never hardcodes the folder or playbook list. It loads `playbooks/*
   "id": "nextjs",
   "kind": "frontend",
   "label": "Next.js",
-  "appliesTo": { "backend": ["supabase", "springboot", "postgresql"] },
+  "appliesTo": { "backend": ["supabase", "springboot", "postgres"] },
   "folders": ["src/app", "src/components/ui", "src/features"],
-  "deps": { "next": "^15", "react": "^19", "react-dom": "^19" },
-  "env": ["NEXT_PUBLIC_API_URL"],
+  "deps": { "next": "^16.3.4", "react": "^19.2.8", "react-dom": "^19.2.8" },
+  "env": [],
+  "clientEnv": [],
   "concerns": [
     { "id": "validation", "required": false, "when": "runtime validation needed", "sections": ["Zod for Runtime Validation"] }
   ]
 }
 ```
 
-Add a new stack or concern by dropping a manifest — no code changes required.
+Add a policy-only concern with a manifest and playbook. A new executable stack also needs a focused scaffold implementation and a generated-project contract test; this prevents documentation from advertising code that does not exist.
 
 ## Topics
 
