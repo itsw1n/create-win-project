@@ -59,9 +59,11 @@ describe('resolveStack — env prefix', () => {
     const catalog = await loadCatalog(path.join(root, 'playbooks'))
     const stack   = resolveStack({ frontend: 'nextjs', backend: 'supabase', styling: 'tailwind', architecture: 'medium' }, catalog)
     expect(stack.env.some((e) => e.startsWith('NEXT_PUBLIC_'))).toBe(true)
-    // server-only key should NOT get a prefix
-    expect(stack.env).toContain('SUPABASE_SERVICE_ROLE_KEY')
-    expect(stack.env).not.toContain('NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY')
+    // privileged keys are opt-in and are not scaffolded into a normal app
+    expect(stack.env).not.toContain('SUPABASE_SECRET_KEY')
+    expect(stack.env).not.toContain('NEXT_PUBLIC_SUPABASE_SECRET_KEY')
+    expect(stack.env).toContain('NEXT_PUBLIC_SUPABASE_URL')
+    expect(stack.env).not.toContain('NEXT_PUBLIC_NEXT_PUBLIC_API_URL')
   })
 
   it('applies EXPO_PUBLIC_ prefix to react-native client env vars', async () => {
@@ -96,7 +98,7 @@ describe('resolveStack — capability flags', () => {
     expect(stack.platform).toBe('mobile')
     expect(stack.isMobile).toBe(true)
     expect(stack.ciTemplate).toBe('expo')
-    expect(stack.styleId).toBe('nativewind')
+    expect(stack.styleId).toBe('native-styles')
     expect(stack.playbooks).toContain('stack/react-native.md')
   })
 
@@ -118,13 +120,14 @@ describe('resolveStack — capability flags', () => {
 })
 
 describe('resolveStack — concerns', () => {
-  it('react-native concerns include required: tanstack-query, nativewind, navigation', async () => {
+  it('react-native keeps only platform foundations required', async () => {
     const catalog    = await loadCatalog(path.join(root, 'playbooks'))
     const stack      = resolveStack({ frontend: 'react-native', backend: 'supabase' }, catalog)
     const reqIds     = stack.concerns.filter((c) => c.required).map((c) => c.id)
-    expect(reqIds).toContain('query')
     expect(reqIds).toContain('styling')
     expect(reqIds).toContain('navigation')
+    expect(reqIds).not.toContain('query')
+    expect(reqIds).not.toContain('http-client')
   })
 
   it('react-native concerns point to concerns/ playbooks for shared concerns', async () => {
