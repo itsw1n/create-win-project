@@ -1,312 +1,55 @@
-# DevOps: Docker
+# Docker
 
----
+Generated Docker files are executable configuration, not tutorial samples. Keep this playbook focused on decisions the files cannot express by themselves.
 
 ## Core Rules
-- NEVER hardcode secrets in docker-compose files — always use environment variables
-- Dev compose: source mounts for hot reload
-- Prod compose: no mounts, pre-built images only
-- Always define healthcheck on DB service
-- depends_on with condition: service_healthy for backend
-- Named volumes always — never anonymous
-- Named networks always — one per project
-- restart: always in prod only — never in dev
 
----
+- Pin major runtime versions and use small trusted base images.
+- Copy dependency descriptors before application source so dependency layers remain cacheable.
+- Use a non-root runtime user when the framework image and deployment permit it.
+- Keep credentials out of images, build arguments, repository files, and Compose defaults. Inject them at runtime through the deployment platform.
+- Add `.dockerignore` files for dependencies, build output, secrets, IDE files, and VCS metadata.
+- Make health checks call a real application endpoint and distinguish readiness from liveness when the orchestrator supports both.
+- Scan the final image and update deliberately; do not hide known findings by disabling scanners.
 
 ## Dev vs Prod Differences
-| Concern           | Dev                          | Prod                          |
-|-------------------|------------------------------|-------------------------------|
-| Frontend          | Vite dev server (hot reload) | nginx serving static build    |
-| Backend (Java)    | Maven wrapper (mvnw)         | Compiled JAR                  |
-| Source mounts     | Yes                          | No                            |
-| Volume mounts     | Source code                  | Data only                     |
-| Restart policy    | No                           | always                        |
-| Debug ports       | Optional                     | Never                         |
-| Env vars          | From .env file               | From environment / secrets    |
 
----
+| Concern | Development | Production |
+|---|---|---|
+| Source | bind-mounted for fast feedback | copied into an immutable image |
+| Command | framework/Maven dev server | optimized server or executable JAR |
+| Dependencies | development dependencies available | runtime-only stage where practical |
+| Ports | exposed for local access | published by the deployment platform |
+| Credentials | local uncommitted environment | managed secret store |
+| Restart | developer-controlled | orchestrator policy |
 
-## docker-compose.yml (Dev)
-```yaml
-# docker-compose.yml — React + Spring Boot (Dev)
-services:
-
-  frontend:
-    container_name: ${PROJECT_NAME}-frontend
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.dev
-    ports:
-      - "5173:5173"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    environment:
-      - VITE_API_URL=${VITE_API_URL}
-    depends_on:
-      - backend
-    networks:
-      - app-network
-
-  backend:
-    container_name: ${PROJECT_NAME}-backend
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.dev
-    ports:
-      - "8080:8080"
-    volumes:
-      - ./backend:/app
-      - maven-cache:/root/.m2
-    environment:
-      - SPRING_PROFILES_ACTIVE=dev
-      - DATABASE_URL=${DATABASE_URL}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - JWT_SECRET=${JWT_SECRET}
-      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
-    depends_on:
-      db:
-        condition: service_healthy
-    networks:
-      - app-network
-
-  db:
-    container_name: ${PROJECT_NAME}-db
-    image: postgres:16-alpine
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-volumes:
-  postgres-data:
-    name: ${PROJECT_NAME}-postgres-data
-  maven-cache:
-    name: ${PROJECT_NAME}-maven-cache
-
-networks:
-  app-network:
-    name: ${PROJECT_NAME}-network
-```
-
----
-
-## docker-compose.prod.yml (Prod)
-```yaml
-# docker-compose.prod.yml — React + Spring Boot (Prod)
-services:
-
-  frontend:
-    container_name: ${PROJECT_NAME}-frontend-prod
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-      target: production
-    ports:
-      - "80:80"
-    environment:
-      - VITE_API_URL=${VITE_API_URL}
-    depends_on:
-      - backend
-    networks:
-      - app-network
-    restart: always
-
-  backend:
-    container_name: ${PROJECT_NAME}-backend-prod
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-      target: production
-    ports:
-      - "8080:8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=prod
-      - DATABASE_URL=${DATABASE_URL}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - JWT_SECRET=${JWT_SECRET}
-      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
-      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN:-900000}
-      - JWT_REFRESH_EXPIRES=${JWT_REFRESH_EXPIRES:-604800000}
-    depends_on:
-      db:
-        condition: service_healthy
-    networks:
-      - app-network
-    restart: always
-
-  db:
-    container_name: ${PROJECT_NAME}-db-prod
-    image: postgres:16-alpine
-    environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
-    volumes:
-      - postgres-data-prod:/var/lib/postgresql/data
-    networks:
-      - app-network
-    restart: always
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-volumes:
-  postgres-data-prod:
-    name: ${PROJECT_NAME}-postgres-data-prod
-
-networks:
-  app-network:
-    name: ${PROJECT_NAME}-network-prod
-```
-
----
+Do not deploy the development Compose file. Production needs explicit TLS termination, secret delivery, persistence/backup, resource limits, logging, probes, and rollout policy.
 
 ## Dockerfiles
 
-### Frontend Dev
-```dockerfile
-# frontend/Dockerfile.dev
-FROM node:20-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-EXPOSE 5173
-CMD ["npm", "run", "dev", "--", "--host"]
+The generated templates use multi-stage production builds:
+
+- Next.js builds standalone output, then copies only the standalone server, static assets, and public files.
+- Vite builds static assets, then serves them behind nginx with SPA fallback.
+- Spring Boot builds with Maven and runs the executable JAR on a JRE image.
+
+When editing a Dockerfile, verify both the image build and the container's real health endpoint. A successful compile alone does not prove the runtime stage contains all required files.
+
+## Compose Boundaries
+
+- `depends_on` controls startup ordering, not application readiness; use health conditions where a dependency must be ready.
+- Use named volumes only for data that must persist. Never mount source into a production container.
+- Bind databases to localhost in local development unless another host genuinely needs access.
+- Keep frontend-public values separate from backend secrets. Public framework prefixes remain public inside containers.
+- For managed Supabase, Compose should run the application client; it should not pretend a full Supabase platform exists locally unless the Supabase CLI owns that environment.
+
+## Verification
+
+```bash
+docker compose config
+docker compose build
+docker compose up
+docker compose ps
 ```
 
-### Frontend Prod (multi-stage)
-```dockerfile
-# frontend/Dockerfile
-FROM node:20-alpine AS builder
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN npm run build
-
-FROM nginx:alpine AS production
-COPY --from=builder /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
-```
-
-### nginx.conf (Frontend Prod)
-```nginx
-server {
-  listen 80;
-
-  location / {
-    root /usr/share/nginx/html;
-    index index.html;
-    try_files $uri $uri/ /index.html;   # SPA routing
-  }
-}
-```
-
-### Backend Dev
-```dockerfile
-# backend/Dockerfile.dev
-FROM eclipse-temurin:21-jdk-alpine
-WORKDIR /app
-COPY . .
-EXPOSE 8080
-CMD ["./mvnw", "spring-boot:run"]
-```
-
-### Backend Prod (multi-stage)
-```dockerfile
-# backend/Dockerfile
-FROM eclipse-temurin:21-jdk-alpine AS builder
-WORKDIR /app
-COPY . .
-RUN ./mvnw package -DskipTests
-
-FROM eclipse-temurin:21-jre-alpine AS production
-WORKDIR /app
-COPY --from=builder /app/target/*.jar app.jar
-EXPOSE 8080
-CMD ["java", "-jar", "app.jar"]
-```
-
----
-
-## Port Conventions
-| Service       | Dev Port | Prod Port |
-|---------------|----------|-----------|
-| Frontend      | 5173     | 80        |
-| Backend API   | 8080     | 8080      |
-| PostgreSQL    | 5432     | 5432      |
-| Next.js       | 3000     | 80        |
-
----
-
-## .dockerignore
-```
-# Frontend
-node_modules
-dist
-.env
-.env.local
-
-# Backend
-target
-.mvn
-*.iml
-.env
-
-# General
-.git
-.gitignore
-README.md
-docs
-*.md
-```
-
----
-
-## Agent Rules
-```
-New service in compose?
-  → Add healthcheck if it has dependencies
-  → Add depends_on with condition: service_healthy
-  → Use named volume (never anonymous)
-  → Use named network
-  → No restart policy in dev, restart: always in prod
-
-New environment variable?
-  → NEVER hardcode in compose file
-  → Reference as ${VARIABLE_NAME}
-  → Add to .env.example with comment
-
-Prod compose?
-  → No volume mounts for source code
-  → Use Dockerfile target: production
-  → All restart: always
-
-Dev Dockerfile?
-  → Hot reload via volume mount
-  → CMD should start dev server
-
-Prod Dockerfile?
-  → Multi-stage: build → runtime
-  → Minimal final image (alpine/jre not jdk)
-  → No source code in final image
-```
+Then call the application health endpoint and exercise one real request across service boundaries. Inspect logs for secret leakage before considering the container setup complete.
