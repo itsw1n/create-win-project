@@ -67,12 +67,20 @@ CREATE TABLE users (
 -- V2__create_refresh_tokens_table.sql
 CREATE TABLE refresh_tokens (
   id          VARCHAR(36)  PRIMARY KEY,
-  token       TEXT         NOT NULL UNIQUE,
+  token_hash  VARCHAR(255) NOT NULL UNIQUE,
+  family_id   VARCHAR(36)  NOT NULL,
   user_id     VARCHAR(36)  NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   expires_at  TIMESTAMP    NOT NULL,
+  used_at     TIMESTAMP,
+  revoked_at  TIMESTAMP,
   created_at  TIMESTAMP    NOT NULL DEFAULT NOW()
 );
 ```
+
+Never store a raw refresh token. Rotate tokens atomically, and revoke the token
+family when an already-used token is presented. Prefer server-managed sessions
+or a maintained identity provider unless bearer refresh tokens are an explicit
+architecture requirement.
 
 ## Spring Boot Config
 ```yaml
