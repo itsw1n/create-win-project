@@ -6,8 +6,12 @@
   "required": true,
   "makefileTemplate": "supabase",
   "folders": ["supabase/migrations"],
-  "env": ["SUPABASE_URL", "SUPABASE_ANON_KEY", "SUPABASE_SERVICE_ROLE_KEY"],
-  "clientEnv": ["SUPABASE_URL", "SUPABASE_ANON_KEY"],
+  "deps": {
+    "@supabase/ssr": "^0.12.5",
+    "@supabase/supabase-js": "^2.114.0"
+  },
+  "env": ["SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY"],
+  "clientEnv": ["SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY"],
   "concerns": [
     { "id": "rls", "required": true, "playbook": "database/supabase.md", "sections": ["Row Level Security (RLS)", "Which Client to Use"] },
     { "id": "auth", "required": true, "playbook": "database/supabase.md", "sections": ["Supabase Auth Patterns"] }
