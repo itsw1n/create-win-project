@@ -14,17 +14,23 @@
   "envPrefix": "NEXT_PUBLIC_",
   "dockerTemplate": "nextjs",
   "agentsTemplate": "nextjs",
-  "readmeTemplate": "nextjs",
   "gitignoreTemplate": "nextjs",
   "folders": [
     "src/app", "src/features", "src/components/ui", "src/components/shared",
     "src/components/layout", "src/lib", "src/stores", "src/hooks", "src/types",
     "src/schemas", "src/constants", "e2e", "public"
   ],
-  "deps": { "next": "^15", "react": "^18", "react-dom": "^18" },
-  "devDeps": { "typescript": "^5", "@types/react": "^18", "@types/node": "^20" },
-  "env": ["NEXT_PUBLIC_API_URL"],
-  "clientEnv": ["NEXT_PUBLIC_API_URL"],
+  "deps": { "next": "^16.3.4", "react": "^19.2.8", "react-dom": "^19.2.8" },
+  "devDeps": {
+    "typescript": "^6.0.3",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@types/node": "^24",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.3.4"
+  },
+  "env": [],
+  "clientEnv": [],
   "constraints": [
     "Server Components default; use client only where browser behavior is required",
     "Medium default: Action → Service → Database; add Repository only when DB access is complex"
@@ -38,6 +44,5 @@
     { "id": "url-state", "required": false, "when": "Filter/search/pagination state belongs in URL", "playbook": "concerns/nuqs.md", "sections": ["Basic Usage"] },
     { "id": "safe-action", "required": false, "when": "Type-safe server actions with auth middleware", "playbook": "concerns/next-safe-action.md", "sections": ["Setup", "Defining an Action"] },
     { "id": "dark-mode", "required": false, "when": "Project needs dark mode toggle", "playbook": "concerns/next-themes.md", "sections": ["Provider Setup"] }
-  ],
-  "snippets": { "src/lib/env.ts": "snippet:nextjs-env" }
+  ]
 }
