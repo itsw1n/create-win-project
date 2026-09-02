@@ -1,25 +1,47 @@
 # AGENTS.md
 
-> **This file is always loaded.** Keep it lean. Rule detail lives in `playbooks/` (lazy `Read`).
-> **Load order per task:** `AGENTS.md` (now) → only the one `playbooks/` § you need. Never read all playbooks eagerly.
+> Small operating contract for agents. Project intent lives in `CONTEXT.md`; task guidance is routed through `RULES.md`.
 
-## Stack Snapshot
+## Project
+
 {{PROJECT_NAME}} — {{PROJECT_DESCRIPTION}}
-Stack: {{STACK}}
-Full snapshot → `CONTEXT.md`.
 
-> **Scaffold flexibility:** This structure is advisory — every folder/file (`src/stores`, `src/hooks`, `e2e/`, `supabase/`, etc.) is optional. Suggest adding a folder/file when its `when` condition applies, or removing it when unused for 2+ features. Don't treat empty `.gitkeep` folders as required.
+- Stack: `{{STACK}}`
+- Platform: `{{PLATFORM}}`
+- Architecture profile: `{{ARCHITECTURE}}`
 
-## Key Constraints (always-on)
+## Commands
+
+- Install: `npm install` initially; use `npm ci` after committing the lockfile.
+- Develop: `npm run dev`
+- Validate: `npm run lint && npm run typecheck && npm run test --if-present && npm run build`
+- End-to-end: `npm run test:e2e --if-present`
+- Spring backend, when present: `cd backend && mvn --batch-mode test`
+
+## Required workflow
+
+1. Read `CONTEXT.md` and inspect neighboring implementation and tests.
+2. Find the concern in `RULES.md`; open only its linked playbook section.
+3. State assumptions when product behavior is ambiguous.
+4. Make the smallest coherent change and add risk-appropriate tests.
+5. Run lint, typecheck, relevant tests, and a production build before completion.
+
+## Always-on constraints
+
 {{CONSTRAINTS}}
 
-## What NOT To Do
-- Never bypass RLS with service role key from client (Supabase)
-- Never put business logic in pages/ or Controller
-- Never merge or open PRs unless explicitly asked
+- Validate untrusted input at the server boundary.
+- Authenticate and authorize separately; enforce authorization near data and side effects.
+- Never expose server secrets through public environment prefixes or client modules.
 
-## How to work
-1. Check `RULES.md` for the concern → playbook § map.
-2. `Read` only that one `playbooks/` § (use offset). Never read all playbooks eagerly.
-3. Follow existing patterns; write tests alongside features.
-4. Commit with: `type(scope): description`.
+## Authority boundaries
+
+- Do not deploy, publish, merge, push, send messages, or modify production data unless explicitly asked.
+- Do not delete user work or weaken tests/security controls to make a check pass.
+
+## Definition of done
+
+- Acceptance behavior works and has appropriate coverage.
+- Validation commands pass, or the exact blocker is reported.
+- Errors do not leak secrets, personal data, or internal details.
+- Relevant architecture, API, and environment documentation is updated.
