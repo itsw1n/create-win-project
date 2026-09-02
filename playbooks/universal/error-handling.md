@@ -71,36 +71,21 @@ export function isAppError(error: unknown): error is AppError {
 
 ---
 
-## Frontend: Axios Interceptor (React + Vite)
+## Frontend: Axios Error Normalization (React + Vite)
 ```typescript
 // lib/axios.ts
 api.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    const original = error.config
-
-    // Auto-refresh on 401
-    if (error.response?.status === 401 && !original._retry) {
-      original._retry = true
-      try {
-        const { accessToken } = await refreshToken()
-        setAccessToken(accessToken)
-        original.headers.Authorization = `Bearer ${accessToken}`
-        return api(original)
-      } catch {
-        clearAuth()
-        window.location.href = '/login'
-        return Promise.reject(error)
-      }
-    }
-
-    // Normalize all errors to AppError
+  (error) => {
+    // Session refresh belongs to the selected authentication adapter, not this
+    // generic interceptor. See universal/security.md for the single-flight,
+    // rotate, retry-once, and refresh-endpoint-exclusion requirements.
     const { code, message } = error.response?.data ?? {}
-    throw new AppError(
+    return Promise.reject(new AppError(
       code ?? 'UNKNOWN_ERROR',
       message ?? 'Something went wrong',
       error.response?.status ?? 500
-    )
+    ))
   }
 )
 ```
@@ -299,8 +284,8 @@ Frontend receives an error?
   → NEVER show raw error message to user
 
 401 received?
-  → Interceptor handles refresh automatically
-  → Component never sees 401 unless refresh also fails
+  → Authentication adapter may refresh once under universal/security.md rules
+  → Generic error interceptor never invents session behavior
 
 Validation error?
   → Backend: @Valid on request DTO, GlobalExceptionHandler catches it
