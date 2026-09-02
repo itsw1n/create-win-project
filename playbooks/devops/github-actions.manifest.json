@@ -5,6 +5,6 @@
   "required": false,
   "folders": [".github/workflows"],
   "concerns": [
-    { "id": "ci", "required": true, "sections": ["Frontend/backend CI"] }
+    { "id": "ci", "required": true, "sections": ["Frontend CI", "Backend CI (Spring Boot)", "Next.js CI"] }
   ]
 }

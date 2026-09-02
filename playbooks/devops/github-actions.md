@@ -1,282 +1,61 @@
-# DevOps: GitHub Actions
+# GitHub Actions CI
 
----
+Generated workflows run the same validation commands documented for local development. Keep CI a reproducible quality boundary, not a second build system.
 
 ## Core Rules
-- Separate workflow per service — frontend and backend never in one file
-- Path filtering — only trigger on relevant folder changes
-- Use npm ci not npm install in CI
-- Backend tests always use real PostgreSQL — never H2
-- All secrets from GitHub Secrets — never hardcoded
-- Always cache dependencies (npm cache, Maven cache)
-- Branch targets: dev and main only
 
----
+- Pin actions to maintained major versions or immutable commits according to the repository's supply-chain policy.
+- Use the lockfile command (`npm ci`) and Maven's batch mode.
+- Grant the workflow and each job the minimum `permissions` required; read-only is the default for validation jobs.
+- Do not expose secrets to pull requests from forks or print environment values during debugging.
+- Cache package downloads, not generated application output that can become stale.
+- Cancel superseded runs on the same pull request when build time becomes significant.
+- Protect the release branch with required checks and review rather than relying on branch names in prose.
 
 ## Frontend CI
-```yaml
-# .github/workflows/ci-frontend.yml
-name: CI — Frontend
 
-on:
-  push:
-    branches: [dev, main]
-    paths:
-      - frontend/**
-  pull_request:
-    branches: [dev, main]
-    paths:
-      - frontend/**
+The generated frontend job performs, in order:
 
-jobs:
-  ci-frontend:
-    name: Lint, Test, Build
-    runs-on: ubuntu-latest
+1. checkout;
+2. runtime setup with lockfile-aware npm caching;
+3. `npm ci`;
+4. lint where configured;
+5. strict typecheck;
+6. selected test level;
+7. production build;
+8. Playwright browser install and end-to-end tests when full testing is selected.
 
-    defaults:
-      run:
-        working-directory: frontend
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: frontend/package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Test
-        run: npm run test
-
-      - name: Build
-        run: npm run build
-        env:
-          VITE_API_URL: http://localhost:8080
-```
+React + Vite commands run from `frontend/`. Next.js and Expo commands run from the repository root. Build-time public values may use CI variables/secrets for convenience, but `NEXT_PUBLIC_`, `VITE_`, and `EXPO_PUBLIC_` values are still publicly bundled and must never be credentials.
 
 ## Backend CI (Spring Boot)
-```yaml
-# .github/workflows/ci-backend.yml
-name: CI — Backend
 
-on:
-  push:
-    branches: [dev, main]
-    paths:
-      - backend/**
-  pull_request:
-    branches: [dev, main]
-    paths:
-      - backend/**
+The generated Spring job runs:
 
-jobs:
-  ci-backend:
-    name: Test, Build
-    runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: backend
-
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: testdb
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Java 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: 21
-          distribution: temurin
-          cache: maven
-
-      - name: Run tests
-        run: ./mvnw test
-        env:
-          SPRING_PROFILES_ACTIVE: test
-          DB_URL: jdbc:postgresql://localhost:5432/testdb
-          DB_USERNAME: postgres
-          DB_PASSWORD: postgres
-          JWT_SECRET: test-secret-value-at-least-32-characters
-          JWT_REFRESH_SECRET: test-refresh-secret-at-least-32-chars
-
-      - name: Build JAR
-        run: ./mvnw package -DskipTests
+```bash
+cd backend
+mvn --batch-mode test
+mvn --batch-mode package -DskipTests
 ```
+
+Unit/MVC tests use the generated H2 test configuration and do not need invented JWT credentials or a PostgreSQL service. Add a PostgreSQL service only when a real integration-test profile exercises PostgreSQL-specific behavior; use the same `DATABASE_URL`, `POSTGRES_USER`, and `POSTGRES_PASSWORD` contract as application configuration.
 
 ## Next.js CI
-```yaml
-# .github/workflows/ci-nextjs.yml
-name: CI — Next.js
 
-on:
-  push:
-    branches: [dev, main]
-    paths:
-      - src/**
-      - public/**
-      - package*.json
-      - next.config.*
-  pull_request:
-    branches: [dev, main]
+Next.js validates lint, types, selected tests, and `next build`. Supabase SSR builds receive only the public project URL and publishable key. Other Next.js backends do not receive placeholder Supabase values.
 
-jobs:
-  ci:
-    name: Lint, Test, Build
-    runs-on: ubuntu-latest
+When full testing is selected, Playwright starts the generated development server. Give that step the same required public build/runtime values as the application build and keep test accounts/data isolated from production.
 
-    steps:
-      - uses: actions/checkout@v4
+## Security and Releases
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-
-      - run: npm ci
-      - run: npm run lint
-      - run: npm run test
-      - run: npm run build
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-```
-
-## Branching & Release — `main` / `dev` with `release-please` + `sync-dev`
-
-Branching model enforced by `.github/workflows`:
-
-```
-feature/*, fix/*, chore/*  →  PR → dev  →  when stable  →  PR dev→main  →  tag
-      (CI must pass)            (CI must pass)             (auto-sync main→dev)
-```
-
-- `main` — stable/releaseable only. No direct push. Only merged from `dev` via promote PR (`--no-ff`).
-- `dev` — integration branch. All `feature/`, `fix/`, `chore/` branches branch **off `dev`** (never off `main`) and merge back into `dev`.
-- When `dev` is stable, open PR `dev → main`. That merge is the release.
-
-CI gate (all must pass before merge — see Frontend/Backend/Next.js CI above):
-
-- `typecheck` (`tsc --noEmit`) if project uses TypeScript
-- `lint` (`npm run lint`) + `format:check` (`prettier --check .`)
-- `build` (`npm run build`)
-  - Expo: `expo export --platform android` with dummy `EXPO_PUBLIC_*` in CI (no secrets)
-  - Next.js: `next build` with `NEXT_PUBLIC_*` from `secrets` if SSR needs Supabase
-
-Release — `release-please` (`googleapis/release-please-action` on `push: main`):
-
-```yaml
-# .github/workflows/release.yml
-name: Release
-on:
-  push:
-    branches: [main]
-permissions:
-  contents: write
-  pull-requests: write
-jobs:
-  release-please:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: googleapis/release-please-action@v4
-        with:
-          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
-          release-type: node
-```
-
-Conventional commits drive semver: `feat` → minor, `fix` → patch, `BREAKING CHANGE`/`!` → major. The action bumps `package.json`/`package-lock.json`, updates `CHANGELOG.md`, and tags `vX.Y.Z` — these are **commits on `main` only**, so `dev` falls behind.
-
-Sync — `sync-dev` heals the divergence (`on: release.published`):
-
-```yaml
-# .github/workflows/sync-dev.yml
-name: Sync dev with main
-on:
-  release:
-    types: [published]
-permissions:
-  contents: write
-  pull-requests: write
-jobs:
-  sync:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with: { fetch-depth: 0, token: ${{ secrets.RELEASE_PLEASE_TOKEN || github.token }} }
-      - run: |
-          behind=$(gh api repos/${{ github.repository }}/compare/dev...main --jq '.behind_by' 2>/dev/null || echo 0)
-          echo "dev_behind=$behind" >> "$GITHUB_ENV"
-        env:
-          GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN || github.token }}
-      - if: env.dev_behind > 0
-        run: |
-          BRANCH="sync/dev-realign-${GITHUB_REF_NAME#v}"
-          git checkout -b "$BRANCH" origin/main
-          git merge origin/dev --no-edit -m "chore: realign dev with main"
-          git push origin "$BRANCH"
-          echo "sync_branch=$BRANCH" >> "$GITHUB_ENV"
-      - if: env.dev_behind > 0
-        run: |
-          PR=$(gh pr create --base dev --head "${{ env.sync_branch }}" --title "sync: realign dev with main" --body "Auto after ${{ env.sync_branch }}" | sed -E 's#.*/pull/([0-9]+).*#\1#')
-          gh pr merge --auto --merge "$PR"
-        env:
-          GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN || github.token }}
-```
-
-- Creates branch `sync/dev-realign-<version>` from `main`, merges `dev`, opens + auto-merges PR into `dev` (`RELEASE_PLEASE_TOKEN`). Branch left for manual cleanup (unique per version, safe to re-run).
-- Only needed if you use `release-please` (POS does). If release is dumb `PATCH+1` tag-only (old carwebsite), no sync needed.
-
-Branch protection (apply in GitHub UI → Settings → Branches → Add rule for `main` and `dev`):
-
-- Require a pull request before merging (1 approval, `dismiss stale`).
-- Require status checks to pass before merging → select `Typecheck`, `Lint & format`, and `Build`.
-- Do not allow bypass; restrict who can push.
-
-When to add `sync-dev`:
-
-- Smart tags (`release-please`) → add `ci.yml` + `release.yml` + `sync-dev.yml`.
-- Dumb tags (`PATCH+1` only) → `ci.yml` + `release.yml` only, no `sync-dev`.
-
----
+- Validation workflows should normally declare `permissions: contents: read`.
+- Release/publish jobs require explicit additional permissions and should be separate from untrusted pull-request validation.
+- Use protected environments for production deployment approval and environment-scoped secrets.
+- Generate provenance/SBOM artifacts when the deployment risk warrants them.
+- Keep deployment rollback documented and test it before an incident.
 
 ## Agent Rules
-```
-New workflow file?
-  → Path-filter to relevant folder
-  → Separate from other services
-  → Cache dependencies
-  → Secrets from GitHub Secrets, never hardcoded
 
-Backend tests?
-  → Always real PostgreSQL service container
-  → SPRING_PROFILES_ACTIVE: test
-  → NEVER H2 in-memory DB
-
-Frontend build?
-  → npm ci (not npm install)
-  → Lint must pass before test
-  → Test must pass before build
-```
+- Change local scripts and CI together so command behavior does not drift.
+- Do not weaken a failing check to make a pull request green; fix the defect or document an approved policy change.
+- If a job needs a secret, name its owner, rotation process, environments, and why an identity federation mechanism cannot replace it.
+- Add path filters only after confirming changes to shared root configuration still trigger every affected job.
