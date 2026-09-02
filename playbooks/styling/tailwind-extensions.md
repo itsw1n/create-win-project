@@ -4,7 +4,9 @@ Extends your existing tailwind playbook with missing patterns.
 
 ---
 
-## cn() Utility — Always Use for Conditional Classes
+## Optional cn() Utility for Conditional Classes
+
+The starter does not install these packages. Add `clsx` and `tailwind-merge` before using this optional helper.
 ```typescript
 // lib/utils.ts
 import { clsx, type ClassValue } from 'clsx'
@@ -31,10 +33,12 @@ export function cn(...inputs: ClassValue[]) {
 
 ---
 
-## shadcn/ui Integration
+## Optional shadcn/ui Integration
+
+shadcn/ui is not part of the generated starter. If the project deliberately adopts it:
 - Components live in `components/ui/` — you own the code
 - Install via CLI: `npx shadcn@latest add [component]`
-- Never modify shadcn primitives — extend them in your own components
+- Prefer wrapping generated primitives when adding application-specific behavior
 - Use shadcn variants as-is or override in your wrapper
 
 ```typescript

@@ -6,6 +6,6 @@
   "required": false,
   "folders": [],
   "concerns": [
-    { "id": "styling", "required": true, "sections": ["CSS vars", "Responsive"] }
+    { "id": "styling", "required": true, "sections": ["Dark Mode with CSS Variables", "Responsive in Module File"] }
   ]
 }
