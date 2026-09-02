@@ -221,17 +221,29 @@ try {
   console.log(chalk.bold(`  Next steps:`))
   console.log(chalk.gray(`  cd ${answers.projectName}`))
 
-  if (stack.isMobile) {
+  if (stack.frontendKey === 'react') {
+    if (stack.backendKey === 'springboot') {
+      console.log(chalk.gray(`  cp .env.example .env  # Docker/backend values`))
+    }
+    console.log(chalk.gray(`  cd frontend`))
     console.log(chalk.gray(`  cp .env.example .env`))
-    console.log(chalk.gray(`  # Fill in your .env values`))
     console.log(chalk.gray(`  npm install`))
+  } else {
+    console.log(chalk.gray(`  cp .env.example ${stack.isMobile ? '.env' : '.env.local'}`))
+    console.log(chalk.gray(`  npm install`))
+  }
+
+  if (stack.isMobile) {
     console.log(chalk.gray(`  npx expo start`))
   } else if (answers.makefile) {
-    console.log(chalk.gray(`  cp .env.example .env`))
-    console.log(chalk.gray(`  # Fill in your .env values`))
+    if (stack.frontendKey === 'react') {
+      console.log(chalk.gray(`  cd ..`))
+    }
     console.log(chalk.gray(`  make dev`))
-  } else if (stack.isSupabase) {
+  } else if (stack.backendKey === 'supabase') {
     console.log(chalk.gray(`  npx supabase start`))
+    console.log(chalk.gray(`  npm run dev`))
+  } else if (stack.frontendKey === 'react') {
     console.log(chalk.gray(`  npm run dev`))
   } else {
     console.log(chalk.gray(`  docker compose up -d db`))
