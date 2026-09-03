@@ -18,20 +18,8 @@
     "app", "features", "components/ui", "components/shared",
     "stores", "lib", "config", "types", "schemas"
   ],
-  "deps": {
-    "expo": "~57.0.19",
-    "expo-router": "~57.0.18",
-    "@expo/metro-runtime": "~57.0.15",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
-    "react-native": "0.86.3",
-    "react-native-web": "~0.21.0",
-    "react-native-safe-area-context": "~5.9.1"
-  },
-  "devDeps": {
-    "typescript": "^6.0.3",
-    "@types/react": "^19"
-  },
+  "deps": ["expo", "expo-router", "@expo/metro-runtime", "react", "react-dom", "react-native", "react-native-web", "react-native-safe-area-context"],
+  "devDeps": ["typescript", "@types/react"],
   "env": [],
   "clientEnv": [],
   "constraints": [

@@ -15,8 +15,8 @@
     "backend/src/main/resources/db/dev",
     "backend/src/test/java/{{PACKAGE_PATH}}"
   ],
-  "deps": {},
-  "devDeps": {},
+  "deps": [],
+  "devDeps": [],
   "env": ["API_URL", "DATABASE_URL", "POSTGRES_USER", "POSTGRES_PASSWORD", "POSTGRES_DB", "SPRING_PROFILES_ACTIVE"],
   "clientEnv": ["API_URL"],
   "constraints": [

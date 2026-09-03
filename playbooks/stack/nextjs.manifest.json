@@ -20,15 +20,8 @@
     "src/components/layout", "src/lib", "src/stores", "src/hooks", "src/types",
     "src/schemas", "src/constants", "e2e", "public"
   ],
-  "deps": { "next": "^16.3.4", "react": "^19.2.8", "react-dom": "^19.2.8" },
-  "devDeps": {
-    "typescript": "^6.0.3",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "@types/node": "^24",
-    "eslint": "^9.39.5",
-    "eslint-config-next": "^16.3.4"
-  },
+  "deps": ["next", "react", "react-dom"],
+  "devDeps": ["typescript", "@types/react", "@types/react-dom", "@types/node", "eslint", "eslint-config-next"],
   "env": [],
   "clientEnv": [],
   "constraints": [
