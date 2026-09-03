@@ -28,6 +28,6 @@ jobs:
           distribution: temurin
           cache: maven
       - name: Run tests
-        run: mvn --batch-mode test
+        run: ./mvnw --batch-mode test
       - name: Build JAR
-        run: mvn --batch-mode package -DskipTests
+        run: ./mvnw --batch-mode package -DskipTests

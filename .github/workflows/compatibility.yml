@@ -32,7 +32,7 @@ jobs:
       - uses: actions/checkout@v4
       - id: catalog
         run: |
-          echo "matrix=$(node -e \"const c=require('./compatibility/profiles.json'); const cases=['nextjs-supabase','nextjs-springboot','nextjs-postgres','react-supabase','react-springboot','react-native-supabase','react-native-springboot','react-native-none']; process.stdout.write(JSON.stringify(Object.entries(c.profiles).flatMap(([profile,p])=>cases.map(caseName=>({profile,case:caseName,node:p.runtimes.node,java:p.runtimes.java})))))\")" >> "$GITHUB_OUTPUT"
+          echo "matrix=$(node -e \"const c=require('./compatibility/profiles.json'); const cases=['nextjs-none','nextjs-supabase','nextjs-springboot','nextjs-postgres','react-none','react-supabase','react-springboot','react-native-supabase','react-native-springboot','react-native-none']; process.stdout.write(JSON.stringify(Object.entries(c.profiles).flatMap(([profile,p])=>cases.map(caseName=>({profile,case:caseName,node:p.runtimes.node,java:p.runtimes.java})))))\")" >> "$GITHUB_OUTPUT"
           echo "current=$(node -e \"const c=require('./compatibility/profiles.json'); process.stdout.write(c.defaultProfile)\")" >> "$GITHUB_OUTPUT"
 
   verify:

@@ -16,7 +16,7 @@
 - Typecheck: `npm run typecheck`
 - Tests: `npm test -- --runInBand` when configured.
 - Export check: `npm run build -- --platform web`
-- Spring backend, when present: `cd backend && mvn --batch-mode test`
+- Spring backend, when present: `cd backend && ./mvnw --batch-mode test` (`mvnw.cmd` on Windows)
 
 ## Required workflow
 

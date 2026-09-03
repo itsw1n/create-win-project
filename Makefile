@@ -20,9 +20,20 @@ help: ## Show all available commands (grouped)
 build: ## Build Docker image
 	@docker build -t $(IMAGE) .
 
-.PHONY: run
-run: ## Run the CLI (interactive)
+.PHONY: generate
+generate: ## Run the generator in a disposable container (reuses the image)
 	@$(COMPOSE) run --rm app
+
+.PHONY: run
+run: generate ## Alias for generate (does not rebuild an existing image)
+
+.PHONY: rebuild
+rebuild: ## Rebuild the generator image without Docker layer cache
+	@$(COMPOSE) build --no-cache app
+
+.PHONY: doctor
+doctor: ## Show available host/container development tools
+	@$(COMPOSE) run --rm app doctor
 
 .PHONY: demo
 demo: ## Run the CLI to .demo/ for testing

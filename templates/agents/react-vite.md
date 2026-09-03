@@ -17,7 +17,7 @@ Run frontend commands from `frontend/`.
 - Develop: `npm run dev`
 - Validate: `npm run lint && npm run typecheck && npm run test --if-present && npm run build`
 - End-to-end: `npm run test:e2e --if-present`
-- Spring backend, when present: `cd backend && mvn --batch-mode test`
+- Spring backend, when present: `cd backend && ./mvnw --batch-mode test` (`mvnw.cmd` on Windows)
 
 ## Required workflow
 

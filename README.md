@@ -44,7 +44,7 @@ Manifests declare capabilities and package names. A tested compatibility profile
 **Node 24 LTS *OR* Docker — that's it.**
 
 - No global `prettier`, `eslint`, or `typescript` — they are generated inside your project (`package.json` devDeps + `.prettierrc` + `.editorconfig` + `eslint.config` via `lib/scaffold.js`).
-- Prefer zero host setup? Use Docker (all `make` commands use the catalog's tested Node image, CI-aligned).
+- Prefer zero host setup? Use Docker directly. Make is an optional convenience, never a prerequisite.
 
 ### Lane 2 — To run *what it generates* (depends on your answers)
 | You picked | You need | What the generator includes |
@@ -58,21 +58,37 @@ Manifests declare capabilities and package names. A tested compatibility profile
 
 ## Quick start
 
-**Docker-first (no host Node needed):**
+**Fastest (no clone required):**
+
+```bash
+npx create-win-project@latest
+```
+
+**From a clone with Node:**
+
+```bash
+npm ci
+npm run doctor
+npm start
+```
+
+**Docker-first (no host Node or Make needed):**
 
 ```bash
 git clone https://github.com/itsw1n/create-win-project && cd create-win-project
-make build   # builds the tested Node image (CI-aligned)
-make run     # interactive interview — answer stack, styling, extras
-make test    # run vitest (also dockerized)
-# make help → grouped list (Core, Checks)
+docker compose build
+docker compose run --rm app
 ```
+
+`docker compose run` creates a disposable CLI container and reuses the existing image. It does not rebuild an existing image unless you explicitly build again. On systems with Make, `make build` and `make generate` are shortcuts; `make run` remains an alias for `make generate`.
 
 <details>
 <summary>Prefer host Node?</summary>
 
 ```bash
-npx create-win-project   # or: npm install && node index.js
+npx create-win-project --install      # install generated dependencies now
+npx create-win-project --no-install   # generate files only
+npx create-win-project doctor         # diagnose available tools
 # then follow the same interview
 ```
 
@@ -94,19 +110,21 @@ npm install
 npm run dev
 ```
 
+The generator asks whether to install dependencies. One local `npm install` provides Prettier, ESLint, TypeScript, and the selected test tools; global installs are neither required nor silently performed.
+
 > The generator **never overwrites a non-empty folder** — it stages to a temp dir and moves into place only on success.
 
 ## Features
 
 - **Three frontend families** — Next.js App Router, React + Vite, and Expo Router.
-- **Backends** — Supabase, PostgreSQL, Spring Boot, or none.
+- **Optional backends** — every frontend can choose no backend, Supabase, PostgreSQL where supported, or Spring Boot.
 - **Styling** — Tailwind CSS or CSS Modules (native-styles for Expo).
 - **Lean agent docs** — `AGENTS.md` (tiny, always on) + `RULES.md` (lazy index) generated per project.
 - **Manifest-driven** — `*.manifest.json` drives compatibility, deps, env prefixes (`NEXT_PUBLIC_`/`VITE_`/`EXPO_PUBLIC_`), folders, and concern wiring.
 - **Tested compatibility profiles** — exact direct dependencies and runtime/container versions are resolved from one catalog; current and previous profiles are verified in CI.
 - **Optional concerns, never mandated** — validation/Zod, data-fetching, state, t3-env, URL state are advisory (`CONTEXT.md` only) not forced.
 - **Runnable foundations** — health endpoints, security headers, Supabase SSR plumbing, Spring Security deny-by-default, Playwright/JUnit opt-in.
-- **Safety + contracts** — destination-exists guard, manifest ↔ heading checks, and an 8-combo generated-output matrix (files, env naming, playbook routing).
+- **Safety + contracts** — destination-exists guard, manifest ↔ heading checks, and a generated-output matrix covering every supported pairing.
 
 ## What you get
 
