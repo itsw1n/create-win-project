@@ -39,10 +39,12 @@ afterEach(async () => {
 
 describe('runnable project contract', () => {
   it.each([
+    ['nextjs', 'none', 'tailwind'],
     ['nextjs', 'supabase', 'tailwind'],
     ['nextjs', 'springboot', 'css-modules'],
     ['nextjs', 'postgres', 'tailwind'],
     ['react', 'supabase', 'tailwind'],
+    ['react', 'none', 'css-modules'],
     ['react', 'springboot', 'css-modules'],
     ['react-native', 'supabase', undefined],
     ['react-native', 'springboot', undefined],
@@ -60,6 +62,10 @@ describe('runnable project contract', () => {
     expect(packageJson.scripts.dev).toBeTruthy()
     expect(packageJson.scripts.build).toBeTruthy()
     expect(packageJson.scripts.typecheck).toBeTruthy()
+    expect(packageJson.scripts.format).toBe('prettier --write .')
+    expect(packageJson.scripts['format:check']).toBe('prettier --check .')
+    expect(packageJson.scripts.check).toBeTruthy()
+    expect(packageJson.devDependencies.prettier).toMatch(/^\d+\.\d+\.\d+$/)
     expect(await fs.pathExists(path.join(destination, 'AGENTS.md'))).toBe(true)
     const profile = await fs.readJson(path.join(destination, 'create-win-project.profile.json'))
     expect(profile.profile).toBe('2026.09')
@@ -68,7 +74,12 @@ describe('runnable project contract', () => {
     if (frontend === 'nextjs') expect(await fs.pathExists(path.join(destination, 'src/app/page.tsx'))).toBe(true)
     if (frontend === 'react') expect(await fs.pathExists(path.join(destination, 'frontend/src/main.tsx'))).toBe(true)
     if (frontend === 'react-native') expect(await fs.pathExists(path.join(destination, 'app/_layout.tsx'))).toBe(true)
-    if (backend === 'springboot') expect(await fs.pathExists(path.join(destination, 'backend/pom.xml'))).toBe(true)
+    if (backend === 'springboot') {
+      expect(await fs.pathExists(path.join(destination, 'backend/pom.xml'))).toBe(true)
+      expect(await fs.pathExists(path.join(destination, 'backend/mvnw'))).toBe(true)
+      expect(await fs.pathExists(path.join(destination, 'backend/mvnw.cmd'))).toBe(true)
+      expect((await fs.stat(path.join(destination, 'backend/mvnw'))).mode & 0o111).not.toBe(0)
+    }
   })
 
   it('makes the testing choice real', async () => {
@@ -78,6 +89,12 @@ describe('runnable project contract', () => {
     expect(packageJson.devDependencies.vitest).toBeUndefined()
     expect(await fs.pathExists(path.join(destination, 'src/app/page.test.tsx'))).toBe(false)
     expect(await fs.readFile(path.join(destination, '.github/workflows/ci-frontend.yml'), 'utf8')).not.toContain('npm run test')
+  })
+
+  it('honors the Makefile option for a frontend-only project', async () => {
+    const destination = await generate({ backend: 'none', makefile: true, projectName: 'frontend-only' })
+    const makefile = await fs.readFile(path.join(destination, 'Makefile'), 'utf8')
+    expect(makefile).toContain('npm --prefix $(NPM_DIR) run check')
   })
 
   it('removes Spring test fixtures and CI steps when testing is none', async () => {

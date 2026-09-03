@@ -3,7 +3,7 @@
   "kind": "frontend",
   "label": "Next.js",
   "platform": "web",
-  "appliesTo": { "backend": ["supabase", "springboot", "postgres"] },
+  "appliesTo": { "backend": ["none", "supabase", "springboot", "postgres"] },
   "port": 3000,
   "needsDocker": false,
   "frontendDir": "",

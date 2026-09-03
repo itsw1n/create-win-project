@@ -4,8 +4,10 @@ import chalk from 'chalk'
 import ora from 'ora'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { spawnSync } from 'node:child_process'
 import { generateProject } from './lib/generator.js'
 import { loadCompatibility } from './lib/compatibility.js'
+import { printDoctor } from './lib/doctor.js'
 import { w1nBanner } from './lib/banner.js'
 import {
   loadCatalog, resolveStack,
@@ -13,11 +15,19 @@ import {
 } from './lib/catalog.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const profileArg = process.argv.slice(2).find((arg) => arg.startsWith('--profile='))?.split('=')[1]
+const cliArgs = process.argv.slice(2)
+const profileArg = cliArgs.find((arg) => arg.startsWith('--profile='))?.split('=')[1]
+const wantsInstall = cliArgs.includes('--install')
+const skipsInstall = cliArgs.includes('--no-install')
+if (wantsInstall && skipsInstall) throw new Error('Use either --install or --no-install, not both')
 const { profile } = await loadCompatibility(
   path.join(__dirname, 'compatibility/profiles.json'),
   profileArg,
 )
+if (cliArgs[0] === 'doctor' || cliArgs.includes('--doctor')) {
+  printDoctor(profile)
+  process.exit(0)
+}
 const catalog = await loadCatalog(path.join(__dirname, 'playbooks'), profile)
 
 // ─── Banner ──────────────────────────────────────────────────────────────────
@@ -141,6 +151,13 @@ const answers = await inquirer.prompt([
     message: 'Include GitHub Actions CI?',
     default: true,
   },
+  {
+    type: 'confirm',
+    name: 'installDependencies',
+    message: 'Install project dependencies and create the lockfile now?',
+    default: true,
+    when: () => !wantsInstall && !skipsInstall,
+  },
 
   // ── Spring Boot specific ───────────────────────────────────────────────
   {
@@ -170,6 +187,8 @@ const answers = await inquirer.prompt([
   },
 ])
 answers.compatibilityProfile = profile.id
+if (wantsInstall) answers.installDependencies = true
+if (skipsInstall) answers.installDependencies = false
 
 // ── Auto-resolve docker for stacks that need it ───────────────────────────────
 if (resolveStack({ ...answers, styling: answers.styling || catalog.byId[answers.frontend]?.stylingOptions?.[0] || 'tailwind' }, catalog).needsDocker) {
@@ -198,6 +217,7 @@ if (stack.platform !== 'mobile') {
   console.log(`  ${chalk.cyan('Makefile:')}     ${answers.makefile ? 'yes' : 'no'}`)
 }
 console.log(`  ${chalk.cyan('CI/CD:')}        ${answers.githubActions ? 'yes' : 'no'}`)
+console.log(`  ${chalk.cyan('Install deps:')} ${answers.installDependencies ? 'yes' : 'no'}`)
 if (answers.packageName) {
   console.log(`  ${chalk.cyan('Package:')}      ${answers.packageName}`)
 }
@@ -227,6 +247,20 @@ const spinner = ora('Scaffolding project...').start()
 try {
   await generateProject(answers, __dirname)
   spinner.succeed(chalk.green('Project created!'))
+  if (answers.installDependencies) {
+    const installRoot = stack.frontendKey === 'react'
+      ? path.join(process.cwd(), answers.projectName, 'frontend')
+      : path.join(process.cwd(), answers.projectName)
+    const installSpinner = ora('Installing exact dependencies and creating package-lock.json...').start()
+    const npmCommand = process.platform === 'win32' ? 'npm.cmd' : 'npm'
+    const result = spawnSync(npmCommand, ['install'], { cwd: installRoot, stdio: 'inherit', shell: false })
+    if (result.status !== 0) {
+      installSpinner.warn(chalk.yellow('Project created, but dependency installation did not finish.'))
+      console.log(chalk.yellow(`  Retry with: cd ${path.relative(process.cwd(), installRoot)} && npm install`))
+    } else {
+      installSpinner.succeed(chalk.green('Dependencies installed and lockfile created.'))
+    }
+  }
   console.log('')
   console.log(chalk.bold(`  Next steps:`))
   console.log(chalk.gray(`  cd ${answers.projectName}`))
@@ -237,10 +271,10 @@ try {
     }
     console.log(chalk.gray(`  cd frontend`))
     console.log(chalk.gray(`  cp .env.example .env`))
-    console.log(chalk.gray(`  npm install`))
+    if (!answers.installDependencies) console.log(chalk.gray(`  npm install`))
   } else {
     console.log(chalk.gray(`  cp .env.example ${stack.isMobile ? '.env' : '.env.local'}`))
-    console.log(chalk.gray(`  npm install`))
+    if (!answers.installDependencies) console.log(chalk.gray(`  npm install`))
   }
 
   if (stack.isMobile) {

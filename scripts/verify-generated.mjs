@@ -12,10 +12,12 @@ const args = Object.fromEntries(process.argv.slice(2).map((arg) => {
 }))
 
 const cases = {
+  'nextjs-none': { frontend: 'nextjs', backend: 'none', styling: 'tailwind' },
   'nextjs-supabase': { frontend: 'nextjs', backend: 'supabase', styling: 'tailwind' },
   'nextjs-springboot': { frontend: 'nextjs', backend: 'springboot', styling: 'css-modules', packageName: 'com.example' },
   'nextjs-postgres': { frontend: 'nextjs', backend: 'postgres', styling: 'tailwind' },
   'react-supabase': { frontend: 'react', backend: 'supabase', styling: 'tailwind' },
+  'react-none': { frontend: 'react', backend: 'none', styling: 'css-modules' },
   'react-springboot': { frontend: 'react', backend: 'springboot', styling: 'css-modules', packageName: 'com.example' },
   'react-native-supabase': { frontend: 'react-native', backend: 'supabase' },
   'react-native-springboot': { frontend: 'react-native', backend: 'springboot', packageName: 'com.example' },
@@ -91,8 +93,8 @@ try {
 
   if (selected.backend === 'springboot') {
     const backendRoot = path.join(projectRoot, 'backend')
-    run('mvn', ['--batch-mode', 'test'], backendRoot)
-    run('mvn', ['--batch-mode', 'package', '-DskipTests'], backendRoot)
+    run('./mvnw', ['--batch-mode', 'test'], backendRoot)
+    run('./mvnw', ['--batch-mode', 'package', '-DskipTests'], backendRoot)
   }
 
   if (selected.frontend !== 'react-native') {

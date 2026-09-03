@@ -21,8 +21,12 @@
   ],
   "scripts": {
     "start": "node index.js",
+    "doctor": "node index.js doctor",
     "test": "vitest run",
     "verify:generated": "node scripts/verify-generated.mjs"
+  },
+  "engines": {
+    "node": ">=24"
   },
   "dependencies": {
     "chalk": "^5.3.0",

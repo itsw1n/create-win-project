@@ -39,11 +39,11 @@ describe('interview helpers', () => {
     expect(values).toContain('springboot')
   })
 
-  it('does not include "none" backend for nextjs', async () => {
+  it('includes "none" backend for every frontend', async () => {
     const catalog  = await loadCatalog(path.join(root, 'playbooks'))
-    const choices  = backendChoicesFor(catalog, 'nextjs')
-    const values   = choices.map((c) => c.value)
-    expect(values).not.toContain('none')
+    for (const frontend of ['nextjs', 'react', 'react-native']) {
+      expect(backendChoicesFor(catalog, frontend).map((choice) => choice.value)).toContain('none')
+    }
   })
 
   it('supportsArchitecture is true for nextjs, false for react-native', async () => {
@@ -112,10 +112,8 @@ describe('resolveStack — capability flags', () => {
 
   it('rejects invalid frontend/backend pairing', async () => {
     const catalog = await loadCatalog(path.join(root, 'playbooks'))
-    expect(() => resolveStack({ frontend: 'nextjs', backend: 'none', styling: 'tailwind' }, catalog))
-      .toThrow(/cannot pair/)
-    expect(() => resolveStack({ frontend: 'react', backend: 'none', styling: 'tailwind' }, catalog))
-      .toThrow(/cannot pair/)
+    expect(() => resolveStack({ frontend: 'nextjs', backend: 'missing', styling: 'tailwind' }, catalog))
+      .toThrow(/Unknown backend/)
   })
 })
 

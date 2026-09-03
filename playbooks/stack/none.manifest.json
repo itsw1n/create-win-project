@@ -1,18 +1,19 @@
 {
   "id": "none",
   "kind": "backend",
-  "label": "None / BYO API",
-  "appliesTo": { "frontend": ["react-native"] },
+  "label": "None / frontend only",
+  "appliesTo": { "frontend": ["nextjs", "react", "react-native"] },
   "port": 0,
   "needsDocker": false,
+  "makefileTemplate": "frontend",
   "folders": [],
   "deps": [],
   "devDeps": [],
   "env": ["API_URL"],
   "clientEnv": ["API_URL"],
   "constraints": [
-    "No backend scaffolded — connect your own API via the apiClient in lib/apiClient.ts",
-    "Set EXPO_PUBLIC_API_URL in .env to point to your API"
+    "No backend is scaffolded; the frontend can remain standalone or connect to an API later",
+    "The generated public API URL is optional until an external API is connected"
   ],
   "concerns": []
 }

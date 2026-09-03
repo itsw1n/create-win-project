@@ -3,7 +3,7 @@
   "kind": "frontend",
   "label": "React + Vite",
   "platform": "web",
-  "appliesTo": { "backend": ["supabase", "springboot"] },
+  "appliesTo": { "backend": ["none", "supabase", "springboot"] },
   "port": 5173,
   "needsDocker": false,
   "frontendDir": "frontend",
