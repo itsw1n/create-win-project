@@ -1,9 +1,9 @@
-FROM maven:3.9-eclipse-temurin-21-alpine AS builder
+FROM {{MAVEN_IMAGE}} AS builder
 WORKDIR /app
 COPY . .
 RUN mvn --batch-mode package -DskipTests
 
-FROM eclipse-temurin:21-jre-alpine AS production
+FROM {{JAVA_IMAGE}} AS production
 WORKDIR /app
 COPY --from=builder /app/target/*.jar app.jar
 EXPOSE 8080

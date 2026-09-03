@@ -1,4 +1,4 @@
-FROM node:20-alpine
+FROM {{NODE_IMAGE}}
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
