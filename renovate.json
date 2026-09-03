@@ -1,0 +1,106 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "timezone": "Asia/Manila",
+  "schedule": ["* 0-6 * * 1"],
+  "rangeStrategy": "pin",
+  "dependencyDashboard": true,
+  "labels": ["dependencies"],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": ["security"]
+  },
+  "customManagers": [
+    {
+      "customType": "jsonata",
+      "fileFormat": "json",
+      "managerFilePatterns": ["/compatibility/profiles\\.json$/"],
+      "matchStrings": [
+        "profiles[status = 'current'].packages.$each(function($v, $n) { $type($v) = 'string' ? { 'depName': $n, 'currentValue': $v } })",
+        "profiles[status = 'current'].packages.$each(function($v, $n) { $type($v) = 'object' ? { 'depName': $n, 'currentValue': $v.default } })",
+        "profiles[status = 'current'].packages.$each(function($v, $n) { $v.overrides.$each(function($ov, $capability) { { 'depName': $n, 'currentValue': $ov, 'depType': $capability } }) })"
+      ],
+      "datasourceTemplate": "npm",
+      "versioningTemplate": "npm"
+    },
+    {
+      "customType": "jsonata",
+      "fileFormat": "json",
+      "managerFilePatterns": ["/compatibility/profiles\\.json$/"],
+      "matchStrings": [
+        "profiles[status = 'current'].{ 'depName': 'org.springframework.boot:spring-boot-dependencies', 'currentValue': springBoot }"
+      ],
+      "datasourceTemplate": "maven",
+      "versioningTemplate": "maven"
+    },
+    {
+      "customType": "jsonata",
+      "fileFormat": "json",
+      "managerFilePatterns": ["/compatibility/profiles\\.json$/"],
+      "matchStrings": [
+        "profiles[status = 'current'].{ 'depName': 'node', 'currentValue': runtimes.node }"
+      ],
+      "datasourceTemplate": "node-version",
+      "versioningTemplate": "node"
+    },
+    {
+      "customType": "jsonata",
+      "fileFormat": "json",
+      "managerFilePatterns": ["/compatibility/profiles\\.json$/"],
+      "matchStrings": [
+        "profiles[status = 'current'].images.*.{ 'depName': repository, 'currentValue': tag }"
+      ],
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "docker"
+    }
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": ["node"],
+      "groupName": "Node runtime and container"
+    },
+    {
+      "matchPackageNames": ["maven", "eclipse-temurin"],
+      "groupName": "Java and Maven runtimes and containers"
+    },
+    {
+      "matchPackageNames": ["postgres"],
+      "groupName": "PostgreSQL runtime and container"
+    },
+    {
+      "matchPackageNames": ["org.springframework.boot:spring-boot-dependencies"],
+      "groupName": "Spring Boot compatibility set"
+    },
+    {
+      "matchPackageNames": ["next", "vite", "@vitejs/plugin-react", "react", "react-dom", "eslint-config-next"],
+      "groupName": "Web framework compatibility set"
+    },
+    {
+      "matchPackageNames": ["expo", "expo-router", "expo-secure-store", "@expo/metro-runtime", "react-native", "react-native-web", "react-native-safe-area-context"],
+      "groupName": "Expo compatibility set"
+    },
+    {
+      "matchPackageNames": ["react", "react-dom"],
+      "matchDepTypes": ["react-native"],
+      "groupName": "Expo compatibility set"
+    },
+    {
+      "matchPackageNames": ["prisma", "@prisma/client"],
+      "groupName": "Prisma compatibility set"
+    },
+    {
+      "matchPackageNames": ["vitest", "jest", "jest-expo", "jsdom", "@playwright/test", "@testing-library/**", "@types/jest"],
+      "groupName": "Testing compatibility set"
+    },
+    {
+      "matchPackageNames": ["eslint", "@eslint/js", "typescript-eslint", "typescript", "@types/**"],
+      "groupName": "TypeScript and lint compatibility set"
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true,
+      "labels": ["dependencies", "major-upgrade"],
+      "prBodyNotes": ["Major compatibility change: include reviewed upstream migration notes and required generated-project migrations before merge."]
+    }
+  ]
+}
