@@ -2,6 +2,7 @@
   "id": "react",
   "kind": "frontend",
   "label": "React + Vite",
+  "language": "TypeScript",
   "platform": "web",
   "appliesTo": { "backend": ["none", "supabase", "springboot"] },
   "port": 5173,
