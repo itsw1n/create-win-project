@@ -33,12 +33,12 @@ generated-project contract tests
 
 ### Catalog and resolution
 
-`lib/catalog.js` loads co-located `*.manifest.json` files, validates their basic schema, checks compatibility, and merges selected capabilities into one stack descriptor.
+`lib/catalog.js` loads co-located `*.manifest.json` files and merges selected capabilities into one stack descriptor. `lib/compatibility.js` validates `compatibility/profiles.json` and resolves every package name to an exact version for the selected profile.
 
 Manifests declare:
 
 - identity and compatibility (`id`, `kind`, `appliesTo`);
-- dependencies and scripts;
+- dependency names and scripts (never dependency versions);
 - semantic environment names and which ones are client-visible;
 - folders and optional templates;
 - constraints shown to the agent;
@@ -61,7 +61,11 @@ This module intentionally generates a small working example. Domain-specific fea
 
 `lib/generator.js` coordinates writes and refuses to merge into a non-empty destination. It adds documentation, selected playbooks, CI, Docker, Makefile, environment examples, and repository conventions around the runnable foundation.
 
-The first `npm install` creates the lockfile. Generated CI uses `npm ci`, so the lockfile must be committed before CI is enabled.
+The first `npm install` creates the lockfile. Generated CI uses `npm ci`, so the lockfile must be committed before CI is enabled. `create-win-project.profile.json` records which tested profile produced the project; after generation, that project owns its own upgrade lifecycle.
+
+### Compatibility profile lifecycle
+
+Exactly one profile is `current` and one is `previous`. The current profile is the default. A profile owns exact npm, Spring Boot, runtime, and container versions; manifests and scaffold code may only request names or capabilities. Promotion copies the candidate into a new dated profile, marks the former current profile previous, and happens only after the generated-project matrix passes. Major changes also require migration notes. See `DEPENDENCY_MAINTENANCE.md`.
 
 ## Documentation model
 
@@ -81,7 +85,7 @@ The generator itself has three verification levels:
 
 1. unit tests for catalog composition and template rendering;
 2. an eight-combination generated-output matrix that checks required files, environment naming, playbook routing, testing profiles, and overwrite safety;
-3. periodic install/build smoke checks that execute each generated stack's own validation commands.
+3. a current-and-previous profile matrix that installs and runs lint, typecheck, tests, builds, Expo compatibility checks/web export, Spring MVC/Maven packaging, Compose validation, and current-profile container builds.
 
 Canonical Markdown code examples should progressively move into extracted fixtures so examples compile against the versions they teach.
 

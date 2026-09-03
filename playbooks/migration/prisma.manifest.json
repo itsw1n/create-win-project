@@ -5,8 +5,8 @@
   "appliesTo": { "backend": ["postgres"] },
   "required": true,
   "folders": ["prisma/migrations"],
-  "deps": { "@prisma/client": "^7.10.0" },
-  "devDeps": { "prisma": "^7.10.0" },
+  "deps": ["@prisma/client"],
+  "devDeps": ["prisma"],
   "concerns": [
     { "id": "migration", "required": true, "sections": ["Setup", "prisma/schema.prisma"] }
   ]

@@ -1,6 +1,6 @@
 # =============================================================================
 # Makefile — create-win-project CLI (fully dockerized, no host Node needed)
-# Image is CI-aligned: node:20-alpine
+# Image is CI-aligned with the current tested compatibility profile
 # All commands run inside Docker via `docker compose run`
 # =============================================================================
 

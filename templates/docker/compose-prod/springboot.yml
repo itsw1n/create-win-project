@@ -39,7 +39,7 @@ services:
 
   db:
     container_name: {{PROJECT_NAME}}-db-prod
-    image: postgres:16-alpine
+    image: {{POSTGRES_IMAGE}}
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}

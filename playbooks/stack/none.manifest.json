@@ -6,8 +6,8 @@
   "port": 0,
   "needsDocker": false,
   "folders": [],
-  "deps": {},
-  "devDeps": {},
+  "deps": [],
+  "devDeps": [],
   "env": ["API_URL"],
   "clientEnv": ["API_URL"],
   "constraints": [

@@ -10,16 +10,19 @@
   "files": [
     "index.js",
     "lib",
+    "compatibility",
     "playbooks",
     "ci",
     "templates",
+    "scripts",
     "docs",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
     "start": "node index.js",
-    "test": "vitest run"
+    "test": "vitest run",
+    "verify:generated": "node scripts/verify-generated.mjs"
   },
   "dependencies": {
     "chalk": "^5.3.0",

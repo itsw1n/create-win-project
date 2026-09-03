@@ -40,7 +40,7 @@ Expo uses React Native `StyleSheet` by default. Web projects can select Tailwind
 A manifest may declare:
 
 - `id`, `kind`, `label`, and compatibility;
-- folders, dependencies, scripts, and templates;
+- folders, dependency names, scripts, and templates (versions live only in `compatibility/profiles.json`);
 - semantic environment names and client-visible names;
 - stack constraints;
 - required and optional concerns, target playbook, headings, and applicability.

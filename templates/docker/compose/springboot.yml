@@ -41,7 +41,7 @@ services:
 
   db:
     container_name: {{PROJECT_NAME}}-db
-    image: postgres:16-alpine
+    image: {{POSTGRES_IMAGE}}
     ports:
       - "5432:5432"
     environment:

@@ -61,6 +61,9 @@ describe('runnable project contract', () => {
     expect(packageJson.scripts.build).toBeTruthy()
     expect(packageJson.scripts.typecheck).toBeTruthy()
     expect(await fs.pathExists(path.join(destination, 'AGENTS.md'))).toBe(true)
+    const profile = await fs.readJson(path.join(destination, 'create-win-project.profile.json'))
+    expect(profile.profile).toBe('2026.09')
+    expect(profile.stack).toBe(`${frontend}-${backend}`)
     expect(await fs.readFile(path.join(destination, 'RULES.md'), 'utf8')).not.toMatch(/section not found|MISSING/)
     if (frontend === 'nextjs') expect(await fs.pathExists(path.join(destination, 'src/app/page.tsx'))).toBe(true)
     if (frontend === 'react') expect(await fs.pathExists(path.join(destination, 'frontend/src/main.tsx'))).toBe(true)
@@ -105,6 +108,15 @@ describe('runnable project contract', () => {
     expect(env).not.toContain('SERVICE_ROLE')
   })
 
+  it('can reproduce the previous compatibility profile', async () => {
+    const destination = await generate({ projectName: 'previous-profile', compatibilityProfile: '2026.08' })
+    const metadata = await fs.readJson(path.join(destination, 'create-win-project.profile.json'))
+    const packageJson = await fs.readJson(path.join(destination, 'package.json'))
+    expect(metadata.status).toBe('previous')
+    expect(packageJson.dependencies.next).toBe('16.3.4')
+    expect(Object.values(packageJson.dependencies).every((version) => !/^[~^]/.test(version))).toBe(true)
+  })
+
   it('uses backend-specific public values in frontend CI', async () => {
     const destination = await generate({ frontend: 'react', backend: 'supabase', projectName: 'vite-ci' })
     const workflow = await fs.readFile(path.join(destination, '.github/workflows/ci-frontend.yml'), 'utf8')
@@ -133,6 +145,7 @@ describe('runnable project contract', () => {
     expect(compose).toContain('dockerfile: Dockerfile.dev')
     expect(compose).toContain('./frontend:/app')
     expect(compose).not.toContain('dockerfile: frontend/Dockerfile.dev')
+    expect(compose).toContain('postgres:16-alpine')
   })
 
   it('does not approximate Supabase with a bare PostgreSQL container', async () => {

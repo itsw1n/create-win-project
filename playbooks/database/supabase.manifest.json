@@ -6,10 +6,7 @@
   "required": true,
   "makefileTemplate": "supabase",
   "folders": ["supabase/migrations"],
-  "deps": {
-    "@supabase/ssr": "^0.12.5",
-    "@supabase/supabase-js": "^2.114.0"
-  },
+  "deps": ["@supabase/ssr", "@supabase/supabase-js"],
   "env": ["SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY"],
   "clientEnv": ["SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY"],
   "concerns": [
