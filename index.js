@@ -5,19 +5,28 @@ import ora from 'ora'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { generateProject } from './lib/generator.js'
+import { loadCompatibility } from './lib/compatibility.js'
+import { w1nBanner } from './lib/banner.js'
 import {
   loadCatalog, resolveStack,
   frontendChoices, backendChoicesFor, stylingChoicesFor, supportsArchitecture,
 } from './lib/catalog.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const catalog = await loadCatalog(path.join(__dirname, 'playbooks'))
+const profileArg = process.argv.slice(2).find((arg) => arg.startsWith('--profile='))?.split('=')[1]
+const { profile } = await loadCompatibility(
+  path.join(__dirname, 'compatibility/profiles.json'),
+  profileArg,
+)
+const catalog = await loadCatalog(path.join(__dirname, 'playbooks'), profile)
 
 // ─── Banner ──────────────────────────────────────────────────────────────────
 
 console.log('')
-console.log(chalk.bold.cyan('  create-win-project'))
+console.log(w1nBanner())
+console.log('')
 console.log(chalk.gray('  Production-ready project scaffolding'))
+console.log(chalk.gray(`  Compatibility profile: ${profile.id} (${profile.status})`))
 console.log('')
 
 // ─── Interview ───────────────────────────────────────────────────────────────
@@ -160,6 +169,7 @@ const answers = await inquirer.prompt([
     },
   },
 ])
+answers.compatibilityProfile = profile.id
 
 // ── Auto-resolve docker for stacks that need it ───────────────────────────────
 if (resolveStack({ ...answers, styling: answers.styling || catalog.byId[answers.frontend]?.stylingOptions?.[0] || 'tailwind' }, catalog).needsDocker) {
@@ -221,17 +231,29 @@ try {
   console.log(chalk.bold(`  Next steps:`))
   console.log(chalk.gray(`  cd ${answers.projectName}`))
 
-  if (stack.isMobile) {
+  if (stack.frontendKey === 'react') {
+    if (stack.backendKey === 'springboot') {
+      console.log(chalk.gray(`  cp .env.example .env  # Docker/backend values`))
+    }
+    console.log(chalk.gray(`  cd frontend`))
     console.log(chalk.gray(`  cp .env.example .env`))
-    console.log(chalk.gray(`  # Fill in your .env values`))
     console.log(chalk.gray(`  npm install`))
+  } else {
+    console.log(chalk.gray(`  cp .env.example ${stack.isMobile ? '.env' : '.env.local'}`))
+    console.log(chalk.gray(`  npm install`))
+  }
+
+  if (stack.isMobile) {
     console.log(chalk.gray(`  npx expo start`))
   } else if (answers.makefile) {
-    console.log(chalk.gray(`  cp .env.example .env`))
-    console.log(chalk.gray(`  # Fill in your .env values`))
+    if (stack.frontendKey === 'react') {
+      console.log(chalk.gray(`  cd ..`))
+    }
     console.log(chalk.gray(`  make dev`))
-  } else if (stack.isSupabase) {
+  } else if (stack.backendKey === 'supabase') {
     console.log(chalk.gray(`  npx supabase start`))
+    console.log(chalk.gray(`  npm run dev`))
+  } else if (stack.frontendKey === 'react') {
     console.log(chalk.gray(`  npm run dev`))
   } else {
     console.log(chalk.gray(`  docker compose up -d db`))

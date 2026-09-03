@@ -10,6 +10,9 @@ on:
     paths:
       - frontend/**
 
+permissions:
+  contents: read
+
 jobs:
   ci-frontend:
     name: Lint, Test, Build
@@ -26,6 +29,7 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci
       - run: npm run lint
+      - run: npm run typecheck
       - run: npm run test
       - run: npm run build
         env:

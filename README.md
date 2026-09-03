@@ -1,61 +1,112 @@
-# create-win-project
+```
+ ██╗    ██╗  ██╗ ███╗  ██╗
+ ██║    ██║ ███║ ████╗ ██║
+ ██║ █╗ ██║ ╚██║ ██╔██╗██║
+ ██║███╗██║  ██║ ██║╚████║
+ ╚███╔███╔╝  ██║ ██║ ╚███║
+  ╚══╝╚══╝   ╚═╝ ╚═╝  ╚══╝
 
-> Production-ready project scaffolding for AI-assisted teams. Generate a Next.js / React / Spring Boot app that ships with a **lean, manifest-driven `AGENTS.md`**, a **lazy `RULES.md`**, and a curated set of engineering playbooks — so your coding agent knows the rules without burning context on a 3,000-line doc.
+ █▀█ █▀█ █▀█   █ █▀▀ █▀▀ ▀█▀
+ █▀▀ █▀█ █ █   █ █▀  █    █
+ █   █ █ █▄█ █▄█ █▄▄ █▄▄  █
+```
+
+# Are you confused creating architecture rules, AGENTS.md, and folder structures from scratch every time you pick a new stack?
+
+> **Just answer what tech stack you want.** `create-win-project` turns your answers into a runnable, tested, agent-ready foundation — not an empty folder with a giant doc dump.
+
+Stop bikeshedding folders for 3 days. Stop pasting a 500-line `AGENTS.md` that burns tokens and still lets the agent hallucinate your stack. Your stack, your rules, already wired.
 
 [![CI](https://github.com/itsw1n/create-win-project/actions/workflows/ci.yml/badge.svg)](https://github.com/itsw1n/create-win-project/actions/workflows/ci.yml)
-[![Node](https://img.shields.io/badge/node-20%2B-green)](https://nodejs.org)
+[![Node](https://img.shields.io/badge/node-24_LTS-green)](https://nodejs.org)
 [![Manifest-driven](https://img.shields.io/badge/architecture-manifest--driven-blue)](./playbooks)
 [![Lean docs](https://img.shields.io/badge/AGENTS.md-lean%20%26%20lazy-9cf)](./playbooks)
 [![Interactive](https://img.shields.io/badge/cli-interactive-ff69b4)](./index.js)
 
+Next.js · React + Vite · Expo (React Native) · Spring Boot · Supabase · PostgreSQL · Tailwind · CSS Modules
+
 ---
 
-## About
+## Why this exists
 
-`create-win-project` is a scaffolding CLI that turns a short interview into a complete, opinionated project — folders, `package.json`, env template, CI, Docker, and a documentation layer your AI coding agent can actually use.
+You were that dev who rebuilt the same foundation twice — Next.js App Router one week, Expo the next, Spring Boot after that. Same questions: where do components live? How does auth refresh? What goes in `AGENTS.md` without drowning the context window?
 
-Most scaffolds dump a giant `CLAUDE.md`/`AGENTS.md` that eats tokens on every prompt. This tool does the opposite:
+**The fix:** answer 4 questions and get **two coordinated outputs**:
 
-- **`AGENTS.md` is small and always loaded** — it tells the agent *where the rules live*, not the rules themselves.
-- **`RULES.md` is a lazy index** — `concern → playbook §`. The agent reads only the section it needs, when it needs it.
-- **Playbooks are the single source of truth.** Every stack, backend, styling, and concern is described by a `*.manifest.json`, so what gets generated is declarative and easy to extend.
+1. **A small runnable app** — real page/screen, strict TypeScript, ESLint, health endpoint, tests, and the exact config for your stack.
+2. **A task-routed docs layer** — a tiny always-on `AGENTS.md` + a lazy `RULES.md` (`concern → playbook §`). The agent reads only what it touches, when it touches it.
 
-The result: new contributors (human *and* agent) get guardrails from minute one, and your context window stays free for the work that matters.
+Manifests declare capabilities and package names. A tested compatibility profile owns every exact version, so generated stacks are declarative without letting version strings drift.
 
-## Features
+## Prerequisites — what you actually need to install
 
-- **Three stacks** — Next.js (App Router), React + Vite, Spring Boot.
-- **Backends** — Supabase, PostgreSQL, Spring Boot, or none.
-- **Styling** — Tailwind CSS or CSS Modules.
-- **Lean agent docs** — `AGENTS.md` (always on) + `RULES.md` (lazy index) generated for every project.
-- **Manifest-driven** — 20 `*.manifest.json` files drive folders, dependencies, env vars, snippets, and concern wiring. No hardcoded tables.
-- **Optional concerns, never mandated** — validation/Zod, data fetching, state, env validation, URL state, and forms are listed but never forced; an advisory prompt only annotates `CONTEXT.md`.
-- **Real plumbing** — `package.json`, `.env.example`, and `src/lib/env.ts` are generated from manifest fields.
-- **Optional extras** — Makefile, Docker Compose, and GitHub Actions CI, toggled by the interview.
+### Lane 1 — To run *this generator*
+**Node 24 LTS *OR* Docker — that's it.**
+
+- No global `prettier`, `eslint`, or `typescript` — they are generated inside your project (`package.json` devDeps + `.prettierrc` + `.editorconfig` + `eslint.config` via `lib/scaffold.js`).
+- Prefer zero host setup? Use Docker (all `make` commands use the catalog's tested Node image, CI-aligned).
+
+### Lane 2 — To run *what it generates* (depends on your answers)
+| You picked | You need | What the generator includes |
+|---|---|---|
+| **Next.js** or **React + Vite** | Node 24 LTS → `npm install` → `npm run dev` | Page/entry, Vite/Next config, strict TS, ESLint, tests, `frontend/.env.example` |
+| **Expo** | Node 24 LTS + Expo Go app → `npm install` → `npx expo start` | Expo Router layout/screen, `app.json`, Jest, TS |
+| **Supabase** | No extra install (uses your Supabase project) | Browser/server clients, Proxy session refresh, PKCE `callback` route, typed client |
+| **Spring Boot / PostgreSQL** | JDK 21 + Docker for DB **only if you selected them** | Maven app, Security deny-by-default, health endpoint, Flyway, `backend/.env.example`; `docker-compose.yml` only if you toggled Docker/Make in the interview |
+
+**Hybrid:** the exact commands for *your* stack live in the README inside `./your-project` and `docs/guides/setup.md` — no duplication here. If you didn't enable Docker/Make, no compose file is generated.
 
 ## Quick start
 
-Clone and run — no host Node needed (everything is dockerized):
+**Docker-first (no host Node needed):**
 
 ```bash
 git clone https://github.com/itsw1n/create-win-project && cd create-win-project
-make build   # builds node:20-alpine image (CI-aligned)
-make run     # interactive CLI
-make test    # run tests
+make build   # builds the tested Node image (CI-aligned)
+make run     # interactive interview — answer stack, styling, extras
+make test    # run vitest (also dockerized)
+# make help → grouped list (Core, Checks)
 ```
 
-All `make` commands run inside Docker — see `make help` for grouped list (`Core`, `Checks`).
-
-If you already have Node 20+, you can still use `npx create-win-project` directly, but `make` always uses Docker for zero conflict.
-
-Answer a few questions (project name, frontend, backend, styling, extras) and a ready-to-run project appears in `./<your-project>`.
+<details>
+<summary>Prefer host Node?</summary>
 
 ```bash
-# then, inside the new project
+npx create-win-project   # or: npm install && node index.js
+# then follow the same interview
+```
+
+Requires Node 24 LTS. Still dockerizes the *generated* app only if you enabled it.
+
+</details>
+
+**Then run what you generated:**
+
+```bash
+# Next.js or Expo
 cd your-project
+npm install
+npm run dev        # or: npx expo start for Expo
+
+# React + Vite (frontend workspace)
+cd your-project/frontend
 npm install
 npm run dev
 ```
+
+> The generator **never overwrites a non-empty folder** — it stages to a temp dir and moves into place only on success.
+
+## Features
+
+- **Three frontend families** — Next.js App Router, React + Vite, and Expo Router.
+- **Backends** — Supabase, PostgreSQL, Spring Boot, or none.
+- **Styling** — Tailwind CSS or CSS Modules (native-styles for Expo).
+- **Lean agent docs** — `AGENTS.md` (tiny, always on) + `RULES.md` (lazy index) generated per project.
+- **Manifest-driven** — `*.manifest.json` drives compatibility, deps, env prefixes (`NEXT_PUBLIC_`/`VITE_`/`EXPO_PUBLIC_`), folders, and concern wiring.
+- **Tested compatibility profiles** — exact direct dependencies and runtime/container versions are resolved from one catalog; current and previous profiles are verified in CI.
+- **Optional concerns, never mandated** — validation/Zod, data-fetching, state, t3-env, URL state are advisory (`CONTEXT.md` only) not forced.
+- **Runnable foundations** — health endpoints, security headers, Supabase SSR plumbing, Spring Security deny-by-default, Playwright/JUnit opt-in.
+- **Safety + contracts** — destination-exists guard, manifest ↔ heading checks, and an 8-combo generated-output matrix (files, env naming, playbook routing).
 
 ## What you get
 
@@ -64,15 +115,16 @@ npm run dev
 | `AGENTS.md` | Lean, always-loaded guidance for your coding agent. |
 | `RULES.md` | Lazy index — `concern → playbook §`. Read only what you touch. |
 | `CONTEXT.md` | Project context + any advisory "expected concerns". |
-| `playbooks/` | The curated rule playbooks (shipped lean). |
+| `playbooks/` | Curated rule playbooks (shipped lean). |
 | `package.json` | Generated from the selected stack's manifest. |
-| `.env.example` | Generated from the stack's declared env vars. |
-| `src/lib/env.ts` | Typed env access, extracted from the env playbook snippet. |
+| `create-win-project.profile.json` | Records the compatibility profile and runtimes used to create the project. |
+| `.env.example` | Generated from the stack's declared env vars (prefixes already applied). |
+| Framework source/config | A working page or screen, health endpoint where applicable, strict TypeScript, lint, tests, and build scripts. |
 | `Makefile` / `docker-compose.yml` / `.github/workflows` | Optional, interview-toggled. |
 
 ## How it works
 
-The generator never hardcodes the folder or playbook list. It loads `playbooks/**/*.manifest.json` and resolves a *stack* from your answers:
+The generator never hardcodes the folder or playbook list. It loads `playbooks/**/*.manifest.json` and resolves a *stack*:
 
 ```jsonc
 // playbooks/stack/nextjs.manifest.json (excerpt)
@@ -80,17 +132,16 @@ The generator never hardcodes the folder or playbook list. It loads `playbooks/*
   "id": "nextjs",
   "kind": "frontend",
   "label": "Next.js",
-  "appliesTo": { "backend": ["supabase", "springboot", "postgresql"] },
+  "appliesTo": { "backend": ["supabase", "springboot", "postgres"] },
   "folders": ["src/app", "src/components/ui", "src/features"],
-  "deps": { "next": "^15", "react": "^19", "react-dom": "^19" },
-  "env": ["NEXT_PUBLIC_API_URL"],
+  "deps": ["next", "react", "react-dom"],
   "concerns": [
     { "id": "validation", "required": false, "when": "runtime validation needed", "sections": ["Zod for Runtime Validation"] }
   ]
 }
 ```
 
-Add a new stack or concern by dropping a manifest — no code changes required.
+Versions are resolved from `compatibility/profiles.json`; manifests never own them. The current tested profile is the default, while `--profile=YYYY.MM` selects a retained profile explicitly. Add a policy-only concern with a manifest + playbook. A new executable stack also needs a focused `lib/scaffold.js` implementation and a contract test — this prevents docs from advertising code that doesn't exist.
 
 ## Topics
 
@@ -100,8 +151,9 @@ Next.js · React · Spring Boot · Supabase · PostgreSQL · TypeScript · Tailw
 
 1. Fork and create a feature branch.
 2. `npm install` and `npm test` must stay green.
-3. Add or update a `*.manifest.json` for new stacks/concerns.
-4. Open a pull request.
+3. Add or update a `*.manifest.json` for new stacks/concerns; put package versions only in `compatibility/profiles.json`.
+4. Run `npm run verify:generated -- --profile=2026.09 --case=nextjs-supabase` for a focused executable check. CI runs every supported combination and retained profile.
+5. Document migration work for major upgrades, then open a pull request.
 
 ## License
 

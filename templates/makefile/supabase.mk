@@ -3,6 +3,7 @@
 # =============================================================================
 
 .DEFAULT_GOAL := help
+NPM_DIR := {{FRONTEND_DIR}}
 
 .PHONY: help dev build lint test test-e2e db-start db-stop db-reset db-types init
 
@@ -11,19 +12,19 @@ help: ## Show all commands
 		| awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
 dev: ## Start dev server + Supabase local
-	npx supabase start && npm run dev
+	npx supabase start && npm --prefix $(NPM_DIR) run dev
 
 build: ## Build frontend for production
-	npm run build
+	npm --prefix $(NPM_DIR) run build
 
 lint: ## Run ESLint
-	npm run lint
+	npm --prefix $(NPM_DIR) run lint
 
 test: ## Run Vitest
-	npm run test
+	npm --prefix $(NPM_DIR) run test --if-present
 
 test-e2e: ## Run Playwright E2E tests
-	npm run test:e2e
+	npm --prefix $(NPM_DIR) run test:e2e --if-present
 
 db-start: ## Start local Supabase stack
 	npx supabase start

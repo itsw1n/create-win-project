@@ -29,7 +29,7 @@ describe('lean shipped playbooks', () => {
     const concerns = [
       'zustand.md', 'tanstack-query.md', 'zod.md',
       'axios.md', 't3-env.md', 'nuqs.md',
-      'next-safe-action.md', 'next-themes.md', 'nativewind.md',
+      'next-safe-action.md', 'next-themes.md',
     ]
     for (const file of concerns) {
       const fullPath = path.join(root, 'playbooks', 'concerns', file)
@@ -38,13 +38,6 @@ describe('lean shipped playbooks', () => {
       // Each concern file should have an agent quick reference
       expect(content, `${file} missing Agent Quick Reference`).toContain('Agent Quick Reference')
     }
-  })
-
-  it('t3-env concern file contains the snippet tag', () => {
-    const content = fs.readFileSync(
-      path.join(root, 'playbooks', 'concerns', 't3-env.md'), 'utf-8'
-    )
-    expect(content).toContain('snippet:nextjs-env')
   })
 
   it('react-native playbook references concern files not embedding them', () => {

@@ -7,8 +7,9 @@ RUN npm run build
 
 FROM node:20-alpine AS production
 WORKDIR /app
-COPY --from=builder /app/.next ./.next
+ENV NODE_ENV=production
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/package.json ./package.json
 EXPOSE {{FRONTEND_PORT}}
-CMD ["npm", "run", "start"]
+CMD ["node", "server.js"]

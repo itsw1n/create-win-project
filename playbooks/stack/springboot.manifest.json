@@ -7,12 +7,9 @@
   "needsDocker": true,
   "makefileTemplate": "springboot",
   "folders": [
-    "backend/src/main/java/{{PACKAGE_PATH}}/auth/dto",
-    "backend/src/main/java/{{PACKAGE_PATH}}/auth/entity",
     "backend/src/main/java/{{PACKAGE_PATH}}/config",
     "backend/src/main/java/{{PACKAGE_PATH}}/common/exception",
     "backend/src/main/java/{{PACKAGE_PATH}}/common/response",
-    "backend/src/main/java/{{PACKAGE_PATH}}/common/jwt",
     "backend/src/main/java/{{PACKAGE_PATH}}/common/audit",
     "backend/src/main/resources/db/migration",
     "backend/src/main/resources/db/dev",
@@ -20,11 +17,11 @@
   ],
   "deps": {},
   "devDeps": {},
-  "env": ["DATABASE_URL", "JWT_SECRET", "JWT_REFRESH_SECRET"],
-  "clientEnv": [],
+  "env": ["API_URL", "DATABASE_URL", "POSTGRES_USER", "POSTGRES_PASSWORD", "POSTGRES_DB", "SPRING_PROFILES_ACTIVE"],
+  "clientEnv": ["API_URL"],
   "constraints": [
-    "Spring Boot owns ALL business logic, auth (JWT), and data access",
-    "Auth tokens come from Spring Boot and are attached to every request"
+    "Spring Boot owns server-side business logic, authorization, and data access",
+    "Security starts deny-by-default; add authentication through Spring Security rather than hand-rolled token code"
   ],
   "concerns": [
     { "id": "layers", "required": true, "playbook": "stack/springboot.md", "sections": ["Controller — HTTP Only", "Service — Business Logic Only", "Repository — DB Only"] },

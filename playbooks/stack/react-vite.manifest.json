@@ -14,7 +14,6 @@
   "envPrefix": "VITE_",
   "dockerTemplate": "vite",
   "agentsTemplate": "react-vite",
-  "readmeTemplate": "react-vite",
   "gitignoreTemplate": "react-vite",
   "folders": [
     "frontend/src/app", "frontend/src/pages", "frontend/src/features",
@@ -23,17 +22,26 @@
     "frontend/src/stores", "frontend/src/lib", "frontend/src/hooks",
     "frontend/src/types", "frontend/src/constants", "frontend/e2e", "frontend/public"
   ],
-  "deps": { "react": "^18", "react-dom": "^18" },
-  "devDeps": { "vite": "^5", "typescript": "^5", "@vitejs/plugin-react": "^4" },
-  "env": ["VITE_API_URL"],
-  "clientEnv": ["VITE_API_URL"],
+  "deps": { "react": "^19.2.8", "react-dom": "^19.2.8" },
+  "devDeps": {
+    "vite": "^8.2.2",
+    "typescript": "^6.0.3",
+    "@vitejs/plugin-react": "^6.1.1",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9.39.5",
+    "@eslint/js": "^9.39.5",
+    "typescript-eslint": "^8"
+  },
+  "env": [],
+  "clientEnv": [],
   "constraints": [
     "SPA exposes everything to the browser — never use the service role key client-side",
     "Full Docker: React + backend + PostgreSQL for Spring Boot combos"
   ],
   "concerns": [
     { "id": "data-flow", "required": true, "playbook": "stack/react-vite.md", "sections": ["Data Flow", "Feature API Pattern"] },
-    { "id": "http-client", "required": true, "playbook": "concerns/axios.md", "sections": ["One Shared Client", "Service Calls apiClient, Hook Calls Service"] },
+    { "id": "http-client", "required": false, "when": "The app adopts Axios instead of the native fetch client", "playbook": "concerns/axios.md", "sections": ["One Shared Client", "Service Calls apiClient, Hook Calls Service"] },
     { "id": "validation", "required": false, "when": "Project has forms / runtime input", "playbook": "concerns/zod.md", "sections": ["Schema First, Always", "Web Form (React Hook Form)"] },
     { "id": "query", "required": false, "when": "Client needs cached server state", "playbook": "concerns/tanstack-query.md", "sections": ["Read Hook", "Mutation Hook"] },
     { "id": "state", "required": false, "when": "Shared UI state across pages", "playbook": "concerns/zustand.md", "sections": ["Store Setup"] }

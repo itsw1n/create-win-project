@@ -1031,47 +1031,16 @@ public class GlobalExceptionHandler {
 
 ---
 
-# 20. JWT Pattern
+# 20. Advanced JWT Pattern (Not the Default)
 
-```java
-@Service
-public class JwtService {
-
-    @Value("${app.jwt.secret}")
-    private String secret;
-
-    @Value("${app.jwt.expires-in}")
-    private long expiresIn;
-
-    public String generateAccessToken(String userId) {
-        return Jwts.builder()
-            .subject(userId)
-            .issuedAt(new Date())
-            .expiration(new Date(System.currentTimeMillis() + expiresIn))
-            .signWith(getSigningKey())
-            .compact();
-    }
-
-    public String extractUserId(String token) {
-        return getClaims(token).getSubject();
-    }
-
-    public boolean isTokenValid(String token) {
-        try { getClaims(token); return true; }
-        catch (JwtException e) { return false; }
-    }
-
-    private Claims getClaims(String token) {
-        return Jwts.parser()
-            .verifyWith(getSigningKey()).build()
-            .parseSignedClaims(token).getPayload();
-    }
-
-    private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
-    }
-}
-```
+Prefer Spring Security with a maintained identity provider or a server-managed
+session for browser applications. Implement bearer JWT issuance only when the
+system architecture requires independently verifiable tokens. A complete design
+must also define issuer and audience validation, algorithm pinning, signing-key
+rotation, revocation, refresh-token hashing/rotation/reuse detection, abuse
+controls, and logout behavior. Do not assemble this protocol from a short code
+snippet. Use the provider's Spring Security integration and test invalid issuer,
+audience, signature, expiry, revocation, and authorization cases.
 
 ---
 
@@ -1079,33 +1048,24 @@ public class JwtService {
 
 ```java
 @Configuration
-@EnableWebSecurity
 @EnableMethodSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
-
-    private final JwtFilter jwtFilter;
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
-            .csrf(AbstractHttpConfigurer::disable)
-            .sessionManagement(s -> s.sessionCreationPolicy(STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/actuator/health").permitAll()
-                .anyRequest().authenticated()
+                .requestMatchers("/api/health", "/actuator/health").permitAll()
+                .anyRequest().denyAll()
             )
-            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
             .build();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 }
 ```
+
+This is the generated fail-closed baseline. When an identity provider is chosen,
+replace `denyAll()` only for explicitly protected routes and keep method/resource
+authorization close to the operation. Keep CSRF enabled for cookie/browser
+credentials; disable it only for a documented, strictly bearer-header API.
 
 ---
 
@@ -1125,19 +1085,12 @@ spring:
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
   jpa:
+    open-in-view: false
     hibernate:
       ddl-auto: validate
     show-sql: false
   flyway:
     enabled: true
-
-app:
-  jwt:
-    secret: ${JWT_SECRET}
-    refresh-secret: ${JWT_REFRESH_SECRET}
-    expires-in: ${JWT_EXPIRES_IN:900000}
-    refresh-expires: ${JWT_REFRESH_EXPIRES:604800000}
-
 # application-dev.yml
 spring:
   jpa:
@@ -1149,15 +1102,15 @@ logging:
 # application-test.yml
 spring:
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/testdb}
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:postgres}
+    url: jdbc:h2:mem:testdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+  flyway:
+    enabled: false
   jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
     show-sql: false
-app:
-  jwt:
-    secret: ${JWT_SECRET:test-secret-value-at-least-32-characters-long}
-    refresh-secret: ${JWT_REFRESH_SECRET:test-refresh-secret-at-least-32-chars}
 logging:
   level:
     root: WARN

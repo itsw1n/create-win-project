@@ -5,6 +5,6 @@
   "required": false,
   "folders": [],
   "concerns": [
-    { "id": "docker", "required": true, "sections": ["Dev/prod compose", "Dockerfiles"] }
+    { "id": "docker", "required": true, "sections": ["Dev vs Prod Differences", "Dockerfiles"] }
   ]
 }

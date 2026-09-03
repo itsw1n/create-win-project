@@ -108,7 +108,7 @@ src/
 │       └── types/
 │
 ├── components/
-│   ├── ui/                       → shadcn/ui + custom primitives
+│   ├── ui/                       → framework-appropriate UI primitives
 │   ├── shared/                   → app-aware reusables
 │   └── layout/                   → Navbar, Sidebar, Footer
 │
@@ -117,7 +117,6 @@ src/
 │   ├── supabase/                 → Supabase clients (if Supabase)
 │   │   ├── client.ts
 │   │   ├── server.ts
-│   │   └── admin.ts
 │   ├── safe-action.ts            → next-safe-action client
 │   ├── errors.ts                 → AppError class
 │   └── logger.ts

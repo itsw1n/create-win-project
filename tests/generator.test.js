@@ -1,0 +1,168 @@
+import { afterEach, describe, expect, it } from 'vitest'
+import fs from 'fs-extra'
+import os from 'node:os'
+import path from 'node:path'
+import { generateProject } from '../lib/generator.js'
+
+const root = path.resolve(import.meta.dirname, '..')
+const temporaryDirectories = []
+
+async function generate(overrides) {
+  const workingDirectory = await fs.mkdtemp(path.join(os.tmpdir(), 'create-win-project-test-'))
+  temporaryDirectories.push(workingDirectory)
+  const previous = process.cwd()
+  process.chdir(workingDirectory)
+  try {
+    await generateProject({
+      projectName: 'example-app',
+      projectDescription: 'A runnable test fixture',
+      frontend: 'nextjs',
+      backend: 'supabase',
+      styling: 'tailwind',
+      architecture: 'medium',
+      testing: 'basic',
+      docker: false,
+      makefile: false,
+      githubActions: true,
+      expectedConcerns: [],
+      ...overrides,
+    }, root)
+  } finally {
+    process.chdir(previous)
+  }
+  return path.join(workingDirectory, overrides.projectName || 'example-app')
+}
+
+afterEach(async () => {
+  await Promise.all(temporaryDirectories.splice(0).map((directory) => fs.remove(directory)))
+})
+
+describe('runnable project contract', () => {
+  it.each([
+    ['nextjs', 'supabase', 'tailwind'],
+    ['nextjs', 'springboot', 'css-modules'],
+    ['nextjs', 'postgres', 'tailwind'],
+    ['react', 'supabase', 'tailwind'],
+    ['react', 'springboot', 'css-modules'],
+    ['react-native', 'supabase', undefined],
+    ['react-native', 'springboot', undefined],
+    ['react-native', 'none', undefined],
+  ])('generates the required foundation for %s + %s', async (frontend, backend, styling) => {
+    const destination = await generate({
+      frontend,
+      backend,
+      styling,
+      packageName: backend === 'springboot' ? 'com.example' : undefined,
+      projectName: `${frontend}-${backend}`,
+    })
+    const packageRoot = frontend === 'react' ? path.join(destination, 'frontend') : destination
+    const packageJson = await fs.readJson(path.join(packageRoot, 'package.json'))
+    expect(packageJson.scripts.dev).toBeTruthy()
+    expect(packageJson.scripts.build).toBeTruthy()
+    expect(packageJson.scripts.typecheck).toBeTruthy()
+    expect(await fs.pathExists(path.join(destination, 'AGENTS.md'))).toBe(true)
+    expect(await fs.readFile(path.join(destination, 'RULES.md'), 'utf8')).not.toMatch(/section not found|MISSING/)
+    if (frontend === 'nextjs') expect(await fs.pathExists(path.join(destination, 'src/app/page.tsx'))).toBe(true)
+    if (frontend === 'react') expect(await fs.pathExists(path.join(destination, 'frontend/src/main.tsx'))).toBe(true)
+    if (frontend === 'react-native') expect(await fs.pathExists(path.join(destination, 'app/_layout.tsx'))).toBe(true)
+    if (backend === 'springboot') expect(await fs.pathExists(path.join(destination, 'backend/pom.xml'))).toBe(true)
+  })
+
+  it('makes the testing choice real', async () => {
+    const destination = await generate({ testing: 'none', projectName: 'without-tests' })
+    const packageJson = await fs.readJson(path.join(destination, 'package.json'))
+    expect(packageJson.scripts.test).toBeUndefined()
+    expect(packageJson.devDependencies.vitest).toBeUndefined()
+    expect(await fs.pathExists(path.join(destination, 'src/app/page.test.tsx'))).toBe(false)
+    expect(await fs.readFile(path.join(destination, '.github/workflows/ci-frontend.yml'), 'utf8')).not.toContain('npm run test')
+  })
+
+  it('removes Spring test fixtures and CI steps when testing is none', async () => {
+    const destination = await generate({
+      frontend: 'react', backend: 'springboot', styling: 'css-modules', testing: 'none',
+      packageName: 'com.example', projectName: 'spring-without-tests',
+    })
+    const pom = await fs.readFile(path.join(destination, 'backend/pom.xml'), 'utf8')
+    const workflow = await fs.readFile(path.join(destination, '.github/workflows/ci-backend.yml'), 'utf8')
+    expect(await fs.pathExists(path.join(destination, 'backend/src/test/resources/application.yml'))).toBe(false)
+    expect(pom).not.toContain('spring-boot-starter-webmvc-test')
+    expect(pom).not.toContain('spring-security-test')
+    expect(workflow).not.toContain('mvn --batch-mode test')
+  })
+
+  it('generates current Supabase SSR session plumbing for Next.js', async () => {
+    const destination = await generate({ projectName: 'supabase-auth' })
+    for (const file of [
+      'src/lib/supabase/client.ts',
+      'src/lib/supabase/server.ts',
+      'src/lib/supabase/proxy.ts',
+      'src/proxy.ts',
+      'src/app/auth/callback/route.ts',
+    ]) expect(await fs.pathExists(path.join(destination, file))).toBe(true)
+    const env = await fs.readFile(path.join(destination, '.env.example'), 'utf8')
+    expect(env).toContain('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY')
+    expect(env).not.toContain('NEXT_PUBLIC_NEXT_PUBLIC_')
+    expect(env).not.toContain('SERVICE_ROLE')
+  })
+
+  it('uses backend-specific public values in frontend CI', async () => {
+    const destination = await generate({ frontend: 'react', backend: 'supabase', projectName: 'vite-ci' })
+    const workflow = await fs.readFile(path.join(destination, '.github/workflows/ci-frontend.yml'), 'utf8')
+    expect(workflow).toContain('VITE_SUPABASE_URL')
+    expect(workflow).toContain('VITE_SUPABASE_PUBLISHABLE_KEY')
+    expect(workflow).not.toContain('VITE_API_URL')
+  })
+
+  it('does not invent Spring authentication secrets or external test services', async () => {
+    const destination = await generate({
+      frontend: 'react', backend: 'springboot', styling: 'css-modules',
+      packageName: 'com.example', projectName: 'spring-ci',
+    })
+    const workflow = await fs.readFile(path.join(destination, '.github/workflows/ci-backend.yml'), 'utf8')
+    expect(workflow).not.toContain('JWT_SECRET')
+    expect(workflow).not.toContain('services:')
+  })
+
+  it('renders Docker paths relative to each build context', async () => {
+    const destination = await generate({
+      frontend: 'react', backend: 'springboot', styling: 'css-modules', docker: true,
+      packageName: 'com.example', projectName: 'docker-context',
+    })
+    const compose = await fs.readFile(path.join(destination, 'docker-compose.yml'), 'utf8')
+    expect(compose).toContain('context: frontend')
+    expect(compose).toContain('dockerfile: Dockerfile.dev')
+    expect(compose).toContain('./frontend:/app')
+    expect(compose).not.toContain('dockerfile: frontend/Dockerfile.dev')
+  })
+
+  it('does not approximate Supabase with a bare PostgreSQL container', async () => {
+    const destination = await generate({ docker: true, projectName: 'supabase-compose' })
+    const compose = await fs.readFile(path.join(destination, 'docker-compose.yml'), 'utf8')
+    expect(compose).toContain('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY')
+    expect(compose).not.toContain('image: postgres')
+  })
+
+  it('refuses to overwrite a non-empty destination', async () => {
+    const workingDirectory = await fs.mkdtemp(path.join(os.tmpdir(), 'create-win-project-test-'))
+    temporaryDirectories.push(workingDirectory)
+    await fs.ensureDir(path.join(workingDirectory, 'occupied'))
+    await fs.writeFile(path.join(workingDirectory, 'occupied/keep.txt'), 'mine')
+    const previous = process.cwd()
+    process.chdir(workingDirectory)
+    try {
+      await expect(generateProject({
+        projectName: 'occupied', projectDescription: 'Must remain safe', frontend: 'nextjs',
+        backend: 'supabase', styling: 'tailwind', testing: 'none',
+      }, root)).rejects.toThrow(/already exists/)
+    } finally {
+      process.chdir(previous)
+    }
+    expect(await fs.readFile(path.join(workingDirectory, 'occupied/keep.txt'), 'utf8')).toBe('mine')
+  })
+
+  it('escapes arbitrary descriptions into valid source text', async () => {
+    const destination = await generate({ projectName: 'escaped-description', projectDescription: `It's <useful>\nand safe` })
+    const page = await fs.readFile(path.join(destination, 'src/app/page.tsx'), 'utf8')
+    expect(page).toContain(`{"It's <useful>\\nand safe"}`)
+  })
+})

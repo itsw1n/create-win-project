@@ -1,0 +1,13 @@
+{
+  "id": "security-baseline",
+  "kind": "universal",
+  "label": "Security Baseline",
+  "required": true,
+  "folders": [],
+  "concerns": [
+    { "id": "web-security", "required": true, "sections": ["Trust Boundaries", "Browser Sessions and Cookies", "CSRF, CORS, and Request Integrity", "Web Security Headers"] },
+    { "id": "token-security", "required": true, "sections": ["Access and Refresh Tokens"] },
+    { "id": "secret-safety", "required": true, "sections": ["Secrets, Logging, and Errors"] }
+  ]
+}
+

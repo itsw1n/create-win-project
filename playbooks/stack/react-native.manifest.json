@@ -8,50 +8,44 @@
   "needsDocker": false,
   "frontendDir": "",
   "supportsArchitecture": false,
-  "stylingOptions": ["nativewind"],
+  "stylingOptions": ["native-styles"],
   "scripts": { "dev": "expo start", "build": "expo export", "test": "jest --passWithNoTests" },
   "ciTemplate": "expo",
   "envPrefix": "EXPO_PUBLIC_",
   "agentsTemplate": "react-native",
-  "readmeTemplate": "react-native",
   "gitignoreTemplate": "react-native",
   "folders": [
     "app", "features", "components/ui", "components/shared",
     "stores", "lib", "config", "types", "schemas"
   ],
   "deps": {
-    "expo": "~52.0.0",
-    "expo-router": "~4.0.0",
-    "expo-secure-store": "~14.0.0",
-    "react": "18.3.2",
-    "react-native": "0.76.0",
-    "nativewind": "^4.0.0",
-    "@tanstack/react-query": "^5",
-    "zustand": "^5",
-    "react-hook-form": "^7",
-    "@hookform/resolvers": "^3",
-    "zod": "^3",
-    "axios": "^1"
+    "expo": "~57.0.19",
+    "expo-router": "~57.0.18",
+    "@expo/metro-runtime": "~57.0.15",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.86.3",
+    "react-native-web": "~0.21.0",
+    "react-native-safe-area-context": "~5.9.1"
   },
   "devDeps": {
-    "typescript": "^5",
-    "@types/react": "~18.3.0",
-    "tailwindcss": "^3.4.0"
+    "typescript": "^6.0.3",
+    "@types/react": "^19"
   },
-  "env": ["EXPO_PUBLIC_API_BASE_URL"],
-  "clientEnv": ["EXPO_PUBLIC_API_BASE_URL"],
+  "env": [],
+  "clientEnv": [],
   "constraints": [
     "No server boundary — every network call is a client-side side effect",
     "Expo managed workflow — no native build config required",
     "File-based routing via Expo Router (same mental model as Next.js App Router)",
-    "NativeWind for styling — Tailwind classes work on RN components",
+    "React Native StyleSheet by default — no styling compiler or web-CSS assumptions",
     "Auth tokens must use expo-secure-store — never AsyncStorage"
   ],
   "concerns": [
     { "id": "navigation", "required": true, "playbook": "stack/react-native.md", "sections": ["Navigation — Expo Router"] },
-    { "id": "styling", "required": true, "playbook": "concerns/nativewind.md", "sections": ["Key Differences from Web Tailwind", "Basic Component"] },
-    { "id": "http-client", "required": true, "playbook": "concerns/axios.md", "sections": ["One Shared Client", "Service Calls apiClient, Hook Calls Service"] },
-    { "id": "query", "required": true, "playbook": "concerns/tanstack-query.md", "sections": ["Read Hook", "Mutation Hook", "QueryClient Setup"] },
+    { "id": "styling", "required": true, "playbook": "styling/native-styles.md", "sections": ["Default", "Rules"] },
+    { "id": "http-client", "required": false, "when": "The app adopts Axios for a REST API", "playbook": "concerns/axios.md", "sections": ["One Shared Client", "Service Calls apiClient, Hook Calls Service"] },
+    { "id": "query", "required": false, "when": "The app needs cached remote server state", "playbook": "concerns/tanstack-query.md", "sections": ["Read Hook", "Mutation Hook", "QueryClient Setup"] },
     { "id": "state", "required": false, "when": "Shared state across multiple screens", "playbook": "concerns/zustand.md", "sections": ["Store Setup", "Auth Store Pattern"] },
     { "id": "validation", "required": false, "when": "Project has forms", "playbook": "concerns/zod.md", "sections": ["Schema First, Always", "React Native Form (React Hook Form + Controller)"] }
   ]
