@@ -1,0 +1,16 @@
+{
+  "name": "create-win-project",
+  "build": {
+    "dockerfile": "../Dockerfile",
+    "context": ".."
+  },
+  "overrideCommand": true,
+  "workspaceFolder": "/workspace/create-win-project",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace/create-win-project,type=bind",
+  "postCreateCommand": "npm ci",
+  "customizations": {
+    "vscode": {
+      "extensions": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"]
+    }
+  }
+}
