@@ -8,7 +8,7 @@ const root      = path.resolve(__dirname, '..')
 
 describe('catalog loading', () => {
   it('loads all manifests including concerns', async () => {
-    const catalog = await loadCatalog(path.join(root, 'playbooks'))
+    const catalog = await loadCatalog(path.join(root, 'library'))
     expect(catalog.frontends.length).toBeGreaterThanOrEqual(3)       // nextjs, react, react-native
     expect(catalog.byId['react-native']).toBeDefined()
     expect(catalog.byId['none']).toBeDefined()
@@ -19,19 +19,19 @@ describe('catalog loading', () => {
 
 describe('interview helpers', () => {
   it('returns styling choices when frontend has >1 option', async () => {
-    const catalog = await loadCatalog(path.join(root, 'playbooks'))
+    const catalog = await loadCatalog(path.join(root, 'library'))
     const choices = stylingChoicesFor(catalog, 'nextjs')
     expect(choices.length).toBeGreaterThan(1)
   })
 
   it('returns empty styling choices for react-native (auto-select)', async () => {
-    const catalog = await loadCatalog(path.join(root, 'playbooks'))
+    const catalog = await loadCatalog(path.join(root, 'library'))
     const choices = stylingChoicesFor(catalog, 'react-native')
     expect(choices).toHaveLength(0)
   })
 
   it('includes "none" backend for react-native', async () => {
-    const catalog  = await loadCatalog(path.join(root, 'playbooks'))
+    const catalog  = await loadCatalog(path.join(root, 'library'))
     const choices  = backendChoicesFor(catalog, 'react-native')
     const values   = choices.map((c) => c.value)
     expect(values).toContain('none')
@@ -40,14 +40,14 @@ describe('interview helpers', () => {
   })
 
   it('includes "none" backend for every frontend', async () => {
-    const catalog  = await loadCatalog(path.join(root, 'playbooks'))
+    const catalog  = await loadCatalog(path.join(root, 'library'))
     for (const frontend of ['nextjs', 'react', 'react-native']) {
       expect(backendChoicesFor(catalog, frontend).map((choice) => choice.value)).toContain('none')
     }
   })
 
   it('offers Medium first for every supported stack combination', async () => {
-    const catalog = await loadCatalog(path.join(root, 'playbooks'))
+    const catalog = await loadCatalog(path.join(root, 'library'))
     for (const [frontend, backend] of [
       ['nextjs', 'none'], ['react', 'supabase'], ['react-native', 'springboot'],
     ]) {
@@ -59,7 +59,7 @@ describe('interview helpers', () => {
 
 describe('resolveStack — env prefix', () => {
   it('applies NEXT_PUBLIC_ prefix to nextjs client env vars', async () => {
-    const catalog = await loadCatalog(path.join(root, 'playbooks'))
+    const catalog = await loadCatalog(path.join(root, 'library'))
     const stack   = resolveStack({ frontend: 'nextjs', backend: 'supabase', styling: 'tailwind', architecture: 'medium' }, catalog)
     expect(stack.env.some((e) => e.startsWith('NEXT_PUBLIC_'))).toBe(true)
     // privileged keys are opt-in and are not scaffolded into a normal app
@@ -70,14 +70,14 @@ describe('resolveStack — env prefix', () => {
   })
 
   it('applies EXPO_PUBLIC_ prefix to react-native client env vars', async () => {
-    const catalog = await loadCatalog(path.join(root, 'playbooks'))
+    const catalog = await loadCatalog(path.join(root, 'library'))
     const stack   = resolveStack({ frontend: 'react-native', backend: 'supabase' }, catalog)
     expect(stack.env.some((e) => e.startsWith('EXPO_PUBLIC_'))).toBe(true)
     expect(stack.env).not.toContain('NEXT_PUBLIC_SUPABASE_URL')
   })
 
   it('applies VITE_ prefix to react-vite client env vars', async () => {
-    const catalog = await loadCatalog(path.join(root, 'playbooks'))
+    const catalog = await loadCatalog(path.join(root, 'library'))
     const stack   = resolveStack({ frontend: 'react', backend: 'supabase', styling: 'tailwind' }, catalog)
     expect(stack.env.some((e) => e.startsWith('VITE_'))).toBe(true)
   })
@@ -85,7 +85,7 @@ describe('resolveStack — env prefix', () => {
 
 describe('resolveStack — capability flags', () => {
   it('supports a backend-only Spring Boot application shape', async () => {
-    const catalog = await loadCatalog(path.join(root, 'playbooks'))
+    const catalog = await loadCatalog(path.join(root, 'library'))
     const stack = resolveStack({ frontend: 'no-frontend', backend: 'springboot', applicationShape: 'api' }, catalog)
     expect(stack.applicationShape).toBe('api')
     expect(stack.platform).toBe('api')
@@ -93,7 +93,7 @@ describe('resolveStack — capability flags', () => {
   })
 
   it('maps Laravel authentication from application shape and audience', async () => {
-    const catalog = await loadCatalog(path.join(root, 'playbooks'))
+    const catalog = await loadCatalog(path.join(root, 'library'))
     const spa = resolveStack({ frontend: 'react', backend: 'laravel', applicationShape: 'separate', authentication: 'yes' }, catalog)
     const api = resolveStack({ frontend: 'react-native', backend: 'laravel', applicationShape: 'mobile', authentication: 'yes' }, catalog)
     expect(spa.authentication).toBe('sanctum-spa')
@@ -101,7 +101,7 @@ describe('resolveStack — capability flags', () => {
     expect(spa.playbooks).toContain('capabilities/laravel/sanctum-spa.md')
   })
   it('nextjs + supabase produces correct capabilities', async () => {
-    const catalog = await loadCatalog(path.join(root, 'playbooks'))
+    const catalog = await loadCatalog(path.join(root, 'library'))
     const stack   = resolveStack({ frontend: 'nextjs', backend: 'supabase', styling: 'tailwind', architecture: 'medium' }, catalog)
     expect(stack.platform).toBe('web')
     expect(stack.isMobile).toBe(false)
@@ -114,7 +114,7 @@ describe('resolveStack — capability flags', () => {
   })
 
   it('react-native + supabase produces correct capabilities', async () => {
-    const catalog = await loadCatalog(path.join(root, 'playbooks'))
+    const catalog = await loadCatalog(path.join(root, 'library'))
     const stack   = resolveStack({ frontend: 'react-native', backend: 'supabase' }, catalog)
     expect(stack.platform).toBe('mobile')
     expect(stack.isMobile).toBe(true)
@@ -127,7 +127,7 @@ describe('resolveStack — capability flags', () => {
   })
 
   it('react-native + none produces correct capabilities', async () => {
-    const catalog = await loadCatalog(path.join(root, 'playbooks'))
+    const catalog = await loadCatalog(path.join(root, 'library'))
     const stack   = resolveStack({ frontend: 'react-native', backend: 'none' }, catalog)
     expect(stack.platform).toBe('mobile')
     expect(stack.backendKey).toBe('none')
@@ -135,7 +135,7 @@ describe('resolveStack — capability flags', () => {
   })
 
   it('rejects invalid frontend/backend pairing', async () => {
-    const catalog = await loadCatalog(path.join(root, 'playbooks'))
+    const catalog = await loadCatalog(path.join(root, 'library'))
     expect(() => resolveStack({ frontend: 'nextjs', backend: 'missing', styling: 'tailwind' }, catalog))
       .toThrow(/Unknown backend/)
   })
@@ -143,7 +143,7 @@ describe('resolveStack — capability flags', () => {
 
 describe('resolveStack — concerns', () => {
   it('react-native keeps only platform foundations required', async () => {
-    const catalog    = await loadCatalog(path.join(root, 'playbooks'))
+    const catalog    = await loadCatalog(path.join(root, 'library'))
     const stack      = resolveStack({ frontend: 'react-native', backend: 'supabase' }, catalog)
     const reqIds     = stack.concerns.filter((c) => c.required).map((c) => c.id)
     expect(reqIds).toContain('styling')
@@ -153,14 +153,14 @@ describe('resolveStack — concerns', () => {
   })
 
   it('react-native concerns point to concerns/ playbooks for shared concerns', async () => {
-    const catalog   = await loadCatalog(path.join(root, 'playbooks'))
+    const catalog   = await loadCatalog(path.join(root, 'library'))
     const stack     = resolveStack({ frontend: 'react-native', backend: 'supabase' }, catalog)
     const queryConcern = stack.concerns.find((c) => c.id === 'query')
     expect(queryConcern?.playbook).toBe('concerns/tanstack-query.md')
   })
 
   it('nextjs optional concerns do not appear for react-native', async () => {
-    const catalog  = await loadCatalog(path.join(root, 'playbooks'))
+    const catalog  = await loadCatalog(path.join(root, 'library'))
     const rnStack  = resolveStack({ frontend: 'react-native', backend: 'supabase' }, catalog)
     const ids      = rnStack.concerns.map((c) => c.id)
     expect(ids).not.toContain('t3-env')

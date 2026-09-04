@@ -1,6 +1,6 @@
 import fs from 'fs-extra'
 
-const catalog = await fs.readJson(new URL('../compatibility/profiles.json', import.meta.url))
+const catalog = await fs.readJson(new URL('../library/tested-versions.json', import.meta.url))
 const scope = process.argv.find((arg) => arg.startsWith('--scope='))?.split('=')[1] || 'smoke'
 if (!['smoke', 'full'].includes(scope)) throw new Error('--scope must be smoke or full')
 

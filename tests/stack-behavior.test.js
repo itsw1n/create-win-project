@@ -27,7 +27,7 @@ describe('existing resolved stack behavior', () => {
   it.each(existingStacks)(
     'preserves %s: %s + %s',
     async (applicationShape, frontend, backend, platform, styleId, ciTemplate, makefileTemplate) => {
-      const catalog = await loadCatalog(path.join(root, 'playbooks'))
+      const catalog = await loadCatalog(path.join(root, 'library'))
       const stack = resolveStack({ frontend, backend, applicationShape }, catalog)
 
       expect(stack).toMatchObject({

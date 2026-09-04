@@ -1,0 +1,11 @@
+{
+  "id": "pr-template",
+  "kind": "devops",
+  "label": "PR Template",
+  "file": "devops/pr-template.md",
+  "required": false,
+  "folders": [],
+  "concerns": [
+    { "id": "pr", "required": true, "sections": ["Template"] }
+  ]
+}

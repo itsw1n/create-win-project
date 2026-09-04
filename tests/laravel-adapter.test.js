@@ -13,7 +13,7 @@ import { getLaravelUi, laravelUiPromptContribution, laravelUis } from '../lib/st
 const root = path.resolve(import.meta.dirname, '..')
 
 async function laravelStack(overrides = {}) {
-  const catalog = await loadCatalog(path.join(root, 'playbooks'))
+  const catalog = await loadCatalog(path.join(root, 'library'))
   return resolveStack({
     frontend: 'no-frontend',
     backend: 'laravel',

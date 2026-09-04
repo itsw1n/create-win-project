@@ -9,9 +9,9 @@ const root      = path.resolve(__dirname, '..')
 
 describe('buildRulesIndex — nextjs', () => {
   it('produces always-on and optional groups with § refs', async () => {
-    const catalog = await loadCatalog(path.join(root, 'playbooks'))
+    const catalog = await loadCatalog(path.join(root, 'library'))
     const stack   = resolveStack({ frontend: 'nextjs', backend: 'supabase', styling: 'tailwind', githubActions: true }, catalog)
-    const out     = await buildRulesIndex(stack, catalog, path.join(root, 'playbooks'))
+    const out     = await buildRulesIndex(stack, catalog, path.join(root, 'library'))
     expect(out).toContain('## Always-on Invariants')
     expect(out).toContain('## Optional Concerns')
     expect(out).toContain('§')
@@ -22,9 +22,9 @@ describe('buildRulesIndex — nextjs', () => {
 
 describe('buildRulesIndex — react-native', () => {
   it('includes mobile-specific required concerns', async () => {
-    const catalog = await loadCatalog(path.join(root, 'playbooks'))
+    const catalog = await loadCatalog(path.join(root, 'library'))
     const stack   = resolveStack({ frontend: 'react-native', backend: 'supabase' }, catalog)
-    const out     = await buildRulesIndex(stack, catalog, path.join(root, 'playbooks'))
+    const out     = await buildRulesIndex(stack, catalog, path.join(root, 'library'))
     expect(out).toContain('navigation')
     expect(out).toContain('styling')
     expect(out).toContain('query')
@@ -33,25 +33,25 @@ describe('buildRulesIndex — react-native', () => {
   })
 
   it('does not contain web-only concerns', async () => {
-    const catalog = await loadCatalog(path.join(root, 'playbooks'))
+    const catalog = await loadCatalog(path.join(root, 'library'))
     const stack   = resolveStack({ frontend: 'react-native', backend: 'supabase' }, catalog)
-    const out     = await buildRulesIndex(stack, catalog, path.join(root, 'playbooks'))
+    const out     = await buildRulesIndex(stack, catalog, path.join(root, 'library'))
     expect(out).not.toContain('t3-env')
     expect(out).not.toContain('url-state')
     expect(out).not.toContain('dark-mode')
   })
 
   it('shows platform in header', async () => {
-    const catalog = await loadCatalog(path.join(root, 'playbooks'))
+    const catalog = await loadCatalog(path.join(root, 'library'))
     const stack   = resolveStack({ frontend: 'react-native', backend: 'supabase' }, catalog)
-    const out     = await buildRulesIndex(stack, catalog, path.join(root, 'playbooks'))
+    const out     = await buildRulesIndex(stack, catalog, path.join(root, 'library'))
     expect(out).toContain("**Platform:** mobile")
   })
 })
 
 describe('collectPlaybookFiles', () => {
   it('includes concern files for react-native stack', async () => {
-    const catalog = await loadCatalog(path.join(root, 'playbooks'))
+    const catalog = await loadCatalog(path.join(root, 'library'))
     const stack   = resolveStack({ frontend: 'react-native', backend: 'supabase' }, catalog)
     const files   = collectPlaybookFiles(stack)
     expect(files.some((f) => f.startsWith('concerns/'))).toBe(true)
@@ -60,7 +60,7 @@ describe('collectPlaybookFiles', () => {
   })
 
   it('includes concern files for nextjs stack', async () => {
-    const catalog = await loadCatalog(path.join(root, 'playbooks'))
+    const catalog = await loadCatalog(path.join(root, 'library'))
     const stack   = resolveStack({ frontend: 'nextjs', backend: 'supabase', styling: 'tailwind' }, catalog)
     const files   = collectPlaybookFiles(stack)
     expect(files).toContain('stack/nextjs/architecture.md')
@@ -69,7 +69,7 @@ describe('collectPlaybookFiles', () => {
   })
 
   it('does not duplicate files', async () => {
-    const catalog = await loadCatalog(path.join(root, 'playbooks'))
+    const catalog = await loadCatalog(path.join(root, 'library'))
     const stack   = resolveStack({ frontend: 'react-native', backend: 'supabase' }, catalog)
     const files   = collectPlaybookFiles(stack)
     const unique  = new Set(files)

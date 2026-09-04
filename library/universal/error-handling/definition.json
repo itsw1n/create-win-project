@@ -1,0 +1,11 @@
+{
+  "id": "error-handling",
+  "kind": "universal",
+  "label": "Error Handling",
+  "file": "universal/error-handling.md",
+  "required": true,
+  "folders": [],
+  "concerns": [
+    { "id": "errors", "required": true, "sections": ["Error Contract", "Boundary Handling", "Security Rules for Errors"] }
+  ]
+}

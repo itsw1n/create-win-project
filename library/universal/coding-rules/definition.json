@@ -1,0 +1,13 @@
+{
+  "id": "coding-rules",
+  "kind": "universal",
+  "label": "Coding Rules",
+  "file": "universal/coding-rules.md",
+  "required": true,
+  "folders": [],
+  "devDeps": ["prettier"],
+  "concerns": [
+    { "id": "naming", "required": true, "sections": ["Naming", "Functions", "Imports", "Constants"] },
+    { "id": "no-debug", "required": true, "sections": ["No Debug Code in Commits", "One Thing Per File"] }
+  ]
+}

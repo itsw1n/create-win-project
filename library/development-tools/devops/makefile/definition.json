@@ -1,0 +1,11 @@
+{
+  "id": "makefile",
+  "kind": "devops",
+  "label": "Makefile",
+  "file": "devops/makefile.md",
+  "required": false,
+  "folders": [],
+  "concerns": [
+    { "id": "makefile", "required": true, "sections": ["Core Rules"] }
+  ]
+}

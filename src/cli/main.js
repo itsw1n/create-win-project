@@ -52,14 +52,14 @@ const laravelUiArg = args.laravelUi
 const wantsInstall = args.install
 const skipsInstall = args.noInstall
 const { profile } = await loadCompatibility(
-  path.join(projectRoot, 'compatibility/profiles.json'),
+  path.join(projectRoot, 'library/tested-versions.json'),
   profileArg,
 )
 if (args.doctor) {
   printDoctor(profile)
   process.exit(0)
 }
-const catalog = await loadCatalog(path.join(projectRoot, 'playbooks'), profile)
+const catalog = await loadCatalog(path.join(projectRoot, 'library'), profile)
 
 // ─── Banner ──────────────────────────────────────────────────────────────────
 
