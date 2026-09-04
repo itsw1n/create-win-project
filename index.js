@@ -9,6 +9,7 @@ import { generateProject } from './lib/generator.js'
 import { loadCompatibility } from './lib/compatibility.js'
 import { printDoctor } from './lib/doctor.js'
 import { configurationDecisionChoices, promptWithBack } from './lib/interview.js'
+import { projectLocationNotice } from './lib/project-location.js'
 import { w1nBanner } from './lib/banner.js'
 import {
   loadCatalog, resolveStack,
@@ -354,6 +355,16 @@ const spinner = ora('Scaffolding project...').start()
 try {
   await generateProject(answers, __dirname)
   spinner.succeed(chalk.green('Project created!'))
+  const locationNotice = projectLocationNotice({ cwd: process.cwd(), cliRoot: __dirname, projectName: answers.projectName })
+  if (locationNotice) {
+    console.log('')
+    console.log(chalk.yellow.bold('  Project location note'))
+    console.log(chalk.yellow(`  ${locationNotice.message}`))
+    console.log(chalk.gray(`  Created at: ${locationNotice.generatedPath}`))
+    console.log(chalk.gray(`  Suggested destination: ${locationNotice.suggestedPath}`))
+    console.log(chalk.gray(`  Linux/macOS: mv "${locationNotice.generatedPath}" "${locationNotice.suggestedPath}"`))
+    console.log(chalk.gray(`  Windows: cut the generated folder in File Explorer and paste it into your projects folder.`))
+  }
   if (answers.installDependencies) {
     const projectRoot = path.join(process.cwd(), answers.projectName)
     const steps = []
