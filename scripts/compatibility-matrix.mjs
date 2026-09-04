@@ -24,7 +24,8 @@ function authChoices(caseName) {
   return base
 }
 
-const full = Object.entries(catalog.profiles).flatMap(([profile, versions]) =>
+const current = catalog.defaultProfile
+const full = Object.entries(catalog.profiles).filter(([profile]) => profile === current).flatMap(([profile, versions]) =>
   cases.flatMap((caseName) => ['small', 'medium', 'large'].flatMap((architecture) =>
     authChoices(caseName).map((auth) => ({ profile, case: caseName, architecture, ...auth, node: versions.runtimes.node, java: versions.runtimes.java, php: versions.runtimes.php })))),
 )
@@ -41,7 +42,6 @@ const smokeSelections = [
   ['laravel-inertia-react', 'large', 'yes', 'website'],
   ['react-laravel', 'medium', 'yes', 'website'],
 ]
-const current = catalog.defaultProfile
 const smoke = full.filter((entry) => entry.profile === current && smokeSelections.some(([caseName, architecture, authentication, audience]) =>
   entry.case === caseName && entry.architecture === architecture && entry.authentication === authentication && entry.audience === audience))
 
