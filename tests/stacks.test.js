@@ -81,6 +81,18 @@ describe('stack adapter registry', () => {
 })
 
 describe('registered stack capabilities', () => {
+  it('registers the no-backend choice without invented runtime contributions', () => {
+    const none = stackRegistry.require('none')
+
+    expect(none.compatibleWith.frontend).toEqual(['nextjs', 'react', 'react-native'])
+    expect(none.capabilities.applicationShapes).toEqual(['fullstack', 'frontend', 'mobile'])
+    expect(none.capabilities.authenticationModels).toEqual(['public', 'undecided'])
+    expect(none.contributes.environment({})).toEqual([])
+    expect(none.contributes.install({})).toEqual([])
+    expect(none.contributes.docker({})).toEqual([])
+    expect(none.contributes.verification({})).toHaveLength(3)
+  })
+
   it('registers PostgreSQL with Prisma files, environment, and verification ownership', () => {
     const postgres = stackRegistry.require('postgres')
 
