@@ -135,6 +135,20 @@ describe('runnable project contract', () => {
     expect(await fs.readFile(path.join(destination, 'docs/guides/setup.md'), 'utf8')).toContain('Only Docker with Compose is required')
   })
 
+  it('generates backend-only Docker services for React Native with Laravel', async () => {
+    const destination = await generate({
+      frontend: 'react-native', backend: 'laravel', applicationShape: 'mobile', architecture: 'small',
+      authentication: 'not-yet', authAudience: 'multi-client', docker: true, makefile: false,
+      githubActions: false, projectName: 'mobile-laravel-docker',
+    })
+    const compose = await fs.readFile(path.join(destination, 'docker-compose.yml'), 'utf8')
+
+    expect(compose).toContain('  backend:')
+    expect(compose).toContain('  db:')
+    expect(compose).not.toContain('  frontend:')
+    expect(await fs.pathExists(path.join(destination, 'backend/Dockerfile.dev'))).toBe(true)
+  })
+
   it('generates Laravel CI in the correct application directory', async () => {
     const destination = await generate({
       frontend: 'react', backend: 'laravel', applicationShape: 'separate', architecture: 'medium',

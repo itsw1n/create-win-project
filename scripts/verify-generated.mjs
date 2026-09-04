@@ -67,7 +67,7 @@ try {
     authentication,
     authAudience,
     testing: selected.frontend === 'react-native' ? 'basic' : 'full',
-    docker: selected.frontend !== 'react-native',
+    docker: selected.frontend !== 'react-native' || selected.backend === 'laravel',
     makefile: false,
     githubActions: true,
     expectedConcerns: [],
