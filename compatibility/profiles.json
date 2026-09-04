@@ -14,11 +14,26 @@
         "postgres": "16"
       },
       "images": {
-        "node": { "repository": "node", "tag": "24.20.0-alpine" },
-        "maven": { "repository": "maven", "tag": "3.9.16-eclipse-temurin-21-alpine" },
-        "java": { "repository": "eclipse-temurin", "tag": "21-jre-alpine" },
-        "postgres": { "repository": "postgres", "tag": "16-alpine" },
-        "nginx": { "repository": "nginx", "tag": "alpine" }
+        "node": {
+          "repository": "node",
+          "tag": "24.20.0-alpine"
+        },
+        "maven": {
+          "repository": "maven",
+          "tag": "3.9.16-eclipse-temurin-21-alpine"
+        },
+        "java": {
+          "repository": "eclipse-temurin",
+          "tag": "21-jre-alpine"
+        },
+        "postgres": {
+          "repository": "postgres",
+          "tag": "16-alpine"
+        },
+        "nginx": {
+          "repository": "nginx",
+          "tag": "alpine"
+        }
       },
       "packages": {
         "@eslint/js": "9.39.5",
@@ -52,15 +67,25 @@
         "prettier": "3.6.2",
         "pg": "8.23.0",
         "prisma": "7.10.0",
-        "react": { "default": "19.2.8", "overrides": { "react-native": "19.2.3" } },
-        "react-dom": { "default": "19.2.8", "overrides": { "react-native": "19.2.3" } },
+        "react": {
+          "default": "19.2.8",
+          "overrides": {
+            "react-native": "19.2.3"
+          }
+        },
+        "react-dom": {
+          "default": "19.2.8",
+          "overrides": {
+            "react-native": "19.2.3"
+          }
+        },
         "react-native": "0.86.3",
         "react-native-safe-area-context": "5.7.0",
         "react-native-web": "0.21.2",
         "supabase": "2.116.0",
         "tailwindcss": "4.3.3",
-        "testcontainers-junit-jupiter": "2.0.3",
-        "testcontainers-postgresql": "2.0.3",
+        "testcontainers-junit-jupiter": "1.19.8",
+        "testcontainers-postgresql": "1.19.8",
         "typescript": "6.0.3",
         "typescript-eslint": "8.69.0",
         "vite": "8.2.2",
@@ -80,11 +105,26 @@
         "postgres": "16"
       },
       "images": {
-        "node": { "repository": "node", "tag": "24.20.0-alpine" },
-        "maven": { "repository": "maven", "tag": "3.9.16-eclipse-temurin-21-alpine" },
-        "java": { "repository": "eclipse-temurin", "tag": "21-jre-alpine" },
-        "postgres": { "repository": "postgres", "tag": "16-alpine" },
-        "nginx": { "repository": "nginx", "tag": "alpine" }
+        "node": {
+          "repository": "node",
+          "tag": "24.20.0-alpine"
+        },
+        "maven": {
+          "repository": "maven",
+          "tag": "3.9.16-eclipse-temurin-21-alpine"
+        },
+        "java": {
+          "repository": "eclipse-temurin",
+          "tag": "21-jre-alpine"
+        },
+        "postgres": {
+          "repository": "postgres",
+          "tag": "16-alpine"
+        },
+        "nginx": {
+          "repository": "nginx",
+          "tag": "alpine"
+        }
       },
       "packages": {
         "@eslint/js": "9.39.5",
@@ -118,15 +158,25 @@
         "prettier": "3.6.2",
         "pg": "8.23.0",
         "prisma": "7.10.0",
-        "react": { "default": "19.2.8", "overrides": { "react-native": "19.2.3" } },
-        "react-dom": { "default": "19.2.8", "overrides": { "react-native": "19.2.3" } },
+        "react": {
+          "default": "19.2.8",
+          "overrides": {
+            "react-native": "19.2.3"
+          }
+        },
+        "react-dom": {
+          "default": "19.2.8",
+          "overrides": {
+            "react-native": "19.2.3"
+          }
+        },
         "react-native": "0.86.3",
         "react-native-safe-area-context": "5.7.0",
         "react-native-web": "0.21.2",
         "supabase": "2.116.0",
         "tailwindcss": "4.3.3",
-        "testcontainers-junit-jupiter": "2.0.3",
-        "testcontainers-postgresql": "2.0.3",
+        "testcontainers-junit-jupiter": "1.19.8",
+        "testcontainers-postgresql": "1.19.8",
         "typescript": "6.0.3",
         "typescript-eslint": "8.69.0",
         "vite": "8.2.2",
