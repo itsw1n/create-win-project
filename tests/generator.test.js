@@ -70,7 +70,7 @@ describe('runnable project contract', () => {
     expect(packageJson.devDependencies.prettier).toMatch(/^\d+\.\d+\.\d+$/)
     expect(await fs.pathExists(path.join(destination, 'AGENTS.md'))).toBe(true)
     const profile = await fs.readJson(path.join(destination, 'create-win-project.profile.json'))
-    expect(profile.schemaVersion).toBe(2)
+    expect(profile.schemaVersion).toBe(3)
     expect(profile.compatibilityProfile.id).toBe('2026.09')
     expect(profile.architectureProfile).toBe('medium')
     expect(profile.authentication).toEqual({
