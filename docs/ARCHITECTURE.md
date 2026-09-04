@@ -39,7 +39,7 @@ Root `index.js` remains the stable executable entry point. Generated-project pat
 
 ### CLI boundary
 
-`index.js` owns interaction and presentation. It gathers project identity, frontend, optional backend, styling, one Small/Medium/Large architecture profile, login intent, client audience when relevant, testing depth, and optional operational tooling. Medium is shown first and is the default. It does not contain stack dependency tables.
+Root `index.js` is only the stable executable shim. `src/cli/main.js` coordinates the command, `arguments.js` parses and validates flags, `questions.js` defines the interview, `navigation.js` owns Back behavior, `display.js` owns terminal presentation, and `system-check.js` detects runtime support. The CLI gathers project identity, frontend, optional backend, styling, one Small/Medium/Large architecture profile, login intent, client audience when relevant, testing depth, and optional operational tooling. Medium is shown first and is the default. CLI modules do not contain stack dependency tables.
 
 `generateProject()` validates the same answers again because it is also an exported programmatic API. A caller cannot bypass destination-name, Java-package, or testing-profile validation by skipping the CLI.
 
