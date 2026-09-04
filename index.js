@@ -22,6 +22,12 @@ import {
   frontendChoicesForShape,
 } from './lib/application-shapes.js'
 import { laravelUiPromptContribution, laravelUis } from './lib/stacks/laravel/ui/index.js'
+import {
+  decideInstallation,
+  detectSystemVersions,
+  installationIssues,
+  runtimeSetupInstructions,
+} from './lib/system-check.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const cliArgs = process.argv.slice(2)
@@ -337,6 +343,52 @@ if (decision === 'cancel') {
 break
 }
 
+const detectedVersions = detectSystemVersions()
+const runtimeIssues = installationIssues(stack, profile, detectedVersions)
+const installationDecision = await decideInstallation({
+  requested: answers.installDependencies,
+  issues: runtimeIssues,
+  interactive: Boolean(process.stdin.isTTY && process.stdout.isTTY),
+  choose: async () => {
+    console.log(chalk.yellow.bold('\n  Runtime mismatch\n'))
+    for (const issue of runtimeIssues) {
+      console.log(chalk.yellow(`  ${issue.tool} ${issue.required} or newer is required.`))
+      console.log(chalk.gray(`  Current terminal: ${issue.tool} ${issue.found || 'not found'}.`))
+    }
+    console.log(chalk.gray('\n  Your global tools will not be changed.\n'))
+    const { runtimeDecision } = await inquirer.prompt([{
+      type: 'list',
+      name: 'runtimeDecision',
+      message: 'How should create-win-project continue?',
+      choices: [
+        { name: 'Create files and skip dependency installation', value: 'skip' },
+        { name: 'Show runtime setup instructions', value: 'instructions' },
+        { name: 'Cancel', value: 'cancel' },
+      ],
+    }])
+    return runtimeDecision
+  },
+})
+
+if (installationDecision.reason === 'cancelled') {
+  console.log(chalk.yellow('\n  Cancelled. No files were created.\n'))
+  process.exit(0)
+}
+if (installationDecision.reason === 'show-instructions') {
+  console.log(chalk.cyan.bold('\n  Runtime setup\n'))
+  for (const line of runtimeSetupInstructions(profile, runtimeIssues)) console.log(chalk.gray(`  ${line}`))
+  console.log(chalk.gray('\n  Run create-win-project again after switching runtimes.\n'))
+  process.exit(0)
+}
+if (answers.installDependencies && !installationDecision.install) {
+  console.log(chalk.yellow('\n  Dependency installation will be skipped because this terminal does not meet the selected project requirements.'))
+  for (const issue of runtimeIssues) {
+    console.log(chalk.gray(`  ${issue.tool}: ${issue.found || 'not found'} (requires ${issue.required} or newer)`))
+  }
+  console.log(chalk.gray('  Project files will still be created. Use Mise/NVM, then run the retry command shown below.\n'))
+}
+answers.installDependencies = installationDecision.install
+
 // ─── Generate ────────────────────────────────────────────────────────────────
 
 console.log('')
@@ -345,6 +397,17 @@ const spinner = ora('Scaffolding project...').start()
 try {
   await generateProject(answers, __dirname)
   spinner.succeed(chalk.green('Project created!'))
+  const projectRoot = path.join(process.cwd(), answers.projectName)
+  const steps = []
+  if (stack.backendKey === 'laravel') {
+    const laravelRoot = ['laravel-ui', 'no-frontend'].includes(stack.frontendKey) ? projectRoot : path.join(projectRoot, 'backend')
+    steps.push({ command: process.platform === 'win32' ? 'composer.bat' : 'composer', args: ['install'], cwd: laravelRoot, retry: `cd ${path.relative(process.cwd(), laravelRoot)} && composer install` })
+  }
+  const needsNpm = stack.frontendKey !== 'no-frontend' && (stack.frontendKey !== 'laravel-ui' || answers.laravelUi === 'inertia-react')
+  if (needsNpm) {
+    const npmRoot = stack.frontendKey === 'react' ? path.join(projectRoot, 'frontend') : projectRoot
+    steps.push({ command: process.platform === 'win32' ? 'npm.cmd' : 'npm', args: ['install'], cwd: npmRoot, retry: `cd ${path.relative(process.cwd(), npmRoot)} && npm install` })
+  }
   const locationNotice = projectLocationNotice({ cwd: process.cwd(), cliRoot: __dirname, projectName: answers.projectName })
   if (locationNotice) {
     console.log('')
@@ -356,25 +419,19 @@ try {
     console.log(chalk.gray(`  Windows: cut the generated folder in File Explorer and paste it into your projects folder.`))
   }
   if (answers.installDependencies) {
-    const projectRoot = path.join(process.cwd(), answers.projectName)
-    const steps = []
-    if (stack.backendKey === 'laravel') {
-      const laravelRoot = ['laravel-ui', 'no-frontend'].includes(stack.frontendKey) ? projectRoot : path.join(projectRoot, 'backend')
-      steps.push({ command: process.platform === 'win32' ? 'composer.bat' : 'composer', args: ['install'], cwd: laravelRoot, retry: `cd ${path.relative(process.cwd(), laravelRoot)} && composer install` })
-    }
-    const needsNpm = stack.frontendKey !== 'no-frontend' && (stack.frontendKey !== 'laravel-ui' || answers.laravelUi === 'inertia-react')
-    if (needsNpm) {
-      const npmRoot = stack.frontendKey === 'react' ? path.join(projectRoot, 'frontend') : projectRoot
-      steps.push({ command: process.platform === 'win32' ? 'npm.cmd' : 'npm', args: ['install'], cwd: npmRoot, retry: `cd ${path.relative(process.cwd(), npmRoot)} && npm install` })
-    }
     const installSpinner = ora('Installing exact dependencies and creating lockfiles...').start()
     const failed = steps.find((step) => spawnSync(step.command, step.args, { cwd: step.cwd, stdio: 'inherit', shell: false }).status !== 0)
     if (failed) {
       installSpinner.warn(chalk.yellow('Project created, but dependency installation did not finish.'))
+      console.log(chalk.yellow(`  Detected Node.js ${detectedVersions.node || 'not found'}, npm ${detectedVersions.npm || 'not found'}, PHP ${detectedVersions.php || 'not found'}, and Composer ${detectedVersions.composer || 'not found'}.`))
       console.log(chalk.yellow(`  Retry with: ${failed.retry}`))
     } else {
       installSpinner.succeed(chalk.green('Dependencies installed and lockfiles created.'))
     }
+  } else if (installationDecision.reason === 'runtime-mismatch') {
+    console.log(chalk.yellow('  Project files were created without installing dependencies.'))
+    console.log(chalk.gray(`  Detected Node.js ${detectedVersions.node || 'not found'}, npm ${detectedVersions.npm || 'not found'}, PHP ${detectedVersions.php || 'not found'}, and Composer ${detectedVersions.composer || 'not found'}.`))
+    for (const step of steps) console.log(chalk.gray(`  Retry with: ${step.retry}`))
   }
   console.log('')
   console.log(chalk.bold(`  Next steps:`))
