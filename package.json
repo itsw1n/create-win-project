@@ -10,23 +10,36 @@
   "files": [
     "index.js",
     "lib",
+    "compatibility",
     "playbooks",
     "ci",
     "templates",
+    "scripts",
+    "docs/ARCHITECTURE.md",
+    "docs/CONTENT_MODEL.md",
+    "docs/DEPENDENCY_MAINTENANCE.md",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
     "start": "node index.js",
-    "test": "vitest run"
+    "doctor": "node index.js doctor",
+    "test": "vitest run",
+    "validate:content": "node scripts/validate-content.mjs",
+    "matrix:smoke": "node scripts/compatibility-matrix.mjs --scope=smoke",
+    "matrix:full": "node scripts/compatibility-matrix.mjs --scope=full",
+    "verify:generated": "node scripts/verify-generated.mjs"
+  },
+  "engines": {
+    "node": ">=24"
   },
   "dependencies": {
-    "chalk": "^5.3.0",
-    "fs-extra": "^11.4.0",
-    "inquirer": "^9.2.12",
-    "ora": "^7.0.1"
+    "chalk": "5.6.2",
+    "fs-extra": "11.4.0",
+    "inquirer": "9.3.8",
+    "ora": "7.0.1"
   },
   "devDependencies": {
-    "vitest": "^2.1.0"
+    "vitest": "2.1.9"
   }
 }

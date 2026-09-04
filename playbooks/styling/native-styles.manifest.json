@@ -1,0 +1,9 @@
+{
+  "id": "native-styles",
+  "kind": "styling",
+  "label": "React Native StyleSheet",
+  "file": "styling/native-styles.md",
+  "required": false,
+  "folders": [],
+  "concerns": []
+}

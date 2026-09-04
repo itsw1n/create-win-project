@@ -23,7 +23,8 @@ const http = axios.create({
 
 http.interceptors.request.use(async (config) => {
   const token = await tokenStorage.get() // RN: expo-secure-store
-  // const token = localStorage.getItem('token') // React Vite (or cookie-based)
+  // Browser apps should prefer same-origin HttpOnly cookies. If bearer access
+  // tokens are required, keep the short-lived access token in memory.
   if (token) config.headers.Authorization = `Bearer ${token}`
   return config
 })
@@ -103,8 +104,10 @@ Hooks call `productService`. Never call `apiClient` directly from a hook.
 > **React Native** — token storage uses `expo-secure-store` via a `tokenStorage` helper.
 > Never use `localStorage` in React Native — it does not exist.
 
-> **React Vite** — token storage typically uses `localStorage` or an httpOnly cookie.
-> Adjust the request interceptor accordingly.
+> **React Vite** — prefer a same-origin `HttpOnly` session/refresh cookie. Do not
+> store session IDs, access tokens, or refresh tokens in `localStorage` or
+> `sessionStorage`. Cookie-authenticated mutations also require CSRF protection.
+> See `playbooks/universal/security.md`.
 
 ---
 

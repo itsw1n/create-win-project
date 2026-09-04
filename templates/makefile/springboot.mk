@@ -68,13 +68,13 @@ dev-back: ## Start backend + DB containers only
 .PHONY: migrate seed db-reset db-shell
 
 migrate: ## Run pending Flyway migrations
-	$(BACKEND) ./mvnw flyway:migrate
+	$(BACKEND) mvn flyway:migrate
 
 seed: ## Seed the database with dev data
 	$(DB) psql -U $${POSTGRES_USER} -d $${POSTGRES_DB} -f /docker-entrypoint-initdb.d/seed.sql
 
 db-reset: ## Drop + migrate + seed (full fresh slate)
-	$(BACKEND) ./mvnw flyway:clean flyway:migrate
+	$(BACKEND) mvn flyway:clean flyway:migrate
 	$(MAKE) seed
 
 db-shell: ## Open psql shell inside DB container
@@ -107,7 +107,7 @@ test-front: ## Run Vitest (frontend)
 	$(FRONTEND) npm run test
 
 test-back: ## Run JUnit (backend)
-	$(BACKEND) ./mvnw test
+	$(BACKEND) mvn test
 
 # =============================================================================
 # Production
@@ -123,16 +123,3 @@ prod-up: ## Start production containers
 
 prod-down: ## Stop production containers
 	$(COMPOSE) -f docker-compose.prod.yml down
-
-# =============================================================================
-# Scaffolding
-# =============================================================================
-
-.PHONY: init
-
-init: ## Scaffold full folder structure (run once after cloning)
-	@mkdir -p {{FRONTEND_DIR}}
-	@mkdir -p backend/src/main/resources/db/{migration,dev}
-	@mkdir -p docs/{api,architecture,guides,decisions}
-	@find . -type d -empty -not -path "./.git/*" -exec touch {}/.gitkeep \;
-	@echo "✅ Done. Run: make dev"

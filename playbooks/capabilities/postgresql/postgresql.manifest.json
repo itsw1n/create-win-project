@@ -1,0 +1,15 @@
+{
+  "id": "postgres",
+  "kind": "database",
+  "label": "PostgreSQL",
+  "playbooks": ["capabilities/postgresql/architecture.md", "capabilities/postgresql/schema-design.md", "capabilities/postgresql/migrations.md", "capabilities/postgresql/security.md", "capabilities/postgresql/testing.md"],
+  "appliesTo": { "backend": ["postgres", "springboot"] },
+  "required": true,
+  "architectureProfiles": ["small", "medium", "large"],
+  "makefileTemplate": "postgres",
+  "folders": [],
+  "env": ["DATABASE_URL"],
+  "concerns": [
+    { "id": "schema", "required": true, "playbook": "capabilities/postgresql/schema-design.md", "sections": ["Core Rules"] }
+  ]
+}

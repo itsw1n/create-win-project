@@ -1,0 +1,17 @@
+{
+  "id": "mobile-platform",
+  "kind": "platform",
+  "label": "Mobile Platform",
+  "appliesTo": { "platform": ["mobile"] },
+  "deps": [],
+  "devDeps": [],
+  "env": [],
+  "clientEnv": [],
+  "constraints": [
+    "Treat the installed application as an untrusted public client",
+    "Handle foreground, background, offline, and deep-link lifecycle explicitly"
+  ],
+  "concerns": [
+    { "id": "mobile-platform", "required": true, "playbook": "platform/mobile.md", "sections": ["Device Boundary", "Lifecycle and Links"] }
+  ]
+}

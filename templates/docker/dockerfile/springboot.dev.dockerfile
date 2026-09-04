@@ -1,5 +1,5 @@
-FROM eclipse-temurin:21-jdk-alpine
+FROM {{MAVEN_IMAGE}}
 WORKDIR /app
 COPY . .
 EXPOSE 8080
-CMD ["./mvnw", "spring-boot:run"]
+CMD ["mvn", "spring-boot:run"]

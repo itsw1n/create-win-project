@@ -1,60 +1,48 @@
-# t3-env — Environment Variable Validation (Next.js)
+# t3-env for Next.js
 
-> **When to use:** Next.js projects that need typed, validated env vars with build-time failure
-> if required vars are missing.
+> Optional: adopt this when a Next.js project needs one typed, startup/build-time environment boundary. Install `@t3-oss/env-nextjs` and `zod` in the same change.
 
----
+## Setup
 
-# 1. Setup
+Declare only values the selected stack actually consumes:
 
-<!-- snippet:nextjs-env -->
-```typescript
-// src/lib/env.ts
+```ts
 import { createEnv } from '@t3-oss/env-nextjs'
 import { z } from 'zod'
 
 export const env = createEnv({
   server: {
-    DATABASE_URL: z.string().url(),
-    JWT_SECRET: z.string().min(32),
-    SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
+    DATABASE_URL: z.string().min(1).optional(),
   },
   client: {
-    NEXT_PUBLIC_SUPABASE_URL: z.string().url().optional(),
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().optional(),
     NEXT_PUBLIC_API_URL: z.string().url().optional(),
+    NEXT_PUBLIC_SUPABASE_URL: z.string().url().optional(),
+    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string().min(1).optional(),
   },
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
-    JWT_SECRET: process.env.JWT_SECRET,
-    SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
-    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
   },
 })
 ```
 
-Import everywhere: `import { env } from '@/lib/env'`. Build fails if a required variable is missing.
+Make a value required only for a stack that cannot run without it. Client-prefixed values are bundled and are never secrets.
 
----
+## Rules
 
-# 2. Rules
+- Server-only values belong in `server`; client-visible values require `NEXT_PUBLIC_` and belong in `client`.
+- Add each new value to the schema, runtime mapping, `.env.example`, deployment configuration, and generated environment documentation.
+- Keep secrets out of logs, client schemas, public prefixes, and committed environment files.
+- Do not copy speculative JWT, administrator, or provider secrets into every project.
 
-- Server-only vars → `server: {}`. Client-safe vars → `client: {}` with `NEXT_PUBLIC_` prefix.
-- Never access `process.env` directly — always use `env.VAR_NAME`.
-- Add every new env var to `src/lib/env.ts` AND `.env.example`.
-- Build will fail loudly if a required var is missing — this is intentional.
-
----
-
-# 3. Agent Quick Reference
+## Agent Quick Reference
 
 ```text
-New env variable?          → add to server: {} or client: {} in src/lib/env.ts
-                           → add to runtimeEnv: {}
-                           → add to .env.example with a comment
-Client-safe variable?      → must be prefixed NEXT_PUBLIC_  → goes in client: {}
-Server-only variable?      → no prefix → goes in server: {}
-Accessing env in code?     → import { env } from '@/lib/env' — never process.env directly
+New value?        → identify its runtime owner and whether the browser needs it
+Server secret?    → server schema, no public prefix
+Browser value?    → client schema with NEXT_PUBLIC_; treat as public
+Required value?   → fail validation before serving traffic
+Unused value?     → remove it from schema, examples, CI, and deployment config
 ```

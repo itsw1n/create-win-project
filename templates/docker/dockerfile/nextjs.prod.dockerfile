@@ -1,14 +1,18 @@
-FROM node:20-alpine AS builder
+FROM {{NODE_IMAGE}} AS builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
+RUN mkdir -p public
 COPY . .
+ARG DATABASE_URL=postgresql://dummy:dummy@localhost:5432/dummy
+ENV DATABASE_URL=$DATABASE_URL
 RUN npm run build
 
-FROM node:20-alpine AS production
+FROM {{NODE_IMAGE}} AS production
 WORKDIR /app
-COPY --from=builder /app/.next ./.next
+ENV NODE_ENV=production
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/package.json ./package.json
 EXPOSE {{FRONTEND_PORT}}
-CMD ["npm", "run", "start"]
+CMD ["node", "server.js"]

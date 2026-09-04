@@ -5,6 +5,6 @@
   "required": false,
   "folders": [],
   "concerns": [
-    { "id": "pr", "required": true, "sections": ["PR checklist"] }
+    { "id": "pr", "required": true, "sections": ["Template"] }
   ]
 }

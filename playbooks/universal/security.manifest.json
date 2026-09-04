@@ -1,0 +1,11 @@
+{
+  "id": "security-baseline",
+  "kind": "universal",
+  "label": "Security Baseline",
+  "required": true,
+  "folders": [],
+  "concerns": [
+    { "id": "security-boundaries", "required": true, "sections": ["Trust Boundaries", "Authentication and Authorization"] },
+    { "id": "secret-safety", "required": true, "sections": ["Secrets and Data", "Failure Safety"] }
+  ]
+}

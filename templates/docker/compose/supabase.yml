@@ -1,29 +1,18 @@
-# docker-compose.yml — {{PROJECT_NAME}} ({{STACK}}) — Dev (Postgres only)
+# docker-compose.yml — {{PROJECT_NAME}} ({{STACK}}) — application + managed Supabase
 services:
-
-  db:
-    container_name: {{PROJECT_NAME}}-db
-    image: postgres:16-alpine
+  frontend:
+    container_name: {{PROJECT_NAME}}-frontend
+    build:
+      context: {{FRONTEND_DIR}}
+      dockerfile: {{FRONTEND_DOCKERFILE}}
     ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
+      - "{{FRONTEND_PORT}}:{{FRONTEND_PORT}}"
     volumes:
-      - postgres-data:/var/lib/postgresql/data
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      - ./{{FRONTEND_DIR}}:/app
+      - /app/node_modules
+    environment:
+      - {{ENV_PREFIX}}SUPABASE_URL=${{ENV_PREFIX}}SUPABASE_URL
+      - {{ENV_PREFIX}}SUPABASE_PUBLISHABLE_KEY=${{ENV_PREFIX}}SUPABASE_PUBLISHABLE_KEY
 
-volumes:
-  postgres-data:
-    name: {{PROJECT_NAME}}-postgres-data
-
-networks:
-  app-network:
-    name: {{PROJECT_NAME}}-network
+# The Supabase platform is managed separately. Use `supabase start` for the
+# official local stack instead of approximating it with a bare PostgreSQL image.

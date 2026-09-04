@@ -5,6 +5,6 @@
   "required": true,
   "folders": [],
   "concerns": [
-    { "id": "errors", "required": true, "sections": ["API Error Response Shape", "Error Code Registry", "Security Rules for Errors"] }
+    { "id": "errors", "required": true, "sections": ["Error Contract", "Boundary Handling", "Security Rules for Errors"] }
   ]
 }

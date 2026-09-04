@@ -28,7 +28,7 @@ describe('buildRulesIndex — react-native', () => {
     expect(out).toContain('navigation')
     expect(out).toContain('styling')
     expect(out).toContain('query')
-    expect(out).toContain('concerns/nativewind.md')
+    expect(out).toContain('styling/native-styles.md')
     expect(out).toContain('concerns/tanstack-query.md')
   })
 
@@ -56,14 +56,15 @@ describe('collectPlaybookFiles', () => {
     const files   = collectPlaybookFiles(stack)
     expect(files.some((f) => f.startsWith('concerns/'))).toBe(true)
     expect(files).toContain('concerns/tanstack-query.md')
-    expect(files).toContain('concerns/nativewind.md')
+    expect(files).toContain('styling/native-styles.md')
   })
 
   it('includes concern files for nextjs stack', async () => {
     const catalog = await loadCatalog(path.join(root, 'playbooks'))
     const stack   = resolveStack({ frontend: 'nextjs', backend: 'supabase', styling: 'tailwind' }, catalog)
     const files   = collectPlaybookFiles(stack)
-    expect(files).toContain('stack/nextjs.md')
+    expect(files).toContain('stack/nextjs/architecture.md')
+    expect(files).toContain('stack/nextjs/security.md')
     expect(files.some((f) => f.startsWith('concerns/'))).toBe(true)
   })
 

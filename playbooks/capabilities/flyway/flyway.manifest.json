@@ -1,0 +1,12 @@
+{
+  "id": "flyway",
+  "kind": "migration",
+  "label": "Flyway",
+  "playbooks": ["capabilities/flyway/migrations.md", "capabilities/flyway/environments.md", "capabilities/flyway/testing.md"],
+  "appliesTo": { "backend": ["springboot"] },
+  "required": true,
+  "folders": [],
+  "concerns": [
+    { "id": "migration", "required": true, "playbook": "capabilities/flyway/migrations.md", "sections": ["Naming and Ownership"] }
+  ]
+}

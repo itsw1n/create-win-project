@@ -1,25 +1,48 @@
 # AGENTS.md
 
-> **This file is always loaded.** Keep it lean. Rule detail lives in `playbooks/` (lazy `Read`).
-> **Load order per task:** `AGENTS.md` (now) → only the one `playbooks/` § you need. Never read all playbooks eagerly.
+> Small operating contract for agents. Project intent lives in `CONTEXT.md`; task guidance is routed through `RULES.md`.
 
-## Stack Snapshot
+## Project
+
 {{PROJECT_NAME}} — {{PROJECT_DESCRIPTION}}
-Stack: {{STACK}}
-Full snapshot → `CONTEXT.md`.
 
-> **Scaffold flexibility:** This structure is advisory — every folder/file (`src/stores`, `src/hooks`, `e2e/`, `supabase/`, etc.) is optional. Suggest adding a folder/file when its `when` condition applies, or removing it when unused for 2+ features. Don't treat empty `.gitkeep` folders as required.
+- Stack: `{{STACK}}`
+- Platform: `{{PLATFORM}}`
 
-## Key Constraints (always-on)
+## Commands
+
+- Install: `npm install` initially; use `npm ci` after committing the lockfile.
+- Develop: `npm run dev`
+- Typecheck: `npm run typecheck`
+- Tests: `npm test -- --runInBand` when configured.
+- Export check: `npm run build -- --platform web`
+- Spring backend, when present: `cd backend && ./mvnw --batch-mode test` (`mvnw.cmd` on Windows)
+
+## Required workflow
+
+1. Read `CONTEXT.md` and inspect neighboring screens, hooks, services, and tests.
+2. Find the concern in `RULES.md`; open only its linked playbook section.
+3. State assumptions when behavior is ambiguous.
+4. Make the smallest coherent change and test it on the affected platform.
+5. Run typecheck, relevant tests, and an export/build check.
+
+## Always-on constraints
+
 {{CONSTRAINTS}}
 
-## What NOT To Do
-- Never bypass RLS with service role key from client (Supabase)
-- Never put business logic in pages/ or Controller
-- Never merge or open PRs unless explicitly asked
+- Keep screens thin; side effects belong in hooks and services.
+- Store sensitive credentials with platform secure storage, never AsyncStorage.
+- Public-prefixed Expo values are bundled into the application and are never secrets.
+- Client navigation guards are user experience, not server authorization.
 
-## How to work
-1. Check `RULES.md` for the concern → playbook § map.
-2. `Read` only that one `playbooks/` § (use offset). Never read all playbooks eagerly.
-3. Follow existing patterns; write tests alongside features.
-4. Commit with: `type(scope): description`.
+## Authority boundaries
+
+- Do not publish builds, deploy, merge, push, or modify production data unless explicitly asked.
+- Do not add native modules or eject without explaining the impact.
+
+## Definition of done
+
+- Acceptance behavior works on the affected platform with appropriate tests.
+- Typecheck, tests, and export/build pass, or the exact blocker is reported.
+- Loading, offline, error, safe-area, keyboard, and accessibility behavior are considered.
+- Relevant docs are updated.
