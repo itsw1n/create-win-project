@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { loadCatalog, resolveStack, stylingChoicesFor, backendChoicesFor, supportsArchitecture } from '../lib/catalog.js'
+import { loadCatalog, resolveStack, stylingChoicesFor, backendChoicesFor, architectureChoicesFor } from '../lib/catalog.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const root      = path.resolve(__dirname, '..')
@@ -46,11 +46,14 @@ describe('interview helpers', () => {
     }
   })
 
-  it('supportsArchitecture is true for nextjs, false for react-native', async () => {
+  it('offers Medium first for every supported stack combination', async () => {
     const catalog = await loadCatalog(path.join(root, 'playbooks'))
-    expect(supportsArchitecture(catalog, 'nextjs')).toBe(true)
-    expect(supportsArchitecture(catalog, 'react-native')).toBe(false)
-    expect(supportsArchitecture(catalog, 'react')).toBe(false)
+    for (const [frontend, backend] of [
+      ['nextjs', 'none'], ['react', 'supabase'], ['react-native', 'springboot'],
+    ]) {
+      const choices = architectureChoicesFor(catalog, frontend, backend)
+      expect(choices).toEqual(['small', 'medium', 'large'])
+    }
   })
 })
 
@@ -88,8 +91,9 @@ describe('resolveStack — capability flags', () => {
     expect(stack.isMobile).toBe(false)
     expect(stack.ciTemplate).toBe('nextjs')
     expect(stack.label).toBe('Next.js + Supabase')
-    expect(stack.folders).toContain('src/app')
-    expect(stack.playbooks).toContain('stack/nextjs.md')
+    expect(stack.architecture).toBe('medium')
+    expect(stack.playbooks).toContain('stack/nextjs/architecture.md')
+    expect(stack.playbooks).toContain('capabilities/supabase/nextjs.md')
   })
 
   it('react-native + supabase produces correct capabilities', async () => {
@@ -99,7 +103,9 @@ describe('resolveStack — capability flags', () => {
     expect(stack.isMobile).toBe(true)
     expect(stack.ciTemplate).toBe('expo')
     expect(stack.styleId).toBe('native-styles')
-    expect(stack.playbooks).toContain('stack/react-native.md')
+    expect(stack.architecture).toBe('medium')
+    expect(stack.playbooks).toContain('stack/expo/architecture.md')
+    expect(stack.playbooks).toContain('capabilities/supabase/expo.md')
   })
 
   it('react-native + none produces correct capabilities', async () => {
