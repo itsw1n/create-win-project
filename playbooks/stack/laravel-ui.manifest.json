@@ -1,0 +1,25 @@
+{
+  "id": "laravel-ui", "kind": "frontend", "label": "Laravel full-stack UI", "platform": "web",
+  "appliesTo": { "backend": ["laravel"] }, "port": 8000, "needsDocker": false, "frontendDir": "",
+  "architectureProfiles": ["small", "medium", "large"],
+  "playbooks": [
+    { "file": "platform/laravel-ui/blade/architecture.md", "appliesWhen": { "laravelUi": "blade" } },
+    { "file": "platform/laravel-ui/blade/structure.md", "appliesWhen": { "laravelUi": "blade" } },
+    { "file": "platform/laravel-ui/blade/runtime.md", "appliesWhen": { "laravelUi": "blade" } },
+    { "file": "platform/laravel-ui/blade/security.md", "appliesWhen": { "laravelUi": "blade" } },
+    { "file": "platform/laravel-ui/blade/testing.md", "appliesWhen": { "laravelUi": "blade" } },
+    { "file": "platform/laravel-ui/livewire/architecture.md", "appliesWhen": { "laravelUi": "livewire" } },
+    { "file": "platform/laravel-ui/livewire/structure.md", "appliesWhen": { "laravelUi": "livewire" } },
+    { "file": "platform/laravel-ui/livewire/runtime.md", "appliesWhen": { "laravelUi": "livewire" } },
+    { "file": "platform/laravel-ui/livewire/security.md", "appliesWhen": { "laravelUi": "livewire" } },
+    { "file": "platform/laravel-ui/livewire/testing.md", "appliesWhen": { "laravelUi": "livewire" } },
+    { "file": "platform/laravel-ui/inertia-react/architecture.md", "appliesWhen": { "laravelUi": "inertia-react" } },
+    { "file": "platform/laravel-ui/inertia-react/structure.md", "appliesWhen": { "laravelUi": "inertia-react" } },
+    { "file": "platform/laravel-ui/inertia-react/runtime.md", "appliesWhen": { "laravelUi": "inertia-react" } },
+    { "file": "platform/laravel-ui/inertia-react/security.md", "appliesWhen": { "laravelUi": "inertia-react" } },
+    { "file": "platform/laravel-ui/inertia-react/testing.md", "appliesWhen": { "laravelUi": "inertia-react" } }
+  ],
+  "stylingOptions": ["tailwind"], "scripts": {}, "ciTemplate": "laravel", "envPrefix": "VITE_",
+  "folders": [], "deps": [], "devDeps": [], "env": [], "clientEnv": [],
+  "constraints": ["Laravel owns routing, authentication, authorization, and persistence"], "concerns": []
+}
