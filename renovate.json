@@ -28,6 +28,16 @@
       "fileFormat": "json",
       "managerFilePatterns": ["/compatibility/profiles\\.json$/"],
       "matchStrings": [
+        "profiles[status = 'current'].composerPackages.$each(function($v, $n) { { 'depName': $n, 'currentValue': $v } })"
+      ],
+      "datasourceTemplate": "packagist",
+      "versioningTemplate": "composer"
+    },
+    {
+      "customType": "jsonata",
+      "fileFormat": "json",
+      "managerFilePatterns": ["/compatibility/profiles\\.json$/"],
+      "matchStrings": [
         "profiles[status = 'current'].{ 'depName': 'org.springframework.boot:spring-boot-dependencies', 'currentValue': springBoot }",
         "profiles[status = 'current'].{ 'depName': 'org.springframework.modulith:spring-modulith-bom', 'currentValue': springModulith }"
       ],
@@ -67,6 +77,22 @@
     {
       "matchPackageNames": ["postgres"],
       "groupName": "PostgreSQL runtime and container"
+    },
+    {
+      "matchPackageNames": ["php", "composer"],
+      "groupName": "PHP and Composer runtimes and containers"
+    },
+    {
+      "matchPackageNames": ["laravel/framework", "laravel/sanctum", "laravel/pint", "larastan/larastan", "pestphp/pest", "pestphp/pest-plugin-laravel"],
+      "groupName": "Laravel compatibility set"
+    },
+    {
+      "matchPackageNames": ["inertiajs/inertia-laravel", "@inertiajs/react"],
+      "groupName": "Laravel Inertia React compatibility set"
+    },
+    {
+      "matchPackageNames": ["livewire/livewire"],
+      "groupName": "Laravel Livewire compatibility set"
     },
     {
       "matchPackageNames": ["org.springframework.boot:spring-boot-dependencies", "org.springframework.modulith:spring-modulith-bom"],
