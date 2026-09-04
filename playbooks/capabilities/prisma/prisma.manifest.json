@@ -2,13 +2,13 @@
   "id": "prisma",
   "kind": "migration",
   "label": "Prisma",
-  "file": "capabilities/prisma/overview.md",
+  "playbooks": ["capabilities/prisma/architecture.md", "capabilities/prisma/schema.md", "capabilities/prisma/migrations.md", "capabilities/prisma/runtime.md", "capabilities/prisma/testing.md"],
   "appliesTo": { "backend": ["postgres"] },
   "required": true,
   "folders": [],
   "deps": ["@prisma/client", "@prisma/adapter-pg", "pg"],
   "devDeps": ["prisma", "dotenv", "@types/pg"],
   "concerns": [
-    { "id": "migration", "required": true, "sections": ["Setup", "prisma/schema.prisma"] }
+    { "id": "migration", "required": true, "playbook": "capabilities/prisma/migrations.md", "sections": ["Development", "Production"] }
   ]
 }
