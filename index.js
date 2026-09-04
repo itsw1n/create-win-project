@@ -21,6 +21,7 @@ import {
   backendChoicesForShape,
   frontendChoicesForShape,
 } from './lib/application-shapes.js'
+import { laravelUiPromptContribution, laravelUis } from './lib/stacks/laravel/ui/index.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const cliArgs = process.argv.slice(2)
@@ -46,7 +47,7 @@ if (authenticationArg && !['yes', 'not-yet', 'none'].includes(authenticationArg)
 if (authAudienceArg && !['website', 'multi-client'].includes(authAudienceArg)) {
   throw new Error('--auth-audience must be website or multi-client')
 }
-if (laravelUiArg && !['blade', 'livewire', 'inertia-react'].includes(laravelUiArg)) {
+if (laravelUiArg && !laravelUis.some((ui) => ui.id === laravelUiArg)) {
   throw new Error('--laravel-ui must be blade, livewire, or inertia-react')
 }
 const wantsInstall = cliArgs.includes('--install')
@@ -116,18 +117,7 @@ const questions = [
     choices: (a) => backendChoicesForShape(shapeArg || a.applicationShape, a.frontend, catalog),
     when: () => !backendArg,
   },
-  {
-    type: 'list',
-    name: 'laravelUi',
-    message: 'How should Laravel render the website?',
-    choices: [
-      { name: 'Blade (Recommended) — server-rendered pages with the fewest moving parts', value: 'blade' },
-      { name: 'Livewire — interactive server-driven components with minimal JavaScript', value: 'livewire' },
-      { name: 'Inertia + React — React pages with Laravel routing and controllers', value: 'inertia-react' },
-    ],
-    default: 'blade',
-    when: (a) => a.frontend === 'laravel-ui' && !laravelUiArg,
-  },
+  ...laravelUiPromptContribution(laravelUiArg).questions,
 
   // ── Styling: only shown when frontend has >1 option (catalog-driven) ───
   {
