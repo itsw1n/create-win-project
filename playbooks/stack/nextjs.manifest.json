@@ -4,7 +4,7 @@
   "label": "Next.js",
   "language": "TypeScript",
   "platform": "web",
-  "appliesTo": { "backend": ["none", "supabase", "springboot", "postgres"] },
+  "appliesTo": { "backend": ["none", "supabase", "springboot", "postgres", "laravel"] },
   "port": 3000,
   "needsDocker": false,
   "frontendDir": "",

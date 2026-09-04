@@ -41,6 +41,114 @@ afterEach(async () => {
 
 describe('runnable project contract', () => {
   it.each([
+    ['no-frontend', 'api', 'medium'],
+    ['react', 'separate', 'small'],
+  ])('generates a Laravel API for %s (%s)', async (frontend, applicationShape, architecture) => {
+    const destination = await generate({
+      frontend,
+      backend: 'laravel',
+      applicationShape,
+      architecture,
+      styling: frontend === 'react' ? 'tailwind' : undefined,
+      githubActions: false,
+      projectName: `laravel-${frontend}`,
+    })
+    const laravelRoot = frontend === 'no-frontend' ? destination : path.join(destination, 'backend')
+    const composer = await fs.readJson(path.join(laravelRoot, 'composer.json'))
+    expect(composer.require['laravel/framework']).toMatch(/^\d+\.\d+\.\d+$/)
+    expect(composer['require-dev']['larastan/larastan']).toMatch(/^\d+\.\d+\.\d+$/)
+    expect(await fs.pathExists(path.join(laravelRoot, 'artisan'))).toBe(true)
+    expect(await fs.pathExists(path.join(laravelRoot, 'routes/api.php'))).toBe(true)
+    expect(await fs.pathExists(path.join(laravelRoot, 'tests/Feature/HealthTest.php'))).toBe(true)
+    const profile = await fs.readJson(path.join(destination, 'create-win-project.profile.json'))
+    expect(profile.applicationShape).toBe(applicationShape)
+  })
+
+  it.each([
+    ['none', 'public'],
+    ['not-yet', 'undecided'],
+    ['yes', 'sanctum-spa'],
+  ])('generates honest Laravel authentication for %s', async (authentication, model) => {
+    const destination = await generate({
+      frontend: 'react', backend: 'laravel', applicationShape: 'separate', architecture: 'medium',
+      authentication, authAudience: 'website', styling: 'tailwind', githubActions: false,
+      projectName: `laravel-auth-${authentication}`,
+    })
+    const composer = await fs.readJson(path.join(destination, 'backend/composer.json'))
+    const routes = await fs.readFile(path.join(destination, 'backend/routes/api.php'), 'utf8')
+    expect(composer.require['laravel/sanctum'] !== undefined).toBe(authentication === 'yes')
+    expect(routes.includes("middleware('auth:sanctum')")).toBe(authentication === 'yes')
+    expect(routes.includes('Authentication is not configured.')).toBe(authentication === 'not-yet')
+    expect(await fs.pathExists(path.join(destination, 'backend/app/Http/Controllers/AuthController.php'))).toBe(authentication === 'yes')
+    const profile = await fs.readJson(path.join(destination, 'create-win-project.profile.json'))
+    expect(profile.authentication.model).toBe(model)
+  })
+
+  it('generates a pinned OIDC resource-server adapter for Laravel multi-client APIs', async () => {
+    const destination = await generate({
+      frontend: 'no-frontend', backend: 'laravel', applicationShape: 'api', architecture: 'medium',
+      authentication: 'yes', authAudience: 'multi-client', githubActions: false,
+      projectName: 'laravel-oidc-api',
+    })
+    const composer = await fs.readJson(path.join(destination, 'composer.json'))
+    expect(composer.require['auth0/login']).toBe('7.22.0')
+    expect(await fs.pathExists(path.join(destination, 'config/auth0.php'))).toBe(true)
+    expect(await fs.readFile(path.join(destination, 'routes/api.php'), 'utf8')).toContain("Auth::shouldUse('auth0-api')")
+    expect(await fs.readFile(path.join(destination, '.env.example'), 'utf8')).toContain('AUTH0_AUDIENCE=')
+  })
+
+  it.each([
+    ['blade', 'resources/views/home.blade.php', null],
+    ['livewire', 'app/Livewire/HomePage.php', 'livewire/livewire'],
+    ['inertia-react', 'resources/js/Pages/Home.jsx', 'inertiajs/inertia-laravel'],
+  ])('generates the %s Laravel full-stack UI', async (laravelUi, expectedFile, composerPackage) => {
+    const destination = await generate({
+      frontend: 'laravel-ui', backend: 'laravel', applicationShape: 'fullstack', laravelUi,
+      architecture: 'medium', authentication: 'yes', styling: 'tailwind', githubActions: false,
+      projectName: `laravel-${laravelUi}`,
+    })
+    expect(await fs.pathExists(path.join(destination, expectedFile))).toBe(true)
+    const composer = await fs.readJson(path.join(destination, 'composer.json'))
+    if (composerPackage) expect(composer.require[composerPackage]).toMatch(/^\d+\.\d+\.\d+$/)
+    if (laravelUi === 'inertia-react') {
+      const packageJson = await fs.readJson(path.join(destination, 'package.json'))
+      expect(packageJson.dependencies['@inertiajs/react']).toMatch(/^\d+\.\d+\.\d+$/)
+    }
+    const rules = await fs.readFile(path.join(destination, 'RULES.md'), 'utf8')
+    expect(rules).toContain(`platform/laravel-ui/${laravelUi}/architecture.md`)
+  })
+
+  it('keeps Laravel Docker build and run as separate operations', async () => {
+    const destination = await generate({
+      frontend: 'no-frontend', backend: 'laravel', applicationShape: 'api', architecture: 'medium',
+      authentication: 'not-yet', docker: true, makefile: true, githubActions: false,
+      projectName: 'laravel-docker-api',
+    })
+    const makefile = await fs.readFile(path.join(destination, 'Makefile'), 'utf8')
+    expect(makefile).toMatch(/build:.*\n\t\$\(COMPOSE\) build/)
+    expect(makefile).toMatch(/run:.*\n\t\$\(COMPOSE\) up -d/)
+    expect(makefile.match(/run:.*\n\t.*--build/)).toBeNull()
+    const compose = await fs.readFile(path.join(destination, 'docker-compose.yml'), 'utf8')
+    expect(compose).toContain('backend:')
+    expect(compose).toContain('postgres:16-alpine')
+    expect(await fs.pathExists(path.join(destination, 'Dockerfile.dev'))).toBe(true)
+    expect(await fs.readFile(path.join(destination, 'docs/guides/setup.md'), 'utf8')).toContain('Only Docker with Compose is required')
+  })
+
+  it('generates Laravel CI in the correct application directory', async () => {
+    const destination = await generate({
+      frontend: 'react', backend: 'laravel', applicationShape: 'separate', architecture: 'medium',
+      authentication: 'none', docker: false, makefile: false, githubActions: true,
+      projectName: 'laravel-ci-api',
+    })
+    const workflow = await fs.readFile(path.join(destination, '.github/workflows/ci-backend.yml'), 'utf8')
+    expect(workflow).toContain('working-directory: backend')
+    expect(workflow).toContain('php-version: "8.5.10"')
+    expect(workflow).toContain('postgres:16-alpine')
+    expect(workflow).toContain('composer check')
+  })
+
+  it.each([
     ['nextjs', 'none', 'tailwind'],
     ['nextjs', 'supabase', 'tailwind'],
     ['nextjs', 'springboot', 'css-modules'],
@@ -70,7 +178,7 @@ describe('runnable project contract', () => {
     expect(packageJson.devDependencies.prettier).toMatch(/^\d+\.\d+\.\d+$/)
     expect(await fs.pathExists(path.join(destination, 'AGENTS.md'))).toBe(true)
     const profile = await fs.readJson(path.join(destination, 'create-win-project.profile.json'))
-    expect(profile.schemaVersion).toBe(2)
+    expect(profile.schemaVersion).toBe(3)
     expect(profile.compatibilityProfile.id).toBe('2026.09')
     expect(profile.architectureProfile).toBe('medium')
     expect(profile.authentication).toEqual({

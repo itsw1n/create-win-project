@@ -2,45 +2,63 @@ name: Generated compatibility
 
 on:
   pull_request:
-    paths:
-      - compatibility/**
-      - lib/**
-      - playbooks/**/*.manifest.json
-      - templates/**
-      - ci/**
-      - scripts/verify-generated.mjs
-      - package.json
-      - package-lock.json
+    branches: [dev, main]
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      scope:
+        description: Matrix scope to run
+        type: choice
+        options: [full, smoke]
+        default: full
 
 permissions:
   contents: read
 
 concurrency:
-  group: compatibility-${{ github.workflow }}-${{ github.ref }}
+  group: compatibility-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
   prepare:
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.catalog.outputs.matrix }}
-      current: ${{ steps.catalog.outputs.current }}
+      matrix: ${{ steps.matrix.outputs.matrix }}
+      current: ${{ steps.matrix.outputs.current }}
+      scope: ${{ steps.matrix.outputs.scope }}
     steps:
       - uses: actions/checkout@v4
-      - id: catalog
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.20.0
+          cache: npm
+      - run: npm ci
+      - id: matrix
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_REF: ${{ github.base_ref }}
+          MANUAL_SCOPE: ${{ inputs.scope }}
         run: |
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            scope="$MANUAL_SCOPE"
+          elif [ "$EVENT_NAME" = "pull_request" ] && [ "$BASE_REF" != "main" ]; then
+            scope="smoke"
+          else
+            scope="full"
+          fi
+          echo "scope=$scope" >> "$GITHUB_OUTPUT"
           echo "current=$(node -e 'const c=require("./compatibility/profiles.json"); process.stdout.write(c.defaultProfile)')" >> "$GITHUB_OUTPUT"
-          echo "matrix=$(node -e 'const c=require("./compatibility/profiles.json"); const cases=["nextjs-none","nextjs-supabase","nextjs-springboot","nextjs-postgres","react-none","react-supabase","react-springboot","react-native-supabase","react-native-springboot","react-native-none"]; const auths=x=>[...["not-yet","none"].map(authentication=>({authentication,audience:x.startsWith("react-native")?"multi-client":"website"})),...(x.includes("supabase")?[{authentication:"yes",audience:x.startsWith("react-native")?"multi-client":"website"}]:[]),...(x.includes("springboot")?[{authentication:"yes",audience:"website"},{authentication:"yes",audience:"multi-client"}]:[])]; const full=Object.entries(c.profiles).flatMap(([profile,p])=>cases.flatMap(caseName=>["small","medium","large"].flatMap(architecture=>auths(caseName).map(a=>({profile,case:caseName,architecture,...a,node:p.runtimes.node,java:p.runtimes.java}))))); const current=c.defaultProfile; const matrix=process.env.GITHUB_EVENT_NAME==="pull_request" ? full.filter(j=>j.profile===current) : full; process.stdout.write(JSON.stringify(matrix))')" >> "$GITHUB_OUTPUT"
+          echo "matrix=$(node scripts/compatibility-matrix.mjs --scope=$scope)" >> "$GITHUB_OUTPUT"
 
   verify:
     needs: prepare
     name: ${{ matrix.profile }} / ${{ matrix.case }} / ${{ matrix.architecture }} / ${{ matrix.authentication }} / ${{ matrix.audience }}
     runs-on: ubuntu-latest
+    timeout-minutes: 35
     strategy:
       fail-fast: false
+      max-parallel: 20
       matrix:
         include: ${{ fromJSON(needs.prepare.outputs.matrix) }}
     steps:
@@ -54,9 +72,26 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
           distribution: temurin
+      - uses: shivammathur/setup-php@v2
+        if: contains(matrix.case, 'laravel')
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: pdo_pgsql
+          coverage: none
       - run: npm ci
-      - run: npm test
-      - run: npm run validate:content
-      - run: npm pack --dry-run
       - name: Verify generated application
-        run: node scripts/verify-generated.mjs --profile=${{ matrix.profile }} --case=${{ matrix.case }} --architecture=${{ matrix.architecture }} --authentication=${{ matrix.authentication }} --auth-audience=${{ matrix.audience }} --containers=${{ matrix.profile == needs.prepare.outputs.current }}
+        run: node scripts/verify-generated.mjs --profile=${{ matrix.profile }} --case=${{ matrix.case }} --architecture=${{ matrix.architecture }} --authentication=${{ matrix.authentication }} --auth-audience=${{ matrix.audience }} --containers=${{ needs.prepare.outputs.scope == 'full' && matrix.profile == needs.prepare.outputs.current }}
+
+  compatibility-gate:
+    name: compatibility-gate
+    if: always()
+    needs: [prepare, verify]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every generated-project check
+        env:
+          PREPARE_RESULT: ${{ needs.prepare.result }}
+          VERIFY_RESULT: ${{ needs.verify.result }}
+        run: |
+          test "$PREPARE_RESULT" = "success"
+          test "$VERIFY_RESULT" = "success"

@@ -8,18 +8,35 @@ import { spawnSync } from 'node:child_process'
 import { generateProject } from './lib/generator.js'
 import { loadCompatibility } from './lib/compatibility.js'
 import { printDoctor } from './lib/doctor.js'
+import { configurationDecisionChoices, promptWithBack } from './lib/interview.js'
+import { projectLocationNotice } from './lib/project-location.js'
 import { w1nBanner } from './lib/banner.js'
 import {
   loadCatalog, resolveStack,
-  frontendChoices, backendChoicesFor, stylingChoicesFor, architectureChoicesFor,
+  stylingChoicesFor, architectureChoicesFor,
 } from './lib/catalog.js'
+import {
+  APPLICATION_SHAPES,
+  applicationShapeChoices,
+  backendChoicesForShape,
+  frontendChoicesForShape,
+} from './lib/application-shapes.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const cliArgs = process.argv.slice(2)
 const profileArg = cliArgs.find((arg) => arg.startsWith('--profile='))?.split('=')[1]
+const shapeArg = cliArgs.find((arg) => arg.startsWith('--shape='))?.split('=')[1]
+const frontendValue = cliArgs.find((arg) => arg.startsWith('--frontend='))?.split('=')[1]
+const backendArg = cliArgs.find((arg) => arg.startsWith('--backend='))?.split('=')[1]
+const frontendAliases = { vite: 'react', expo: 'react-native', none: 'no-frontend' }
+const frontendArg = frontendAliases[frontendValue] || frontendValue
 const architectureArg = cliArgs.find((arg) => arg.startsWith('--architecture='))?.split('=')[1]
 const authenticationArg = cliArgs.find((arg) => arg.startsWith('--authentication='))?.split('=')[1]
 const authAudienceArg = cliArgs.find((arg) => arg.startsWith('--auth-audience='))?.split('=')[1]
+const laravelUiArg = cliArgs.find((arg) => arg.startsWith('--laravel-ui='))?.split('=')[1]
+if (shapeArg && !APPLICATION_SHAPES[shapeArg]) {
+  throw new Error('--shape must be fullstack, separate, api, mobile, or frontend')
+}
 if (architectureArg && !['small', 'medium', 'large'].includes(architectureArg)) {
   throw new Error('--architecture must be small, medium, or large')
 }
@@ -28,6 +45,9 @@ if (authenticationArg && !['yes', 'not-yet', 'none'].includes(authenticationArg)
 }
 if (authAudienceArg && !['website', 'multi-client'].includes(authAudienceArg)) {
   throw new Error('--auth-audience must be website or multi-client')
+}
+if (laravelUiArg && !['blade', 'livewire', 'inertia-react'].includes(laravelUiArg)) {
+  throw new Error('--laravel-ui must be blade, livewire, or inertia-react')
 }
 const wantsInstall = cliArgs.includes('--install')
 const skipsInstall = cliArgs.includes('--no-install')
@@ -53,7 +73,15 @@ console.log('')
 
 // ─── Interview ───────────────────────────────────────────────────────────────
 
-const answers = await inquirer.prompt([
+const questions = [
+  {
+    type: 'list',
+    name: 'applicationShape',
+    message: 'What kind of application are you building?',
+    choices: applicationShapeChoices(),
+    default: 'fullstack',
+    when: () => !shapeArg,
+  },
   // ── Always-on ──────────────────────────────────────────────────────────
   {
     type: 'input',
@@ -77,14 +105,28 @@ const answers = await inquirer.prompt([
   {
     type: 'list',
     name: 'frontend',
-    message: 'Pick your frontend:',
-    choices: frontendChoices(catalog),
+    message: 'Which application framework or frontend?',
+    choices: (a) => frontendChoicesForShape(shapeArg || a.applicationShape, catalog),
+    when: () => !frontendArg,
   },
   {
     type: 'list',
     name: 'backend',
-    message: 'Pick your backend/database:',
-    choices: (a) => backendChoicesFor(catalog, a.frontend),
+    message: 'Which backend or data service?',
+    choices: (a) => backendChoicesForShape(shapeArg || a.applicationShape, a.frontend, catalog),
+    when: () => !backendArg,
+  },
+  {
+    type: 'list',
+    name: 'laravelUi',
+    message: 'How should Laravel render the website?',
+    choices: [
+      { name: 'Blade (Recommended) — server-rendered pages with the fewest moving parts', value: 'blade' },
+      { name: 'Livewire — interactive server-driven components with minimal JavaScript', value: 'livewire' },
+      { name: 'Inertia + React — React pages with Laravel routing and controllers', value: 'inertia-react' },
+    ],
+    default: 'blade',
+    when: (a) => a.frontend === 'laravel-ui' && !laravelUiArg,
   },
 
   // ── Styling: only shown when frontend has >1 option (catalog-driven) ───
@@ -120,7 +162,7 @@ const answers = await inquirer.prompt([
     message: 'Does your application need user login?',
     choices: (a) => {
       const choices = []
-      if (a.backend === 'supabase' || a.backend === 'springboot') {
+      if (a.backend === 'supabase' || a.backend === 'springboot' || a.backend === 'laravel') {
         choices.push({ name: 'Yes — generate authentication appropriate for this stack', value: 'yes' })
       }
       choices.push(
@@ -141,7 +183,7 @@ const answers = await inquirer.prompt([
       { name: 'Website and mobile — use a trusted identity provider for every client', value: 'multi-client' },
     ],
     default: 'website',
-    when: (a) => a.backend === 'springboot' && (authenticationArg || a.authentication) === 'yes' && !authAudienceArg,
+    when: (a) => ['springboot', 'laravel'].includes(a.backend) && a.frontend !== 'laravel-ui' && (authenticationArg || a.authentication) === 'yes' && !authAudienceArg,
   },
 
   // ── Testing ────────────────────────────────────────────────────────────
@@ -232,11 +274,21 @@ const answers = await inquirer.prompt([
       return [...opts].map((id) => ({ name: id, value: id }))
     },
   },
-])
+]
+let answers = {
+  applicationShape: shapeArg,
+  frontend: frontendArg,
+  backend: backendArg,
+}
+let stack
+while (true) {
+answers = await promptWithBack(inquirer, questions, answers)
 answers.compatibilityProfile = profile.id
+answers.applicationShape = shapeArg || answers.applicationShape
 answers.architecture = architectureArg || answers.architecture || 'medium'
 answers.authentication = authenticationArg || answers.authentication || 'not-yet'
 answers.authAudience = authAudienceArg || answers.authAudience || (catalog.byId[answers.frontend]?.platform === 'mobile' ? 'multi-client' : 'website')
+answers.laravelUi = laravelUiArg || answers.laravelUi || (answers.frontend === 'laravel-ui' ? 'blade' : undefined)
 if (wantsInstall) answers.installDependencies = true
 if (skipsInstall) answers.installDependencies = false
 
@@ -245,7 +297,7 @@ if (resolveStack({ ...answers, styling: answers.styling || catalog.byId[answers.
   answers.docker = answers.docker ?? true
 }
 
-const stack = resolveStack({ ...answers, styling: answers.styling || catalog.byId[answers.frontend]?.stylingOptions?.[0] || 'tailwind' }, catalog)
+stack = resolveStack({ ...answers, styling: answers.styling || catalog.byId[answers.frontend]?.stylingOptions?.[0] || 'tailwind' }, catalog)
 
 // ─── Confirm ─────────────────────────────────────────────────────────────────
 
@@ -254,10 +306,12 @@ console.log(chalk.bold('  Summary'))
 console.log(chalk.gray('  ───────────────────────────'))
 console.log(`  ${chalk.cyan('Name:')}         ${answers.projectName}`)
 console.log(`  ${chalk.cyan('Stack:')}        ${stack.label}`)
+console.log(`  ${chalk.cyan('Shape:')}        ${APPLICATION_SHAPES[stack.applicationShape].label}`)
 console.log(`  ${chalk.cyan('Platform:')}     ${stack.platform}`)
 if (stack.styleId) {
   console.log(`  ${chalk.cyan('Styling:')}      ${catalog.byId[stack.styleId]?.label || stack.styleId}`)
 }
+if (answers.laravelUi) console.log(`  ${chalk.cyan('Laravel UI:')}   ${answers.laravelUi}`)
 console.log(`  ${chalk.cyan('Architecture:')} ${stack.architecture[0].toUpperCase()}${stack.architecture.slice(1)}`)
 console.log(`  ${chalk.cyan('Authentication:')} ${stack.authentication}`)
 console.log(`  ${chalk.cyan('Testing:')}      ${answers.testing}`)
@@ -279,13 +333,18 @@ if (stack.constraints.length) {
 }
 console.log('')
 
-const { confirm } = await inquirer.prompt([
-  { type: 'confirm', name: 'confirm', message: 'Generate project?', default: true },
-])
+const { decision } = await inquirer.prompt([{
+  type: 'list', name: 'decision', message: 'Ready?', choices: configurationDecisionChoices(),
+}])
 
-if (!confirm) {
+if (decision === 'back') {
+  continue
+}
+if (decision === 'cancel') {
   console.log(chalk.yellow('\n  Cancelled.\n'))
   process.exit(0)
+}
+break
 }
 
 // ─── Generate ────────────────────────────────────────────────────────────────
@@ -296,25 +355,52 @@ const spinner = ora('Scaffolding project...').start()
 try {
   await generateProject(answers, __dirname)
   spinner.succeed(chalk.green('Project created!'))
+  const locationNotice = projectLocationNotice({ cwd: process.cwd(), cliRoot: __dirname, projectName: answers.projectName })
+  if (locationNotice) {
+    console.log('')
+    console.log(chalk.yellow.bold('  Project location note'))
+    console.log(chalk.yellow(`  ${locationNotice.message}`))
+    console.log(chalk.gray(`  Created at: ${locationNotice.generatedPath}`))
+    console.log(chalk.gray(`  Suggested destination: ${locationNotice.suggestedPath}`))
+    console.log(chalk.gray(`  Linux/macOS: mv "${locationNotice.generatedPath}" "${locationNotice.suggestedPath}"`))
+    console.log(chalk.gray(`  Windows: cut the generated folder in File Explorer and paste it into your projects folder.`))
+  }
   if (answers.installDependencies) {
-    const installRoot = stack.frontendKey === 'react'
-      ? path.join(process.cwd(), answers.projectName, 'frontend')
-      : path.join(process.cwd(), answers.projectName)
-    const installSpinner = ora('Installing exact dependencies and creating package-lock.json...').start()
-    const npmCommand = process.platform === 'win32' ? 'npm.cmd' : 'npm'
-    const result = spawnSync(npmCommand, ['install'], { cwd: installRoot, stdio: 'inherit', shell: false })
-    if (result.status !== 0) {
+    const projectRoot = path.join(process.cwd(), answers.projectName)
+    const steps = []
+    if (stack.backendKey === 'laravel') {
+      const laravelRoot = ['laravel-ui', 'no-frontend'].includes(stack.frontendKey) ? projectRoot : path.join(projectRoot, 'backend')
+      steps.push({ command: process.platform === 'win32' ? 'composer.bat' : 'composer', args: ['install'], cwd: laravelRoot, retry: `cd ${path.relative(process.cwd(), laravelRoot)} && composer install` })
+    }
+    const needsNpm = stack.frontendKey !== 'no-frontend' && (stack.frontendKey !== 'laravel-ui' || answers.laravelUi === 'inertia-react')
+    if (needsNpm) {
+      const npmRoot = stack.frontendKey === 'react' ? path.join(projectRoot, 'frontend') : projectRoot
+      steps.push({ command: process.platform === 'win32' ? 'npm.cmd' : 'npm', args: ['install'], cwd: npmRoot, retry: `cd ${path.relative(process.cwd(), npmRoot)} && npm install` })
+    }
+    const installSpinner = ora('Installing exact dependencies and creating lockfiles...').start()
+    const failed = steps.find((step) => spawnSync(step.command, step.args, { cwd: step.cwd, stdio: 'inherit', shell: false }).status !== 0)
+    if (failed) {
       installSpinner.warn(chalk.yellow('Project created, but dependency installation did not finish.'))
-      console.log(chalk.yellow(`  Retry with: cd ${path.relative(process.cwd(), installRoot)} && npm install`))
+      console.log(chalk.yellow(`  Retry with: ${failed.retry}`))
     } else {
-      installSpinner.succeed(chalk.green('Dependencies installed and lockfile created.'))
+      installSpinner.succeed(chalk.green('Dependencies installed and lockfiles created.'))
     }
   }
   console.log('')
   console.log(chalk.bold(`  Next steps:`))
   console.log(chalk.gray(`  cd ${answers.projectName}`))
 
-  if (stack.frontendKey === 'react') {
+  if (stack.backendKey === 'laravel') {
+    const laravelDir = ['laravel-ui', 'no-frontend'].includes(stack.frontendKey) ? '' : 'backend/'
+    console.log(chalk.gray(`  cp ${laravelDir}.env.example ${laravelDir}.env`))
+    if (answers.makefile) {
+      console.log(chalk.gray(`  make setup  # first run only`))
+      console.log(chalk.gray(`  make run    # later runs; never rebuilds`))
+    } else {
+      console.log(chalk.gray(`  docker compose build`))
+      console.log(chalk.gray(`  docker compose up -d`))
+    }
+  } else if (stack.frontendKey === 'react') {
     if (stack.backendKey === 'springboot') {
       console.log(chalk.gray(`  cp .env.example .env  # Docker/backend values`))
     }
@@ -326,7 +412,9 @@ try {
     if (!answers.installDependencies) console.log(chalk.gray(`  npm install`))
   }
 
-  if (stack.isMobile) {
+  if (stack.backendKey === 'laravel') {
+    // Laravel commands were printed above because its root differs by application shape.
+  } else if (stack.isMobile) {
     console.log(chalk.gray(`  npx expo start`))
   } else if (answers.makefile) {
     if (stack.frontendKey === 'react') {

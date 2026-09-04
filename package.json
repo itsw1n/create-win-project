@@ -26,6 +26,8 @@
     "doctor": "node index.js doctor",
     "test": "vitest run",
     "validate:content": "node scripts/validate-content.mjs",
+    "matrix:smoke": "node scripts/compatibility-matrix.mjs --scope=smoke",
+    "matrix:full": "node scripts/compatibility-matrix.mjs --scope=full",
     "verify:generated": "node scripts/verify-generated.mjs"
   },
   "engines": {

@@ -84,6 +84,22 @@ describe('resolveStack — env prefix', () => {
 })
 
 describe('resolveStack — capability flags', () => {
+  it('supports a backend-only Spring Boot application shape', async () => {
+    const catalog = await loadCatalog(path.join(root, 'playbooks'))
+    const stack = resolveStack({ frontend: 'no-frontend', backend: 'springboot', applicationShape: 'api' }, catalog)
+    expect(stack.applicationShape).toBe('api')
+    expect(stack.platform).toBe('api')
+    expect(stack.styleId).toBeNull()
+  })
+
+  it('maps Laravel authentication from application shape and audience', async () => {
+    const catalog = await loadCatalog(path.join(root, 'playbooks'))
+    const spa = resolveStack({ frontend: 'react', backend: 'laravel', applicationShape: 'separate', authentication: 'yes' }, catalog)
+    const api = resolveStack({ frontend: 'react-native', backend: 'laravel', applicationShape: 'mobile', authentication: 'yes' }, catalog)
+    expect(spa.authentication).toBe('sanctum-spa')
+    expect(api.authentication).toBe('laravel-oidc')
+    expect(spa.playbooks).toContain('capabilities/laravel/sanctum-spa.md')
+  })
   it('nextjs + supabase produces correct capabilities', async () => {
     const catalog = await loadCatalog(path.join(root, 'playbooks'))
     const stack   = resolveStack({ frontend: 'nextjs', backend: 'supabase', styling: 'tailwind', architecture: 'medium' }, catalog)
@@ -92,6 +108,7 @@ describe('resolveStack — capability flags', () => {
     expect(stack.ciTemplate).toBe('nextjs')
     expect(stack.label).toBe('Next.js + Supabase')
     expect(stack.architecture).toBe('medium')
+    expect(stack.applicationShape).toBe('fullstack')
     expect(stack.playbooks).toContain('stack/nextjs/architecture.md')
     expect(stack.playbooks).toContain('capabilities/supabase/nextjs.md')
   })
@@ -104,6 +121,7 @@ describe('resolveStack — capability flags', () => {
     expect(stack.ciTemplate).toBe('expo')
     expect(stack.styleId).toBe('native-styles')
     expect(stack.architecture).toBe('medium')
+    expect(stack.applicationShape).toBe('mobile')
     expect(stack.playbooks).toContain('stack/expo/architecture.md')
     expect(stack.playbooks).toContain('capabilities/supabase/expo.md')
   })

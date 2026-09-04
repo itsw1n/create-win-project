@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import path from 'node:path'
-import { loadCompatibility, resolvePackages, validateCompatibility } from '../lib/compatibility.js'
+import { composerPackageVersion, loadCompatibility, resolvePackages, validateCompatibility } from '../lib/compatibility.js'
 import { loadCatalog, resolveStack } from '../lib/catalog.js'
 
 const root = path.resolve(import.meta.dirname, '..')
@@ -20,6 +20,9 @@ describe('compatibility profiles', () => {
     const invalid = structuredClone(catalog)
     invalid.profiles[invalid.defaultProfile].packages.next = '^16.3.4'
     expect(() => validateCompatibility(invalid)).toThrow(/exact versions/)
+    const invalidComposer = structuredClone(catalog)
+    invalidComposer.profiles[invalidComposer.defaultProfile].composerPackages['laravel/framework'] = '^13.0'
+    expect(() => validateCompatibility(invalidComposer)).toThrow(/Composer package.*exact version/)
     expect(() => resolvePackages(['not-a-real-package'], profile, 'fixture.deps')).toThrow(/missing/)
   })
 
@@ -27,6 +30,7 @@ describe('compatibility profiles', () => {
     const { profile } = await loadCompatibility(profilesFile)
     expect(resolvePackages(['react'], profile, 'nextjs.deps').react).toBe('19.2.8')
     expect(resolvePackages(['react'], profile, 'react-native.deps').react).toBe('19.2.3')
+    expect(composerPackageVersion(profile, 'laravel/framework')).toMatch(/^\d+\.\d+\.\d+$/)
   })
 
   it('resolves every direct dependency to an exact profile version', async () => {

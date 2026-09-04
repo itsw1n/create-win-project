@@ -1,0 +1,35 @@
+{
+  "id": "laravel",
+  "kind": "backend",
+  "label": "Laravel (PHP)",
+  "appliesTo": { "frontend": ["nextjs", "react", "react-native", "no-frontend", "laravel-ui"] },
+  "port": 8000,
+  "needsDocker": true,
+  "makefileTemplate": "laravel",
+  "architectureProfiles": ["small", "medium", "large"],
+  "playbooks": [
+    "stack/laravel/architecture.md",
+    "stack/laravel/structure.md",
+    "stack/laravel/runtime.md",
+    "stack/laravel/security.md",
+    "stack/laravel/testing.md",
+    "capabilities/laravel/database.md",
+    "capabilities/laravel/migrations.md",
+    { "file": "capabilities/laravel/session-auth.md", "appliesWhen": { "authentication": "laravel-session" } },
+    { "file": "capabilities/laravel/sanctum-spa.md", "appliesWhen": { "authentication": "sanctum-spa" } },
+    { "file": "capabilities/laravel/oidc-resource-server.md", "appliesWhen": { "authentication": "laravel-oidc" } }
+  ],
+  "folders": [], "deps": [], "devDeps": [],
+  "env": ["DATABASE_URL", "POSTGRES_USER", "POSTGRES_PASSWORD", "POSTGRES_DB", "APP_KEY", "APP_URL"],
+  "clientEnv": [],
+  "constraints": [
+    "Laravel owns trusted server behavior and resource authorization",
+    "PostgreSQL migrations are the generated schema source of truth"
+  ],
+  "concerns": [
+    { "id": "architecture", "required": true, "playbook": "stack/laravel/architecture.md", "sections": ["Profiles", "Dependency Direction"] },
+    { "id": "stack-security", "required": true, "playbook": "stack/laravel/security.md", "sections": ["Trust Boundaries", "Authentication Models"] },
+    { "id": "stack-testing", "required": true, "playbook": "stack/laravel/testing.md", "sections": ["Risk-Based Layers"] },
+    { "id": "migrations", "required": true, "playbook": "capabilities/laravel/migrations.md", "sections": ["Development", "Production"] }
+  ]
+}
