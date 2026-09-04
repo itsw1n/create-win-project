@@ -89,6 +89,10 @@ PostgreSQL + Prisma owns its schema, client initialization, migration commands,
 database environment, Docker contribution, and focused Next.js verification in
 `src/stacks/backends/postgres`.
 
+The no-backend adapter explicitly owns frontend-only compatibility and confirms
+that no server files, install steps, Docker services, credentials, or pretend
+authentication are contributed.
+
 Core code owns prompt order, compatibility-profile resolution, atomic writes, process execution, and final composition. An adapter receives a read-only stack context and returns contributions; it cannot write arbitrary paths or install global tools. Adapter definitions do not accept dependency tables or version fields. Exact versions remain exclusively owned by `compatibility/profiles.json`.
 
 Manifests declare:
