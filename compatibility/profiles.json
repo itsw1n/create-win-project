@@ -9,6 +9,8 @@
       "springModulith": "2.0.8",
       "runtimes": {
         "node": "24.20.0",
+        "nodeMinimum": "22.14.0",
+        "npmMinimum": "11.19.0",
         "java": "21",
         "maven": "3.9.16",
         "postgres": "16",
@@ -125,6 +127,8 @@
       "springModulith": "2.0.8",
       "runtimes": {
         "node": "24.20.0",
+        "nodeMinimum": "22.14.0",
+        "npmMinimum": "11.19.0",
         "java": "21",
         "maven": "3.9.16",
         "postgres": "16",
