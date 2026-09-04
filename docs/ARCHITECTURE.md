@@ -25,6 +25,18 @@ resolved stack descriptor
 generated-project contract tests
 ```
 
+### Source ownership
+
+The migration target has three explicit source boundaries:
+
+- `src/cli` owns terminal arguments, questions and navigation, display, warnings, summaries, and system checks. It may call the engine and read stack descriptions.
+- `src/engine` owns validated project orchestration, tested-version and library loading, safe writes, dependency installation, and template rendering. It must not import terminal code or concrete stack folders.
+- `src/stacks` owns stack rules, the explicit available-stack list, and stack-specific generated behavior. Stack modules must not import CLI or engine implementation modules.
+
+During the architecture migration, these paths provide compatibility exports backed by the existing `lib` modules. Each later phase moves one responsibility behind the new path, updates callers, and removes its wrapper only after old and new imports are proven equivalent. `tests/architecture-boundaries.test.js` enforces dependency direction, while `tests/architecture-compatibility.test.js` protects public imports, representative paths, and byte-identical generated output.
+
+Root `index.js` remains the stable executable entry point. Generated-project paths such as `playbooks/`, `RULES.md`, and application folders are user-facing and do not change merely because generator source files move.
+
 ### CLI boundary
 
 `index.js` owns interaction and presentation. It gathers project identity, frontend, optional backend, styling, one Small/Medium/Large architecture profile, login intent, client audience when relevant, testing depth, and optional operational tooling. Medium is shown first and is the default. It does not contain stack dependency tables.

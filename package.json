@@ -13,6 +13,7 @@
   },
   "files": [
     "index.js",
+    "src",
     "lib",
     "compatibility",
     "playbooks",
