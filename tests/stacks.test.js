@@ -81,6 +81,23 @@ describe('stack adapter registry', () => {
 })
 
 describe('registered stack capabilities', () => {
+  it('registers React + Vite with its supported shapes, pairings, and operational facets', () => {
+    const react = stackRegistry.require('react')
+    const context = { backend: { id: 'springboot' } }
+
+    expect(react.compatibleWith.backend).toEqual(['none', 'supabase', 'springboot', 'laravel'])
+    expect(react.capabilities.applicationShapes).toEqual(['separate', 'frontend'])
+    expect(react.capabilities.architectureProfiles).toEqual(['small', 'medium', 'large'])
+    expect(react.contributes.environment(context)).toEqual(['API_URL'])
+    expect(react.contributes.install(context)).toEqual([
+      { cwd: 'frontend', command: 'npm', args: ['install'] },
+    ])
+    expect(react.contributes.verification(context)).toEqual(expect.arrayContaining([
+      expect.objectContaining({ backend: 'supabase', authentication: 'supabase' }),
+      expect.objectContaining({ backend: 'springboot', architecture: 'large' }),
+    ]))
+  })
+
   it('registers Next.js with its supported shapes, pairings, and contribution facets', () => {
     const nextjs = stackRegistry.require('nextjs')
 
