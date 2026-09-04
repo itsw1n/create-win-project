@@ -8,6 +8,7 @@ import {
 import { createStackContext } from '../lib/stacks/context.js'
 import { createStackRegistry } from '../lib/stacks/registry.js'
 import { collectContributions, collectPromptContributions } from '../lib/stacks/shared/contributions.js'
+import { stackRegistry } from '../lib/stacks/index.js'
 
 function adapter(overrides = {}) {
   return defineStackAdapter({
@@ -76,6 +77,19 @@ describe('stack adapter registry', () => {
     })
     const registry = createStackRegistry([frontend, incompatible])
     expect(registry.supports('example', 'other-api')).toBe(false)
+  })
+})
+
+describe('registered stack capabilities', () => {
+  it('registers Laravel with its existing pairings and authentication models', () => {
+    const laravel = stackRegistry.require('laravel')
+
+    expect(laravel.kind).toBe('backend')
+    expect(laravel.compatibleWith.frontend).toEqual([
+      'nextjs', 'react', 'react-native', 'no-frontend', 'laravel-ui',
+    ])
+    expect(laravel.capabilities.applicationShapes).toEqual(['fullstack', 'separate', 'api', 'mobile'])
+    expect(laravel.capabilities.authenticationModels).toContain('laravel-oidc')
   })
 })
 
