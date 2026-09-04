@@ -65,6 +65,26 @@ describe('runnable project contract', () => {
   })
 
   it.each([
+    ['none', 'public'],
+    ['not-yet', 'undecided'],
+    ['yes', 'sanctum-spa'],
+  ])('generates honest Laravel authentication for %s', async (authentication, model) => {
+    const destination = await generate({
+      frontend: 'react', backend: 'laravel', applicationShape: 'separate', architecture: 'medium',
+      authentication, authAudience: 'website', styling: 'tailwind', githubActions: false,
+      projectName: `laravel-auth-${authentication}`,
+    })
+    const composer = await fs.readJson(path.join(destination, 'backend/composer.json'))
+    const routes = await fs.readFile(path.join(destination, 'backend/routes/api.php'), 'utf8')
+    expect(composer.require['laravel/sanctum'] !== undefined).toBe(authentication === 'yes')
+    expect(routes.includes("middleware('auth:sanctum')")).toBe(authentication === 'yes')
+    expect(routes.includes('Authentication is not configured.')).toBe(authentication === 'not-yet')
+    expect(await fs.pathExists(path.join(destination, 'backend/app/Http/Controllers/AuthController.php'))).toBe(authentication === 'yes')
+    const profile = await fs.readJson(path.join(destination, 'create-win-project.profile.json'))
+    expect(profile.authentication.model).toBe(model)
+  })
+
+  it.each([
     ['nextjs', 'none', 'tailwind'],
     ['nextjs', 'supabase', 'tailwind'],
     ['nextjs', 'springboot', 'css-modules'],
