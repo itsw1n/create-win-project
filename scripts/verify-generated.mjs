@@ -134,7 +134,7 @@ try {
     run('composer', ['install', '--no-interaction', '--prefer-dist'], backendRoot)
     run('docker', ['compose', 'up', '-d', '--wait', 'db'], projectRoot, publicEnv)
     try {
-      run('composer', ['check'], backendRoot, { ...publicEnv, DB_HOST: '127.0.0.1', DB_PORT: '5432', APP_KEY: 'base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=' })
+      run('composer', ['check'], backendRoot, { ...publicEnv, DB_HOST: '127.0.0.1', DB_PORT: '5432', DB_DATABASE: publicEnv.POSTGRES_DB, DB_USERNAME: publicEnv.POSTGRES_USER, DB_PASSWORD: publicEnv.POSTGRES_PASSWORD, APP_KEY: 'base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=' })
     } finally {
       run('docker', ['compose', 'down', '--volumes'], projectRoot, publicEnv)
     }
