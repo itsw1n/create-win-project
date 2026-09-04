@@ -19,7 +19,7 @@
     { "file": "platform/laravel-ui/inertia-react/security.md", "appliesWhen": { "laravelUi": "inertia-react" } },
     { "file": "platform/laravel-ui/inertia-react/testing.md", "appliesWhen": { "laravelUi": "inertia-react" } }
   ],
-  "stylingOptions": ["tailwind"], "scripts": {}, "ciTemplate": "laravel", "envPrefix": "VITE_",
+  "stylingOptions": ["tailwind"], "scripts": {}, "ciTemplate": "none", "envPrefix": "VITE_",
   "folders": [], "deps": [], "devDeps": [], "env": [], "clientEnv": [],
   "constraints": ["Laravel owns routing, authentication, authorization, and persistence"],
   "concerns": [

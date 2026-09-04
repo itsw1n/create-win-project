@@ -84,6 +84,19 @@ describe('runnable project contract', () => {
     expect(profile.authentication.model).toBe(model)
   })
 
+  it('generates a pinned OIDC resource-server adapter for Laravel multi-client APIs', async () => {
+    const destination = await generate({
+      frontend: 'no-frontend', backend: 'laravel', applicationShape: 'api', architecture: 'medium',
+      authentication: 'yes', authAudience: 'multi-client', githubActions: false,
+      projectName: 'laravel-oidc-api',
+    })
+    const composer = await fs.readJson(path.join(destination, 'composer.json'))
+    expect(composer.require['auth0/login']).toBe('7.22.0')
+    expect(await fs.pathExists(path.join(destination, 'config/auth0.php'))).toBe(true)
+    expect(await fs.readFile(path.join(destination, 'routes/api.php'), 'utf8')).toContain("Auth::shouldUse('auth0-api')")
+    expect(await fs.readFile(path.join(destination, '.env.example'), 'utf8')).toContain('AUTH0_AUDIENCE=')
+  })
+
   it.each([
     ['blade', 'resources/views/home.blade.php', null],
     ['livewire', 'app/Livewire/HomePage.php', 'livewire/livewire'],
@@ -120,6 +133,19 @@ describe('runnable project contract', () => {
     expect(compose).toContain('postgres:16-alpine')
     expect(await fs.pathExists(path.join(destination, 'Dockerfile.dev'))).toBe(true)
     expect(await fs.readFile(path.join(destination, 'docs/guides/setup.md'), 'utf8')).toContain('Only Docker with Compose is required')
+  })
+
+  it('generates Laravel CI in the correct application directory', async () => {
+    const destination = await generate({
+      frontend: 'react', backend: 'laravel', applicationShape: 'separate', architecture: 'medium',
+      authentication: 'none', docker: false, makefile: false, githubActions: true,
+      projectName: 'laravel-ci-api',
+    })
+    const workflow = await fs.readFile(path.join(destination, '.github/workflows/ci-backend.yml'), 'utf8')
+    expect(workflow).toContain('working-directory: backend')
+    expect(workflow).toContain('php-version: "8.5.10"')
+    expect(workflow).toContain('postgres:16-alpine')
+    expect(workflow).toContain('composer check')
   })
 
   it.each([
