@@ -72,7 +72,6 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
           distribution: temurin
-          cache: maven
       - uses: shivammathur/setup-php@v2
         if: contains(matrix.case, 'laravel')
         with:
