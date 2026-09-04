@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest'
 import path from 'node:path'
 import { loadCatalog, resolveStack } from '../lib/catalog.js'
 import { buildLaravelFiles } from '../lib/stacks/laravel/generate.js'
+import { laravelSessionAuthentication } from '../lib/stacks/laravel/auth/session.js'
+import { sanctumSpaAuthentication } from '../lib/stacks/laravel/auth/sanctum.js'
+import { laravelOidcAuthentication } from '../lib/stacks/laravel/auth/oidc.js'
 
 const root = path.resolve(import.meta.dirname, '..')
 
@@ -54,5 +57,56 @@ describe('Laravel core adapter', () => {
 
     expect('app/Actions/GetSystemStatus.php' in files).toBe(hasAction)
     expect('tests/Architecture/BoundariesTest.php' in files).toBe(hasBoundary)
+  })
+})
+
+describe('Laravel authentication adapter contracts', () => {
+  it.each([
+    ['none', 'public', false, false, false],
+    ['not-yet', 'undecided', true, false, false],
+    ['yes', 'sanctum-spa', false, true, false],
+  ])('implements %s intent as %s', async (intent, model, failClosed, usesSanctum, usesOidc) => {
+    const stack = await laravelStack({
+      frontend: 'react',
+      applicationShape: 'separate',
+      authentication: intent,
+      authAudience: 'website',
+    })
+    const files = buildLaravelFiles(answers, stack)
+    const composer = JSON.parse(files['backend/composer.json'])
+    const routes = files['backend/routes/api.php']
+
+    expect(stack.authentication).toBe(model)
+    expect(routes.includes('Authentication is not configured.')).toBe(failClosed)
+    expect(composer.require[sanctumSpaAuthentication.composerPackage] !== undefined).toBe(usesSanctum)
+    expect(composer.require[laravelOidcAuthentication.composerPackage] !== undefined).toBe(usesOidc)
+  })
+
+  it('uses a server session for Laravel UI without exposing a refresh token', async () => {
+    const stack = await laravelStack({
+      frontend: 'laravel-ui',
+      applicationShape: 'fullstack',
+      authentication: 'yes',
+      laravelUi: 'blade',
+    })
+    const files = buildLaravelFiles(answers, stack)
+
+    expect(stack.authentication).toBe(laravelSessionAuthentication.id)
+    expect(files['routes/api.php']).toContain("middleware('auth')")
+    expect(files['.env.example']).toContain('SESSION_DRIVER=database')
+    expect(files['.env.example']).not.toMatch(/REFRESH_TOKEN/i)
+  })
+
+  it('keeps multi-client OIDC external and access-token only', async () => {
+    const stack = await laravelStack({ authentication: 'yes', authAudience: 'multi-client' })
+    const files = buildLaravelFiles(answers, stack)
+    const composer = JSON.parse(files['composer.json'])
+
+    expect(stack.authentication).toBe(laravelOidcAuthentication.id)
+    expect(laravelOidcAuthentication.acceptsRefreshTokens).toBe(false)
+    expect(composer.require[laravelOidcAuthentication.composerPackage]).toMatch(/^\d+\.\d+\.\d+$/)
+    expect(files['routes/api.php']).toContain(`Auth::shouldUse('${laravelOidcAuthentication.guard}')`)
+    expect(files['.env.example']).toContain('AUTH0_AUDIENCE=')
+    expect(files['.env.example']).not.toMatch(/REFRESH_TOKEN/i)
   })
 })
