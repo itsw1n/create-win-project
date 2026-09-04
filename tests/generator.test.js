@@ -85,6 +85,27 @@ describe('runnable project contract', () => {
   })
 
   it.each([
+    ['blade', 'resources/views/home.blade.php', null],
+    ['livewire', 'app/Livewire/HomePage.php', 'livewire/livewire'],
+    ['inertia-react', 'resources/js/Pages/Home.jsx', 'inertiajs/inertia-laravel'],
+  ])('generates the %s Laravel full-stack UI', async (laravelUi, expectedFile, composerPackage) => {
+    const destination = await generate({
+      frontend: 'laravel-ui', backend: 'laravel', applicationShape: 'fullstack', laravelUi,
+      architecture: 'medium', authentication: 'yes', styling: 'tailwind', githubActions: false,
+      projectName: `laravel-${laravelUi}`,
+    })
+    expect(await fs.pathExists(path.join(destination, expectedFile))).toBe(true)
+    const composer = await fs.readJson(path.join(destination, 'composer.json'))
+    if (composerPackage) expect(composer.require[composerPackage]).toMatch(/^\d+\.\d+\.\d+$/)
+    if (laravelUi === 'inertia-react') {
+      const packageJson = await fs.readJson(path.join(destination, 'package.json'))
+      expect(packageJson.dependencies['@inertiajs/react']).toMatch(/^\d+\.\d+\.\d+$/)
+    }
+    const rules = await fs.readFile(path.join(destination, 'RULES.md'), 'utf8')
+    expect(rules).toContain(`platform/laravel-ui/${laravelUi}/architecture.md`)
+  })
+
+  it.each([
     ['nextjs', 'none', 'tailwind'],
     ['nextjs', 'supabase', 'tailwind'],
     ['nextjs', 'springboot', 'css-modules'],

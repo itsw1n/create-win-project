@@ -32,6 +32,7 @@ const frontendArg = frontendAliases[frontendValue] || frontendValue
 const architectureArg = cliArgs.find((arg) => arg.startsWith('--architecture='))?.split('=')[1]
 const authenticationArg = cliArgs.find((arg) => arg.startsWith('--authentication='))?.split('=')[1]
 const authAudienceArg = cliArgs.find((arg) => arg.startsWith('--auth-audience='))?.split('=')[1]
+const laravelUiArg = cliArgs.find((arg) => arg.startsWith('--laravel-ui='))?.split('=')[1]
 if (shapeArg && !APPLICATION_SHAPES[shapeArg]) {
   throw new Error('--shape must be fullstack, separate, api, mobile, or frontend')
 }
@@ -43,6 +44,9 @@ if (authenticationArg && !['yes', 'not-yet', 'none'].includes(authenticationArg)
 }
 if (authAudienceArg && !['website', 'multi-client'].includes(authAudienceArg)) {
   throw new Error('--auth-audience must be website or multi-client')
+}
+if (laravelUiArg && !['blade', 'livewire', 'inertia-react'].includes(laravelUiArg)) {
+  throw new Error('--laravel-ui must be blade, livewire, or inertia-react')
 }
 const wantsInstall = cliArgs.includes('--install')
 const skipsInstall = cliArgs.includes('--no-install')
@@ -111,6 +115,18 @@ const questions = [
     choices: (a) => backendChoicesForShape(shapeArg || a.applicationShape, a.frontend, catalog),
     when: () => !backendArg,
   },
+  {
+    type: 'list',
+    name: 'laravelUi',
+    message: 'How should Laravel render the website?',
+    choices: [
+      { name: 'Blade (Recommended) — server-rendered pages with the fewest moving parts', value: 'blade' },
+      { name: 'Livewire — interactive server-driven components with minimal JavaScript', value: 'livewire' },
+      { name: 'Inertia + React — React pages with Laravel routing and controllers', value: 'inertia-react' },
+    ],
+    default: 'blade',
+    when: (a) => a.frontend === 'laravel-ui' && !laravelUiArg,
+  },
 
   // ── Styling: only shown when frontend has >1 option (catalog-driven) ───
   {
@@ -145,7 +161,7 @@ const questions = [
     message: 'Does your application need user login?',
     choices: (a) => {
       const choices = []
-      if (a.backend === 'supabase' || a.backend === 'springboot') {
+      if (a.backend === 'supabase' || a.backend === 'springboot' || a.backend === 'laravel') {
         choices.push({ name: 'Yes — generate authentication appropriate for this stack', value: 'yes' })
       }
       choices.push(
@@ -166,7 +182,7 @@ const questions = [
       { name: 'Website and mobile — use a trusted identity provider for every client', value: 'multi-client' },
     ],
     default: 'website',
-    when: (a) => a.backend === 'springboot' && (authenticationArg || a.authentication) === 'yes' && !authAudienceArg,
+    when: (a) => ['springboot', 'laravel'].includes(a.backend) && a.frontend !== 'laravel-ui' && (authenticationArg || a.authentication) === 'yes' && !authAudienceArg,
   },
 
   // ── Testing ────────────────────────────────────────────────────────────
@@ -271,6 +287,7 @@ answers.applicationShape = shapeArg || answers.applicationShape
 answers.architecture = architectureArg || answers.architecture || 'medium'
 answers.authentication = authenticationArg || answers.authentication || 'not-yet'
 answers.authAudience = authAudienceArg || answers.authAudience || (catalog.byId[answers.frontend]?.platform === 'mobile' ? 'multi-client' : 'website')
+answers.laravelUi = laravelUiArg || answers.laravelUi || (answers.frontend === 'laravel-ui' ? 'blade' : undefined)
 if (wantsInstall) answers.installDependencies = true
 if (skipsInstall) answers.installDependencies = false
 
@@ -293,6 +310,7 @@ console.log(`  ${chalk.cyan('Platform:')}     ${stack.platform}`)
 if (stack.styleId) {
   console.log(`  ${chalk.cyan('Styling:')}      ${catalog.byId[stack.styleId]?.label || stack.styleId}`)
 }
+if (answers.laravelUi) console.log(`  ${chalk.cyan('Laravel UI:')}   ${answers.laravelUi}`)
 console.log(`  ${chalk.cyan('Architecture:')} ${stack.architecture[0].toUpperCase()}${stack.architecture.slice(1)}`)
 console.log(`  ${chalk.cyan('Authentication:')} ${stack.authentication}`)
 console.log(`  ${chalk.cyan('Testing:')}      ${answers.testing}`)
