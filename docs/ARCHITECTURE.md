@@ -81,6 +81,11 @@ Spring Boot owns its Maven launcher, application and security configuration,
 package-by-feature architecture variants, migrations, tests, and runtime-facing
 Docker/CI contributions in `src/stacks/backends/springboot`.
 
+Laravel's composer definition, application files, authentication models, and
+Blade, Livewire, and Inertia UI variants live together under
+`src/stacks/backends/laravel`. The former `lib/stacks/laravel` paths are
+identity-preserving compatibility exports during the migration.
+
 Supabase owns framework-specific clients and authentication flows, native token
 lifecycle handling, local project configuration, migrations, RLS policies, and
 database verification in `src/stacks/backends/supabase`.
