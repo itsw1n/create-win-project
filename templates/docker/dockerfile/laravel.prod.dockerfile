@@ -1,7 +1,7 @@
 FROM {{COMPOSER_IMAGE}} AS composer
 
 FROM {{PHP_IMAGE}} AS production
-RUN docker-php-ext-install pdo_pgsql
+RUN apk add --no-cache libpq-dev && docker-php-ext-install pdo_pgsql
 WORKDIR /app
 COPY --from=composer /usr/bin/composer /usr/local/bin/composer
 COPY composer.json ./
