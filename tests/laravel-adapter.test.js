@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest'
 import path from 'node:path'
 import { loadCatalog, resolveStack } from '../lib/catalog.js'
 import { buildLaravelFiles } from '../lib/stacks/laravel/generate.js'
+import { buildLaravelFiles as buildLaravelFilesFromSource } from '../src/stacks/backends/laravel/generate.js'
+import { laravelAdapter as legacyLaravelAdapter } from '../lib/stacks/laravel/index.js'
+import { laravelAdapter } from '../src/stacks/backends/laravel/index.js'
 import { laravelSessionAuthentication } from '../lib/stacks/laravel/auth/session.js'
 import { sanctumSpaAuthentication } from '../lib/stacks/laravel/auth/sanctum.js'
 import { laravelOidcAuthentication } from '../lib/stacks/laravel/auth/oidc.js'
@@ -27,6 +30,11 @@ const answers = {
 }
 
 describe('Laravel core adapter', () => {
+  it('keeps legacy imports as identity-preserving compatibility exports', () => {
+    expect(buildLaravelFiles).toBe(buildLaravelFilesFromSource)
+    expect(legacyLaravelAdapter).toBe(laravelAdapter)
+  })
+
   it('preserves the root API scaffold and fail-closed application routes', async () => {
     const files = buildLaravelFiles(answers, await laravelStack())
 
