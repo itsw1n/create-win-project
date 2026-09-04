@@ -5,16 +5,18 @@
   "appliesTo": { "frontend": ["nextjs", "react", "react-native"] },
   "port": 8080,
   "needsDocker": true,
-  "makefileTemplate": "springboot",
-  "folders": [
-    "backend/src/main/java/{{PACKAGE_PATH}}/config",
-    "backend/src/main/java/{{PACKAGE_PATH}}/common/exception",
-    "backend/src/main/java/{{PACKAGE_PATH}}/common/response",
-    "backend/src/main/java/{{PACKAGE_PATH}}/common/audit",
-    "backend/src/main/resources/db/migration",
-    "backend/src/main/resources/db/dev",
-    "backend/src/test/java/{{PACKAGE_PATH}}"
+  "architectureProfiles": ["small", "medium", "large"],
+  "playbooks": [
+    "stack/springboot/architecture.md",
+    "stack/springboot/structure.md",
+    "stack/springboot/runtime.md",
+    "stack/springboot/security.md",
+    "stack/springboot/testing.md",
+    { "file": "capabilities/auth/spring-session.md", "appliesWhen": { "authentication": "session" } },
+    { "file": "capabilities/auth/oidc-resource-server.md", "appliesWhen": { "authentication": "oidc" } }
   ],
+  "makefileTemplate": "springboot",
+  "folders": [],
   "deps": [],
   "devDeps": [],
   "env": ["API_URL", "DATABASE_URL", "POSTGRES_USER", "POSTGRES_PASSWORD", "POSTGRES_DB", "SPRING_PROFILES_ACTIVE"],
@@ -24,7 +26,12 @@
     "Security starts deny-by-default; add authentication through Spring Security rather than hand-rolled token code"
   ],
   "concerns": [
-    { "id": "layers", "required": true, "playbook": "stack/springboot.md", "sections": ["Controller — HTTP Only", "Service — Business Logic Only", "Repository — DB Only"] },
-    { "id": "security", "required": true, "playbook": "stack/springboot.md", "sections": ["Custom Auth Check in Service", "Bean Validation on Request DTOs"] }
+    { "id": "architecture", "required": true, "playbook": "stack/springboot/architecture.md", "sections": ["Profiles", "Dependency Direction"] },
+    { "id": "structure", "required": true, "playbook": "stack/springboot/structure.md", "sections": ["Package by Feature"] },
+    { "id": "runtime", "required": true, "playbook": "stack/springboot/runtime.md", "sections": ["Transactions", "Errors and Observability"] },
+    { "id": "stack-security", "required": true, "playbook": "stack/springboot/security.md", "sections": ["Authentication Models", "Authorization"] },
+    { "id": "stack-testing", "required": true, "playbook": "stack/springboot/testing.md", "sections": ["Test Layers"] },
+    { "id": "session-auth", "required": true, "appliesWhen": { "authentication": "session" }, "playbook": "capabilities/auth/spring-session.md", "sections": ["Session Ownership", "Required Tests"] },
+    { "id": "oidc-auth", "required": true, "appliesWhen": { "authentication": "oidc" }, "playbook": "capabilities/auth/oidc-resource-server.md", "sections": ["Provider and API Responsibilities", "Required Tests"] }
   ]
 }
