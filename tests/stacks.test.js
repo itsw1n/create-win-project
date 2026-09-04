@@ -81,6 +81,21 @@ describe('stack adapter registry', () => {
 })
 
 describe('registered stack capabilities', () => {
+  it('registers React Native with mobile-only capabilities and local-device verification', () => {
+    const native = stackRegistry.require('react-native')
+    const context = { backend: { id: 'springboot' } }
+
+    expect(native.compatibleWith.backend).toEqual(['none', 'supabase', 'springboot', 'laravel'])
+    expect(native.capabilities.applicationShapes).toEqual(['mobile'])
+    expect(native.capabilities.architectureProfiles).toEqual(['small', 'medium', 'large'])
+    expect(native.contributes.environment(context)).toEqual(['API_URL'])
+    expect(native.contributes.docker(context)).toEqual([])
+    expect(native.contributes.verification(context)).toEqual(expect.arrayContaining([
+      expect.objectContaining({ backend: 'supabase', authentication: 'supabase' }),
+      expect.objectContaining({ backend: 'springboot', authentication: 'oidc' }),
+    ]))
+  })
+
   it('registers React + Vite with its supported shapes, pairings, and operational facets', () => {
     const react = stackRegistry.require('react')
     const context = { backend: { id: 'springboot' } }
