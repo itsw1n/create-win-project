@@ -83,11 +83,11 @@
       "groupName": "PHP and Composer runtimes and containers"
     },
     {
-      "matchPackageNames": ["laravel/framework", "laravel/sanctum", "laravel/pint", "larastan/larastan", "pestphp/pest", "pestphp/pest-plugin-laravel"],
+      "matchPackageNames": ["laravel/framework", "laravel/sanctum", "auth0/login", "fakerphp/faker", "laravel/pint", "larastan/larastan", "pestphp/pest", "pestphp/pest-plugin-laravel"],
       "groupName": "Laravel compatibility set"
     },
     {
-      "matchPackageNames": ["inertiajs/inertia-laravel", "@inertiajs/react"],
+      "matchPackageNames": ["inertiajs/inertia-laravel", "@inertiajs/react", "laravel-vite-plugin"],
       "groupName": "Laravel Inertia React compatibility set"
     },
     {
