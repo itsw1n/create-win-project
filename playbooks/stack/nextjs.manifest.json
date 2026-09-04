@@ -7,7 +7,14 @@
   "port": 3000,
   "needsDocker": false,
   "frontendDir": "",
-  "supportsArchitecture": true,
+  "architectureProfiles": ["small", "medium", "large"],
+  "playbooks": [
+    "stack/nextjs/architecture.md",
+    "stack/nextjs/structure.md",
+    "stack/nextjs/runtime.md",
+    "stack/nextjs/security.md",
+    "stack/nextjs/testing.md"
+  ],
   "stylingOptions": ["tailwind", "css-modules"],
   "scripts": { "dev": "next dev", "build": "next build", "test": "vitest run" },
   "ciTemplate": "nextjs",
@@ -15,21 +22,21 @@
   "dockerTemplate": "nextjs",
   "agentsTemplate": "nextjs",
   "gitignoreTemplate": "nextjs",
-  "folders": [
-    "src/app", "src/features", "src/components/ui", "src/components/shared",
-    "src/components/layout", "src/lib", "src/stores", "src/hooks", "src/types",
-    "src/schemas", "src/constants", "e2e", "public"
-  ],
+  "folders": [],
   "deps": ["next", "react", "react-dom"],
   "devDeps": ["typescript", "@types/react", "@types/react-dom", "@types/node", "eslint", "eslint-config-next"],
   "env": [],
   "clientEnv": [],
   "constraints": [
     "Server Components default; use client only where browser behavior is required",
-    "Medium default: Action → Service → Database; add Repository only when DB access is complex"
+    "Medium default: entry point → Service → owned Repository or remote API client"
   ],
   "concerns": [
-    { "id": "server-client", "required": true, "playbook": "stack/nextjs.md", "sections": ["Server vs Client", "Rule E — Keep client boundaries narrow"] },
+    { "id": "architecture", "required": true, "playbook": "stack/nextjs/architecture.md", "sections": ["Profiles", "Dependency Direction"] },
+    { "id": "structure", "required": true, "playbook": "stack/nextjs/structure.md", "sections": ["Feature Ownership", "Backend-Specific Boundaries"] },
+    { "id": "runtime", "required": true, "playbook": "stack/nextjs/runtime.md", "sections": ["Server and Client", "Caching and Mutations"] },
+    { "id": "stack-security", "required": true, "playbook": "stack/nextjs/security.md", "sections": ["Authorization", "Sessions"] },
+    { "id": "stack-testing", "required": true, "playbook": "stack/nextjs/testing.md", "sections": ["Test Layers"] },
     { "id": "validation", "required": false, "when": "Project has forms / runtime input", "playbook": "concerns/zod.md", "sections": ["Schema First, Always", "Zod Schema Placement"] },
     { "id": "query", "required": false, "when": "Client needs cached server state", "playbook": "concerns/tanstack-query.md", "sections": ["Read Hook", "Mutation Hook"] },
     { "id": "state", "required": false, "when": "Shared non-server UI state", "playbook": "concerns/zustand.md", "sections": ["Store Setup"] },
