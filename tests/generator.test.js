@@ -41,6 +41,30 @@ afterEach(async () => {
 
 describe('runnable project contract', () => {
   it.each([
+    ['no-frontend', 'api', 'medium'],
+    ['react', 'separate', 'small'],
+  ])('generates a Laravel API for %s (%s)', async (frontend, applicationShape, architecture) => {
+    const destination = await generate({
+      frontend,
+      backend: 'laravel',
+      applicationShape,
+      architecture,
+      styling: frontend === 'react' ? 'tailwind' : undefined,
+      githubActions: false,
+      projectName: `laravel-${frontend}`,
+    })
+    const laravelRoot = frontend === 'no-frontend' ? destination : path.join(destination, 'backend')
+    const composer = await fs.readJson(path.join(laravelRoot, 'composer.json'))
+    expect(composer.require['laravel/framework']).toMatch(/^\d+\.\d+\.\d+$/)
+    expect(composer['require-dev']['larastan/larastan']).toMatch(/^\d+\.\d+\.\d+$/)
+    expect(await fs.pathExists(path.join(laravelRoot, 'artisan'))).toBe(true)
+    expect(await fs.pathExists(path.join(laravelRoot, 'routes/api.php'))).toBe(true)
+    expect(await fs.pathExists(path.join(laravelRoot, 'tests/Feature/HealthTest.php'))).toBe(true)
+    const profile = await fs.readJson(path.join(destination, 'create-win-project.profile.json'))
+    expect(profile.applicationShape).toBe(applicationShape)
+  })
+
+  it.each([
     ['nextjs', 'none', 'tailwind'],
     ['nextjs', 'supabase', 'tailwind'],
     ['nextjs', 'springboot', 'css-modules'],
