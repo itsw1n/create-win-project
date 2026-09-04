@@ -8,18 +8,33 @@ import { spawnSync } from 'node:child_process'
 import { generateProject } from './lib/generator.js'
 import { loadCompatibility } from './lib/compatibility.js'
 import { printDoctor } from './lib/doctor.js'
+import { configurationDecisionChoices, promptWithBack } from './lib/interview.js'
 import { w1nBanner } from './lib/banner.js'
 import {
   loadCatalog, resolveStack,
-  frontendChoices, backendChoicesFor, stylingChoicesFor, architectureChoicesFor,
+  stylingChoicesFor, architectureChoicesFor,
 } from './lib/catalog.js'
+import {
+  APPLICATION_SHAPES,
+  applicationShapeChoices,
+  backendChoicesForShape,
+  frontendChoicesForShape,
+} from './lib/application-shapes.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const cliArgs = process.argv.slice(2)
 const profileArg = cliArgs.find((arg) => arg.startsWith('--profile='))?.split('=')[1]
+const shapeArg = cliArgs.find((arg) => arg.startsWith('--shape='))?.split('=')[1]
+const frontendValue = cliArgs.find((arg) => arg.startsWith('--frontend='))?.split('=')[1]
+const backendArg = cliArgs.find((arg) => arg.startsWith('--backend='))?.split('=')[1]
+const frontendAliases = { vite: 'react', expo: 'react-native', none: 'no-frontend' }
+const frontendArg = frontendAliases[frontendValue] || frontendValue
 const architectureArg = cliArgs.find((arg) => arg.startsWith('--architecture='))?.split('=')[1]
 const authenticationArg = cliArgs.find((arg) => arg.startsWith('--authentication='))?.split('=')[1]
 const authAudienceArg = cliArgs.find((arg) => arg.startsWith('--auth-audience='))?.split('=')[1]
+if (shapeArg && !APPLICATION_SHAPES[shapeArg]) {
+  throw new Error('--shape must be fullstack, separate, api, mobile, or frontend')
+}
 if (architectureArg && !['small', 'medium', 'large'].includes(architectureArg)) {
   throw new Error('--architecture must be small, medium, or large')
 }
@@ -53,7 +68,15 @@ console.log('')
 
 // ─── Interview ───────────────────────────────────────────────────────────────
 
-const answers = await inquirer.prompt([
+const questions = [
+  {
+    type: 'list',
+    name: 'applicationShape',
+    message: 'What kind of application are you building?',
+    choices: applicationShapeChoices(),
+    default: 'fullstack',
+    when: () => !shapeArg,
+  },
   // ── Always-on ──────────────────────────────────────────────────────────
   {
     type: 'input',
@@ -77,14 +100,16 @@ const answers = await inquirer.prompt([
   {
     type: 'list',
     name: 'frontend',
-    message: 'Pick your frontend:',
-    choices: frontendChoices(catalog),
+    message: 'Which application framework or frontend?',
+    choices: (a) => frontendChoicesForShape(shapeArg || a.applicationShape, catalog),
+    when: () => !frontendArg,
   },
   {
     type: 'list',
     name: 'backend',
-    message: 'Pick your backend/database:',
-    choices: (a) => backendChoicesFor(catalog, a.frontend),
+    message: 'Which backend or data service?',
+    choices: (a) => backendChoicesForShape(shapeArg || a.applicationShape, a.frontend, catalog),
+    when: () => !backendArg,
   },
 
   // ── Styling: only shown when frontend has >1 option (catalog-driven) ───
@@ -232,8 +257,17 @@ const answers = await inquirer.prompt([
       return [...opts].map((id) => ({ name: id, value: id }))
     },
   },
-])
+]
+let answers = {
+  applicationShape: shapeArg,
+  frontend: frontendArg,
+  backend: backendArg,
+}
+let stack
+while (true) {
+answers = await promptWithBack(inquirer, questions, answers)
 answers.compatibilityProfile = profile.id
+answers.applicationShape = shapeArg || answers.applicationShape
 answers.architecture = architectureArg || answers.architecture || 'medium'
 answers.authentication = authenticationArg || answers.authentication || 'not-yet'
 answers.authAudience = authAudienceArg || answers.authAudience || (catalog.byId[answers.frontend]?.platform === 'mobile' ? 'multi-client' : 'website')
@@ -245,7 +279,7 @@ if (resolveStack({ ...answers, styling: answers.styling || catalog.byId[answers.
   answers.docker = answers.docker ?? true
 }
 
-const stack = resolveStack({ ...answers, styling: answers.styling || catalog.byId[answers.frontend]?.stylingOptions?.[0] || 'tailwind' }, catalog)
+stack = resolveStack({ ...answers, styling: answers.styling || catalog.byId[answers.frontend]?.stylingOptions?.[0] || 'tailwind' }, catalog)
 
 // ─── Confirm ─────────────────────────────────────────────────────────────────
 
@@ -254,6 +288,7 @@ console.log(chalk.bold('  Summary'))
 console.log(chalk.gray('  ───────────────────────────'))
 console.log(`  ${chalk.cyan('Name:')}         ${answers.projectName}`)
 console.log(`  ${chalk.cyan('Stack:')}        ${stack.label}`)
+console.log(`  ${chalk.cyan('Shape:')}        ${APPLICATION_SHAPES[stack.applicationShape].label}`)
 console.log(`  ${chalk.cyan('Platform:')}     ${stack.platform}`)
 if (stack.styleId) {
   console.log(`  ${chalk.cyan('Styling:')}      ${catalog.byId[stack.styleId]?.label || stack.styleId}`)
@@ -279,13 +314,18 @@ if (stack.constraints.length) {
 }
 console.log('')
 
-const { confirm } = await inquirer.prompt([
-  { type: 'confirm', name: 'confirm', message: 'Generate project?', default: true },
-])
+const { decision } = await inquirer.prompt([{
+  type: 'list', name: 'decision', message: 'Ready?', choices: configurationDecisionChoices(),
+}])
 
-if (!confirm) {
+if (decision === 'back') {
+  continue
+}
+if (decision === 'cancel') {
   console.log(chalk.yellow('\n  Cancelled.\n'))
   process.exit(0)
+}
+break
 }
 
 // ─── Generate ────────────────────────────────────────────────────────────────
