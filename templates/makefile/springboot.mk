@@ -123,16 +123,3 @@ prod-up: ## Start production containers
 
 prod-down: ## Stop production containers
 	$(COMPOSE) -f docker-compose.prod.yml down
-
-# =============================================================================
-# Scaffolding
-# =============================================================================
-
-.PHONY: init
-
-init: ## Scaffold full folder structure (run once after cloning)
-	@mkdir -p {{FRONTEND_DIR}}
-	@mkdir -p backend/src/main/resources/db/{migration,dev}
-	@mkdir -p docs/{api,architecture,guides,decisions}
-	@find . -type d -empty -not -path "./.git/*" -exec touch {}/.gitkeep \;
-	@echo "✅ Done. Run: make dev"

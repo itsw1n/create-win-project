@@ -63,7 +63,7 @@ interface User {
 // Type — for unions, intersections, primitives, tuples
 type UserId = string
 type UserRole = 'ADMIN' | 'USER' | 'MODERATOR'
-type ApiResponse<T> = { success: true; data: T } | { success: false; error: ApiError }
+type Result<T, E> = { ok: true; value: T } | { ok: false; error: E }
 type UserWithRole = User & { role: UserRole }
 ```
 
@@ -120,11 +120,8 @@ function first<T>(array: T[]): T | undefined {
   return array[0]
 }
 
-// ✅ API response wrapper
-type ApiResponse<T> = {
-  success: true
-  data: T
-}
+// ✅ reusable operation result inside the application
+type Result<T, E> = { ok: true; value: T } | { ok: false; error: E }
 
 // ❌ unnecessary generic
 function getUserName<T extends User>(user: T): string {
@@ -178,16 +175,15 @@ Is this type specific to one feature?
 Is this type a Zod schema + inferred type?
   → src/features/[name]/schemas/[name].schema.ts
 
-Is this type for an API response shape?
-  → src/types/api.ts
+Is this type shared by several transport clients?
+  → src/types/transport.ts
 ```
 
 ### Global types (src/types/)
 ```typescript
-// src/types/api.ts
-export type ApiSuccess<T> = { success: true; data: T }
-export type ApiError = { code: string; message: string; details?: FieldError[]; traceId: string }
-export type ApiResponse<T> = ApiSuccess<T> | ApiError
+// src/types/transport.ts
+// Successful endpoints return their normal DTO. Model only genuinely shared shapes.
+export type ProblemDetails = { type: string; title: string; status: number; detail?: string; traceId?: string }
 
 // src/types/pagination.ts
 export type PaginatedResponse<T> = {
