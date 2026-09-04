@@ -4,7 +4,7 @@ import { composerPackageVersion, loadCompatibility, resolvePackages, validateCom
 import { loadCatalog, resolveStack } from '../lib/catalog.js'
 
 const root = path.resolve(import.meta.dirname, '..')
-const profilesFile = path.join(root, 'compatibility/profiles.json')
+const profilesFile = path.join(root, 'library/tested-versions.json')
 
 describe('compatibility profiles', () => {
   it('loads current by default and previous explicitly', async () => {
@@ -35,7 +35,7 @@ describe('compatibility profiles', () => {
 
   it('resolves every direct dependency to an exact profile version', async () => {
     const { profile } = await loadCompatibility(profilesFile)
-    const catalog = await loadCatalog(path.join(root, 'playbooks'), profile)
+    const catalog = await loadCatalog(path.join(root, 'library'), profile)
     const stacks = [
       ['nextjs', 'supabase', 'tailwind'], ['nextjs', 'springboot', 'css-modules'],
       ['nextjs', 'postgres', 'tailwind'], ['react', 'supabase', 'tailwind'],

@@ -14,7 +14,7 @@ CLI interview
     ↓
 validated answers
     ↓
-manifest catalog + compatibility resolver
+definition catalog + compatibility resolver
     ↓
 resolved stack descriptor
     ├── runnable framework files
@@ -45,7 +45,7 @@ Root `index.js` is only the stable executable shim. `src/cli/main.js` coordinate
 
 ### Catalog and resolution
 
-`lib/catalog.js` loads co-located `*.manifest.json` files and merges selected capabilities into one stack descriptor. `lib/compatibility.js` validates `compatibility/profiles.json` and resolves every package name to an exact version for the selected profile.
+`lib/catalog.js` loads co-located `library/**/definition.json` files and merges selected capabilities into one stack descriptor. `lib/compatibility.js` validates `library/tested-versions.json` and resolves every package name to an exact version for the selected profile.
 
 Stack-specific behavior crosses into core orchestration through the contract in `lib/stacks/contract.js`. Every frontend, backend, or data adapter has a stable identity, declares compatible adapters and supported application/authentication/architecture models, and is added to the explicit registry. Registration is deliberate; adapters are never discovered by scanning directories.
 
@@ -98,7 +98,7 @@ The no-backend adapter explicitly owns frontend-only compatibility and confirms
 that no server files, install steps, Docker services, credentials, or pretend
 authentication are contributed.
 
-Core code owns prompt order, compatibility-profile resolution, atomic writes, process execution, and final composition. An adapter receives a read-only stack context and returns contributions; it cannot write arbitrary paths or install global tools. Adapter definitions do not accept dependency tables or version fields. Exact versions remain exclusively owned by `compatibility/profiles.json`.
+Core code owns prompt order, compatibility-profile resolution, atomic writes, process execution, and final composition. An adapter receives a read-only stack context and returns contributions; it cannot write arbitrary paths or install global tools. Adapter definitions do not accept dependency tables or version fields. Exact versions remain exclusively owned by `library/tested-versions.json`.
 
 Manifests declare:
 
@@ -109,7 +109,7 @@ Manifests declare:
 - constraints shown to the agent;
 - concerns and their playbook sections.
 
-Client environment variables are semantic in manifests (`API_URL`) and receive exactly one framework prefix during resolution (`NEXT_PUBLIC_API_URL`, `VITE_API_URL`, or `EXPO_PUBLIC_API_URL`). Public prefixes always mean the value is shipped to the client.
+Client environment variables are semantic in definitions (`API_URL`) and receive exactly one framework prefix during resolution (`NEXT_PUBLIC_API_URL`, `VITE_API_URL`, or `EXPO_PUBLIC_API_URL`). Public prefixes always mean the value is shipped to the client.
 
 ### Runnable scaffold
 
@@ -134,7 +134,7 @@ The first `npm install` creates the lockfile. Generated CI uses `npm ci`, so the
 
 ### Compatibility profile lifecycle
 
-Exactly one profile is `current` and one is `previous`. The current profile is the default. A profile owns exact npm, Spring Boot, runtime, and container versions; manifests and scaffold code may only request names or capabilities. Promotion copies the candidate into a new dated profile, marks the former current profile previous, and happens only after the generated-project matrix passes. Major changes also require migration notes. See `DEPENDENCY_MAINTENANCE.md`.
+Exactly one profile is `current` and one is `previous`. The current profile is the default. A profile owns exact npm, Spring Boot, runtime, and container versions; definitions and scaffold code may only request names or capabilities. Promotion copies the candidate into a new dated profile, marks the former current profile previous, and happens only after the generated-project matrix passes. Major changes also require migration notes. See `DEPENDENCY_MAINTENANCE.md`.
 
 ## Documentation model
 
@@ -162,7 +162,7 @@ Canonical Markdown code examples should progressively move into extracted fixtur
 
 When adding a stack or capability:
 
-1. Add its manifest, all five stack facets, and any platform/capability routes.
+1. Add its definition, all five stack facets, and any platform/capability routes.
 2. Add the smallest runnable files needed in `lib/scaffold.js` or a focused scaffold module.
 3. Add every supported architecture/authentication combination to the generated-output matrix.
 4. Run install, lint/typecheck, tests, and production build for the new fixture.

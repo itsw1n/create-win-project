@@ -1,0 +1,11 @@
+{
+  "id": "accessibility-baseline",
+  "kind": "universal",
+  "label": "Accessibility Baseline",
+  "file": "universal/accessibility.md",
+  "required": true,
+  "folders": [],
+  "concerns": [
+    { "id": "accessibility", "required": true, "sections": ["Semantic Structure", "Keyboard and Focus", "Forms and Authentication", "Accessibility Testing"] }
+  ]
+}

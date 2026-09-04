@@ -1,0 +1,12 @@
+{
+  "id": "typescript",
+  "kind": "universal",
+  "label": "TypeScript",
+  "file": "universal/typescript.md",
+  "required": true,
+  "folders": [],
+  "concerns": [
+    { "id": "typescript-strict", "required": true, "sections": ["Strict Mode — Always On", "No any", "Type vs Interface"] },
+    { "id": "validation", "required": false, "when": "Project validates external/runtime input", "sections": ["Zod for Runtime Validation"] }
+  ]
+}

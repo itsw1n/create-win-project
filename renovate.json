@@ -14,7 +14,7 @@
     {
       "customType": "jsonata",
       "fileFormat": "json",
-      "managerFilePatterns": ["/compatibility/profiles\\.json$/"],
+      "managerFilePatterns": ["/library/tested-versions\\.json$/"],
       "matchStrings": [
         "profiles[status = 'current'].packages.$each(function($v, $n) { $type($v) = 'string' ? { 'depName': $n, 'currentValue': $v } })",
         "profiles[status = 'current'].packages.$each(function($v, $n) { $type($v) = 'object' ? { 'depName': $n, 'currentValue': $v.default } })",
@@ -26,7 +26,7 @@
     {
       "customType": "jsonata",
       "fileFormat": "json",
-      "managerFilePatterns": ["/compatibility/profiles\\.json$/"],
+      "managerFilePatterns": ["/library/tested-versions\\.json$/"],
       "matchStrings": [
         "profiles[status = 'current'].composerPackages.$each(function($v, $n) { { 'depName': $n, 'currentValue': $v } })"
       ],
@@ -36,7 +36,7 @@
     {
       "customType": "jsonata",
       "fileFormat": "json",
-      "managerFilePatterns": ["/compatibility/profiles\\.json$/"],
+      "managerFilePatterns": ["/library/tested-versions\\.json$/"],
       "matchStrings": [
         "profiles[status = 'current'].{ 'depName': 'org.springframework.boot:spring-boot-dependencies', 'currentValue': springBoot }",
         "profiles[status = 'current'].{ 'depName': 'org.springframework.modulith:spring-modulith-bom', 'currentValue': springModulith }"
@@ -47,7 +47,7 @@
     {
       "customType": "jsonata",
       "fileFormat": "json",
-      "managerFilePatterns": ["/compatibility/profiles\\.json$/"],
+      "managerFilePatterns": ["/library/tested-versions\\.json$/"],
       "matchStrings": [
         "profiles[status = 'current'].{ 'depName': 'node', 'currentValue': runtimes.node }"
       ],
@@ -57,7 +57,7 @@
     {
       "customType": "jsonata",
       "fileFormat": "json",
-      "managerFilePatterns": ["/compatibility/profiles\\.json$/"],
+      "managerFilePatterns": ["/library/tested-versions\\.json$/"],
       "matchStrings": [
         "profiles[status = 'current'].images.*.{ 'depName': repository, 'currentValue': tag }"
       ],

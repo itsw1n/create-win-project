@@ -2,17 +2,17 @@ import fs from 'fs-extra'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { loadCatalog, resolveStack } from '../lib/catalog.js'
-import { buildRulesIndex } from '../lib/playbooks.js'
+import { buildRulesIndex, resolvePlaybook } from '../lib/playbooks.js'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
-const playbooksDir = path.join(root, 'playbooks')
+const playbooksDir = path.join(root, 'library')
 const catalog = await loadCatalog(playbooksDir)
 const errors = []
 
 for (const manifest of catalog.manifests) {
   for (const entry of manifest._playbooks || []) {
     const relative = typeof entry === 'string' ? entry : entry.file
-    if (!await fs.pathExists(path.join(playbooksDir, relative))) {
+    if (!await fs.pathExists(await resolvePlaybook(playbooksDir, relative))) {
       errors.push(`${manifest.id}: missing playbook ${relative}`)
     }
   }
@@ -48,7 +48,7 @@ const markdownFiles = (await fs.readdir(playbooksDir, { recursive: true, withFil
 for (const file of markdownFiles) {
   const content = await fs.readFile(file, 'utf8')
   const relative = path.relative(playbooksDir, file)
-  const limit = relative.startsWith('stack/') || relative.startsWith('platform/') || relative.startsWith('capabilities/') ? 250 : 650
+  const limit = relative.startsWith('stacks/') || relative.startsWith('platforms/') || relative.startsWith('features/') ? 250 : 650
   if (content.split('\n').length > limit) errors.push(`${relative}: exceeds ${limit} lines`)
   for (const match of content.matchAll(/\[[^\]]*\]\(([^)]+)\)/g)) {
     const target = match[1].split('#')[0]

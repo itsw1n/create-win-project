@@ -7,7 +7,7 @@ const templatesDir = path.join(process.cwd(), 'templates')
 
 describe('template rendering', () => {
   it('reads and renders correctly for nextjs + springboot', async () => {
-    const catalog = await loadCatalog(path.join(process.cwd(), 'playbooks'))
+    const catalog = await loadCatalog(path.join(process.cwd(), 'library'))
     const stack = resolveStack({ frontend: 'nextjs', backend: 'springboot', styling: 'tailwind', architecture: 'medium' }, catalog)
     const vars = buildVars({ projectName: 'myapp', projectDescription: 'test', packageName: 'com.example' }, stack)
 
@@ -31,7 +31,7 @@ describe('template rendering', () => {
   })
 
   it('reads and renders correctly for react-native (no Makefile, no docker)', async () => {
-    const catalog = await loadCatalog(path.join(process.cwd(), 'playbooks'))
+    const catalog = await loadCatalog(path.join(process.cwd(), 'library'))
     const stack = resolveStack({ frontend: 'react-native', backend: 'none' }, catalog)
     expect(stack.isMobile).toBe(true)
     expect(stack.makefileTemplate).toBeNull() // mobile has no makefile

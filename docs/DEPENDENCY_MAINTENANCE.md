@@ -1,6 +1,6 @@
 # Dependency maintenance
 
-`compatibility/profiles.json` is the only owner of versions emitted into generated applications. Stack and concern manifests declare package names and capabilities, never ranges or versions. Direct npm dependencies are generated as exact versions, and consumers commit the lockfile created by their first install.
+`library/tested-versions.json` is the only owner of versions emitted into generated applications. Stack and concern definitions declare package names and capabilities, never ranges or versions. Direct npm dependencies are generated as exact versions, and consumers commit the lockfile created by their first install.
 
 ## Profile policy
 

@@ -37,7 +37,7 @@ describe('application shapes', () => {
   })
 
   it('filters framework and backend choices by shape', async () => {
-    const catalog = await loadCatalog(path.join(root, 'playbooks'))
+    const catalog = await loadCatalog(path.join(root, 'library'))
     expect(frontendChoicesForShape('fullstack', catalog).map((choice) => choice.value)).toEqual(['nextjs', 'laravel-ui'])
     expect(backendChoicesForShape('fullstack', 'nextjs', catalog).map((choice) => choice.value))
       .toEqual(['none', 'postgres', 'supabase'])
