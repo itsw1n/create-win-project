@@ -35,6 +35,20 @@ generated-project contract tests
 
 `lib/catalog.js` loads co-located `*.manifest.json` files and merges selected capabilities into one stack descriptor. `lib/compatibility.js` validates `compatibility/profiles.json` and resolves every package name to an exact version for the selected profile.
 
+Stack-specific behavior crosses into core orchestration through the contract in `lib/stacks/contract.js`. Every frontend, backend, or data adapter has a stable identity, declares compatible adapters and supported application/authentication/architecture models, and is added to the explicit registry. Registration is deliberate; adapters are never discovered by scanning directories.
+
+Adapters may contribute data in these areas:
+
+- questions in a core-defined prompt slot;
+- authentication models;
+- generated file descriptions;
+- environment declarations;
+- install steps;
+- Docker and CI fragments;
+- verification cases.
+
+Core code owns prompt order, compatibility-profile resolution, atomic writes, process execution, and final composition. An adapter receives a read-only stack context and returns contributions; it cannot write arbitrary paths or install global tools. Adapter definitions do not accept dependency tables or version fields. Exact versions remain exclusively owned by `compatibility/profiles.json`.
+
 Manifests declare:
 
 - identity and compatibility (`id`, `kind`, `appliesTo`);
