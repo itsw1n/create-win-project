@@ -21,5 +21,22 @@
   ],
   "stylingOptions": ["tailwind"], "scripts": {}, "ciTemplate": "laravel", "envPrefix": "VITE_",
   "folders": [], "deps": [], "devDeps": [], "env": [], "clientEnv": [],
-  "constraints": ["Laravel owns routing, authentication, authorization, and persistence"], "concerns": []
+  "constraints": ["Laravel owns routing, authentication, authorization, and persistence"],
+  "concerns": [
+    { "id": "ui-architecture", "required": true, "playbook": "platform/laravel-ui/blade/architecture.md", "appliesWhen": { "laravelUi": "blade" } },
+    { "id": "ui-structure", "required": true, "playbook": "platform/laravel-ui/blade/structure.md", "appliesWhen": { "laravelUi": "blade" } },
+    { "id": "ui-runtime", "required": true, "playbook": "platform/laravel-ui/blade/runtime.md", "appliesWhen": { "laravelUi": "blade" } },
+    { "id": "ui-security", "required": true, "playbook": "platform/laravel-ui/blade/security.md", "appliesWhen": { "laravelUi": "blade" } },
+    { "id": "ui-testing", "required": true, "playbook": "platform/laravel-ui/blade/testing.md", "appliesWhen": { "laravelUi": "blade" } },
+    { "id": "ui-architecture", "required": true, "playbook": "platform/laravel-ui/livewire/architecture.md", "appliesWhen": { "laravelUi": "livewire" } },
+    { "id": "ui-structure", "required": true, "playbook": "platform/laravel-ui/livewire/structure.md", "appliesWhen": { "laravelUi": "livewire" } },
+    { "id": "ui-runtime", "required": true, "playbook": "platform/laravel-ui/livewire/runtime.md", "appliesWhen": { "laravelUi": "livewire" } },
+    { "id": "ui-security", "required": true, "playbook": "platform/laravel-ui/livewire/security.md", "appliesWhen": { "laravelUi": "livewire" } },
+    { "id": "ui-testing", "required": true, "playbook": "platform/laravel-ui/livewire/testing.md", "appliesWhen": { "laravelUi": "livewire" } },
+    { "id": "ui-architecture", "required": true, "playbook": "platform/laravel-ui/inertia-react/architecture.md", "appliesWhen": { "laravelUi": "inertia-react" } },
+    { "id": "ui-structure", "required": true, "playbook": "platform/laravel-ui/inertia-react/structure.md", "appliesWhen": { "laravelUi": "inertia-react" } },
+    { "id": "ui-runtime", "required": true, "playbook": "platform/laravel-ui/inertia-react/runtime.md", "appliesWhen": { "laravelUi": "inertia-react" } },
+    { "id": "ui-security", "required": true, "playbook": "platform/laravel-ui/inertia-react/security.md", "appliesWhen": { "laravelUi": "inertia-react" } },
+    { "id": "ui-testing", "required": true, "playbook": "platform/laravel-ui/inertia-react/testing.md", "appliesWhen": { "laravelUi": "inertia-react" } }
+  ]
 }
