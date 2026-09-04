@@ -81,6 +81,40 @@ describe('stack adapter registry', () => {
 })
 
 describe('registered stack capabilities', () => {
+  it('registers Next.js with its supported shapes, pairings, and contribution facets', () => {
+    const nextjs = stackRegistry.require('nextjs')
+
+    expect(nextjs.kind).toBe('frontend')
+    expect(nextjs.compatibleWith.backend).toEqual([
+      'none', 'postgres', 'supabase', 'springboot', 'laravel',
+    ])
+    expect(nextjs.capabilities.applicationShapes).toEqual(['fullstack', 'separate'])
+    expect(nextjs.capabilities.architectureProfiles).toEqual(['small', 'medium', 'large'])
+    expect(nextjs.capabilities.authenticationModels).toContain('supabase')
+  })
+
+  it('keeps Next.js operational and focused compatibility cases with the adapter', () => {
+    const nextjs = stackRegistry.require('nextjs')
+    const context = {
+      backend: { id: 'springboot' },
+    }
+
+    expect(nextjs.contributes.environment(context)).toEqual(['API_URL'])
+    expect(nextjs.contributes.install(context)).toEqual([
+      { cwd: '.', command: 'npm', args: ['install'] },
+    ])
+    expect(nextjs.contributes.docker(context)).toEqual([
+      { template: 'nextjs', developmentPath: 'Dockerfile.dev', productionPath: 'Dockerfile' },
+    ])
+    expect(nextjs.contributes.ci(context)).toEqual([
+      { template: 'nextjs', path: '.github/workflows/ci-frontend.yml' },
+    ])
+    expect(nextjs.contributes.verification(context)).toEqual(expect.arrayContaining([
+      expect.objectContaining({ backend: 'supabase', architecture: 'large', authentication: 'supabase' }),
+      expect.objectContaining({ backend: 'springboot', architecture: 'medium', authentication: 'session' }),
+    ]))
+  })
+
   it('registers Laravel with its existing pairings and authentication models', () => {
     const laravel = stackRegistry.require('laravel')
 

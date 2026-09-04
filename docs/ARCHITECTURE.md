@@ -59,6 +59,13 @@ Adapters may contribute data in these areas:
 - Docker and CI fragments;
 - verification cases.
 
+Next.js is the first frontend migrated behind this boundary. Its adapter owns
+the supported full-stack/separate shapes, backend pairings, authentication and
+architecture models, environment/install needs, Docker and CI templates, and
+focused verification cases. The explicit registry remains the only list of
+available adapters; later stack PRs add their own entries without editing the
+Next.js implementation.
+
 Core code owns prompt order, compatibility-profile resolution, atomic writes, process execution, and final composition. An adapter receives a read-only stack context and returns contributions; it cannot write arbitrary paths or install global tools. Adapter definitions do not accept dependency tables or version fields. Exact versions remain exclusively owned by `compatibility/profiles.json`.
 
 Manifests declare:
