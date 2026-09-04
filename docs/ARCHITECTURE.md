@@ -66,6 +66,12 @@ focused verification cases. The explicit registry remains the only list of
 available adapters; later stack PRs add their own entries without editing the
 Next.js implementation.
 
+React + Vite follows the same boundary: its base SPA files and architecture
+profiles live in `src/stacks/frontends/react-vite`, while backend-specific
+additions remain owned by their backend/data stack. Its install root, Docker
+and CI templates, authentication models, and verification cases are declared
+with the adapter.
+
 Core code owns prompt order, compatibility-profile resolution, atomic writes, process execution, and final composition. An adapter receives a read-only stack context and returns contributions; it cannot write arbitrary paths or install global tools. Adapter definitions do not accept dependency tables or version fields. Exact versions remain exclusively owned by `compatibility/profiles.json`.
 
 Manifests declare:
