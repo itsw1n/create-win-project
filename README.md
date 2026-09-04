@@ -49,8 +49,8 @@ Manifests declare capabilities and package names. A tested compatibility profile
 ### Lane 2 — To run *what it generates* (depends on your answers)
 | You picked | You need | What the generator includes |
 |---|---|---|
-| **Next.js** or **React + Vite** | Node 24 LTS → `npm install` → `npm run dev` | Page/entry, Vite/Next config, strict TS, ESLint, tests, `frontend/.env.example` |
-| **Expo** | Node 24 LTS + Expo Go app → `npm install` → `npx expo start` | Expo Router layout/screen, `app.json`, Jest, TS |
+| **Next.js** or **React + Vite** | Node 22.14+ with npm 11.19+ (tested on Node 24) → `npm install` → `npm run dev` | Page/entry, Vite/Next config, strict TS, ESLint, tests, `frontend/.env.example` |
+| **Expo** | Node 22.14+ with npm 11.19+ (tested on Node 24) + Expo Go app → `npm install` → `npx expo start` | Expo Router layout/screen, `app.json`, Jest, TS |
 | **Supabase** | Docker for the generated local Supabase stack | Pinned local CLI, migrations/RLS tests, platform-native clients; login/callback/secure lifecycle only when login is selected |
 | **Spring Boot / PostgreSQL** | JDK 21 + Docker for DB **only if you selected them** | Maven app, public health + fail-closed security, Flyway/PostgreSQL; server session or OIDC Resource Server when login is selected |
 
@@ -111,6 +111,8 @@ npm run dev
 ```
 
 The generator asks whether to install dependencies. One local `npm install` provides Prettier, ESLint, TypeScript, and the selected test tools; global installs are neither required nor silently performed.
+
+Before automatic installation, the CLI checks the current Node, npm, PHP, and Composer versions needed by the selected stack. A mismatch never changes global tools: interactive users can create files without installing, view setup instructions, or cancel; noninteractive runs safely create files and skip installation. Node 22 is supported with npm 11.19 or newer. npm 10.9.8 and early npm 11 releases can crash while resolving current generated dependencies, so switch through Mise/NVM or update that managed Node installation before retrying.
 
 > The generator **never overwrites a non-empty folder** — it stages to a temp dir and moves into place only on success.
 

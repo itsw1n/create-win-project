@@ -183,6 +183,7 @@ describe('runnable project contract', () => {
     })
     const packageRoot = frontend === 'react' ? path.join(destination, 'frontend') : destination
     const packageJson = await fs.readJson(path.join(packageRoot, 'package.json'))
+    const setupGuide = await fs.readFile(path.join(destination, 'docs/guides/setup.md'), 'utf8')
     expect(packageJson.scripts.dev).toBeTruthy()
     expect(packageJson.scripts.build).toBeTruthy()
     expect(packageJson.scripts.typecheck).toBeTruthy()
@@ -190,6 +191,10 @@ describe('runnable project contract', () => {
     expect(packageJson.scripts['format:check']).toBe('prettier --check .')
     expect(packageJson.scripts.check).toBeTruthy()
     expect(packageJson.devDependencies.prettier).toMatch(/^\d+\.\d+\.\d+$/)
+    if (backend !== 'laravel') {
+      expect(setupGuide).toContain('Node.js 22.14.0 or newer with npm 11.19.0 or newer')
+      expect(setupGuide).toContain('tested on Node.js 24.20.0')
+    }
     expect(await fs.pathExists(path.join(destination, 'AGENTS.md'))).toBe(true)
     const profile = await fs.readJson(path.join(destination, 'create-win-project.profile.json'))
     expect(profile.schemaVersion).toBe(3)
