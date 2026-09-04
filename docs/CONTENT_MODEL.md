@@ -20,6 +20,8 @@ The project separates always-loaded instructions, task-routed standards, generat
 5. Keep secrets, authentication, authorization, validation, accessibility, and failure behavior at explicit trust boundaries.
 6. Product docs describe the generated application. Playbooks teach reusable practices; they must not invent product endpoints or entities.
 7. Code and executable tests win when prose conflicts. Fix the prose in the same change.
+8. Stack guides always use the five-facet contract: `architecture.md`, `structure.md`, `runtime.md`, `security.md`, and `testing.md`.
+9. Universal guidance cannot claim browser, mobile, Spring, or provider-specific behavior. Route it through `platform/`, `stack/`, or `capabilities/`.
 
 ## Review checklist
 
@@ -31,4 +33,4 @@ The project separates always-loaded instructions, task-routed standards, generat
 - Do auth examples cover storage, refresh/expiry, CSRF/CORS, authorization, revocation, and failure paths appropriate to that session model?
 - Would moving a long example into a compile-tested fixture reduce drift?
 
-Legacy stack playbooks can be migrated incrementally: first remove duplicated universal rules, then distinguish defaults from optional recipes, and finally extract important examples into buildable fixtures.
+When adding a stack, implement all three profiles, all five facets, a runnable vertical slice for each profile, relevant auth mappings, and matrix entries before advertising support.

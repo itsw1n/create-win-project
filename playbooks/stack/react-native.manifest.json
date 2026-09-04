@@ -7,17 +7,21 @@
   "port": 8081,
   "needsDocker": false,
   "frontendDir": "",
-  "supportsArchitecture": false,
+  "architectureProfiles": ["small", "medium", "large"],
+  "playbooks": [
+    "stack/expo/architecture.md",
+    "stack/expo/structure.md",
+    "stack/expo/runtime.md",
+    "stack/expo/security.md",
+    "stack/expo/testing.md"
+  ],
   "stylingOptions": ["native-styles"],
   "scripts": { "dev": "expo start", "build": "expo export", "test": "jest --passWithNoTests" },
   "ciTemplate": "expo",
   "envPrefix": "EXPO_PUBLIC_",
   "agentsTemplate": "react-native",
   "gitignoreTemplate": "react-native",
-  "folders": [
-    "app", "features", "components/ui", "components/shared",
-    "stores", "lib", "config", "types", "schemas"
-  ],
+  "folders": [],
   "deps": ["expo", "expo-router", "@expo/metro-runtime", "react", "react-dom", "react-native", "react-native-web", "react-native-safe-area-context"],
   "devDeps": ["typescript", "@types/react"],
   "env": [],
@@ -30,7 +34,11 @@
     "Auth tokens must use expo-secure-store — never AsyncStorage"
   ],
   "concerns": [
-    { "id": "navigation", "required": true, "playbook": "stack/react-native.md", "sections": ["Navigation — Expo Router"] },
+    { "id": "architecture", "required": true, "playbook": "stack/expo/architecture.md", "sections": ["Profiles", "Dependency Direction"] },
+    { "id": "navigation", "required": true, "playbook": "stack/expo/structure.md", "sections": ["Expo Router", "Feature Ownership"] },
+    { "id": "runtime", "required": true, "playbook": "stack/expo/runtime.md", "sections": ["Lifecycle and Remote State"] },
+    { "id": "stack-security", "required": true, "playbook": "stack/expo/security.md", "sections": ["Mobile Trust Boundary", "Session Storage"] },
+    { "id": "stack-testing", "required": true, "playbook": "stack/expo/testing.md", "sections": ["Test Layers"] },
     { "id": "styling", "required": true, "playbook": "styling/native-styles.md", "sections": ["Default", "Rules"] },
     { "id": "http-client", "required": false, "when": "The app adopts Axios for a REST API", "playbook": "concerns/axios.md", "sections": ["One Shared Client", "Service Calls apiClient, Hook Calls Service"] },
     { "id": "query", "required": false, "when": "The app needs cached remote server state", "playbook": "concerns/tanstack-query.md", "sections": ["Read Hook", "Mutation Hook", "QueryClient Setup"] },

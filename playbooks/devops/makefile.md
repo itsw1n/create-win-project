@@ -202,8 +202,7 @@ init: ## Scaffold project folder structure (run once after cloning)
 	@mkdir -p backend/src/main/java/com/app/{auth/{dto,entity},config,common/{exception,response,jwt,audit}}
 	@mkdir -p backend/src/main/resources/db/{migration,dev}
 	@mkdir -p backend/src/test/java/com/app
-	@mkdir -p docs/{api,architecture,guides}
-	@find . -type d -empty -not -path "./.git/*" -exec touch {}/.gitkeep \;
+	@mkdir -p docs
 	@echo "Done. Run: make dev"
 ```
 
@@ -223,7 +222,7 @@ Production credentials and production migration execution belong to the deployme
 SHELL := /bin/bash
 
 # Variables
-SUPABASE := npx supabase
+SUPABASE := npm exec -- supabase
 NPM      := npm
 
 # =============================================================================
@@ -309,19 +308,6 @@ migration: ## Create migration file: make migration name=add_vehicle_status
 	$(SUPABASE) migration new $(name)
 
 # =============================================================================
-# Scaffolding
-# =============================================================================
-
-.PHONY: init
-
-init: ## Scaffold project folder structure
-	@mkdir -p src/{app,features,components/{ui,shared,layout},lib/supabase,stores,types,schemas,constants}
-	@mkdir -p docs/{api,architecture,guides}
-	@mkdir -p supabase/migrations
-	@find . -type d -empty -not -path "./.git/*" -exec touch {}/.gitkeep \;
-	@echo "Done. Configure local env, then run: make dev"
-
-# =============================================================================
 # Production Safety
 # =============================================================================
 
@@ -359,16 +345,16 @@ Preferred release/CI flow:
 
 ```bash
 # Preview pending migrations against the linked production project
-npx supabase db push --linked --dry-run
+npm exec -- supabase db push --linked --dry-run
 
 # Apply only after review / release approval
-npx supabase db push --linked
+npm exec -- supabase db push --linked
 ```
 
 Forbidden against production:
 
 ```bash
-npx supabase db reset --linked
+npm exec -- supabase db reset --linked
 ```
 
 Do not add a Make target that wraps the forbidden reset command.
@@ -424,12 +410,6 @@ db-reset: ## LOCAL DESTRUCTIVE: Reset + migrate + seed
 db-studio: ## LOCAL: Open Prisma Studio
 	$(PRISMA) studio
 
-init: ## Scaffold project folder structure
-	@mkdir -p src/{app,features,components/{ui,shared,layout},lib,stores,types,schemas,constants}
-	@mkdir -p prisma/migrations
-	@mkdir -p docs/{api,architecture,guides}
-	@find . -type d -empty -not -path "./.git/*" -exec touch {}/.gitkeep \;
-	@echo "Done. Run: make dev"
 ```
 
 Production Prisma migrations should use the deployment/release workflow (for example, `prisma migrate deploy`) rather than a destructive local reset target.

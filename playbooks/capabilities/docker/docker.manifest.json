@@ -1,0 +1,11 @@
+{
+  "id": "docker",
+  "kind": "devops",
+  "label": "Docker",
+  "file": "capabilities/docker/overview.md",
+  "required": false,
+  "folders": [],
+  "concerns": [
+    { "id": "docker", "required": true, "sections": ["Dev vs Prod Differences", "Dockerfiles"] }
+  ]
+}

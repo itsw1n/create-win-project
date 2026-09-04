@@ -4,20 +4,42 @@ import chalk from 'chalk'
 import ora from 'ora'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { spawnSync } from 'node:child_process'
 import { generateProject } from './lib/generator.js'
 import { loadCompatibility } from './lib/compatibility.js'
+import { printDoctor } from './lib/doctor.js'
 import { w1nBanner } from './lib/banner.js'
 import {
   loadCatalog, resolveStack,
-  frontendChoices, backendChoicesFor, stylingChoicesFor, supportsArchitecture,
+  frontendChoices, backendChoicesFor, stylingChoicesFor, architectureChoicesFor,
 } from './lib/catalog.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const profileArg = process.argv.slice(2).find((arg) => arg.startsWith('--profile='))?.split('=')[1]
+const cliArgs = process.argv.slice(2)
+const profileArg = cliArgs.find((arg) => arg.startsWith('--profile='))?.split('=')[1]
+const architectureArg = cliArgs.find((arg) => arg.startsWith('--architecture='))?.split('=')[1]
+const authenticationArg = cliArgs.find((arg) => arg.startsWith('--authentication='))?.split('=')[1]
+const authAudienceArg = cliArgs.find((arg) => arg.startsWith('--auth-audience='))?.split('=')[1]
+if (architectureArg && !['small', 'medium', 'large'].includes(architectureArg)) {
+  throw new Error('--architecture must be small, medium, or large')
+}
+if (authenticationArg && !['yes', 'not-yet', 'none'].includes(authenticationArg)) {
+  throw new Error('--authentication must be yes, not-yet, or none')
+}
+if (authAudienceArg && !['website', 'multi-client'].includes(authAudienceArg)) {
+  throw new Error('--auth-audience must be website or multi-client')
+}
+const wantsInstall = cliArgs.includes('--install')
+const skipsInstall = cliArgs.includes('--no-install')
+if (wantsInstall && skipsInstall) throw new Error('Use either --install or --no-install, not both')
 const { profile } = await loadCompatibility(
   path.join(__dirname, 'compatibility/profiles.json'),
   profileArg,
 )
+if (cliArgs[0] === 'doctor' || cliArgs.includes('--doctor')) {
+  printDoctor(profile)
+  process.exit(0)
+}
 const catalog = await loadCatalog(path.join(__dirname, 'playbooks'), profile)
 
 // ─── Banner ──────────────────────────────────────────────────────────────────
@@ -74,17 +96,52 @@ const answers = await inquirer.prompt([
     when: (a) => stylingChoicesFor(catalog, a.frontend).length > 1,
   },
 
-  // ── Architecture: only shown when frontend supports it (manifest flag) ─
+  // ── One architecture profile, interpreted natively by every stack ──────
   {
     type: 'list',
     name: 'architecture',
-    message: 'Architecture depth?',
-    choices: [
-      { name: 'Medium  — Service layer, no Repository  (recommended)', value: 'medium' },
-      { name: 'Large   — Service + Repository layers',                  value: 'large' },
-    ],
+    message: 'Architecture? (Medium is recommended for most long-term applications)',
+    choices: (a) => {
+      const supported = architectureChoicesFor(catalog, a.frontend, a.backend)
+      return [
+        { name: 'Medium (Recommended) — clear feature, service, and data boundaries', value: 'medium' },
+        { name: 'Small — fewer layers for prototypes and simple applications', value: 'small' },
+        { name: 'Large — enforced boundaries for complex domains and larger teams', value: 'large' },
+      ].filter((choice) => supported.includes(choice.value))
+    },
     default: 'medium',
-    when: (a) => supportsArchitecture(catalog, a.frontend),
+    when: () => !architectureArg,
+  },
+
+  // ── Authentication intent, expressed without protocol jargon ───────────
+  {
+    type: 'list',
+    name: 'authentication',
+    message: 'Does your application need user login?',
+    choices: (a) => {
+      const choices = []
+      if (a.backend === 'supabase' || a.backend === 'springboot') {
+        choices.push({ name: 'Yes — generate authentication appropriate for this stack', value: 'yes' })
+      }
+      choices.push(
+        { name: 'Not yet (Recommended) — add guidance without pretending login exists', value: 'not-yet' },
+        { name: 'No — this application is intentionally public and has no user accounts', value: 'none' },
+      )
+      return choices
+    },
+    default: 'not-yet',
+    when: () => !authenticationArg,
+  },
+  {
+    type: 'list',
+    name: 'authAudience',
+    message: 'Where will users access the application?',
+    choices: [
+      { name: 'Website only — use a secure server-managed browser session', value: 'website' },
+      { name: 'Website and mobile — use a trusted identity provider for every client', value: 'multi-client' },
+    ],
+    default: 'website',
+    when: (a) => a.backend === 'springboot' && (authenticationArg || a.authentication) === 'yes' && !authAudienceArg,
   },
 
   // ── Testing ────────────────────────────────────────────────────────────
@@ -141,6 +198,13 @@ const answers = await inquirer.prompt([
     message: 'Include GitHub Actions CI?',
     default: true,
   },
+  {
+    type: 'confirm',
+    name: 'installDependencies',
+    message: 'Install project dependencies and create the lockfile now?',
+    default: true,
+    when: () => !wantsInstall && !skipsInstall,
+  },
 
   // ── Spring Boot specific ───────────────────────────────────────────────
   {
@@ -170,6 +234,11 @@ const answers = await inquirer.prompt([
   },
 ])
 answers.compatibilityProfile = profile.id
+answers.architecture = architectureArg || answers.architecture || 'medium'
+answers.authentication = authenticationArg || answers.authentication || 'not-yet'
+answers.authAudience = authAudienceArg || answers.authAudience || (catalog.byId[answers.frontend]?.platform === 'mobile' ? 'multi-client' : 'website')
+if (wantsInstall) answers.installDependencies = true
+if (skipsInstall) answers.installDependencies = false
 
 // ── Auto-resolve docker for stacks that need it ───────────────────────────────
 if (resolveStack({ ...answers, styling: answers.styling || catalog.byId[answers.frontend]?.stylingOptions?.[0] || 'tailwind' }, catalog).needsDocker) {
@@ -189,15 +258,15 @@ console.log(`  ${chalk.cyan('Platform:')}     ${stack.platform}`)
 if (stack.styleId) {
   console.log(`  ${chalk.cyan('Styling:')}      ${catalog.byId[stack.styleId]?.label || stack.styleId}`)
 }
-if (stack.platform === 'web' && supportsArchitecture(catalog, answers.frontend)) {
-  console.log(`  ${chalk.cyan('Architecture:')} ${stack.architecture === 'large' ? 'Large (Service + Repository)' : 'Medium (Service layer)'}`)
-}
+console.log(`  ${chalk.cyan('Architecture:')} ${stack.architecture[0].toUpperCase()}${stack.architecture.slice(1)}`)
+console.log(`  ${chalk.cyan('Authentication:')} ${stack.authentication}`)
 console.log(`  ${chalk.cyan('Testing:')}      ${answers.testing}`)
 if (stack.platform !== 'mobile') {
   console.log(`  ${chalk.cyan('Docker:')}       ${answers.docker ? 'yes' : 'no'}`)
   console.log(`  ${chalk.cyan('Makefile:')}     ${answers.makefile ? 'yes' : 'no'}`)
 }
 console.log(`  ${chalk.cyan('CI/CD:')}        ${answers.githubActions ? 'yes' : 'no'}`)
+console.log(`  ${chalk.cyan('Install deps:')} ${answers.installDependencies ? 'yes' : 'no'}`)
 if (answers.packageName) {
   console.log(`  ${chalk.cyan('Package:')}      ${answers.packageName}`)
 }
@@ -227,6 +296,20 @@ const spinner = ora('Scaffolding project...').start()
 try {
   await generateProject(answers, __dirname)
   spinner.succeed(chalk.green('Project created!'))
+  if (answers.installDependencies) {
+    const installRoot = stack.frontendKey === 'react'
+      ? path.join(process.cwd(), answers.projectName, 'frontend')
+      : path.join(process.cwd(), answers.projectName)
+    const installSpinner = ora('Installing exact dependencies and creating package-lock.json...').start()
+    const npmCommand = process.platform === 'win32' ? 'npm.cmd' : 'npm'
+    const result = spawnSync(npmCommand, ['install'], { cwd: installRoot, stdio: 'inherit', shell: false })
+    if (result.status !== 0) {
+      installSpinner.warn(chalk.yellow('Project created, but dependency installation did not finish.'))
+      console.log(chalk.yellow(`  Retry with: cd ${path.relative(process.cwd(), installRoot)} && npm install`))
+    } else {
+      installSpinner.succeed(chalk.green('Dependencies installed and lockfile created.'))
+    }
+  }
   console.log('')
   console.log(chalk.bold(`  Next steps:`))
   console.log(chalk.gray(`  cd ${answers.projectName}`))
@@ -237,10 +320,10 @@ try {
     }
     console.log(chalk.gray(`  cd frontend`))
     console.log(chalk.gray(`  cp .env.example .env`))
-    console.log(chalk.gray(`  npm install`))
+    if (!answers.installDependencies) console.log(chalk.gray(`  npm install`))
   } else {
     console.log(chalk.gray(`  cp .env.example ${stack.isMobile ? '.env' : '.env.local'}`))
-    console.log(chalk.gray(`  npm install`))
+    if (!answers.installDependencies) console.log(chalk.gray(`  npm install`))
   }
 
   if (stack.isMobile) {
@@ -251,7 +334,7 @@ try {
     }
     console.log(chalk.gray(`  make dev`))
   } else if (stack.backendKey === 'supabase') {
-    console.log(chalk.gray(`  npx supabase start`))
+    console.log(chalk.gray(`  npm run supabase:start`))
     console.log(chalk.gray(`  npm run dev`))
   } else if (stack.frontendKey === 'react') {
     console.log(chalk.gray(`  npm run dev`))

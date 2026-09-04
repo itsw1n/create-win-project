@@ -28,7 +28,8 @@
       "fileFormat": "json",
       "managerFilePatterns": ["/compatibility/profiles\\.json$/"],
       "matchStrings": [
-        "profiles[status = 'current'].{ 'depName': 'org.springframework.boot:spring-boot-dependencies', 'currentValue': springBoot }"
+        "profiles[status = 'current'].{ 'depName': 'org.springframework.boot:spring-boot-dependencies', 'currentValue': springBoot }",
+        "profiles[status = 'current'].{ 'depName': 'org.springframework.modulith:spring-modulith-bom', 'currentValue': springModulith }"
       ],
       "datasourceTemplate": "maven",
       "versioningTemplate": "maven"
@@ -68,7 +69,7 @@
       "groupName": "PostgreSQL runtime and container"
     },
     {
-      "matchPackageNames": ["org.springframework.boot:spring-boot-dependencies"],
+      "matchPackageNames": ["org.springframework.boot:spring-boot-dependencies", "org.springframework.modulith:spring-modulith-bom"],
       "groupName": "Spring Boot compatibility set"
     },
     {
@@ -85,8 +86,12 @@
       "groupName": "Expo compatibility set"
     },
     {
-      "matchPackageNames": ["prisma", "@prisma/client"],
+      "matchPackageNames": ["prisma", "@prisma/client", "@prisma/adapter-pg", "pg", "@types/pg", "dotenv"],
       "groupName": "Prisma compatibility set"
+    },
+    {
+      "matchPackageNames": ["supabase", "@supabase/ssr", "@supabase/supabase-js"],
+      "groupName": "Supabase compatibility set"
     },
     {
       "matchPackageNames": ["vitest", "jest", "jest-expo", "jsdom", "@playwright/test", "@testing-library/**", "@types/jest"],

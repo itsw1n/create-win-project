@@ -1,0 +1,28 @@
+{
+  "id": "supabase",
+  "kind": "database",
+  "label": "Supabase",
+  "appliesTo": { "backend": ["supabase"] },
+  "required": true,
+  "architectureProfiles": ["small", "medium", "large"],
+  "playbooks": [
+    "capabilities/supabase/overview.md",
+    { "file": "capabilities/supabase/nextjs.md", "appliesWhen": { "frontend": "nextjs" } },
+    { "file": "capabilities/supabase/vite.md", "appliesWhen": { "frontend": "react" } },
+    { "file": "capabilities/supabase/expo.md", "appliesWhen": { "frontend": "react-native" } },
+    "capabilities/supabase/security-testing.md"
+  ],
+  "makefileTemplate": "supabase",
+  "folders": [],
+  "deps": ["@supabase/ssr", "@supabase/supabase-js"],
+  "devDeps": ["supabase"],
+  "env": ["SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY"],
+  "clientEnv": ["SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY"],
+  "concerns": [
+    { "id": "supabase-runtime", "required": true, "playbook": "capabilities/supabase/overview.md", "sections": ["Environment and Migrations"] },
+    { "id": "rls", "required": true, "playbook": "capabilities/supabase/security-testing.md", "sections": ["Grants and RLS", "Policy Tests"] },
+    { "id": "supabase-next", "required": true, "appliesWhen": { "frontend": "nextjs" }, "playbook": "capabilities/supabase/nextjs.md", "sections": ["Clients and Proxy"] },
+    { "id": "supabase-vite", "required": true, "appliesWhen": { "frontend": "react" }, "playbook": "capabilities/supabase/vite.md", "sections": ["Browser Session"] },
+    { "id": "supabase-expo", "required": true, "appliesWhen": { "frontend": "react-native" }, "playbook": "capabilities/supabase/expo.md", "sections": ["Native Session"] }
+  ]
+}

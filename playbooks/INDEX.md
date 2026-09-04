@@ -6,10 +6,10 @@ Playbooks are task-routed standards used by generated projects. Their co-located
 
 | Directory | Responsibility |
 |---|---|
-| `universal/` | Security, accessibility, observability, testing, errors, TypeScript, repository conventions |
-| `stack/` | Framework boundaries and framework-specific patterns |
-| `database/` | Database clients, data authorization, schema practices |
-| `migration/` | Migration and ORM workflows |
+| `universal/` | Only principles that remain true across every stack |
+| `platform/` | Browser/web and installed-mobile behavior |
+| `stack/` | Five stack-owned facets: architecture, structure, runtime, security, testing |
+| `capabilities/` | Supabase, PostgreSQL, Prisma, Flyway, Docker, CI, and authentication-provider behavior |
 | `styling/` | Styling-system rules selected by the frontend |
 | `concerns/` | Optional/shared libraries such as query, state, validation, and HTTP clients |
 | `devops/` | Optional CI, Docker, Makefile, and pull-request guidance |
@@ -17,7 +17,7 @@ Playbooks are task-routed standards used by generated projects. Their co-located
 ## Composition
 
 ```text
-required universal manifests
+required universal + selected platform manifests
   + selected frontend
   + selected backend/database/migration
   + selected styling
@@ -37,15 +37,15 @@ Expo uses React Native `StyleSheet` by default. Web projects can select Tailwind
 
 ## Manifest contract
 
-A manifest may declare:
+A stack manifest must declare all three architecture profiles. Any manifest may declare:
 
 - `id`, `kind`, `label`, and compatibility;
-- folders, dependency names, scripts, and templates (versions live only in `compatibility/profiles.json`);
+- dependency names, scripts, templates, and conditional playbooks (versions live only in `compatibility/profiles.json`);
 - semantic environment names and client-visible names;
 - stack constraints;
 - required and optional concerns, target playbook, headings, and applicability.
 
-Manifests compose capabilities; `lib/scaffold.js` owns their executable minimum. Adding a runnable capability requires both parts plus a generated-output test.
+Manifests compose capabilities; `lib/scaffold.js` owns their executable minimum. Generated directories exist only when they contain a selected profile's real files. Adding a runnable capability requires both parts plus generated-output and compatibility-matrix coverage.
 
 ## Generated documentation
 

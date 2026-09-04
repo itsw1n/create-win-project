@@ -63,7 +63,8 @@ describe('collectPlaybookFiles', () => {
     const catalog = await loadCatalog(path.join(root, 'playbooks'))
     const stack   = resolveStack({ frontend: 'nextjs', backend: 'supabase', styling: 'tailwind' }, catalog)
     const files   = collectPlaybookFiles(stack)
-    expect(files).toContain('stack/nextjs.md')
+    expect(files).toContain('stack/nextjs/architecture.md')
+    expect(files).toContain('stack/nextjs/security.md')
     expect(files.some((f) => f.startsWith('concerns/'))).toBe(true)
   })
 

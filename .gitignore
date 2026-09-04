@@ -13,6 +13,9 @@ npm-debug.log*
 .env.local
 .env.*.local
 
+# Worktrees (isolated workspaces)
+.worktrees/
+
 # OS / Editor
 .DS_Store
 Thumbs.db
