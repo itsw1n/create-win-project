@@ -268,7 +268,7 @@ Before writing any code:
 
 Before creating a new file:
   1. Check if an existing file should be extended instead
-  2. Confirm the correct folder per folder-structure.md
+  2. Follow the selected stack's structure playbook and current feature ownership
 
 Before adding a dependency:
   1. Check if existing tools already solve it
