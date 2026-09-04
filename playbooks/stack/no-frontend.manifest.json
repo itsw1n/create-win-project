@@ -3,7 +3,7 @@
   "kind": "frontend",
   "label": "No frontend",
   "platform": "api",
-  "appliesTo": { "backend": ["springboot"] },
+  "appliesTo": { "backend": ["springboot", "laravel"] },
   "port": 0,
   "needsDocker": false,
   "frontendDir": "",

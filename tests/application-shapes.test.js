@@ -38,11 +38,11 @@ describe('application shapes', () => {
 
   it('filters framework and backend choices by shape', async () => {
     const catalog = await loadCatalog(path.join(root, 'playbooks'))
-    expect(frontendChoicesForShape('fullstack', catalog).map((choice) => choice.value)).toEqual(['nextjs'])
+    expect(frontendChoicesForShape('fullstack', catalog).map((choice) => choice.value)).toEqual(['nextjs', 'laravel-ui'])
     expect(backendChoicesForShape('fullstack', 'nextjs', catalog).map((choice) => choice.value))
       .toEqual(['none', 'postgres', 'supabase'])
     expect(frontendChoicesForShape('mobile', catalog).map((choice) => choice.value)).toEqual(['react-native'])
     expect(frontendChoicesForShape('api', catalog).map((choice) => choice.value)).toEqual(['no-frontend'])
-    expect(backendChoicesForShape('api', 'no-frontend', catalog).map((choice) => choice.value)).toEqual(['springboot'])
+    expect(backendChoicesForShape('api', 'no-frontend', catalog).map((choice) => choice.value)).toEqual(['springboot', 'laravel'])
   })
 })

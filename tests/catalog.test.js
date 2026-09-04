@@ -91,6 +91,15 @@ describe('resolveStack — capability flags', () => {
     expect(stack.platform).toBe('api')
     expect(stack.styleId).toBeNull()
   })
+
+  it('maps Laravel authentication from application shape and audience', async () => {
+    const catalog = await loadCatalog(path.join(root, 'playbooks'))
+    const spa = resolveStack({ frontend: 'react', backend: 'laravel', applicationShape: 'separate', authentication: 'yes' }, catalog)
+    const api = resolveStack({ frontend: 'react-native', backend: 'laravel', applicationShape: 'mobile', authentication: 'yes' }, catalog)
+    expect(spa.authentication).toBe('sanctum-spa')
+    expect(api.authentication).toBe('laravel-oidc')
+    expect(spa.playbooks).toContain('capabilities/laravel/sanctum-spa.md')
+  })
   it('nextjs + supabase produces correct capabilities', async () => {
     const catalog = await loadCatalog(path.join(root, 'playbooks'))
     const stack   = resolveStack({ frontend: 'nextjs', backend: 'supabase', styling: 'tailwind', architecture: 'medium' }, catalog)
