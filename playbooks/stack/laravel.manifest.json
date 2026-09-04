@@ -5,6 +5,7 @@
   "appliesTo": { "frontend": ["nextjs", "react", "react-native", "no-frontend", "laravel-ui"] },
   "port": 8000,
   "needsDocker": true,
+  "makefileTemplate": "laravel",
   "architectureProfiles": ["small", "medium", "large"],
   "playbooks": [
     "stack/laravel/architecture.md",
@@ -32,4 +33,3 @@
     { "id": "migrations", "required": true, "playbook": "capabilities/laravel/migrations.md", "sections": ["Development", "Production"] }
   ]
 }
-

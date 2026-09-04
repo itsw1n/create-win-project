@@ -105,6 +105,23 @@ describe('runnable project contract', () => {
     expect(rules).toContain(`platform/laravel-ui/${laravelUi}/architecture.md`)
   })
 
+  it('keeps Laravel Docker build and run as separate operations', async () => {
+    const destination = await generate({
+      frontend: 'no-frontend', backend: 'laravel', applicationShape: 'api', architecture: 'medium',
+      authentication: 'not-yet', docker: true, makefile: true, githubActions: false,
+      projectName: 'laravel-docker-api',
+    })
+    const makefile = await fs.readFile(path.join(destination, 'Makefile'), 'utf8')
+    expect(makefile).toMatch(/build:.*\n\t\$\(COMPOSE\) build/)
+    expect(makefile).toMatch(/run:.*\n\t\$\(COMPOSE\) up -d/)
+    expect(makefile.match(/run:.*\n\t.*--build/)).toBeNull()
+    const compose = await fs.readFile(path.join(destination, 'docker-compose.yml'), 'utf8')
+    expect(compose).toContain('backend:')
+    expect(compose).toContain('postgres:16-alpine')
+    expect(await fs.pathExists(path.join(destination, 'Dockerfile.dev'))).toBe(true)
+    expect(await fs.readFile(path.join(destination, 'docs/guides/setup.md'), 'utf8')).toContain('Only Docker with Compose is required')
+  })
+
   it.each([
     ['nextjs', 'none', 'tailwind'],
     ['nextjs', 'supabase', 'tailwind'],
