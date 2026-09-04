@@ -54,7 +54,6 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
           distribution: temurin
-          cache: maven
       - run: npm ci
       - run: npm test
       - run: npm run validate:content
