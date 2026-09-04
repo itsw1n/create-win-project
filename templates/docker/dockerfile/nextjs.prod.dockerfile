@@ -2,6 +2,7 @@ FROM {{NODE_IMAGE}} AS builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
+RUN mkdir -p public
 COPY . .
 ARG DATABASE_URL=postgresql://dummy:dummy@localhost:5432/dummy
 ENV DATABASE_URL=$DATABASE_URL
