@@ -2,6 +2,7 @@
   "id": "react-native",
   "kind": "frontend",
   "label": "React Native (Expo)",
+  "language": "TypeScript",
   "platform": "mobile",
   "appliesTo": { "backend": ["supabase", "springboot", "none"] },
   "port": 8081,

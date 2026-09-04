@@ -2,6 +2,7 @@
   "id": "springboot",
   "kind": "backend",
   "label": "Spring Boot",
+  "language": "Java",
   "appliesTo": { "frontend": ["nextjs", "react", "react-native"] },
   "port": 8080,
   "needsDocker": true,
