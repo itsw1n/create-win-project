@@ -355,24 +355,41 @@ try {
   await generateProject(answers, __dirname)
   spinner.succeed(chalk.green('Project created!'))
   if (answers.installDependencies) {
-    const installRoot = stack.frontendKey === 'react'
-      ? path.join(process.cwd(), answers.projectName, 'frontend')
-      : path.join(process.cwd(), answers.projectName)
-    const installSpinner = ora('Installing exact dependencies and creating package-lock.json...').start()
-    const npmCommand = process.platform === 'win32' ? 'npm.cmd' : 'npm'
-    const result = spawnSync(npmCommand, ['install'], { cwd: installRoot, stdio: 'inherit', shell: false })
-    if (result.status !== 0) {
+    const projectRoot = path.join(process.cwd(), answers.projectName)
+    const steps = []
+    if (stack.backendKey === 'laravel') {
+      const laravelRoot = ['laravel-ui', 'no-frontend'].includes(stack.frontendKey) ? projectRoot : path.join(projectRoot, 'backend')
+      steps.push({ command: process.platform === 'win32' ? 'composer.bat' : 'composer', args: ['install'], cwd: laravelRoot, retry: `cd ${path.relative(process.cwd(), laravelRoot)} && composer install` })
+    }
+    const needsNpm = stack.frontendKey !== 'no-frontend' && (stack.frontendKey !== 'laravel-ui' || answers.laravelUi === 'inertia-react')
+    if (needsNpm) {
+      const npmRoot = stack.frontendKey === 'react' ? path.join(projectRoot, 'frontend') : projectRoot
+      steps.push({ command: process.platform === 'win32' ? 'npm.cmd' : 'npm', args: ['install'], cwd: npmRoot, retry: `cd ${path.relative(process.cwd(), npmRoot)} && npm install` })
+    }
+    const installSpinner = ora('Installing exact dependencies and creating lockfiles...').start()
+    const failed = steps.find((step) => spawnSync(step.command, step.args, { cwd: step.cwd, stdio: 'inherit', shell: false }).status !== 0)
+    if (failed) {
       installSpinner.warn(chalk.yellow('Project created, but dependency installation did not finish.'))
-      console.log(chalk.yellow(`  Retry with: cd ${path.relative(process.cwd(), installRoot)} && npm install`))
+      console.log(chalk.yellow(`  Retry with: ${failed.retry}`))
     } else {
-      installSpinner.succeed(chalk.green('Dependencies installed and lockfile created.'))
+      installSpinner.succeed(chalk.green('Dependencies installed and lockfiles created.'))
     }
   }
   console.log('')
   console.log(chalk.bold(`  Next steps:`))
   console.log(chalk.gray(`  cd ${answers.projectName}`))
 
-  if (stack.frontendKey === 'react') {
+  if (stack.backendKey === 'laravel') {
+    const laravelDir = ['laravel-ui', 'no-frontend'].includes(stack.frontendKey) ? '' : 'backend/'
+    console.log(chalk.gray(`  cp ${laravelDir}.env.example ${laravelDir}.env`))
+    if (answers.makefile) {
+      console.log(chalk.gray(`  make setup  # first run only`))
+      console.log(chalk.gray(`  make run    # later runs; never rebuilds`))
+    } else {
+      console.log(chalk.gray(`  docker compose build`))
+      console.log(chalk.gray(`  docker compose up -d`))
+    }
+  } else if (stack.frontendKey === 'react') {
     if (stack.backendKey === 'springboot') {
       console.log(chalk.gray(`  cp .env.example .env  # Docker/backend values`))
     }
@@ -384,7 +401,9 @@ try {
     if (!answers.installDependencies) console.log(chalk.gray(`  npm install`))
   }
 
-  if (stack.isMobile) {
+  if (stack.backendKey === 'laravel') {
+    // Laravel commands were printed above because its root differs by application shape.
+  } else if (stack.isMobile) {
     console.log(chalk.gray(`  npx expo start`))
   } else if (answers.makefile) {
     if (stack.frontendKey === 'react') {
