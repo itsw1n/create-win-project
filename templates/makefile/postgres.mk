@@ -6,7 +6,7 @@ COMPOSE := docker compose
 
 .DEFAULT_GOAL := help
 
-.PHONY: help dev build lint test db-start db-stop db-migrate db-seed db-reset db-studio init
+.PHONY: help dev build lint test db-start db-stop db-migrate db-reset db-studio
 
 help: ## Show all commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
@@ -31,20 +31,10 @@ db-stop: ## Stop PostgreSQL container
 	$(COMPOSE) down
 
 db-migrate: ## Run Prisma migrations
-	npx prisma migrate dev
-
-db-seed: ## Seed the database
-	npx prisma db seed
+	npm run db:migrate
 
 db-reset: ## Reset DB + migrate + seed
-	npx prisma migrate reset --force
+	npm run db:reset
 
 db-studio: ## Open Prisma Studio
-	npx prisma studio
-
-init: ## Scaffold project folder structure
-	@mkdir -p src/{app,features,components/{ui,shared,layout},lib,stores,types,schemas,constants}
-	@mkdir -p prisma/migrations
-	@mkdir -p docs/{api,architecture,guides,decisions}
-	@find . -type d -empty -not -path "./.git/*" -exec touch {}/.gitkeep \;
-	@echo "✅ Done. Run: make dev"
+	npm run db:studio

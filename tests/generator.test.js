@@ -20,6 +20,8 @@ async function generate(overrides) {
       backend: 'supabase',
       styling: 'tailwind',
       architecture: 'medium',
+      authentication: 'not-yet',
+      authAudience: 'website',
       testing: 'basic',
       docker: false,
       makefile: false,
@@ -68,7 +70,12 @@ describe('runnable project contract', () => {
     expect(packageJson.devDependencies.prettier).toMatch(/^\d+\.\d+\.\d+$/)
     expect(await fs.pathExists(path.join(destination, 'AGENTS.md'))).toBe(true)
     const profile = await fs.readJson(path.join(destination, 'create-win-project.profile.json'))
-    expect(profile.profile).toBe('2026.09')
+    expect(profile.schemaVersion).toBe(2)
+    expect(profile.compatibilityProfile.id).toBe('2026.09')
+    expect(profile.architectureProfile).toBe('medium')
+    expect(profile.authentication).toEqual({
+      intent: 'not-yet', model: 'undecided', audience: 'website',
+    })
     expect(profile.stack).toBe(`${frontend}-${backend}`)
     expect(await fs.readFile(path.join(destination, 'RULES.md'), 'utf8')).not.toMatch(/section not found|MISSING/)
     if (frontend === 'nextjs') expect(await fs.pathExists(path.join(destination, 'src/app/page.tsx'))).toBe(true)
@@ -111,13 +118,15 @@ describe('runnable project contract', () => {
   })
 
   it('generates current Supabase SSR session plumbing for Next.js', async () => {
-    const destination = await generate({ projectName: 'supabase-auth' })
+    const destination = await generate({ projectName: 'supabase-auth', authentication: 'yes' })
     for (const file of [
       'src/lib/supabase/client.ts',
       'src/lib/supabase/server.ts',
       'src/lib/supabase/proxy.ts',
       'src/proxy.ts',
       'src/app/auth/callback/route.ts',
+      'src/app/login/actions.ts',
+      'src/app/login/page.tsx',
     ]) expect(await fs.pathExists(path.join(destination, file))).toBe(true)
     const env = await fs.readFile(path.join(destination, '.env.example'), 'utf8')
     expect(env).toContain('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY')
@@ -129,7 +138,8 @@ describe('runnable project contract', () => {
     const destination = await generate({ projectName: 'previous-profile', compatibilityProfile: '2026.08' })
     const metadata = await fs.readJson(path.join(destination, 'create-win-project.profile.json'))
     const packageJson = await fs.readJson(path.join(destination, 'package.json'))
-    expect(metadata.status).toBe('previous')
+    expect(metadata.compatibilityProfile.status).toBe('previous')
+    expect(metadata.compatibilityProfile.id).toBe('2026.08')
     expect(packageJson.dependencies.next).toBe('16.3.4')
     expect(Object.values(packageJson.dependencies).every((version) => !/^[~^]/.test(version))).toBe(true)
   })

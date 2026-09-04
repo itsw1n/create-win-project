@@ -25,8 +25,15 @@ const cases = {
 }
 
 if (!args.profile || !cases[args.case]) {
-  throw new Error(`Usage: node scripts/verify-generated.mjs --profile=<id> --case=<${Object.keys(cases).join('|')}>`)
+  throw new Error(`Usage: node scripts/verify-generated.mjs --profile=<id> --case=<${Object.keys(cases).join('|')}> [--architecture=small|medium|large] [--authentication=yes|not-yet|none] [--auth-audience=website|multi-client]`)
 }
+
+const architecture = args.architecture || 'medium'
+const authentication = args.authentication || 'not-yet'
+const authAudience = args['auth-audience'] || (cases[args.case].frontend === 'react-native' ? 'multi-client' : 'website')
+if (!['small', 'medium', 'large'].includes(architecture)) throw new Error(`Invalid architecture: ${architecture}`)
+if (!['yes', 'not-yet', 'none'].includes(authentication)) throw new Error(`Invalid authentication: ${authentication}`)
+if (!['website', 'multi-client'].includes(authAudience)) throw new Error(`Invalid auth audience: ${authAudience}`)
 
 function run(command, commandArgs, cwd, extraEnv = {}) {
   const result = spawnSync(command, commandArgs, {
@@ -41,7 +48,7 @@ function run(command, commandArgs, cwd, extraEnv = {}) {
 
 const fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'create-win-compat-'))
 const selected = cases[args.case]
-const projectName = args.case.replaceAll('react-native', 'expo')
+const projectName = `${args.case.replaceAll('react-native', 'expo')}-${architecture}-${authentication.replaceAll('-', '')}-${authAudience}`
 
 try {
   process.chdir(fixtureRoot)
@@ -49,6 +56,9 @@ try {
     projectName,
     projectDescription: `Compatibility verification for ${args.case}`,
     compatibilityProfile: args.profile,
+    architecture,
+    authentication,
+    authAudience,
     testing: selected.frontend === 'react-native' ? 'basic' : 'full',
     docker: selected.frontend !== 'react-native',
     makefile: false,
@@ -58,6 +68,11 @@ try {
   }, root)
 
   const projectRoot = path.join(fixtureRoot, projectName)
+  const metadata = await fs.readJson(path.join(projectRoot, 'create-win-project.profile.json'))
+  if (metadata.compatibilityProfile.id !== args.profile || metadata.architectureProfile !== architecture ||
+      metadata.authentication.intent !== authentication || metadata.authentication.audience !== authAudience) {
+    throw new Error('Generated profile metadata does not match the requested matrix entry')
+  }
   const packageRoot = selected.frontend === 'react' ? path.join(projectRoot, 'frontend') : projectRoot
   const publicEnv = {
     NEXT_PUBLIC_SUPABASE_URL: 'https://example.supabase.co',
@@ -74,6 +89,10 @@ try {
     POSTGRES_DB: projectName.replaceAll('-', '_'),
     DATABASE_URL: `postgresql://postgres:compatibility-test@localhost:5432/${projectName.replaceAll('-', '_')}`,
     SPRING_PROFILES_ACTIVE: 'test',
+    OIDC_ISSUER_URI: 'http://localhost:9090/realms/app',
+    OIDC_AUDIENCE: 'api',
+    SPRING_SECURITY_USER_NAME: 'compat-user',
+    SPRING_SECURITY_USER_PASSWORD: 'compat-password',
   }
 
   run('npm', ['install'], packageRoot)
@@ -87,7 +106,7 @@ try {
     run('npm', ['run', 'build', '--', '--platform', 'web'], packageRoot, publicEnv)
   } else {
     run('npm', ['run', 'build'], packageRoot, publicEnv)
-    if (process.env.CI) run('npx', ['playwright', 'install', '--with-deps', 'chromium'], packageRoot)
+    run('npx', ['playwright', 'install', ...(process.env.CI ? ['--with-deps'] : []), 'chromium'], packageRoot)
     run('npm', ['run', 'test:e2e'], packageRoot, publicEnv)
   }
 
