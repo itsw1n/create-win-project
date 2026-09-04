@@ -1,0 +1,14 @@
+{
+  "id": "prisma",
+  "kind": "migration",
+  "label": "Prisma",
+  "file": "capabilities/prisma/overview.md",
+  "appliesTo": { "backend": ["postgres"] },
+  "required": true,
+  "folders": [],
+  "deps": ["@prisma/client", "@prisma/adapter-pg", "pg"],
+  "devDeps": ["prisma", "dotenv", "@types/pg"],
+  "concerns": [
+    { "id": "migration", "required": true, "sections": ["Setup", "prisma/schema.prisma"] }
+  ]
+}
