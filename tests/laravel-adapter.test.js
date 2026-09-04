@@ -5,6 +5,7 @@ import { buildLaravelFiles } from '../lib/stacks/laravel/generate.js'
 import { laravelSessionAuthentication } from '../lib/stacks/laravel/auth/session.js'
 import { sanctumSpaAuthentication } from '../lib/stacks/laravel/auth/sanctum.js'
 import { laravelOidcAuthentication } from '../lib/stacks/laravel/auth/oidc.js'
+import { getLaravelUi, laravelUiPromptContribution, laravelUis } from '../lib/stacks/laravel/ui/index.js'
 
 const root = path.resolve(import.meta.dirname, '..')
 
@@ -108,5 +109,37 @@ describe('Laravel authentication adapter contracts', () => {
     expect(files['routes/api.php']).toContain(`Auth::shouldUse('${laravelOidcAuthentication.guard}')`)
     expect(files['.env.example']).toContain('AUTH0_AUDIENCE=')
     expect(files['.env.example']).not.toMatch(/REFRESH_TOKEN/i)
+  })
+})
+
+describe('Laravel UI adapter contracts', () => {
+  it.each([
+    ['blade', 'resources/views/home.blade.php', null],
+    ['livewire', 'app/Livewire/HomePage.php', 'livewire/livewire'],
+    ['inertia-react', 'resources/js/Pages/Home.jsx', 'inertiajs/inertia-laravel'],
+  ])('owns %s files, routes, and packages', async (laravelUi, expectedFile, composerPackage) => {
+    const stack = await laravelStack({
+      frontend: 'laravel-ui',
+      applicationShape: 'fullstack',
+      authentication: 'yes',
+      laravelUi,
+    })
+    const files = buildLaravelFiles(answers, stack)
+    const composer = JSON.parse(files['composer.json'])
+    const ui = getLaravelUi(laravelUi)
+
+    expect(files).toHaveProperty(expectedFile)
+    expect(files['routes/web.php']).toContain(ui.homeRoute)
+    expect(ui.composerPackages).toEqual(composerPackage ? [composerPackage] : [])
+    if (composerPackage) expect(composer.require[composerPackage]).toMatch(/^\d+\.\d+\.\d+$/)
+  })
+
+  it('contributes one question through the core-owned stack-options slot', () => {
+    const contribution = laravelUiPromptContribution(undefined)
+
+    expect(contribution.slot).toBe('stack-options')
+    expect(contribution.questions).toHaveLength(1)
+    expect(contribution.questions[0].choices.map((choice) => choice.value))
+      .toEqual(laravelUis.map((ui) => ui.id))
   })
 })
