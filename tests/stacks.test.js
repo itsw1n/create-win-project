@@ -81,6 +81,23 @@ describe('stack adapter registry', () => {
 })
 
 describe('registered stack capabilities', () => {
+  it('registers Spring Boot with backend runtime, auth, and verification ownership', () => {
+    const spring = stackRegistry.require('springboot')
+    const context = {}
+
+    expect(spring.compatibleWith.frontend).toEqual(['nextjs', 'react', 'react-native', 'no-frontend'])
+    expect(spring.capabilities.applicationShapes).toEqual(['separate', 'api', 'mobile'])
+    expect(spring.capabilities.authenticationModels).toEqual(['public', 'undecided', 'session', 'oidc'])
+    expect(spring.contributes.environment(context)).toContain('DATABASE_URL')
+    expect(spring.contributes.install(context)).toEqual([
+      { cwd: 'backend', command: './mvnw', args: ['dependency:go-offline'] },
+    ])
+    expect(spring.contributes.verification(context)).toEqual(expect.arrayContaining([
+      expect.objectContaining({ frontend: 'react', authentication: 'session' }),
+      expect.objectContaining({ frontend: 'react-native', authentication: 'oidc' }),
+    ]))
+  })
+
   it('registers React Native with mobile-only capabilities and local-device verification', () => {
     const native = stackRegistry.require('react-native')
     const context = { backend: { id: 'springboot' } }
