@@ -1,0 +1,15 @@
+{
+  "id": "postgres",
+  "kind": "database",
+  "label": "PostgreSQL",
+  "file": "capabilities/postgresql/overview.md",
+  "appliesTo": { "backend": ["postgres", "springboot"] },
+  "required": true,
+  "architectureProfiles": ["small", "medium", "large"],
+  "makefileTemplate": "postgres",
+  "folders": [],
+  "env": ["DATABASE_URL"],
+  "concerns": [
+    { "id": "schema", "required": true, "sections": ["Core Rules", "Standard Table Pattern", "Column Conventions"] }
+  ]
+}
