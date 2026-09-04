@@ -81,6 +81,16 @@ describe('stack adapter registry', () => {
 })
 
 describe('registered stack capabilities', () => {
+  it('registers PostgreSQL with Prisma files, environment, and verification ownership', () => {
+    const postgres = stackRegistry.require('postgres')
+
+    expect(postgres.compatibleWith.frontend).toEqual(['nextjs'])
+    expect(postgres.capabilities.applicationShapes).toEqual(['fullstack'])
+    expect(postgres.capabilities.authenticationModels).toEqual(['public', 'undecided'])
+    expect(postgres.contributes.environment({})).toEqual(['DATABASE_URL'])
+    expect(postgres.contributes.verification({})).toHaveLength(3)
+  })
+
   it('registers Supabase with data, auth, environment, and verification ownership', () => {
     const supabase = stackRegistry.require('supabase')
 

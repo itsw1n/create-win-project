@@ -85,6 +85,10 @@ Supabase owns framework-specific clients and authentication flows, native token
 lifecycle handling, local project configuration, migrations, RLS policies, and
 database verification in `src/stacks/backends/supabase`.
 
+PostgreSQL + Prisma owns its schema, client initialization, migration commands,
+database environment, Docker contribution, and focused Next.js verification in
+`src/stacks/backends/postgres`.
+
 Core code owns prompt order, compatibility-profile resolution, atomic writes, process execution, and final composition. An adapter receives a read-only stack context and returns contributions; it cannot write arbitrary paths or install global tools. Adapter definitions do not accept dependency tables or version fields. Exact versions remain exclusively owned by `compatibility/profiles.json`.
 
 Manifests declare:
