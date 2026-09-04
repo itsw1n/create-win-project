@@ -23,8 +23,8 @@ When a runtime and its container image must move together, update both in the sa
 
 1. Create the new dated candidate profile; leave the retained previous profile unchanged.
 2. Review upstream release and migration notes, especially for majors.
-3. Run `npm test` and the compatibility workflow for all eight stack combinations.
-4. Confirm Expo install checks, browser production builds and Playwright, Spring MVC tests/Maven packages, Compose parsing, and container builds.
+3. Run `npm test` and the compatibility workflow for every stack, architecture profile, and applicable authentication model.
+4. Confirm Expo install and auth-lifecycle checks, browser production builds and Playwright, Spring MVC/security/Modulith tests and Maven packages, Supabase RLS tests, Compose parsing, npm package contents, and container builds.
 5. Mark the candidate `current`, the former current `previous`, and remove profiles older than the supported previous profile.
 6. Summarize breaking changes and required migrations in the PR.
 

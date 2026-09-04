@@ -27,7 +27,7 @@ generated-project contract tests
 
 ### CLI boundary
 
-`index.js` owns interaction and presentation. It gathers project identity, frontend, backend, styling, architecture depth, testing depth, and optional operational tooling. It does not contain stack dependency tables.
+`index.js` owns interaction and presentation. It gathers project identity, frontend, optional backend, styling, one Small/Medium/Large architecture profile, login intent, client audience when relevant, testing depth, and optional operational tooling. Medium is shown first and is the default. It does not contain stack dependency tables.
 
 `generateProject()` validates the same answers again because it is also an exported programmatic API. A caller cannot bypass destination-name, Java-package, or testing-profile validation by skipping the CLI.
 
@@ -40,7 +40,7 @@ Manifests declare:
 - identity and compatibility (`id`, `kind`, `appliesTo`);
 - dependency names and scripts (never dependency versions);
 - semantic environment names and which ones are client-visible;
-- folders and optional templates;
+- supported architecture profiles, conditional playbooks, and optional templates;
 - constraints shown to the agent;
 - concerns and their playbook sections.
 
@@ -50,10 +50,12 @@ Client environment variables are semantic in manifests (`API_URL`) and receive e
 
 `lib/scaffold.js` owns the minimum executable vertical slice:
 
-- Next.js: App Router page/layout, health route, strict TypeScript, flat ESLint config, tests, optional Playwright, security headers, and Supabase SSR plumbing when selected.
-- React + Vite: real `frontend/` workspace, entry point, Vite/TypeScript/ESLint/test configuration, and optional Supabase client.
-- Expo: Expo Router entry/layout/screen, secure Supabase storage adapter when selected, TypeScript, Jest, and export configuration.
-- Spring Boot: Maven application, deny-by-default Spring Security configuration, public health endpoint, PostgreSQL/Flyway configuration, MVC test, and executable JAR packaging.
+- Next.js: route-oriented Small; familiar feature services/actions/queries and owned repositories or remote API clients in Medium; public feature APIs and enforced boundaries in Large.
+- React + Vite: thin browser features in Small, feature modules in Medium, and public feature APIs plus boundary checks in Large.
+- Expo: screens/data in Small, feature modules in Medium, and boundaries ready for offline sync, background work, and platform adapters in Large.
+- Spring Boot: conventional package-by-feature in Small, explicit API/service/repository ownership in Medium, and a verified Spring Modulith modular monolith in Large.
+
+Authentication is selected during generation. Supabase emits Supabase Auth clients and login examples; website-only Spring uses a secure server-managed session; multi-client Spring emits an OIDC Resource Server and delegates issuance, refresh, and revocation to the identity provider. `Not yet` is fail-closed for Spring and never emits pretend authentication. Existing projects are never told to rerun the generator to add auth.
 
 This module intentionally generates a small working example. Domain-specific features are added after product context is known; the generator does not invent business entities.
 
@@ -61,7 +63,7 @@ This module intentionally generates a small working example. Domain-specific fea
 
 `lib/generator.js` coordinates writes and refuses to merge into a non-empty destination. It adds documentation, selected playbooks, CI, Docker, Makefile, environment examples, and repository conventions around the runnable foundation.
 
-The first `npm install` creates the lockfile. Generated CI uses `npm ci`, so the lockfile must be committed before CI is enabled. `create-win-project.profile.json` records which tested profile produced the project; after generation, that project owns its own upgrade lifecycle.
+The first `npm install` creates the lockfile. Generated CI uses `npm ci`, so the lockfile must be committed before CI is enabled. `create-win-project.profile.json` separately records the compatibility profile, architecture profile, and authentication intent/model/audience; after generation, that project owns its own upgrade lifecycle.
 
 ### Compatibility profile lifecycle
 
@@ -84,8 +86,8 @@ Manifest section names are checked against Markdown headings. Numbered headings 
 The generator itself has three verification levels:
 
 1. unit tests for catalog composition and template rendering;
-2. an eight-combination generated-output matrix that checks required files, environment naming, playbook routing, testing profiles, and overwrite safety;
-3. a current-and-previous profile matrix that installs and runs lint, typecheck, tests, builds, Expo compatibility checks/web export, Spring MVC/Maven packaging, Compose validation, and current-profile container builds.
+2. generated-output contract tests for required files, environment naming, playbook routing, profile-specific boundaries, auth metadata/code, testing profiles, and overwrite safety;
+3. a current-and-previous matrix across every supported stack combination, all three architecture profiles, and every applicable authentication model. It installs and runs lint, typecheck, tests, builds, Expo compatibility checks/web export, Spring MVC/security/Modulith tests and Maven packaging, Compose validation, and current-profile container builds.
 
 Canonical Markdown code examples should progressively move into extracted fixtures so examples compile against the versions they teach.
 
@@ -93,9 +95,9 @@ Canonical Markdown code examples should progressively move into extracted fixtur
 
 When adding a stack or capability:
 
-1. Add or update its manifest and playbook.
+1. Add its manifest, all five stack facets, and any platform/capability routes.
 2. Add the smallest runnable files needed in `lib/scaffold.js` or a focused scaffold module.
-3. Add the combination to the generated-output matrix.
+3. Add every supported architecture/authentication combination to the generated-output matrix.
 4. Run install, lint/typecheck, tests, and production build for the new fixture.
 5. Update this architecture document if ownership or the generation pipeline changed.
 
