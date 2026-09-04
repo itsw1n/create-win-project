@@ -89,6 +89,8 @@ This module intentionally generates a small working example. Domain-specific fea
 
 `lib/generator.js` coordinates writes and refuses to merge into a non-empty destination. It adds documentation, selected playbooks, CI, Docker, Makefile, environment examples, and repository conventions around the runnable foundation.
 
+Engine infrastructure is separated from those generated-file decisions. `src/engine/write-files.js` validates destinations, stages writes, removes failed staging trees, and publishes completed trees atomically. `render-templates.js` combines rendering with that safe write boundary. `install-dependencies.js` is the only engine process runner and stops at the first failed package-manager step. `tested-versions.js` and `load-library.js` expose version resolution and library loading separately. Compatibility exports remain until all stack migrations have moved their callers.
+
 The first `npm install` creates the lockfile. Generated CI uses `npm ci`, so the lockfile must be committed before CI is enabled. `create-win-project.profile.json` separately records the compatibility profile, architecture profile, and authentication intent/model/audience; after generation, that project owns its own upgrade lifecycle.
 
 ### Compatibility profile lifecycle

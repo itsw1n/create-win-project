@@ -1,8 +1,8 @@
 import inquirer from 'inquirer'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { spawnSync } from 'node:child_process'
 import { generateProject } from '../engine/create-project.js'
+import { runDependencySteps } from '../engine/install-dependencies.js'
 import { loadCompatibility } from '../../lib/compatibility.js'
 import { buildQuestions, configurationDecisionChoices, promptWithBack } from './questions.js'
 import {
@@ -167,7 +167,7 @@ try {
   printLocationNotice(locationNotice)
   if (answers.installDependencies) {
     const installSpinner = startInstallSpinner()
-    const failed = steps.find((step) => spawnSync(step.command, step.args, { cwd: step.cwd, stdio: 'inherit', shell: false }).status !== 0)
+    const { failed } = runDependencySteps(steps)
     if (failed) {
       installFailed(installSpinner)
       printInstallFailure(detectedVersions, failed.retry)
