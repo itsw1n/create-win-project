@@ -1,14 +1,23 @@
-name: CI
+name: Quality
 
 on:
-  push:
-    branches: [main]
   pull_request:
-    branches: [main]
+    branches: [dev, main]
+  push:
+    branches: [dev, main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  test:
+  quality:
+    name: quality
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -17,3 +26,5 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
+      - run: npm run validate:content
+      - run: npm pack --dry-run
