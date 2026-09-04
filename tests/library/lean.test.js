@@ -4,7 +4,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const root      = path.resolve(__dirname, '..')
+const root      = path.resolve(__dirname, '..', '..')
 
 describe('lean shipped playbooks', () => {
   it('nextjs stack guidance is split into five lean facets', () => {

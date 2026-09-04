@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { loadCatalog, resolveStack } from '../lib/catalog.js'
-import { buildRulesIndex, collectPlaybookFiles } from '../lib/playbooks.js'
+import { loadCatalog, resolveStack } from '../../lib/catalog.js'
+import { buildRulesIndex, collectPlaybookFiles } from '../../lib/playbooks.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const root      = path.resolve(__dirname, '..')
+const root      = path.resolve(__dirname, '..', '..')
 
 describe('buildRulesIndex — nextjs', () => {
   it('produces always-on and optional groups with § refs', async () => {

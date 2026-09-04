@@ -2,14 +2,14 @@ import { afterEach, describe, expect, it } from 'vitest'
 import fs from 'fs-extra'
 import os from 'node:os'
 import path from 'node:path'
-import { generateProject as legacyGenerateProject } from '../lib/generator.js'
-import { generateProject } from '../src/engine/create-project.js'
-import * as legacyInterview from '../lib/interview.js'
-import * as questions from '../src/cli/questions.js'
-import { stackRegistry } from '../lib/stacks/index.js'
-import { availableStacks } from '../src/stacks/available-stacks.js'
+import { generateProject as legacyGenerateProject } from '../../lib/generator.js'
+import { generateProject } from '../../src/engine/create-project.js'
+import * as legacyInterview from '../../lib/interview.js'
+import * as questions from '../../src/cli/questions.js'
+import { stackRegistry } from '../../lib/stacks/index.js'
+import { availableStacks } from '../../src/stacks/available-stacks.js'
 
-const root = path.resolve(import.meta.dirname, '..')
+const root = path.resolve(import.meta.dirname, '..', '..')
 const temporaryDirectories = []
 
 async function fileMap(directory, prefix = '') {

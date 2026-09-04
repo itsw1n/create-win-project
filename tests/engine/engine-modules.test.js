@@ -2,13 +2,13 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import fs from 'fs-extra'
 import os from 'node:os'
 import path from 'node:path'
-import { runDependencySteps } from '../src/engine/install-dependencies.js'
+import { runDependencySteps } from '../../src/engine/install-dependencies.js'
 import {
   projectDestinations,
   writeFile,
   writeProjectAtomically,
-} from '../src/engine/write-files.js'
-import { writeRenderedFile } from '../src/engine/render-templates.js'
+} from '../../src/engine/write-files.js'
+import { writeRenderedFile } from '../../src/engine/render-templates.js'
 
 const temporaryDirectories = []
 

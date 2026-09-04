@@ -32,7 +32,7 @@ const cases = {
 }
 
 if (!args.profile || !cases[args.case]) {
-  throw new Error(`Usage: node scripts/verify-generated.mjs --profile=<id> --case=<${Object.keys(cases).join('|')}> [--architecture=small|medium|large] [--authentication=yes|not-yet|none] [--auth-audience=website|multi-client]`)
+  throw new Error(`Usage: npm run verify:generated -- --profile=<id> --case=<${Object.keys(cases).join('|')}> [--architecture=small|medium|large] [--authentication=yes|not-yet|none] [--auth-audience=website|multi-client]`)
 }
 
 const architecture = args.architecture || 'medium'

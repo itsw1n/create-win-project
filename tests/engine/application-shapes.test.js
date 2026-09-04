@@ -6,12 +6,12 @@ import {
   validateApplicationShape,
   frontendChoicesForShape,
   backendChoicesForShape,
-} from '../lib/application-shapes.js'
+} from '../../lib/application-shapes.js'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { loadCatalog } from '../lib/catalog.js'
+import { loadCatalog } from '../../lib/catalog.js'
 
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..')
 
 describe('application shapes', () => {
   it('shows full-stack first with beginner-readable examples', () => {

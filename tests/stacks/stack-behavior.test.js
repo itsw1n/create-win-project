@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import path from 'node:path'
-import { loadCatalog, resolveStack } from '../lib/catalog.js'
+import { loadCatalog, resolveStack } from '../../lib/catalog.js'
 
-const root = path.resolve(import.meta.dirname, '..')
+const root = path.resolve(import.meta.dirname, '..', '..')
 
 const existingStacks = [
   ['fullstack', 'nextjs', 'none', 'web', 'tailwind', 'nextjs', 'frontend'],
