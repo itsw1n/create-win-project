@@ -81,6 +81,19 @@ describe('stack adapter registry', () => {
 })
 
 describe('registered stack capabilities', () => {
+  it('registers Supabase with data, auth, environment, and verification ownership', () => {
+    const supabase = stackRegistry.require('supabase')
+
+    expect(supabase.compatibleWith.frontend).toEqual(['nextjs', 'react', 'react-native'])
+    expect(supabase.capabilities.applicationShapes).toEqual(['fullstack', 'separate', 'mobile'])
+    expect(supabase.capabilities.authenticationModels).toEqual(['public', 'undecided', 'supabase'])
+    expect(supabase.contributes.environment({})).toEqual(['SUPABASE_URL', 'SUPABASE_PUBLISHABLE_KEY'])
+    expect(supabase.contributes.verification({})).toEqual(expect.arrayContaining([
+      expect.objectContaining({ frontend: 'nextjs', authentication: 'supabase' }),
+      expect.objectContaining({ frontend: 'react-native', authentication: 'supabase' }),
+    ]))
+  })
+
   it('registers Spring Boot with backend runtime, auth, and verification ownership', () => {
     const spring = stackRegistry.require('springboot')
     const context = {}

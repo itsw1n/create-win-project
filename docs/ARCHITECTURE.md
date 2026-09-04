@@ -81,6 +81,10 @@ Spring Boot owns its Maven launcher, application and security configuration,
 package-by-feature architecture variants, migrations, tests, and runtime-facing
 Docker/CI contributions in `src/stacks/backends/springboot`.
 
+Supabase owns framework-specific clients and authentication flows, native token
+lifecycle handling, local project configuration, migrations, RLS policies, and
+database verification in `src/stacks/backends/supabase`.
+
 Core code owns prompt order, compatibility-profile resolution, atomic writes, process execution, and final composition. An adapter receives a read-only stack context and returns contributions; it cannot write arbitrary paths or install global tools. Adapter definitions do not accept dependency tables or version fields. Exact versions remain exclusively owned by `compatibility/profiles.json`.
 
 Manifests declare:
