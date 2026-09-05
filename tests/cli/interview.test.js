@@ -3,11 +3,21 @@ import { configurationDecisionChoices, promptWithBack } from '../../src/cli/navi
 
 function fakeInquirer(responses) {
   return {
-    Separator: class Separator {},
+    Separator: class Separator {
+      constructor(text) { this.text = text }
+    },
     async prompt([question]) {
-      const value = responses.shift()
-      const back = question.choices?.find((choice) => choice?.name === '← Back')
-      return { [question.name]: value === 'BACK' ? back.value : value }
+      // Simulate real inquirer: run validate first, retry on error string.
+      for (;;) {
+        const value = responses.shift()
+        const back = question.choices?.find((choice) => choice?.name === '← Back')
+        const resolved = value === 'BACK' ? back.value : value
+        if (typeof question.validate === 'function') {
+          const verdict = await question.validate(resolved, {})
+          if (verdict !== true) continue
+        }
+        return { [question.name]: resolved }
+      }
     },
   }
 }
@@ -26,6 +36,18 @@ describe('navigable interview', () => {
       { type: 'list', name: 'backend', message: 'Backend?', choices: [{ name: 'None', value: 'none' }] },
     ])
     expect(answers).toMatchObject({ shape: 'frontend', frontend: 'react' })
+  })
+
+  it('lets :back pass input validation and return to the earlier prompt', async () => {
+    const inquirer = fakeInquirer(['first', ':back', 'second', 'kept'])
+    const answers = await promptWithBack(inquirer, [
+      { type: 'list', name: 'shape', message: 'Shape?', choices: [{ name: 'A', value: 'a' }, { name: 'B', value: 'b' }] },
+      {
+        type: 'input', name: 'projectName', message: 'Project name?',
+        validate: (value) => /^[a-z0-9-]+$/.test(value) ? true : 'Error: bad name.',
+      },
+    ])
+    expect(answers).toMatchObject({ shape: 'second', projectName: 'kept' })
   })
 
   it('offers create, edit, and cancel at confirmation', () => {

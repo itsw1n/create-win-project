@@ -43,7 +43,15 @@ export async function promptWithBack(inquirer, questions, initialAnswers = {}) {
     }
     if (question.type === 'input' && canGoBack) {
       question.message = `${question.message} (type :back to return)`
-    } else if (question.type === 'confirm') {
+    }
+    if (question.type === 'input') {
+      // Let the :back sentinel through validation so promptWithBack can
+      // handle it; inquirer validates before returning the value.
+      const originalValidate = question.validate
+      question.validate = (value, answersState) =>
+        value === ':back' ? true : (originalValidate?.(value, answersState) ?? true)
+    }
+    if (question.type === 'confirm') {
       const defaultValue = await resolved(question.default, answers)
       question.type = 'list'
       question.choices = [
