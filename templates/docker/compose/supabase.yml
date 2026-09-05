@@ -6,7 +6,7 @@ services:
       context: {{FRONTEND_DIR}}
       dockerfile: {{FRONTEND_DOCKERFILE}}
     ports:
-      - "{{FRONTEND_PORT}}:{{FRONTEND_PORT}}"
+      - "${FRONTEND_HOST_PORT:-{{FRONTEND_PORT}}}:{{FRONTEND_PORT}}"
     volumes:
       - ./{{FRONTEND_DIR}}:/app
       - /app/node_modules

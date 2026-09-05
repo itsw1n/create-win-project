@@ -14,7 +14,7 @@ CLI interview
     ↓
 validated answers
     ↓
-manifest catalog + compatibility resolver
+definition catalog + compatibility resolver
     ↓
 resolved stack descriptor
     ├── runnable framework files
@@ -33,7 +33,7 @@ The migration target has three explicit source boundaries:
 - `src/engine` owns validated project orchestration, tested-version and library loading, safe writes, dependency installation, and template rendering. It must not import terminal code or concrete stack folders.
 - `src/stacks` owns stack rules, the explicit available-stack list, and stack-specific generated behavior. Stack modules must not import CLI or engine implementation modules.
 
-During the architecture migration, these paths provide compatibility exports backed by the existing `lib` modules. Each later phase moves one responsibility behind the new path, updates callers, and removes its wrapper only after old and new imports are proven equivalent. `tests/architecture-boundaries.test.js` enforces dependency direction, while `tests/architecture-compatibility.test.js` protects public imports, representative paths, and byte-identical generated output.
+During the architecture migration, these paths provide compatibility exports backed by the existing `lib` modules. Each later phase moves one responsibility behind the new path, updates callers, and removes its wrapper only after old and new imports are proven equivalent. `tests/architecture-boundaries.test.js` enforces dependency direction, while `tests/engine/architecture-compatibility.test.js` protects public imports, representative paths, and byte-identical generated output.
 
 Root `index.js` remains the stable executable entry point. Generated-project paths such as `playbooks/`, `RULES.md`, and application folders are user-facing and do not change merely because generator source files move.
 
@@ -45,7 +45,7 @@ Root `index.js` is only the stable executable shim. `src/cli/main.js` coordinate
 
 ### Catalog and resolution
 
-`lib/catalog.js` loads co-located `*.manifest.json` files and merges selected capabilities into one stack descriptor. `lib/compatibility.js` validates `compatibility/profiles.json` and resolves every package name to an exact version for the selected profile.
+`lib/catalog.js` loads co-located `library/**/definition.json` files and merges selected capabilities into one stack descriptor. `lib/compatibility.js` validates `library/tested-versions.json` and resolves every package name to an exact version for the selected profile.
 
 Stack-specific behavior crosses into core orchestration through the contract in `lib/stacks/contract.js`. Every frontend, backend, or data adapter has a stable identity, declares compatible adapters and supported application/authentication/architecture models, and is added to the explicit registry. Registration is deliberate; adapters are never discovered by scanning directories.
 
@@ -59,7 +59,46 @@ Adapters may contribute data in these areas:
 - Docker and CI fragments;
 - verification cases.
 
-Core code owns prompt order, compatibility-profile resolution, atomic writes, process execution, and final composition. An adapter receives a read-only stack context and returns contributions; it cannot write arbitrary paths or install global tools. Adapter definitions do not accept dependency tables or version fields. Exact versions remain exclusively owned by `compatibility/profiles.json`.
+Next.js is the first frontend migrated behind this boundary. Its adapter owns
+the supported full-stack/separate shapes, backend pairings, authentication and
+architecture models, environment/install needs, Docker and CI templates, and
+focused verification cases. The explicit registry remains the only list of
+available adapters; later stack PRs add their own entries without editing the
+Next.js implementation.
+
+React + Vite follows the same boundary: its base SPA files and architecture
+profiles live in `src/stacks/frontends/react-vite`, while backend-specific
+additions remain owned by their backend/data stack. Its install root, Docker
+and CI templates, authentication models, and verification cases are declared
+with the adapter.
+
+React Native owns its Expo application shell, mobile architecture profiles,
+local install and CI contributions, and device-oriented verification cases in
+`src/stacks/frontends/react-native`. Mobile deliberately contributes no
+frontend Docker workflow; backend/data integrations remain independently owned.
+
+Spring Boot owns its Maven launcher, application and security configuration,
+package-by-feature architecture variants, migrations, tests, and runtime-facing
+Docker/CI contributions in `src/stacks/backends/springboot`.
+
+Laravel's composer definition, application files, authentication models, and
+Blade, Livewire, and Inertia UI variants live together under
+`src/stacks/backends/laravel`. The former `lib/stacks/laravel` paths are
+identity-preserving compatibility exports during the migration.
+
+Supabase owns framework-specific clients and authentication flows, native token
+lifecycle handling, local project configuration, migrations, RLS policies, and
+database verification in `src/stacks/backends/supabase`.
+
+PostgreSQL + Prisma owns its schema, client initialization, migration commands,
+database environment, Docker contribution, and focused Next.js verification in
+`src/stacks/backends/postgres`.
+
+The no-backend adapter explicitly owns frontend-only compatibility and confirms
+that no server files, install steps, Docker services, credentials, or pretend
+authentication are contributed.
+
+Core code owns prompt order, compatibility-profile resolution, atomic writes, process execution, and final composition. An adapter receives a read-only stack context and returns contributions; it cannot write arbitrary paths or install global tools. Adapter definitions do not accept dependency tables or version fields. Exact versions remain exclusively owned by `library/tested-versions.json`.
 
 Manifests declare:
 
@@ -70,7 +109,7 @@ Manifests declare:
 - constraints shown to the agent;
 - concerns and their playbook sections.
 
-Client environment variables are semantic in manifests (`API_URL`) and receive exactly one framework prefix during resolution (`NEXT_PUBLIC_API_URL`, `VITE_API_URL`, or `EXPO_PUBLIC_API_URL`). Public prefixes always mean the value is shipped to the client.
+Client environment variables are semantic in definitions (`API_URL`) and receive exactly one framework prefix during resolution (`NEXT_PUBLIC_API_URL`, `VITE_API_URL`, or `EXPO_PUBLIC_API_URL`). Public prefixes always mean the value is shipped to the client.
 
 ### Runnable scaffold
 
@@ -95,7 +134,7 @@ The first `npm install` creates the lockfile. Generated CI uses `npm ci`, so the
 
 ### Compatibility profile lifecycle
 
-Exactly one profile is `current` and one is `previous`. The current profile is the default. A profile owns exact npm, Spring Boot, runtime, and container versions; manifests and scaffold code may only request names or capabilities. Promotion copies the candidate into a new dated profile, marks the former current profile previous, and happens only after the generated-project matrix passes. Major changes also require migration notes. See `DEPENDENCY_MAINTENANCE.md`.
+Exactly one profile is `current` and one is `previous`. The current profile is the default. A profile owns exact npm, Spring Boot, runtime, and container versions; definitions and scaffold code may only request names or capabilities. Promotion copies the candidate into a new dated profile, marks the former current profile previous, and happens only after the generated-project matrix passes. Major changes also require migration notes. See `DEPENDENCY_MAINTENANCE.md`.
 
 ## Documentation model
 
@@ -123,7 +162,7 @@ Canonical Markdown code examples should progressively move into extracted fixtur
 
 When adding a stack or capability:
 
-1. Add its manifest, all five stack facets, and any platform/capability routes.
+1. Add its definition, all five stack facets, and any platform/capability routes.
 2. Add the smallest runnable files needed in `lib/scaffold.js` or a focused scaffold module.
 3. Add every supported architecture/authentication combination to the generated-output matrix.
 4. Run install, lint/typecheck, tests, and production build for the new fixture.

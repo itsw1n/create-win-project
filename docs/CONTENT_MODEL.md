@@ -6,7 +6,7 @@ The project separates always-loaded instructions, task-routed standards, generat
 |---|---|---|
 | Agent commands, workflow, authority limits, definition of done | `templates/agents/*.md` → generated `AGENTS.md` | Every project; keep short |
 | Product goal, scope, decisions, unknowns | generated `CONTEXT.md` | Every project; project-specific |
-| Concern routing | manifests → generated `RULES.md` | Selected stack/capability only |
+| Concern routing | definitions → generated `RULES.md` | Selected stack/capability only |
 | Reusable engineering policy and rationale | `playbooks/**/*.md` | A task touches that concern |
 | Setup, API, architecture, deployment for this product | generated `docs/` | Every project, then maintained with code |
 | Framework configuration and canonical patterns | `lib/scaffold.js` output plus tests | The capability is selected |
@@ -15,7 +15,7 @@ The project separates always-loaded instructions, task-routed standards, generat
 
 1. Put a rule in the narrowest applicable playbook. Do not repeat it in `AGENTS.md`, `README.md`, and stack guides.
 2. Write normative language only for behavior the generator configures or tests. Label uninstalled libraries and alternative architectures as optional.
-3. Route concerns to exact Markdown headings from their manifest. Heading changes and manifest changes belong in the same commit.
+3. Route concerns to exact Markdown headings from their definition. Heading changes and definition changes belong in the same commit.
 4. Prefer a compact rule, a reason, and one canonical example. Remove tutorial-length alternatives that compete with the default.
 5. Keep secrets, authentication, authorization, validation, accessibility, and failure behavior at explicit trust boundaries.
 6. Product docs describe the generated application. Playbooks teach reusable practices; they must not invent product endpoints or entities.

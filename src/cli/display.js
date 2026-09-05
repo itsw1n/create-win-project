@@ -41,11 +41,12 @@ export function installFailed(spinner) {
 export function generationFailed(spinner, error, report = console.error) {
   spinner.fail(chalk.red('Failed to generate project'))
   report(error)
+  report(chalk.yellow('Review the error above, correct the input or environment, then run create-win-project again.'))
 }
 
 export function printSummary({ answers, stack, catalog }, output = console.log) {
   output('')
-  output(chalk.bold('  Summary'))
+  output(chalk.cyan.bold('  Review before creating files'))
   output(chalk.gray('  ───────────────────────────'))
   output(`  ${chalk.cyan('Name:')}         ${answers.projectName}`)
   output(`  ${chalk.cyan('Stack:')}        ${stack.label}`)

@@ -52,14 +52,14 @@ const laravelUiArg = args.laravelUi
 const wantsInstall = args.install
 const skipsInstall = args.noInstall
 const { profile } = await loadCompatibility(
-  path.join(projectRoot, 'compatibility/profiles.json'),
+  path.join(projectRoot, 'library/tested-versions.json'),
   profileArg,
 )
 if (args.doctor) {
   printDoctor(profile)
   process.exit(0)
 }
-const catalog = await loadCatalog(path.join(projectRoot, 'playbooks'), profile)
+const catalog = await loadCatalog(path.join(projectRoot, 'library'), profile)
 
 // ─── Banner ──────────────────────────────────────────────────────────────────
 
@@ -84,11 +84,6 @@ answers.authAudience = authAudienceArg || answers.authAudience || (catalog.byId[
 answers.laravelUi = laravelUiArg || answers.laravelUi || (answers.frontend === 'laravel-ui' ? 'blade' : undefined)
 if (wantsInstall) answers.installDependencies = true
 if (skipsInstall) answers.installDependencies = false
-
-// ── Auto-resolve docker for stacks that need it ───────────────────────────────
-if (resolveStack({ ...answers, styling: answers.styling || catalog.byId[answers.frontend]?.stylingOptions?.[0] || 'tailwind' }, catalog).needsDocker) {
-  answers.docker = answers.docker ?? true
-}
 
 stack = resolveStack({ ...answers, styling: answers.styling || catalog.byId[answers.frontend]?.stylingOptions?.[0] || 'tailwind' }, catalog)
 

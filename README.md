@@ -1,15 +1,8 @@
-```
- ██╗    ██╗  ██╗ ███╗  ██╗
- ██║    ██║ ███║ ████╗ ██║
- ██║ █╗ ██║ ╚██║ ██╔██╗██║
- ██║███╗██║  ██║ ██║╚████║
- ╚███╔███╔╝  ██║ ██║ ╚███║
-  ╚══╝╚══╝   ╚═╝ ╚═╝  ╚══╝
-
- █▀█ █▀█ █▀█   █ █▀▀ █▀▀ ▀█▀
- █▀▀ █▀█ █ █   █ █▀  █    █
- █   █ █ █▄█ █▄█ █▄▄ █▄▄  █
-```
+<div align="center">
+  <img src="./public/logo.svg" alt="W1N Project logo" width="160">
+  <h1>W1N PROJECT</h1>
+  <p>Production-ready project scaffolding.</p>
+</div>
 
 # Are you confused creating architecture rules, AGENTS.md, and folder structures from scratch every time you pick a new stack?
 
@@ -19,7 +12,7 @@ Stop bikeshedding folders for 3 days. Stop pasting a 500-line `AGENTS.md` that b
 
 [![CI](https://github.com/itsw1n/create-win-project/actions/workflows/ci.yml/badge.svg)](https://github.com/itsw1n/create-win-project/actions/workflows/ci.yml)
 [![Node](https://img.shields.io/badge/node-24_LTS-green)](https://nodejs.org)
-[![Manifest-driven](https://img.shields.io/badge/architecture-manifest--driven-blue)](./playbooks)
+[![Definition-driven](https://img.shields.io/badge/architecture-definition--driven-blue)](./library)
 [![Lean docs](https://img.shields.io/badge/AGENTS.md-lean%20%26%20lazy-9cf)](./playbooks)
 [![Interactive](https://img.shields.io/badge/cli-interactive-ff69b4)](./index.js)
 
@@ -124,11 +117,11 @@ Before automatic installation, the CLI checks the current Node, npm, PHP, and Co
 - **Lean agent docs** — `AGENTS.md` (tiny, always on) + `RULES.md` (lazy index) generated per project.
 - **Stack-native profiles** — Small, Medium (recommended/default), and Large map to familiar architecture for each selected stack; Large defaults to a modular monolith, not microservices.
 - **Intent-based authentication** — choose Yes, Not yet, or No; the generator maps that intent to Supabase Auth, Spring server sessions, or external-provider OIDC validation as appropriate.
-- **Manifest-driven** — `*.manifest.json` drives compatibility, exact dependency requests, env prefixes (`NEXT_PUBLIC_`/`VITE_`/`EXPO_PUBLIC_`), conditional playbooks, and concern wiring.
+- **Definition-driven** — `library/**/definition.json` drives compatibility, exact dependency requests, env prefixes (`NEXT_PUBLIC_`/`VITE_`/`EXPO_PUBLIC_`), conditional playbooks, and concern wiring.
 - **Tested compatibility profiles** — exact direct dependencies and runtime/container versions are resolved from one catalog; current and previous profiles are verified in CI.
 - **Optional concerns, never mandated** — validation/Zod, data-fetching, state, t3-env, URL state are advisory (`CONTEXT.md` only) not forced.
 - **Runnable foundations** — profile-specific feature slices, health endpoints, security headers, selected auth plumbing, Spring `ProblemDetail`, PostgreSQL Testcontainers, and risk-based tests.
-- **Safety + contracts** — destination-exists guard, manifest ↔ heading checks, and a generated-output matrix covering every pairing, architecture profile, and applicable auth model.
+- **Safety + contracts** — destination-exists guard, definition ↔ heading checks, and a generated-output matrix covering every pairing, architecture profile, and applicable auth model.
 
 ## What you get
 
@@ -138,7 +131,7 @@ Before automatic installation, the CLI checks the current Node, npm, PHP, and Co
 | `RULES.md` | Lazy index — `concern → playbook §`. Read only what you touch. |
 | `CONTEXT.md` | Project context + any advisory "expected concerns". |
 | `playbooks/` | Curated rule playbooks (shipped lean). |
-| `package.json` | Generated from the selected stack's manifest. |
+| `package.json` | Generated from the selected stack's definition. |
 | `create-win-project.profile.json` | Separately records compatibility, architecture, and authentication selections. |
 | `.env.example` | Generated from the stack's declared env vars (prefixes already applied). |
 | Framework source/config | A working page or screen, health endpoint where applicable, strict TypeScript, lint, tests, and build scripts. |
@@ -146,10 +139,10 @@ Before automatic installation, the CLI checks the current Node, npm, PHP, and Co
 
 ## How it works
 
-The generator never hardcodes the folder or playbook list. It loads `playbooks/**/*.manifest.json` and resolves a *stack*:
+The generator never hardcodes the folder or playbook list. It loads `library/**/definition.json` and resolves a *stack*:
 
 ```jsonc
-// playbooks/stack/nextjs.manifest.json (excerpt)
+// library/stacks/nextjs/definition.json (excerpt)
 {
   "id": "nextjs",
   "kind": "frontend",
@@ -170,17 +163,17 @@ The generator never hardcodes the folder or playbook list. It loads `playbooks/*
 }
 ```
 
-Versions are resolved from `compatibility/profiles.json`; manifests never own them. The current tested profile is the default, while `--profile=YYYY.MM` selects a retained profile explicitly. Add a policy-only concern with a manifest + playbook. A new executable stack also needs a focused `lib/scaffold.js` implementation and a contract test — this prevents docs from advertising code that doesn't exist.
+Versions are resolved from `library/tested-versions.json`; definitions never own them. The current tested profile is the default, while `--profile=YYYY.MM` selects a retained profile explicitly. Add a policy-only concern with a definition + guidance file. A new executable stack also needs a focused stack implementation and a contract test — this prevents docs from advertising code that doesn't exist.
 
 ## Topics
 
-Next.js · React · Spring Boot · Supabase · PostgreSQL · TypeScript · Tailwind CSS · CSS Modules · project scaffolding · project template · `AGENTS.md` · coding agents · manifest-driven · lean documentation · lazy rules index
+Next.js · React · Spring Boot · Supabase · PostgreSQL · TypeScript · Tailwind CSS · CSS Modules · project scaffolding · project template · `AGENTS.md` · coding agents · definition-driven · lean documentation · lazy rules index
 
 ## Contributing
 
 1. Fork and create a feature branch.
 2. `npm install` and `npm test` must stay green.
-3. Add or update a `*.manifest.json` for new stacks/concerns; put package versions only in `compatibility/profiles.json`.
+3. Add or update a co-located `definition.json` for new stacks/concerns; put package versions only in `library/tested-versions.json`.
 4. Run `npm run verify:generated -- --profile=2026.09 --case=nextjs-supabase --architecture=medium --authentication=yes` for a focused executable check. CI runs every supported combination, architecture/auth model, and retained profile.
 5. Document migration work for major upgrades, then open a pull request.
 

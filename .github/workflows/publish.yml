@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: read
+  checks: read
   id-token: write
 
 jobs:
@@ -13,6 +14,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Require compatibility gate on this release commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          conclusion=$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/check-runs" --jq '[.check_runs[] | select(.name == "compatibility-gate")][0].conclusion // "missing"')
+          test "$conclusion" = "success"
 
       - uses: actions/setup-node@v4
         with:

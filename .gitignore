@@ -16,6 +16,9 @@ npm-debug.log*
 # Worktrees (isolated workspaces)
 .worktrees/
 
+# Local planning artifacts
+.superpowers/
+
 # OS / Editor
 .DS_Store
 Thumbs.db
