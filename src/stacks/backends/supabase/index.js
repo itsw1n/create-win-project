@@ -1,5 +1,8 @@
 import { defineStackAdapter } from '../../../../lib/stacks/contract.js'
 import { buildSupabaseProjectFiles } from './create-files.js'
+import { ciContributions } from './ci.js'
+import { dockerContributions } from './docker.js'
+import { environmentContributions } from './environment.js'
 
 export const supabaseAdapter = defineStackAdapter({
   id: 'supabase',
@@ -14,9 +17,10 @@ export const supabaseAdapter = defineStackAdapter({
   },
   contributes: {
     files: ({ stack }) => Object.entries(buildSupabaseProjectFiles(stack)),
-    environment: () => ['SUPABASE_URL', 'SUPABASE_PUBLISHABLE_KEY'],
+    environment: environmentContributions,
     install: () => [{ cwd: '.', command: 'npm', args: ['run', 'supabase:start'] }],
-    docker: () => [{ template: 'supabase', path: 'docker-compose.yml' }],
+    docker: dockerContributions,
+    ci: ciContributions,
     verification: () => [
       { frontend: 'nextjs', architecture: 'small', authentication: 'public' },
       { frontend: 'nextjs', architecture: 'large', authentication: 'supabase' },
