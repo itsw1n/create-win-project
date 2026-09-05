@@ -2,6 +2,8 @@ export function buildReactViteFiles(answers, stack, shared) {
   const root = 'frontend'
   const files = {}
   files[`${root}/package.json`] = shared.packageFile(answers, stack)
+  files[`${root}/.node-version`] = `${stack.profile.runtimes.node}\n`
+  files[`${root}/.npmrc`] = 'engine-strict=true\n'
   files[`${root}/tsconfig.json`] = shared.json({ compilerOptions: { target: 'ES2022', useDefineForClassFields: true, lib: ['ES2022', 'DOM', 'DOM.Iterable'], allowJs: false, skipLibCheck: true, esModuleInterop: true, allowSyntheticDefaultImports: true, strict: true, forceConsistentCasingInFileNames: true, module: 'ESNext', moduleResolution: 'Bundler', resolveJsonModule: true, isolatedModules: true, noEmit: true, jsx: 'react-jsx', paths: { '@/*': ['./src/*'] } }, include: ['src', 'vite.config.ts', 'vitest.config.ts'] })
   files[`${root}/index.html`] = `<!doctype html>\n<html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="${shared.html(answers.projectDescription)}" /><title>${shared.html(answers.projectName)}</title></head><body><div id="root"></div><script type="module" src="/src/main.tsx"></script></body></html>\n`
   files[`${root}/vite.config.ts`] = `import { fileURLToPath, URL } from 'node:url'\nimport { defineConfig } from 'vite'\nimport react from '@vitejs/plugin-react'\n${stack.styleId === 'tailwind' ? "import tailwindcss from '@tailwindcss/vite'\n" : ''}\nexport default defineConfig({\n  plugins: [react()${stack.styleId === 'tailwind' ? ', tailwindcss()' : ''}],\n  resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },\n})\n`
@@ -19,4 +21,3 @@ export function buildReactViteFiles(answers, stack, shared) {
   Object.assign(files, shared.statusFeatureFiles(root, stack))
   return files
 }
-

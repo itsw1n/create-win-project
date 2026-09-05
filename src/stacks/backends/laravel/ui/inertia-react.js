@@ -15,7 +15,9 @@ export const inertiaReactUi = Object.freeze({
     const npm = (name) => packageVersion(stack.profile, name, 'laravel-ui', 'Laravel Inertia scaffold')
     return {
       ...buildLaravelAuthView(stack.authentication),
-      'package.json': json({ private: true, type: 'module', scripts: { dev: 'vite', build: 'vite build' }, dependencies: { '@inertiajs/react': npm('@inertiajs/react'), react: npm('react'), 'react-dom': npm('react-dom') }, devDependencies: { '@vitejs/plugin-react': npm('@vitejs/plugin-react'), 'laravel-vite-plugin': npm('laravel-vite-plugin'), vite: npm('vite') } }),
+      'package.json': json({ private: true, type: 'module', packageManager: `npm@${stack.profile.runtimes.npmMinimum}`, engines: { node: `>=${stack.profile.runtimes.nodeMinimum}`, npm: `>=${stack.profile.runtimes.npmMinimum}` }, scripts: { dev: 'vite', build: 'vite build' }, dependencies: { '@inertiajs/react': npm('@inertiajs/react'), react: npm('react'), 'react-dom': npm('react-dom') }, devDependencies: { '@vitejs/plugin-react': npm('@vitejs/plugin-react'), 'laravel-vite-plugin': npm('laravel-vite-plugin'), vite: npm('vite') } }),
+      '.node-version': `${stack.profile.runtimes.node}\n`,
+      '.npmrc': 'engine-strict=true\n',
       'vite.config.js': `import { defineConfig } from 'vite'\nimport laravel from 'laravel-vite-plugin'\nimport react from '@vitejs/plugin-react'\n\nexport default defineConfig({ plugins: [laravel({ input: 'resources/js/app.jsx', refresh: true }), react()] })\n`,
       'resources/js/app.jsx': `import { createInertiaApp } from '@inertiajs/react'\nimport { createRoot } from 'react-dom/client'\n\nconst pages = import.meta.glob('./Pages/**/*.jsx', { eager: true })\ncreateInertiaApp({ resolve: (name) => pages[\`./Pages/\${name}.jsx\`], setup({ el, App, props }) { createRoot(el).render(<App {...props} />) } })\n`,
       'resources/js/Pages/Home.jsx': `export default function Home() { return <main><h1>${answers.projectName}</h1><p>Laravel + Inertia + React</p></main> }\n`,
@@ -33,4 +35,3 @@ final class HandleInertiaRequests extends Middleware
     }
   },
 })
-
