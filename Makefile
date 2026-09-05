@@ -38,7 +38,7 @@ doctor: ## Show available host/container development tools
 .PHONY: demo
 demo: ## Run the CLI to .demo/ for testing
 	@mkdir -p .demo
-	@$(COMPOSE) run --rm app
+	@$(COMPOSE) run --rm -w /app/.demo app
 
 .PHONY: test
 test: ## Run all tests
