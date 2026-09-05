@@ -5,10 +5,10 @@
  */
 export function buildNextjsFiles(answers, stack, shared) {
   const files = {}
-  files['package.json'] = shared.packageFile(answers, stack)
+  files['package.json'] = packageFile(answers, stack)
   files['.node-version'] = `${stack.profile.runtimes.node}\n`
   files['.npmrc'] = 'engine-strict=true\n'
-  files['tsconfig.json'] = shared.json({
+  files['tsconfig.json'] = json({
     compilerOptions: {
       target: 'ES2017', lib: ['dom', 'dom.iterable', 'esnext'], allowJs: false,
       skipLibCheck: true, strict: true, noEmit: true, esModuleInterop: true,
@@ -35,9 +35,12 @@ export function buildNextjsFiles(answers, stack, shared) {
   files['src/app/api/health/route.ts'] = "export function GET() {\n  return Response.json({ status: 'ok' })\n}\n"
   files['src/app/page.test.tsx'] = `import { expect, test } from 'vitest'\nimport { render, screen } from '@testing-library/react'\nimport HomePage from './page'\n\ntest('renders the starter heading', () => {\n  render(<HomePage />)\n  expect(screen.getByRole('heading', { name: 'Your starter is running' })).toBeInTheDocument()\n})\n`
   if ((answers.testing || 'basic') === 'none') delete files['src/app/page.test.tsx']
-  shared.testFiles(files, '', stack, answers.testing || 'basic')
+  addTestingFiles(files, '', stack, answers.testing || 'basic')
   Object.assign(files, shared.statusFeatureFiles('', stack))
   if (stack.backendKey === 'supabase') Object.assign(files, shared.supabaseWebFiles(true, stack.authentication === 'supabase'))
   if (stack.backendKey === 'postgres') Object.assign(files, shared.prismaFiles())
   return files
 }
+import { json } from '../../shared/javascript-package.js'
+import { addTestingFiles } from '../../shared/testing-files.js'
+import { packageFile } from './dependencies.js'

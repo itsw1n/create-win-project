@@ -1,4 +1,7 @@
 import { defineStackAdapter } from '../../../../lib/stacks/contract.js'
+import { ciContributions } from './ci.js'
+import { dockerContributions } from './docker.js'
+import { buildNextjsFiles } from './create-files.js'
 
 const verificationCases = Object.freeze([
   Object.freeze({ backend: 'none', styling: 'tailwind', architecture: 'small', authentication: 'public' }),
@@ -22,10 +25,11 @@ export const nextjsAdapter = defineStackAdapter({
     runtime: 'node',
   },
   contributes: {
+    files: ({ answers, stack, shared }) => Object.entries(buildNextjsFiles(answers, stack, shared)),
     environment: ({ backend }) => backend.id === 'none' ? [] : ['API_URL'],
     install: () => [{ cwd: '.', command: 'npm', args: ['install'] }],
-    docker: () => [{ template: 'nextjs', developmentPath: 'Dockerfile.dev', productionPath: 'Dockerfile' }],
-    ci: () => [{ template: 'nextjs', path: '.github/workflows/ci-frontend.yml' }],
+    docker: dockerContributions,
+    ci: ciContributions,
     verification: () => verificationCases,
   },
 })
