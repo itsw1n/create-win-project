@@ -211,3 +211,10 @@ export function printNextSteps(answers, stack, output = console.log) {
   output(chalk.cyan('  Read RULES.md before starting — it maps every playbook for this stack.'))
   output('')
 }
+
+export function printSupportPrompt(output = console.log) {
+  output(chalk.gray('  ───────────────────────────'))
+  output(chalk.gray('  Enjoyed this starter? ⭐ Star https://github.com/itsw1n/create-win-project'))
+  output(chalk.gray('  Found a gap or idea? Open an issue: https://github.com/itsw1n/create-win-project/issues/new'))
+  output('')
+}
