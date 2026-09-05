@@ -62,7 +62,7 @@ export async function promptWithBack(inquirer, questions, initialAnswers = {}, s
     const question = { ...source, when: undefined, askAnswered: true }
     const title = await resolved(question.message, answers)
     const controls = question.type === 'checkbox'
-      ? 'Arrow keys move • Space selects • Enter continues • Back returns'
+      ? 'Arrow keys move • Space selects (Space on ← Back first) • Enter continues • Back returns'
       : question.type === 'input'
         ? 'Type an answer • Enter continues • :back returns'
         : 'Arrow keys move • Enter selects • Back returns'
