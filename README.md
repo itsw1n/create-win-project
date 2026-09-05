@@ -36,7 +36,7 @@ Manifests declare capabilities and package names. A tested compatibility profile
 ### Lane 1 — To run *this generator*
 **Node 24 LTS *OR* Docker — that's it.**
 
-- No global `prettier`, `eslint`, or `typescript` — they are generated inside your project (`package.json` devDeps + `.prettierrc` + `.editorconfig` + `eslint.config` via `lib/scaffold.js`).
+- No global `prettier`, `eslint`, or `typescript` — each stack generates them inside your project through its own dependency and file contributions.
 - Prefer zero host setup? Use Docker directly. Make is an optional convenience, never a prerequisite.
 
 ### Lane 2 — To run *what it generates* (depends on your answers)
@@ -171,11 +171,7 @@ Next.js · React · Spring Boot · Supabase · PostgreSQL · TypeScript · Tailw
 
 ## Contributing
 
-1. Fork and create a feature branch.
-2. `npm install` and `npm test` must stay green.
-3. Add or update a co-located `definition.json` for new stacks/concerns; put package versions only in `library/tested-versions.json`.
-4. Run `npm run verify:generated -- --profile=2026.09 --case=nextjs-supabase --architecture=medium --authentication=yes` for a focused executable check. CI runs every supported combination, architecture/auth model, and retained profile.
-5. Document migration work for major upgrades, then open a pull request.
+See [docs/CONTRIBUTING.md](./docs/CONTRIBUTING.md) — one workflow for every stack: quick start, 6-step vertical stack addition (`library/**` -> `src/stacks/<id>/` -> `available-stacks.js` -> tests/matrix -> verify), testing gates (`npm test`, `matrix:smoke` -> `dev`, `matrix:full` -> `main`), and version ownership (`library/tested-versions.json` only).
 
 ## License
 

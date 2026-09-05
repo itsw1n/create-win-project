@@ -11,6 +11,13 @@ services:
     image: create-win-project:dev
     stdin_open: true
     tty: true
+    # Run as the host user so bind-mounted files (generated projects,
+    # .demo/, node_modules) are owned by you, not root — make clean works
+    # without sudo. UID/GID are exported by the Makefile (default 1000).
+    user: "${UID:-1000}:${GID:-1000}"
+    environment:
+      # Non-root HOME must stay writable (npm cache during installs)
+      HOME: /tmp
     volumes:
       - .:/app
       - /app/node_modules

@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { loadCatalog, resolveStack } from '../../lib/catalog.js'
-import { buildRulesIndex, collectPlaybookFiles } from '../../lib/playbooks.js'
+import { loadCatalog, resolveStack } from '../../src/engine/load-library.js'
+import { buildRulesIndex, collectPlaybookFiles } from '../../src/engine/project-guidance.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const root      = path.resolve(__dirname, '..', '..')

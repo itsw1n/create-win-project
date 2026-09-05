@@ -3,7 +3,7 @@ import {
   decideInstallation,
   installationIssues,
   versionAtLeast,
-} from '../../lib/system-check.js'
+} from '../../src/cli/system-check.js'
 
 const profile = {
   runtimes: {

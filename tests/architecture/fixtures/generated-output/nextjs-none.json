@@ -1,0 +1,282 @@
+{
+  ".editorconfig": {
+    "bytes": 267,
+    "sha256": "69f636afed2febd57be9a78adf9c29ded43d2b1fab0064417a5a7ecb5dfce253"
+  },
+  ".env.example": {
+    "bytes": 104,
+    "sha256": "f34b01655721c6856b60d6bb34cc764df0e321b0a8ebdae5abb5cb81644463dd"
+  },
+  ".github/PULL_REQUEST_TEMPLATE.md": {
+    "bytes": 855,
+    "sha256": "e6c9ebd10795622b8e71ba32ffb9a2670fa3f7666726522736f4207cabc70bee"
+  },
+  ".github/workflows/ci-frontend.yml": {
+    "bytes": 481,
+    "sha256": "ba8f1a4aeb146a2888185cadafc84dae4cc01809c32d91ae99cdcb627871d822"
+  },
+  ".gitignore": {
+    "bytes": 353,
+    "sha256": "1b65c5ffdde9899cbddf0ba615184045cc2d1bc31d9d494fa1f2b7d12eb1253d"
+  },
+  ".node-version": {
+    "bytes": 8,
+    "sha256": "5b9d0e73029969ae9000117cb877f17bb9841c1279bfe8024e294acfcf017800"
+  },
+  ".npmrc": {
+    "bytes": 19,
+    "sha256": "7151cf397def0c2cb0ab65643701d27d335a72c90f775675b5f826bc7005818a"
+  },
+  ".prettierrc": {
+    "bytes": 312,
+    "sha256": "80a265752b65a489bca52d72780a015416322cdaadff944627d8f0fa8828c7aa"
+  },
+  "AGENTS.md": {
+    "bytes": 2236,
+    "sha256": "db93adcf4ef1f9670343ba9b122cc875a245698c37b49e01ea23fef277ede9f0"
+  },
+  "CONTEXT.md": {
+    "bytes": 565,
+    "sha256": "7a7d650d03ee6da26231dcfce2583777c838a9d83da1bc41653ece11fdc20e04"
+  },
+  "create-win-project.profile.json": {
+    "bytes": 551,
+    "sha256": "c570303514040a1ddc92b1f9c311a18130f631475d1b6fb2b766e30a58626b56"
+  },
+  "docker-compose.yml": {
+    "bytes": 740,
+    "sha256": "c9b07db9514c28cc4234e605bffdc33cd701a9bfcd8cb9e382198a0162399d7c"
+  },
+  "Dockerfile": {
+    "bytes": 477,
+    "sha256": "1cbacb6f0416367b7c83d0d98630263e8fbbe9258bf8b022794cc94c324c9566"
+  },
+  "Dockerfile.dev": {
+    "bytes": 109,
+    "sha256": "fecbc76c7418d9673b68d1b72edf7bc83ea1ac8b29c6b23fd48df2854b9f1db4"
+  },
+  "docs/api/endpoints.md": {
+    "bytes": 84,
+    "sha256": "52ef7f870d7072031a07f9d47f27e10b40ef0db2670be5fed3e6ea8a199ca5f6"
+  },
+  "docs/api/errors.md": {
+    "bytes": 108,
+    "sha256": "8752fbc5b0cfc9f82f62568745ddf1cd65dc4c84d439c27e396eaeb69db9ad6f"
+  },
+  "docs/api/overview.md": {
+    "bytes": 241,
+    "sha256": "2e690a3f25ad0499dc496a49b1050eee0ad068cbd4709dbca3cf7e98288fc50c"
+  },
+  "docs/architecture/auth-flow.md": {
+    "bytes": 412,
+    "sha256": "de98beea26e29009400dfda6dcec4d99108e3acd2d60d6c924a4ce09e6806d64"
+  },
+  "docs/architecture/database-schema.md": {
+    "bytes": 89,
+    "sha256": "e87327e605c00b80ed691147211c7beec30cc910d86f7c2364d293bdd93aed8c"
+  },
+  "docs/architecture/overview.md": {
+    "bytes": 656,
+    "sha256": "af43dbc2e9dc0fa1e1553eacad876ac2281abe9ed0d0b063b251d63218d47431"
+  },
+  "docs/guides/deployment.md": {
+    "bytes": 78,
+    "sha256": "1d6157e9b7f51c8e9009baf3dc751c4c2a52fd25aece286ef768ecec0477294d"
+  },
+  "docs/guides/development-environments.md": {
+    "bytes": 1168,
+    "sha256": "b1668749c5188eeba6170aced08104e3687c4bd0690f3e1cf6363cb8ebe72dc5"
+  },
+  "docs/guides/env-variables.md": {
+    "bytes": 403,
+    "sha256": "250df9b1494319e32ac3fc95cb69dd844a6ee7c176508939654d6d39818b9567"
+  },
+  "docs/guides/setup.md": {
+    "bytes": 370,
+    "sha256": "ab09ab0d31d1062da36dff5c552adbc9c58fbcacb74967bdc9d9e0517a5a6a41"
+  },
+  "docs/guides/toolchain.md": {
+    "bytes": 1183,
+    "sha256": "d9b5de65da858a2c3bf46ca8062359e8bb7b5dc86419c1f1625663738c9fbfde"
+  },
+  "eslint.config.mjs": {
+    "bytes": 293,
+    "sha256": "3d465f52e9b991b1705c438ce4b6ddf0c8cd6326822263259df778d27e538d17"
+  },
+  "Makefile": {
+    "bytes": 970,
+    "sha256": "fc589a9a3e2d2a6cd37189fd7bed4b24928cbc07e320f9ce8bd482e80b789ec2"
+  },
+  "next-env.d.ts": {
+    "bytes": 81,
+    "sha256": "879741880b6ab48da99dcc06dcc674d381c9826137b0496bf7bb368f302de9fc"
+  },
+  "next.config.ts": {
+    "bytes": 514,
+    "sha256": "3c4be25236c17f64c2916b766c6e287f1ba926792f254867455618f59a1e065e"
+  },
+  "package.json": {
+    "bytes": 1066,
+    "sha256": "d80f8485121f4e7e1a4c875c4d6ed1049caffefb79ec29500d089624cc896c38"
+  },
+  "playbooks/capabilities/ci/github-actions.md": {
+    "bytes": 3331,
+    "sha256": "07f14cd7d1c416567598f9117dc9868e4d5336e4aa7e0ac009f685b4bef0c7c2"
+  },
+  "playbooks/capabilities/docker/overview.md": {
+    "bytes": 3075,
+    "sha256": "e3fb3c03eb88c5002bd7bc8021a16b8cfe7ff92d1d89005f19d351a70c6c34f9"
+  },
+  "playbooks/concerns/next-safe-action.md": {
+    "bytes": 1969,
+    "sha256": "2a22b3e8b05fb293f9ec23e1cb9dd0df43808225b6277b2882c54e56969c5dba"
+  },
+  "playbooks/concerns/next-themes.md": {
+    "bytes": 1921,
+    "sha256": "ae5af5cd430bb3f6c8f6f67c26d398db27036d2ca0b9f131dd240d63d83e0aa6"
+  },
+  "playbooks/concerns/nuqs.md": {
+    "bytes": 1670,
+    "sha256": "4b90110733da7370a4f24058f5839cef0417206279aa294b19eb692b22fcd743"
+  },
+  "playbooks/concerns/t3-env.md": {
+    "bytes": 1872,
+    "sha256": "be59609d97fc79b6912226f6cb209fbbe5078e3607f2246a69fa7da16eaa4735"
+  },
+  "playbooks/concerns/tanstack-query.md": {
+    "bytes": 4164,
+    "sha256": "96c9186198601490d93602a406d551b6861e854c0510a476bacaf1a91d4af85a"
+  },
+  "playbooks/concerns/zod.md": {
+    "bytes": 5071,
+    "sha256": "9e2592ce64f516067bdddc5b7f65de45af564aa6cfd50cfc05a293887da6c1a2"
+  },
+  "playbooks/concerns/zustand.md": {
+    "bytes": 2254,
+    "sha256": "4f06b463191614f0733207a9762a58b2cecd64bff2415e55802733e37bae933b"
+  },
+  "playbooks/devops/makefile.md": {
+    "bytes": 16050,
+    "sha256": "e9e65435f977c86a8ccc39fed56344fe84f03ffe80829ee782edf8d4f12ab7b3"
+  },
+  "playbooks/devops/pr-template.md": {
+    "bytes": 2393,
+    "sha256": "bc26649a67b314181ac86e82dd602635d5c22e6f53eacaf80ebb6309355c0036"
+  },
+  "playbooks/platform/web.md": {
+    "bytes": 1156,
+    "sha256": "9fd82f2d1ed95139033b4ccf701c8a35c7d02d91d147abdbde40ca28831b01c6"
+  },
+  "playbooks/stack/nextjs/architecture.md": {
+    "bytes": 2355,
+    "sha256": "5d7d5c4b3ff2223b3b6660a2dee18d8523a31cd4e1482b2db24b2541e961a369"
+  },
+  "playbooks/stack/nextjs/runtime.md": {
+    "bytes": 1563,
+    "sha256": "ac4a579add5d8936d47bae0aad5e897815d96870d8717514c93c70120ebbd388"
+  },
+  "playbooks/stack/nextjs/security.md": {
+    "bytes": 1558,
+    "sha256": "5b1f4c6cca1f78b0f981b064ba2fa868911adf8cc22db0853ff7674adac63bab"
+  },
+  "playbooks/stack/nextjs/structure.md": {
+    "bytes": 2042,
+    "sha256": "bab1560d3893a6fe5ebd4cbedab05ebeb8fb8be8d68c6b256cb008c3f2f1c18c"
+  },
+  "playbooks/stack/nextjs/testing.md": {
+    "bytes": 894,
+    "sha256": "b4f1b988ac7ce7a7a8637cf58d1d2b14ac0904c37f618a804d0841db01f2e05d"
+  },
+  "playbooks/styling/tailwind-extensions.md": {
+    "bytes": 4615,
+    "sha256": "a418fbe0c9a466f2e378ebd75bdcb2e1491923d5514234c251ba8f7a8433f35d"
+  },
+  "playbooks/universal/accessibility.md": {
+    "bytes": 2401,
+    "sha256": "2f1451e99973dee2a6f20e05dd3048a09f397f987dcf20ece9dcbdd127572fad"
+  },
+  "playbooks/universal/coding-rules.md": {
+    "bytes": 6170,
+    "sha256": "48b27fa839e94012015f48d834726e22da87b51421e89f9ae6bcca8898d6a3e8"
+  },
+  "playbooks/universal/error-handling.md": {
+    "bytes": 1608,
+    "sha256": "a1dd0f74dc6d2a1388ab989e9faf2c44fdfff230da4a605132110667ab594952"
+  },
+  "playbooks/universal/git-conventions.md": {
+    "bytes": 5155,
+    "sha256": "6bc31e6c74ceaca9981ec63ed720b49df5b8cbee00f2c3e5a0dd9a271c3e76c9"
+  },
+  "playbooks/universal/observability.md": {
+    "bytes": 1505,
+    "sha256": "8cc942653249a39b99790b84149602a7de2ed069816156c6c5fc09bb2d27d66f"
+  },
+  "playbooks/universal/security.md": {
+    "bytes": 2362,
+    "sha256": "75e151f515874bc6445432a26f3aa095f843288bbde1655ea8cb12d75cae2f2e"
+  },
+  "playbooks/universal/typescript.md": {
+    "bytes": 6252,
+    "sha256": "5e308b9fed7ad7e6f30a5c1fe566e971f5f71774419daa5f0c29cfea3f5758ab"
+  },
+  "postcss.config.mjs": {
+    "bytes": 81,
+    "sha256": "bb9000a2191bec30365c19efa8eb766565751978176a9ba88b20e7c77cce3928"
+  },
+  "PROGRESS.md": {
+    "bytes": 270,
+    "sha256": "8858edf836eca2f87e862d208cb64cc21c73c19bb0bf85bb349330c42b8d8afa"
+  },
+  "README.md": {
+    "bytes": 997,
+    "sha256": "8721254f959d68cd5a739d19d84a6855574eeec0ac2f2f59b4f89ff591c45bb8"
+  },
+  "RULES.md": {
+    "bytes": 5087,
+    "sha256": "12b733c7b67fa8eb021a7b283635c0b9316be9c96c84669e589fa134e0c331fe"
+  },
+  "src/app/api/health/route.ts": {
+    "bytes": 67,
+    "sha256": "37b5f6f54f407241d8391654eb5c426ef99c6eede6ad6faceabb26c7a4a9668f"
+  },
+  "src/app/globals.css": {
+    "bytes": 252,
+    "sha256": "3404d3c547a3f764ed2813eceff19b510bb441abed5d1f9fa0a1beb4926fd5ea"
+  },
+  "src/app/layout.tsx": {
+    "bytes": 355,
+    "sha256": "c6a727e4e3c61e560d6cb108393c6c01a66395f6402053b439d491716f05f4dc"
+  },
+  "src/app/page.test.tsx": {
+    "bytes": 290,
+    "sha256": "d96d1d1cd494db74185e0fa4f157fe0f09b99034ecf98889b50324b40a3dd65a"
+  },
+  "src/app/page.tsx": {
+    "bytes": 424,
+    "sha256": "05c33b1ba9a1dfeb8585643b722a0f1d7340cf524a0de517547658e920406cf8"
+  },
+  "src/features/status/components/StarterStatus.tsx": {
+    "bytes": 200,
+    "sha256": "5737083e586ff46dfdcd8c70b9bb592b785aa58df7a76a0b5f8e4453dfbe4feb"
+  },
+  "src/features/status/services/getStarterStatus.ts": {
+    "bytes": 168,
+    "sha256": "ed08e37c4deed0db23269405c09be5f6f0a9eeb39ab9070c52460814673b31f7"
+  },
+  "src/features/status/types.ts": {
+    "bytes": 80,
+    "sha256": "ac898305005741554b9b06d749136df0aa6c85b049775789cc294cea2e4543d1"
+  },
+  "src/test/setup.ts": {
+    "bytes": 42,
+    "sha256": "977afde26bba6a51325908cd7713cbfdc87d18f06b78b237c8f364c44864b7de"
+  },
+  "tsconfig.json": {
+    "bytes": 703,
+    "sha256": "5563bf72ae43a35ad7902e45d2c0e491e6ac05cb1d35ea3b0c10e3711484903b"
+  },
+  "vitest.config.ts": {
+    "bytes": 315,
+    "sha256": "ea6283820bf91925936010b5312b1be0907ae30177f6c70536c9bd2752ee8069"
+  }
+}

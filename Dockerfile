@@ -17,5 +17,6 @@ RUN npm ci
 # Copy rest of project
 COPY . .
 
-# CLI entrypoint — allows `docker run image --help` and interactive prompts
-ENTRYPOINT ["node", "index.js"]
+# CLI entrypoint (absolute so `docker compose run -w <dir>` still resolves it)
+# — allows `docker run image --help` and interactive prompts
+ENTRYPOINT ["node", "/app/index.js"]

@@ -1,0 +1,282 @@
+{
+  ".editorconfig": {
+    "bytes": 267,
+    "sha256": "69f636afed2febd57be9a78adf9c29ded43d2b1fab0064417a5a7ecb5dfce253"
+  },
+  ".env.example": {
+    "bytes": 126,
+    "sha256": "aac4a76b1ad6605d9f5279bb068bb94137166886d6950bbeffc600df078be201"
+  },
+  ".github/PULL_REQUEST_TEMPLATE.md": {
+    "bytes": 855,
+    "sha256": "e6c9ebd10795622b8e71ba32ffb9a2670fa3f7666726522736f4207cabc70bee"
+  },
+  ".github/workflows/ci-frontend.yml": {
+    "bytes": 585,
+    "sha256": "07265f1cb8102de68379dd6de731cd4e5c975e6439b2252c8605e3adc90922e2"
+  },
+  ".gitignore": {
+    "bytes": 335,
+    "sha256": "2c866acae818e220b1eeac946bbf8381c2348590d522bbeab00dcfdf367779a3"
+  },
+  ".node-version": {
+    "bytes": 8,
+    "sha256": "5b9d0e73029969ae9000117cb877f17bb9841c1279bfe8024e294acfcf017800"
+  },
+  ".npmrc": {
+    "bytes": 19,
+    "sha256": "7151cf397def0c2cb0ab65643701d27d335a72c90f775675b5f826bc7005818a"
+  },
+  ".prettierrc": {
+    "bytes": 312,
+    "sha256": "80a265752b65a489bca52d72780a015416322cdaadff944627d8f0fa8828c7aa"
+  },
+  "AGENTS.md": {
+    "bytes": 2300,
+    "sha256": "d13d2b244505439190b17703012923c8ea482dc889cef1f5a5638d6bb557598d"
+  },
+  "app/_layout.tsx": {
+    "bytes": 315,
+    "sha256": "035dd7213c52a3df64768b7476322d0736e9df0d5c7ad4ea5d83e66301248e91"
+  },
+  "app/index.test.tsx": {
+    "bytes": 251,
+    "sha256": "e73c6c1c3fcd276e35ccd68a5ad5ea66dda510c122e53a4484474f3dab507ac0"
+  },
+  "app/index.tsx": {
+    "bytes": 681,
+    "sha256": "b2f51497a7eb88a46fee68a30694a997e889330c86da7ad20812fca10bcf3c72"
+  },
+  "app/login.tsx": {
+    "bytes": 1319,
+    "sha256": "06d7f4d5da1bc4b1d055463ba30d8fbe215d559c107bac47c8bd0b3495690a78"
+  },
+  "app.json": {
+    "bytes": 372,
+    "sha256": "b8c92356e1cd985782fc679ccf44aa3644c9e7dbb8b4ccd86b6f5e6176244491"
+  },
+  "CONTEXT.md": {
+    "bytes": 590,
+    "sha256": "368a8b2c17e6108f4cf2347f845f254ff173ec9908a13f54669e638710a05c91"
+  },
+  "create-win-project.profile.json": {
+    "bytes": 558,
+    "sha256": "63902f5b85de91acafc7fd4ce25f659eb7e16a282cc3a4f7cc82cbf5806a8854"
+  },
+  "docs/api/endpoints.md": {
+    "bytes": 84,
+    "sha256": "52ef7f870d7072031a07f9d47f27e10b40ef0db2670be5fed3e6ea8a199ca5f6"
+  },
+  "docs/api/errors.md": {
+    "bytes": 108,
+    "sha256": "8752fbc5b0cfc9f82f62568745ddf1cd65dc4c84d439c27e396eaeb69db9ad6f"
+  },
+  "docs/api/overview.md": {
+    "bytes": 289,
+    "sha256": "44430bfdeaf9803ed5d6ee3ac87711faac437c079461bfbaaa5251bd56a453b2"
+  },
+  "docs/architecture/auth-flow.md": {
+    "bytes": 444,
+    "sha256": "d59993fed2b13ecdfe08292328a8a02ba489dfc64a191c6e78e8d36cc0efa6ce"
+  },
+  "docs/architecture/database-schema.md": {
+    "bytes": 89,
+    "sha256": "e87327e605c00b80ed691147211c7beec30cc910d86f7c2364d293bdd93aed8c"
+  },
+  "docs/architecture/overview.md": {
+    "bytes": 658,
+    "sha256": "2b031dc51f39073b934bce621e0a0a47683ff1b28deef1b105a2432b6e9b95bc"
+  },
+  "docs/guides/deployment.md": {
+    "bytes": 78,
+    "sha256": "1d6157e9b7f51c8e9009baf3dc751c4c2a52fd25aece286ef768ecec0477294d"
+  },
+  "docs/guides/development-environments.md": {
+    "bytes": 1052,
+    "sha256": "c4d63ab71943644b016188f486508b9dc1875f96e07eb8ffdb96923b2dbd07af"
+  },
+  "docs/guides/env-variables.md": {
+    "bytes": 498,
+    "sha256": "c6228c76b6dfeb19ac578ca66e6a3df5c4bc1c9e5a9c6edc6cbafcfdad6b54f0"
+  },
+  "docs/guides/setup.md": {
+    "bytes": 539,
+    "sha256": "e7b466906eb06067bb9704545d17f68ce8d29134805c5997d752210137ebe2a7"
+  },
+  "docs/guides/toolchain.md": {
+    "bytes": 1183,
+    "sha256": "d9b5de65da858a2c3bf46ca8062359e8bb7b5dc86419c1f1625663738c9fbfde"
+  },
+  "expo-env.d.ts": {
+    "bytes": 37,
+    "sha256": "57d45be957186273b21383b09f6a6aa3ca599b28d1fb742fb3edfac464504b90"
+  },
+  "features/status/components/StarterStatus.tsx": {
+    "bytes": 273,
+    "sha256": "ecf390eb478782ab7318cc2170eaf0b379e1e7132d062df27997d06b92a9f77c"
+  },
+  "features/status/services/getStarterStatus.ts": {
+    "bytes": 168,
+    "sha256": "ed08e37c4deed0db23269405c09be5f6f0a9eeb39ab9070c52460814673b31f7"
+  },
+  "features/status/types.ts": {
+    "bytes": 80,
+    "sha256": "ac898305005741554b9b06d749136df0aa6c85b049775789cc294cea2e4543d1"
+  },
+  "jest.config.js": {
+    "bytes": 39,
+    "sha256": "d412e753779d88d8391de8fbdd51204693b8710f45351d56e7955e0dc0f4453b"
+  },
+  "lib/supabase-lifecycle.test.ts": {
+    "bytes": 744,
+    "sha256": "12608064c8000c5032c94bf031baa93b4dbaf259d2cc69681ffc19d68a240e38"
+  },
+  "lib/supabase-lifecycle.ts": {
+    "bytes": 473,
+    "sha256": "849d5384e1d054bf54908894018f604c5b922d383359802c87076384e8f7f284"
+  },
+  "lib/supabase.ts": {
+    "bytes": 456,
+    "sha256": "3bf5fdca9dd1830c664f1923171e52609f18bd3801ead7f272ebb06fd7ef6858"
+  },
+  "package.json": {
+    "bytes": 1453,
+    "sha256": "d824b280b1d0569c03640b42dc52fe8460a7302f83187e4f58b5ad777457a6ed"
+  },
+  "playbooks/capabilities/ci/github-actions.md": {
+    "bytes": 3331,
+    "sha256": "07f14cd7d1c416567598f9117dc9868e4d5336e4aa7e0ac009f685b4bef0c7c2"
+  },
+  "playbooks/capabilities/supabase/architecture.md": {
+    "bytes": 311,
+    "sha256": "b3c1621100eaca7e15ee0a1250b8dfd93cd3cc2167e1dcb378fe28188a566cce"
+  },
+  "playbooks/capabilities/supabase/authentication.md": {
+    "bytes": 331,
+    "sha256": "9e42020ad05fbf23df6606a413a7c00b439de52fb70f00dd54d0ac487a7acaaa"
+  },
+  "playbooks/capabilities/supabase/expo.md": {
+    "bytes": 805,
+    "sha256": "8faccf5fcec38e26d861b65d70e2537a3af6626b519e421cb4a695a9c7a3cefa"
+  },
+  "playbooks/capabilities/supabase/migrations.md": {
+    "bytes": 354,
+    "sha256": "aded8e3c181777ec207fda4d71a42c01d1175b9b6d3319163998a26d25a307e0"
+  },
+  "playbooks/capabilities/supabase/rls.md": {
+    "bytes": 368,
+    "sha256": "9268eb3c7dc7e267f3c9cc5d2b378f908bf26f7e07f314990ac06aa1235cbcd0"
+  },
+  "playbooks/capabilities/supabase/testing.md": {
+    "bytes": 326,
+    "sha256": "943041094f6301c4af0e601d88afa09ea99a3765933219e0595a98297425b476"
+  },
+  "playbooks/concerns/axios.md": {
+    "bytes": 4121,
+    "sha256": "981e8ab56fc15897575f8f8620c383b97a495855549454aa1e6e273d44082098"
+  },
+  "playbooks/concerns/tanstack-query.md": {
+    "bytes": 4164,
+    "sha256": "96c9186198601490d93602a406d551b6861e854c0510a476bacaf1a91d4af85a"
+  },
+  "playbooks/concerns/zod.md": {
+    "bytes": 5071,
+    "sha256": "9e2592ce64f516067bdddc5b7f65de45af564aa6cfd50cfc05a293887da6c1a2"
+  },
+  "playbooks/concerns/zustand.md": {
+    "bytes": 2254,
+    "sha256": "4f06b463191614f0733207a9762a58b2cecd64bff2415e55802733e37bae933b"
+  },
+  "playbooks/devops/makefile.md": {
+    "bytes": 16050,
+    "sha256": "e9e65435f977c86a8ccc39fed56344fe84f03ffe80829ee782edf8d4f12ab7b3"
+  },
+  "playbooks/devops/pr-template.md": {
+    "bytes": 2393,
+    "sha256": "bc26649a67b314181ac86e82dd602635d5c22e6f53eacaf80ebb6309355c0036"
+  },
+  "playbooks/platform/mobile.md": {
+    "bytes": 1016,
+    "sha256": "230d1eb6de679e59015152f9f74799341057ea49c3c71be459b294e14426fd7d"
+  },
+  "playbooks/stack/expo/architecture.md": {
+    "bytes": 880,
+    "sha256": "bfb8b1afae467db59eed23a70f76cf3d7a1bc41d9e8be9e1318dd4db00b2f762"
+  },
+  "playbooks/stack/expo/runtime.md": {
+    "bytes": 766,
+    "sha256": "708b9a6b2c864449e84d6778302bb5e067953f57e6e018cbf69d8d40662b983a"
+  },
+  "playbooks/stack/expo/security.md": {
+    "bytes": 882,
+    "sha256": "f3057eff1030a71fbfe18a860c9bc2803d2061ddf76a46d0a6969b38078e336b"
+  },
+  "playbooks/stack/expo/structure.md": {
+    "bytes": 920,
+    "sha256": "769e1212c0c8323cf840b84005afa5c6e9680a82cb7462069441464494200e82"
+  },
+  "playbooks/stack/expo/testing.md": {
+    "bytes": 601,
+    "sha256": "d3f34aa79d07a24b47c2ab41c7cf2ca23515f791a8eb517d7ab894da392a5f46"
+  },
+  "playbooks/styling/native-styles.md": {
+    "bytes": 1034,
+    "sha256": "746b1e2f528a3f0148e2da6d1752b708d9b62e31fe57c9b1a097de384a2dbbff"
+  },
+  "playbooks/universal/accessibility.md": {
+    "bytes": 2401,
+    "sha256": "2f1451e99973dee2a6f20e05dd3048a09f397f987dcf20ece9dcbdd127572fad"
+  },
+  "playbooks/universal/coding-rules.md": {
+    "bytes": 6170,
+    "sha256": "48b27fa839e94012015f48d834726e22da87b51421e89f9ae6bcca8898d6a3e8"
+  },
+  "playbooks/universal/error-handling.md": {
+    "bytes": 1608,
+    "sha256": "a1dd0f74dc6d2a1388ab989e9faf2c44fdfff230da4a605132110667ab594952"
+  },
+  "playbooks/universal/git-conventions.md": {
+    "bytes": 5155,
+    "sha256": "6bc31e6c74ceaca9981ec63ed720b49df5b8cbee00f2c3e5a0dd9a271c3e76c9"
+  },
+  "playbooks/universal/observability.md": {
+    "bytes": 1505,
+    "sha256": "8cc942653249a39b99790b84149602a7de2ed069816156c6c5fc09bb2d27d66f"
+  },
+  "playbooks/universal/security.md": {
+    "bytes": 2362,
+    "sha256": "75e151f515874bc6445432a26f3aa095f843288bbde1655ea8cb12d75cae2f2e"
+  },
+  "playbooks/universal/typescript.md": {
+    "bytes": 6252,
+    "sha256": "5e308b9fed7ad7e6f30a5c1fe566e971f5f71774419daa5f0c29cfea3f5758ab"
+  },
+  "PROGRESS.md": {
+    "bytes": 270,
+    "sha256": "8858edf836eca2f87e862d208cb64cc21c73c19bb0bf85bb349330c42b8d8afa"
+  },
+  "README.md": {
+    "bytes": 1010,
+    "sha256": "803b6fae1759bdc6c80badf3c4e60cc7b4528f4eb77e544b04254a51404cc7d5"
+  },
+  "RULES.md": {
+    "bytes": 5076,
+    "sha256": "31c82da843ddccdfbf9a997723c63f420684c63736ae42a9d489939bacf34e27"
+  },
+  "supabase/config.toml": {
+    "bytes": 232,
+    "sha256": "47ea7fe1f48bc6ff56b3c3b221e3d96b9b6a6a21ea392e5683b857b742eedb0a"
+  },
+  "supabase/migrations/00000000000000_create_examples.sql": {
+    "bytes": 1116,
+    "sha256": "9a73206d40078abbb6ed589632e15be99be8ec6d47f6862fec80942b12ea710d"
+  },
+  "supabase/tests/examples_rls.test.sql": {
+    "bytes": 1462,
+    "sha256": "b12c2a438738234e5c89aaa4a2c265adc59f419171b53a363d674cb1c16df4ea"
+  },
+  "tsconfig.json": {
+    "bytes": 277,
+    "sha256": "66505f4685bf8b168636916b8ae7012c652fe10edb89dfdd47ddc57e2d5b25ec"
+  }
+}

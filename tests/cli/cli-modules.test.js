@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { parseArguments } from '../../src/cli/arguments.js'
 import { buildQuestions, wrapText } from '../../src/cli/questions.js'
-import { loadCatalog } from '../../lib/catalog.js'
+import { loadCatalog } from '../../src/engine/load-library.js'
 import { printSummary } from '../../src/cli/display.js'
 
 describe('CLI modules', () => {
@@ -51,7 +51,9 @@ describe('CLI modules', () => {
     const catalog = await loadCatalog(`${process.cwd()}/library`)
     const questions = buildQuestions({ args: parseArguments([]), catalog })
     const authentication = questions.find((question) => question.name === 'authentication')
-    expect(authentication.choices({ backend: 'postgres' }).map((choice) => choice.value)).toEqual(['not-yet', 'none'])
+    const postgresOptions = authentication.choices({ backend: 'postgres' }).filter((choice) => typeof choice.value !== 'undefined')
+    expect(postgresOptions.map((choice) => choice.value)).toEqual(['not-yet', 'none'])
+    for (const row of postgresOptions) expect(row.name).not.toContain('\n  ')
     expect(authentication.message({ backend: 'postgres' })).toContain('unavailable')
     expect(authentication.choices({ backend: 'supabase' }).map((choice) => choice.value)).toContain('yes')
     expect(questions.find((question) => question.name === 'expectedConcerns').message).toContain('no libraries or feature code')

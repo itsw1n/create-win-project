@@ -1,1 +1,10 @@
-export { generateProject } from '../../lib/generator.js'
+import { scaffoldProject } from '../stacks/create-project.js'
+
+/**
+ * Runs the generic project-creation pipeline. Stack-owned contributions are
+ * composed behind the shared stack boundary and are migrated into their
+ * individual adapters in the following phases.
+ */
+export async function generateProject(answers, cliRoot) {
+  return scaffoldProject(answers, cliRoot)
+}

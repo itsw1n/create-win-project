@@ -7,6 +7,12 @@
 IMAGE   := create-win-project:dev
 COMPOSE := docker compose
 
+# Host IDs for the container user: so files created through bind mounts are
+# owned by you, not root (make clean works without sudo). Falls back to 1000
+# where `id` is unavailable (e.g. some Windows shells); compose defaults match.
+export UID := $(shell id -u 2>/dev/null || echo 1000)
+export GID := $(shell id -g 2>/dev/null || echo 1000)
+
 .DEFAULT_GOAL := help
 
 # ─── Help — grouped by ##@ category ──────────────────────────────────────────
@@ -38,7 +44,7 @@ doctor: ## Show available host/container development tools
 .PHONY: demo
 demo: ## Run the CLI to .demo/ for testing
 	@mkdir -p .demo
-	@$(COMPOSE) run --rm app
+	@$(COMPOSE) run --rm -w /app/.demo app
 
 .PHONY: test
 test: ## Run all tests
@@ -56,12 +62,12 @@ clean: ## Remove .demo/ and Docker image
 ##@ Checks (all inside Docker)
 
 .PHONY: audit
-audit: ## Audit lib/ for identity checks and hardcoded env prefixes
-	@$(COMPOSE) run --rm --entrypoint sh app -c 'echo "=== Identity checks in lib/ ==="; grep -rn "isNextjs\|isReact\|isSpringBoot\|isSupabase\|isPrisma" lib/ || echo "  None found ✓"; echo ""; echo "=== Hardcoded env prefixes in lib/ ==="; grep -rn "NEXT_PUBLIC_\|VITE_\|EXPO_PUBLIC_" lib/ || echo "  None found ✓"'
+audit: ## Audit engine boundaries and stack-owned environment prefixes
+	@$(COMPOSE) run --rm --entrypoint sh app -c 'echo "=== Engine stack branching ==="; grep -rn "stack\.frontendKey\|stack\.backendKey" src/engine/ || echo "  None found ✓"; echo ""; echo "=== Stack environment prefixes ==="; grep -rn "NEXT_PUBLIC_\|VITE_\|EXPO_PUBLIC_" src/stacks/ || echo "  None found ✓"'
 
 .PHONY: fix-templates
-fix-templates: ## Check lib/files.js for leftover identity checks
-	@$(COMPOSE) run --rm --entrypoint sh app -c 'echo "Remaining identity checks in lib/files.js:"; grep -n "isNextjs\|isReact\|isSpringBoot\|isSupabase\|isPrisma" lib/files.js || echo "  None found ✓"'
+fix-templates: ## Check engine files for leftover stack identity checks
+	@$(COMPOSE) run --rm --entrypoint sh app -c 'echo "Remaining identity checks in src/engine/:"; grep -rn "isNextjs\|isReact\|isSpringBoot\|isSupabase\|isPrisma" src/engine/ || echo "  None found ✓"'
 
 .PHONY: templates
 templates: ## List all template files

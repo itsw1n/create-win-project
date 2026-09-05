@@ -1,4 +1,4 @@
-import { composerPackageVersion } from '../../../../lib/compatibility.js'
+import { composerPackageVersion } from '../../shared/javascript-package.js'
 import { usesLaravelSession } from './auth/session.js'
 import { isSanctumSpa, sanctumSpaAuthentication } from './auth/sanctum.js'
 import { isLaravelOidc, laravelOidcAuthentication } from './auth/oidc.js'
@@ -48,4 +48,3 @@ export function buildLaravelComposer(answers, stack) {
     'prefer-stable': true,
   }, null, 2)}\n`
 }
-

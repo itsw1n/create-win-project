@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import fs from 'fs-extra'
 import os from 'node:os'
 import path from 'node:path'
-import { generateProject } from '../../lib/generator.js'
+import { generateProject } from '../../src/engine/create-project.js'
 
 const root = path.resolve(import.meta.dirname, '..', '..')
 const temporaryDirectories = []

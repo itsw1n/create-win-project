@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import path from 'path'
-import { readTemplate, render, buildVars } from '../../lib/template.js'
-import { loadCatalog, resolveStack } from '../../lib/catalog.js'
+import { readTemplate, render, buildVars } from '../../src/engine/render-templates.js'
+import { loadCatalog, resolveStack } from '../../src/engine/load-library.js'
 
 const templatesDir = path.join(process.cwd(), 'templates')
 

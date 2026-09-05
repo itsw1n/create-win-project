@@ -1,4 +1,4 @@
-import { defineStackAdapter } from '../../../../lib/stacks/contract.js'
+import { defineStackAdapter } from '../../rules.js'
 
 export const noBackendAdapter = defineStackAdapter({
   id: 'none',
