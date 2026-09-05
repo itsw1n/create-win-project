@@ -2,6 +2,7 @@
 
 import fs from 'fs-extra'
 import path from 'path'
+import { writeFile } from './write-files.js'
 
 export function render(content, vars) {
   return content.replace(/\{\{(\w+)\}\}/g, (_, key) => vars[key] ?? `{{${key}}}`)
@@ -16,7 +17,6 @@ export async function readTemplate(templatesDir, category, name, ext = '') {
 
 export async function writeRenderedFile(destination, filePath, template, vars) {
   const content = render(template, vars)
-  const { writeFile } = await import('./write-files.js')
   await writeFile(destination, filePath, content)
 }
 

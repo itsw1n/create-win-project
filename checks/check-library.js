@@ -2,7 +2,7 @@ import fs from 'fs-extra'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { loadCatalog, resolveStack } from '../src/engine/load-library.js'
-import { buildRulesIndex, resolvePlaybook } from '../src/engine/load-library.js'
+import { buildRulesIndex, resolvePlaybook } from '../src/engine/project-guidance.js'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const playbooksDir = path.join(root, 'library')
