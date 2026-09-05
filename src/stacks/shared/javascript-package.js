@@ -59,10 +59,14 @@ export function buildJavaScriptPackage(answers, stack, owner) {
     scripts['supabase:types'] = `supabase${workdir} gen types typescript --local > ${typePath}`
   }
   if (stack.backendKey === 'postgres') {
-    scripts['db:generate'] = 'prisma generate'
+    scripts['prisma:generate'] = 'prisma generate'
     scripts['db:migrate'] = 'prisma migrate dev'
     scripts['db:deploy'] = 'prisma migrate deploy'
+    scripts['db:reset'] = 'prisma migrate reset --force'
     scripts['db:studio'] = 'prisma studio'
+    scripts.dev = 'prisma generate && next dev'
+    scripts.build = 'prisma generate && next build'
+    scripts.typecheck = 'prisma generate && tsc --noEmit'
   }
   const boundary = stack.architecture === 'large' ? ' && npm run check:boundaries' : ''
   scripts.check = owner === 'react-native'
