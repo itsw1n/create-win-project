@@ -2,6 +2,16 @@ import chalk from 'chalk'
 
 const BACK = Symbol('back')
 
+export function wrapText(text, width = Math.max(28, Math.min(72, (process.stdout.columns || 80) - 8))) {
+  const lines = []
+  for (const word of text.split(/\s+/)) {
+    const last = lines.at(-1)
+    if (!last || `${last} ${word}`.length > width) lines.push(word)
+    else lines[lines.length - 1] = `${last} ${word}`
+  }
+  return lines.join('\n  ')
+}
+
 function enabled(question, answers) {
   return typeof question.when === 'function' ? question.when(answers) : question.when !== false
 }
@@ -60,9 +70,15 @@ export async function promptWithBack(inquirer, questions, initialAnswers = {}) {
         ...(canGoBack ? [{ name: '← Back', value: BACK }] : []),
       ]
       question.default = defaultValue ? 0 : 1
-    } else if (['list', 'checkbox'].includes(question.type) && canGoBack) {
-      const choices = await resolved(question.choices, answers)
-      question.choices = [...choices, new inquirer.Separator(), { name: '← Back', value: BACK }]
+    } else if (['list', 'checkbox'].includes(question.type)) {
+      const raw = await resolved(question.choices, answers)
+      const rest = raw.filter((choice) => choice?.type !== 'description-footer')
+      const footers = raw
+        .filter((choice) => choice?.type === 'description-footer')
+        .map((footer) => new inquirer.Separator(chalk.dim(wrapText(footer.text))))
+      question.choices = canGoBack
+        ? [...rest, ...footers, new inquirer.Separator(), { name: '← Back', value: BACK }]
+        : [...rest, ...footers]
     }
 
     if (typeof question.default === 'function') question.default = await question.default(answers)

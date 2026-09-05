@@ -1,4 +1,4 @@
-export { configurationDecisionChoices, promptWithBack } from './navigation.js'
+export { configurationDecisionChoices, promptWithBack, wrapText } from './navigation.js'
 import chalk from 'chalk'
 import {
   architectureChoicesFor,
@@ -8,6 +8,7 @@ import {
 import {
   applicationShapeChoices,
   backendChoicesForShape,
+  exampleForShape,
   frontendChoicesForShape,
 } from '../engine/project-shapes.js'
 import { laravelUiPromptContribution } from '../stacks/backends/laravel/ui/index.js'
@@ -18,23 +19,25 @@ const CONCERN_LABELS = {
   'dark-mode': 'Dark mode', 'http-client': 'HTTP client',
 }
 
-export function wrapText(text, width = Math.max(28, Math.min(72, (process.stdout.columns || 80) - 8))) {
-  const lines = []
-  for (const word of text.split(/\s+/)) {
-    const last = lines.at(-1)
-    if (!last || `${last} ${word}`.length > width) lines.push(word)
-    else lines[lines.length - 1] = `${last} ${word}`
-  }
-  return lines.join('\n  ')
+function choice(title, value, { hint, recommended } = {}) {
+  const suffix = [hint ? `(${hint})` : '', recommended ? chalk.green('Recommended') : '']
+    .filter(Boolean).join('  ')
+  return { name: suffix ? `${title}  ${suffix}` : title, short: title, value }
 }
 
-function choice(title, value, description, recommended = false) {
-  const badge = recommended ? `  ${chalk.green('Recommended')}` : ''
-  return { name: `${title}${badge}\n  ${chalk.dim(wrapText(description))}\n`, short: title, value }
+function footerMarker(text) {
+  return { type: 'description-footer', text }
 }
 
-function describeExisting(entries, description) {
-  return entries.map((entry) => choice(entry.short || entry.name.split('\n')[0].replace(' (Recommended)', ''), entry.value, description, entry.name.includes('(Recommended)')))
+function describeExisting(entries, description, hintFor) {
+  return [
+    ...entries.map((entry) => choice(
+      entry.short || entry.name.split('\n')[0].replace(' (Recommended)', ''),
+      entry.value,
+      { hint: hintFor?.(entry.value), recommended: entry.name.includes('(Recommended)') },
+    )),
+    footerMarker(description),
+  ]
 }
 
 function validationError(problem, recovery) {
@@ -45,7 +48,14 @@ export function buildQuestions({ args, catalog }) {
   return [
     {
       type: 'list', name: 'applicationShape', message: 'Application shape',
-      choices: describeExisting(applicationShapeChoices(), 'Choose the runtime layout that matches how this application will be deployed.'), default: 'fullstack', when: () => !args.shape,
+      choices: describeExisting(
+        applicationShapeChoices(),
+        'Choose the runtime layout that matches how this application will be deployed.',
+        (shape) => {
+          const example = exampleForShape(shape)
+          return example ? `e.g. ${example}` : undefined
+        },
+      ), default: 'fullstack', when: () => !args.shape,
     },
     {
       type: 'input', name: 'projectName', message: 'Project name', default: 'my-project',
@@ -78,10 +88,13 @@ export function buildQuestions({ args, catalog }) {
       choices: (answers) => {
         const supported = architectureChoicesFor(catalog, answers.frontend, answers.backend)
         return [
-          choice('Medium', 'medium', 'Clear feature, service, and data boundaries for most long-term applications.', true),
-          choice('Small', 'small', 'Fewer layers for prototypes and simple applications.'),
-          choice('Large', 'large', 'Enforced boundaries for complex domains and larger teams.'),
-        ].filter((choice) => supported.includes(choice.value))
+          ...[
+            choice('Medium', 'medium', { recommended: true }),
+            choice('Small', 'small'),
+            choice('Large', 'large'),
+          ].filter((choice) => supported.includes(choice.value)),
+          footerMarker('Clear feature boundaries for most long-term applications; fewer layers for prototypes; enforced boundaries for complex domains.'),
+        ]
       },
       default: 'medium', when: () => !args.architecture,
     },
@@ -93,11 +106,12 @@ export function buildQuestions({ args, catalog }) {
       choices: (answers) => {
         const choices = []
         if (['supabase', 'springboot', 'laravel'].includes(answers.backend)) {
-          choices.push(choice('Yes', 'yes', 'Generate working authentication appropriate for this stack.'))
+          choices.push(choice('Yes', 'yes'))
         }
         choices.push(
-          choice('Not yet', 'not-yet', 'Record authentication guidance without pretending login exists.', true),
-          choice('No', 'none', 'This application is intentionally public and has no user accounts.'),
+          choice('Not yet', 'not-yet', { recommended: true }),
+          choice('No', 'none'),
+          footerMarker('Generate working authentication for this stack, record guidance without pretending login exists, or stay intentionally public.'),
         )
         return choices
       },
@@ -158,8 +172,9 @@ export function buildQuestions({ args, catalog }) {
           ...answers,
           styling: answers.styling || catalog.byId[answers.frontend]?.stylingOptions?.[0],
         }, catalog)
-        return [...new Set(stack.concerns.filter((concern) => !concern.required).map((concern) => concern.id))]
-          .map((id) => choice(CONCERN_LABELS[id] || id.replaceAll('-', ' '), id, 'Write this concern to CONTEXT.md as a planning note.'))
+        const notes = [...new Set(stack.concerns.filter((concern) => !concern.required).map((concern) => concern.id))]
+          .map((id) => choice(CONCERN_LABELS[id] || id.replaceAll('-', ' '), id))
+        return [...notes, footerMarker('Write selected concerns to CONTEXT.md as planning notes.')]
       },
     },
   ]

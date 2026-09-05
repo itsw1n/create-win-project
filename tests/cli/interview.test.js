@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { configurationDecisionChoices, promptWithBack } from '../../src/cli/navigation.js'
+import { buildQuestions } from '../../src/cli/questions.js'
 
 function fakeInquirer(responses) {
   return {
@@ -48,6 +49,26 @@ describe('navigable interview', () => {
       },
     ])
     expect(answers).toMatchObject({ shape: 'second', projectName: 'kept' })
+  })
+
+  it('renders compact single-line rows with a shared footer and Back last', async () => {
+    const seen = []
+    const [shapeQuestion] = buildQuestions({ args: {}, catalog: { byId: {} } })
+    await promptWithBack(recordingInquirer(['fullstack', 'x'], seen), [
+      shapeQuestion,
+      { type: 'list', name: 'next', message: 'Next?', choices: [{ name: 'X', value: 'x' }] },
+    ])
+    const firstChoices = seen[0].choices
+    const rows = firstChoices.filter((choice) => choice && typeof choice.value !== 'undefined')
+    expect(rows.length).toBeGreaterThan(0)
+    for (const row of rows) expect(row.name).not.toContain('\n  ')
+    expect(rows[0].name).toContain('(e.g. Next.js or Laravel)')
+    expect(rows[0].name).toContain('Recommended')
+    const footers = firstChoices.filter((choice) => choice?.constructor?.name === 'Separator')
+    expect(footers.some((separator) => separator.text.includes('Choose the runtime layout'))).toBe(true)
+    // No Back on the first prompt (nothing to return to); Back closes later lists.
+    expect(firstChoices.some((choice) => choice?.name === '← Back')).toBe(false)
+    expect(seen[1].choices.at(-1).name).toBe('← Back')
   })
 
   it('offers create, edit, and cancel at confirmation', () => {
