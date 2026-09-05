@@ -12,6 +12,11 @@ function fakeInquirer(responses) {
   }
 }
 
+function recordingInquirer(responses, seen) {
+  const fake = fakeInquirer(responses)
+  return { ...fake, async prompt([question]) { seen.push(question); return fake.prompt([question]) } }
+}
+
 describe('navigable interview', () => {
   it('returns to an earlier prompt and replaces dependent answers', async () => {
     const inquirer = fakeInquirer(['fullstack', 'nextjs', 'BACK', 'BACK', 'frontend', 'react', 'none'])
@@ -25,5 +30,15 @@ describe('navigable interview', () => {
 
   it('offers create, edit, and cancel at confirmation', () => {
     expect(configurationDecisionChoices().map((choice) => choice.value)).toEqual(['create', 'back', 'cancel'])
+  })
+
+  it('shows numbered headings and keyboard help without relying on color', async () => {
+    const seen = []
+    await promptWithBack(recordingInquirer(['next'], seen), [
+      { type: 'list', name: 'frontend', message: 'Framework', choices: [{ name: 'Next.js', value: 'next' }] },
+    ])
+    expect(seen[0].message).toContain('Step 1 of 1 - Framework')
+    expect(seen[0].message).toContain('Arrow keys move')
+    expect(seen[0].message).toContain('Enter selects')
   })
 })

@@ -1,3 +1,5 @@
+import chalk from 'chalk'
+
 const BACK = Symbol('back')
 
 function enabled(question, answers) {
@@ -29,6 +31,13 @@ export async function promptWithBack(inquirer, questions, initialAnswers = {}) {
 
     const canGoBack = history.length > 0
     const question = { ...source, when: undefined }
+    const title = await resolved(question.message, answers)
+    const controls = question.type === 'checkbox'
+      ? 'Arrow keys move • Space selects • Enter continues • Back returns'
+      : question.type === 'input'
+        ? 'Type an answer • Enter continues • :back returns'
+        : 'Arrow keys move • Enter selects • Back returns'
+    question.message = `${chalk.cyan.bold(`Step ${history.length + 1} of ${questions.length} - ${title}`)}\n${chalk.dim(controls)}\n`
     if (answers[source.name] !== undefined && question.default === undefined) {
       question.default = answers[source.name]
     }
@@ -70,8 +79,8 @@ export async function promptWithBack(inquirer, questions, initialAnswers = {}) {
 
 export function configurationDecisionChoices() {
   return [
-    { name: 'Create project', value: 'create' },
-    { name: '← Back and edit', value: 'back' },
-    { name: 'Cancel', value: 'cancel' },
+    { name: 'Create project\n  Write the reviewed files and selected configuration.\n', value: 'create' },
+    { name: 'Back and edit\n  Return to the interview without creating files.\n', value: 'back' },
+    { name: 'Cancel\n  Exit without creating files.\n', value: 'cancel' },
   ]
 }

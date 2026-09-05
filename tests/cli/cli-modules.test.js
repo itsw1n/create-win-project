@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { parseArguments } from '../../src/cli/arguments.js'
-import { buildQuestions } from '../../src/cli/questions.js'
+import { buildQuestions, wrapText } from '../../src/cli/questions.js'
+import { loadCatalog } from '../../lib/catalog.js'
 import { printSummary } from '../../src/cli/display.js'
 
 describe('CLI modules', () => {
@@ -43,5 +44,19 @@ describe('CLI modules', () => {
     }, output)
     expect(output.mock.calls.flat().join('\n')).toContain('demo')
     expect(output.mock.calls.flat().join('\n')).toContain('Install deps:')
+  })
+
+  it('explains authentication availability and optional planning notes in plain text', async () => {
+    const catalog = await loadCatalog(`${process.cwd()}/library`)
+    const questions = buildQuestions({ args: parseArguments([]), catalog })
+    const authentication = questions.find((question) => question.name === 'authentication')
+    expect(authentication.choices({ backend: 'postgres' }).map((choice) => choice.value)).toEqual(['not-yet', 'none'])
+    expect(authentication.message({ backend: 'postgres' })).toContain('unavailable')
+    expect(authentication.choices({ backend: 'supabase' }).map((choice) => choice.value)).toContain('yes')
+    expect(questions.find((question) => question.name === 'expectedConcerns').message).toContain('no libraries or feature code')
+  })
+
+  it('wraps descriptions for narrow terminals without losing words', () => {
+    expect(wrapText('one two three four five', 9)).toBe('one two\n  three\n  four five')
   })
 })
