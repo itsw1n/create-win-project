@@ -4,13 +4,13 @@ import {
   architectureChoicesFor,
   resolveStack,
   stylingChoicesFor,
-} from '../../lib/catalog.js'
+} from '../engine/load-library.js'
 import {
   applicationShapeChoices,
   backendChoicesForShape,
   frontendChoicesForShape,
-} from '../../lib/application-shapes.js'
-import { laravelUiPromptContribution } from '../../lib/stacks/laravel/ui/index.js'
+} from '../engine/project-shapes.js'
+import { laravelUiPromptContribution } from '../stacks/backends/laravel/ui/index.js'
 
 const CONCERN_LABELS = {
   validation: 'Runtime validation', query: 'Server-state caching', state: 'Shared UI state',

@@ -4,7 +4,7 @@ import { loadCatalog, resolveStack } from '../engine/load-library.js'
 import { loadCompatibility } from '../engine/tested-versions.js'
 import { buildRulesIndex, copySelectedPlaybooks } from '../engine/project-guidance.js'
 import { buildVars, render, readTemplate } from '../engine/render-templates.js'
-import { buildRunnableFiles } from '../../lib/scaffold.js'
+import { buildRunnableFiles } from './compose-files.js'
 import {
   contextMd, progressMd, docPlaceholder,
   editorconfig, prettierrc, prTemplate,

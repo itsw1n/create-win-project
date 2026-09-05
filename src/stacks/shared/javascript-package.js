@@ -1,9 +1,15 @@
-function version(profile, name, capability) {
+export function packageVersion(profile, name, capability) {
   const configured = profile.packages[name]
   const resolved = typeof configured === 'string'
     ? configured
     : configured?.overrides?.[capability] || configured?.default
   if (!resolved) throw new Error(`${capability} requires ${name} in compatibility profile ${profile.id}`)
+  return resolved
+}
+
+export function composerPackageVersion(profile, name, owner = name) {
+  const resolved = profile.composerPackages?.[name]
+  if (!resolved) throw new Error(`${owner} requires ${name} in compatibility profile ${profile.id}`)
   return resolved
 }
 
@@ -24,23 +30,23 @@ export function buildJavaScriptPackage(answers, stack, owner) {
   if (level !== 'none') {
     if (owner === 'react-native') {
       Object.assign(devDependencies, {
-        jest: version(stack.profile, 'jest', owner),
-        '@types/jest': version(stack.profile, '@types/jest', owner),
-        'jest-expo': version(stack.profile, 'jest-expo', owner),
-        '@testing-library/react-native': version(stack.profile, '@testing-library/react-native', owner),
+        jest: packageVersion(stack.profile, 'jest', owner),
+        '@types/jest': packageVersion(stack.profile, '@types/jest', owner),
+        'jest-expo': packageVersion(stack.profile, 'jest-expo', owner),
+        '@testing-library/react-native': packageVersion(stack.profile, '@testing-library/react-native', owner),
       })
     } else {
       Object.assign(devDependencies, {
-        vitest: version(stack.profile, 'vitest', owner),
-        jsdom: version(stack.profile, 'jsdom', owner),
-        '@testing-library/react': version(stack.profile, '@testing-library/react', owner),
-        '@testing-library/jest-dom': version(stack.profile, '@testing-library/jest-dom', owner),
+        vitest: packageVersion(stack.profile, 'vitest', owner),
+        jsdom: packageVersion(stack.profile, 'jsdom', owner),
+        '@testing-library/react': packageVersion(stack.profile, '@testing-library/react', owner),
+        '@testing-library/jest-dom': packageVersion(stack.profile, '@testing-library/jest-dom', owner),
       })
     }
   }
   if (level === 'full' && owner !== 'react-native') {
     scripts['test:e2e'] = 'playwright test'
-    devDependencies['@playwright/test'] = version(stack.profile, '@playwright/test', owner)
+    devDependencies['@playwright/test'] = packageVersion(stack.profile, '@playwright/test', owner)
   }
 
   scripts.typecheck = 'tsc --noEmit'
@@ -75,14 +81,14 @@ export function buildJavaScriptPackage(answers, stack, owner) {
   Object.keys(scripts).forEach((key) => scripts[key] === undefined && delete scripts[key])
 
   if (stack.styleId === 'tailwind') {
-    devDependencies.tailwindcss = version(stack.profile, 'tailwindcss', owner)
-    if (owner === 'nextjs') devDependencies['@tailwindcss/postcss'] = version(stack.profile, '@tailwindcss/postcss', owner)
-    if (owner === 'react') devDependencies['@tailwindcss/vite'] = version(stack.profile, '@tailwindcss/vite', owner)
+    devDependencies.tailwindcss = packageVersion(stack.profile, 'tailwindcss', owner)
+    if (owner === 'nextjs') devDependencies['@tailwindcss/postcss'] = packageVersion(stack.profile, '@tailwindcss/postcss', owner)
+    if (owner === 'react') devDependencies['@tailwindcss/vite'] = packageVersion(stack.profile, '@tailwindcss/vite', owner)
   }
   const dependencies = { ...stack.deps }
   if (owner !== 'nextjs') delete dependencies['@supabase/ssr']
   if (owner === 'react-native' && stack.authentication === 'supabase') {
-    dependencies['expo-secure-store'] = version(stack.profile, 'expo-secure-store', owner)
+    dependencies['expo-secure-store'] = packageVersion(stack.profile, 'expo-secure-store', owner)
   }
 
   const packageJson = {

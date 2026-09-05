@@ -1,5 +1,5 @@
-import { APPLICATION_SHAPES } from '../../lib/application-shapes.js'
-import { laravelUis } from '../../lib/stacks/laravel/ui/index.js'
+import { APPLICATION_SHAPES } from '../engine/project-shapes.js'
+import { laravelUis } from '../stacks/backends/laravel/ui/index.js'
 
 function option(args, name) {
   return args.find((argument) => argument.startsWith(`--${name}=`))?.split('=')[1]

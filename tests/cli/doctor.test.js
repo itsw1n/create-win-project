@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { printDoctor } from '../../lib/doctor.js'
+import { printDoctor } from '../../src/cli/system-check.js'
 
 describe('doctor', () => {
   it('prints both supported onboarding lanes without changing the machine', () => {
