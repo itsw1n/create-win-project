@@ -128,8 +128,8 @@ export function buildQuestions({ args, catalog }) {
       default: (answers) => catalog.byId[answers.frontend]?.platform === 'mobile' ? 'basic' : 'full',
     },
     {
-      type: 'confirm', name: 'docker', message: 'Include Docker?', default: true,
-      when: (answers) => catalog.byId[answers.backend]?.needsDocker ?? catalog.byId[answers.frontend]?.needsDocker ?? false,
+      type: 'confirm', name: 'docker', message: 'Add optional Docker development files', default: false,
+      when: (answers) => Boolean(catalog.byId[answers.backend]?.needsDocker) || catalog.byId[answers.frontend]?.platform !== 'mobile',
     },
     {
       type: 'confirm', name: 'makefile', message: 'Include Makefile?', default: true,

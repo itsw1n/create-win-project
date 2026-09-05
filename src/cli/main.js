@@ -85,11 +85,6 @@ answers.laravelUi = laravelUiArg || answers.laravelUi || (answers.frontend === '
 if (wantsInstall) answers.installDependencies = true
 if (skipsInstall) answers.installDependencies = false
 
-// ── Auto-resolve docker for stacks that need it ───────────────────────────────
-if (resolveStack({ ...answers, styling: answers.styling || catalog.byId[answers.frontend]?.stylingOptions?.[0] || 'tailwind' }, catalog).needsDocker) {
-  answers.docker = answers.docker ?? true
-}
-
 stack = resolveStack({ ...answers, styling: answers.styling || catalog.byId[answers.frontend]?.stylingOptions?.[0] || 'tailwind' }, catalog)
 
 // ─── Confirm ─────────────────────────────────────────────────────────────────
