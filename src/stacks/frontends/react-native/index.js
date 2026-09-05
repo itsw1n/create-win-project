@@ -1,6 +1,7 @@
 import { defineStackAdapter } from '../../../../lib/stacks/contract.js'
 import { ciContributions } from './ci.js'
 import { dockerContributions } from './docker.js'
+import { buildReactNativeFiles } from './create-files.js'
 
 export const reactNativeAdapter = defineStackAdapter({
   id: 'react-native',
@@ -14,6 +15,7 @@ export const reactNativeAdapter = defineStackAdapter({
     runtime: 'node',
   },
   contributes: {
+    files: ({ answers, stack, shared }) => Object.entries(buildReactNativeFiles(answers, stack, shared)),
     environment: ({ backend }) => backend.id === 'none' ? [] : ['API_URL'],
     install: () => [{ cwd: '.', command: 'npm', args: ['install'] }],
     docker: dockerContributions,

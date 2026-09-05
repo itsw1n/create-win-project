@@ -1,6 +1,7 @@
 import { defineStackAdapter } from '../../../../lib/stacks/contract.js'
 import { ciContributions } from './ci.js'
 import { dockerContributions } from './docker.js'
+import { buildReactViteFiles } from './create-files.js'
 
 const verificationCases = Object.freeze([
   Object.freeze({ backend: 'none', styling: 'css-modules', architecture: 'small', authentication: 'public' }),
@@ -21,6 +22,7 @@ export const reactViteAdapter = defineStackAdapter({
     runtime: 'node',
   },
   contributes: {
+    files: ({ answers, stack, shared }) => Object.entries(buildReactViteFiles(answers, stack, shared)),
     environment: ({ backend }) => backend.id === 'none' ? [] : ['API_URL'],
     install: () => [{ cwd: 'frontend', command: 'npm', args: ['install'] }],
     docker: dockerContributions,
