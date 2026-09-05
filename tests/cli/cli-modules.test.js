@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { parseArguments } from '../../src/cli/arguments.js'
 import { buildQuestions, wrapText } from '../../src/cli/questions.js'
-import { loadCatalog } from '../../lib/catalog.js'
+import { loadCatalog } from '../../src/engine/load-library.js'
 import { printSummary } from '../../src/cli/display.js'
 
 describe('CLI modules', () => {

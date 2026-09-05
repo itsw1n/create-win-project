@@ -14,15 +14,14 @@
   "files": [
     "index.js",
     "src",
-    "lib",
     "library",
-    "ci",
     "templates",
     "checks",
     "public/logo.svg",
     "docs/ARCHITECTURE.md",
     "docs/CONTENT_MODEL.md",
     "docs/DEPENDENCY_MAINTENANCE.md",
+    "docs/CONTRIBUTING.md",
     "README.md",
     "LICENSE"
   ],

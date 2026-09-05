@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { loadCatalog, resolveStack, stylingChoicesFor, backendChoicesFor, architectureChoicesFor } from '../../lib/catalog.js'
+import { loadCatalog, resolveStack, stylingChoicesFor, backendChoicesFor, architectureChoicesFor } from '../../src/engine/load-library.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const root      = path.resolve(__dirname, '..', '..')

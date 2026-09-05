@@ -6,10 +6,10 @@ import {
   validateApplicationShape,
   frontendChoicesForShape,
   backendChoicesForShape,
-} from '../../lib/application-shapes.js'
+} from '../../src/engine/project-shapes.js'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { loadCatalog } from '../../lib/catalog.js'
+import { loadCatalog } from '../../src/engine/load-library.js'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..')
 

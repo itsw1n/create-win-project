@@ -4,11 +4,11 @@ import {
   CONTRIBUTION_HOOKS,
   defineStackAdapter,
   isStackAdapter,
-} from '../../lib/stacks/contract.js'
-import { createStackContext } from '../../lib/stacks/context.js'
-import { createStackRegistry } from '../../lib/stacks/registry.js'
-import { collectContributions, collectPromptContributions } from '../../lib/stacks/shared/contributions.js'
-import { stackRegistry } from '../../lib/stacks/index.js'
+} from '../../src/stacks/rules.js'
+import { createStackContext } from '../../src/stacks/context.js'
+import { createStackRegistry } from '../../src/stacks/available-stacks.js'
+import { collectContributions, collectPromptContributions } from '../../src/stacks/shared/contributions.js'
+import { stackRegistry } from '../../src/stacks/available-stacks.js'
 
 function adapter(overrides = {}) {
   return defineStackAdapter({

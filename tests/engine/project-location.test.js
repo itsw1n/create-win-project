@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import path from 'node:path'
-import { isInsideDirectory, projectLocationNotice } from '../../lib/project-location.js'
+import { isInsideDirectory, projectLocationNotice } from '../../src/engine/project-location.js'
 
 describe('generated project location notice', () => {
   const repository = path.resolve('/work/create-win-project')
