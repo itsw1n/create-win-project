@@ -1,4 +1,4 @@
-import { packageVersion } from '../../../../../lib/compatibility.js'
+import { packageVersion } from '../../../../engine/tested-versions.js'
 import { buildLaravelAuthView } from './shared.js'
 
 const php = (value) => `${value.trim()}\n`
