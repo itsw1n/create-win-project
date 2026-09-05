@@ -27,10 +27,11 @@ function authChoices(caseName) {
 }
 
 const current = catalog.defaultProfile
-const full = Object.entries(catalog.profiles).filter(([profile]) => profile === current).flatMap(([profile, versions]) =>
+const allProfiles = Object.entries(catalog.profiles).flatMap(([profile, versions]) =>
   cases.flatMap((caseName) => ['small', 'medium', 'large'].flatMap((architecture) =>
     authChoices(caseName).map((auth) => ({ profile, case: caseName, architecture, ...auth, node: versions.runtimes.node, java: versions.runtimes.java, php: versions.runtimes.php })))),
 )
+const currentFull = allProfiles.filter((entry) => entry.profile === current)
 
 const smokeSelections = [
   ['nextjs-none', 'small', 'not-yet', 'website'],
@@ -44,8 +45,12 @@ const smokeSelections = [
   ['laravel-inertia-react', 'large', 'yes', 'website'],
   ['react-laravel', 'medium', 'yes', 'website'],
 ]
-const smoke = full.filter((entry) => entry.profile === current && smokeSelections.some(([caseName, architecture, authentication, audience]) =>
-  entry.case === caseName && entry.architecture === architecture && entry.authentication === authentication && entry.audience === audience))
+const matchesSmoke = (entry) => smokeSelections.some(([caseName, architecture, authentication, audience]) =>
+  entry.case === caseName && entry.architecture === architecture && entry.authentication === authentication && entry.audience === audience)
+const smoke = currentFull.filter(matchesSmoke)
+// A complete run exhaustively verifies the current profile and keeps every
+// retained profile alive through the same representative compatibility lanes.
+const full = [...currentFull, ...allProfiles.filter((entry) => entry.profile !== current && matchesSmoke(entry))]
 
 function belongsToStack(caseName, stackName) {
   if (stackName === 'none') return caseName.endsWith('-none')
