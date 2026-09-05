@@ -5,13 +5,18 @@ on:
     branches: [dev, main]
   push:
     branches: [main]
+  schedule:
+    - cron: '17 3 * * *'
   workflow_dispatch:
     inputs:
       scope:
         description: Matrix scope to run
         type: choice
-        options: [full, smoke]
+        options: [full, smoke, stack, none]
         default: full
+      stack:
+        description: Stack name required for stack scope
+        type: string
 
 permissions:
   contents: read
@@ -27,8 +32,11 @@ jobs:
       matrix: ${{ steps.matrix.outputs.matrix }}
       current: ${{ steps.matrix.outputs.current }}
       scope: ${{ steps.matrix.outputs.scope }}
+      stack: ${{ steps.matrix.outputs.stack }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 24.20.0
@@ -39,21 +47,32 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           BASE_REF: ${{ github.base_ref }}
           MANUAL_SCOPE: ${{ inputs.scope }}
+          MANUAL_STACK: ${{ inputs.stack }}
         run: |
           if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
             scope="$MANUAL_SCOPE"
-          elif [ "$EVENT_NAME" = "pull_request" ] && [ "$BASE_REF" != "main" ]; then
-            scope="smoke"
+            stack="$MANUAL_STACK"
+          elif [ "$EVENT_NAME" = "pull_request" ]; then
+            git fetch origin "$BASE_REF"
+            classification=$(git diff --name-only "origin/$BASE_REF...HEAD" | node checks/classify-changes.js)
+            scope=$(node -e 'process.stdout.write(JSON.parse(process.argv[1]).scope)' "$classification")
+            stack=$(node -e 'process.stdout.write(JSON.parse(process.argv[1]).stack || "")' "$classification")
           else
             scope="full"
           fi
           echo "scope=$scope" >> "$GITHUB_OUTPUT"
+          echo "stack=$stack" >> "$GITHUB_OUTPUT"
           echo "current=$(node -e 'const c=require("./library/tested-versions.json"); process.stdout.write(c.defaultProfile)')" >> "$GITHUB_OUTPUT"
-          echo "matrix=$(node checks/check-compatibility.js --scope=$scope)" >> "$GITHUB_OUTPUT"
+          matrix_scope="$scope"
+          if [ "$scope" = "none" ]; then matrix_scope="smoke"; fi
+          stack_arg=""
+          if [ -n "$stack" ]; then stack_arg="--stack=$stack"; fi
+          echo "matrix=$(node checks/check-compatibility.js --scope=$matrix_scope $stack_arg)" >> "$GITHUB_OUTPUT"
 
   verify:
     needs: prepare
-    name: ${{ matrix.profile }} / ${{ matrix.case }} / ${{ matrix.architecture }} / ${{ matrix.authentication }} / ${{ matrix.audience }}
+    if: needs.prepare.outputs.scope != 'none'
+    name: shard ${{ matrix.shard }} / ${{ matrix.profile }} / ${{ matrix.case }} / ${{ matrix.architecture }} / ${{ matrix.authentication }} / ${{ matrix.audience }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     strategy:
@@ -92,6 +111,11 @@ jobs:
         env:
           PREPARE_RESULT: ${{ needs.prepare.result }}
           VERIFY_RESULT: ${{ needs.verify.result }}
+          SCOPE: ${{ needs.prepare.outputs.scope }}
         run: |
           test "$PREPARE_RESULT" = "success"
-          test "$VERIFY_RESULT" = "success"
+          if [ "$SCOPE" = "none" ]; then
+            test "$VERIFY_RESULT" = "skipped"
+          else
+            test "$VERIFY_RESULT" = "success"
+          fi

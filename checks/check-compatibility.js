@@ -2,7 +2,9 @@ import fs from 'fs-extra'
 
 const catalog = await fs.readJson(new URL('../library/tested-versions.json', import.meta.url))
 const scope = process.argv.find((arg) => arg.startsWith('--scope='))?.split('=')[1] || 'smoke'
-if (!['smoke', 'full'].includes(scope)) throw new Error('--scope must be smoke or full')
+const selectedStack = process.argv.find((arg) => arg.startsWith('--stack='))?.split('=')[1]
+if (!['none', 'smoke', 'stack', 'full'].includes(scope)) throw new Error('--scope must be none, smoke, stack, or full')
+if (scope === 'stack' && !selectedStack) throw new Error('--stack is required for stack scope')
 
 const cases = [
   'nextjs-none', 'nextjs-supabase', 'nextjs-springboot', 'nextjs-postgres', 'nextjs-laravel',
@@ -45,4 +47,15 @@ const smokeSelections = [
 const smoke = full.filter((entry) => entry.profile === current && smokeSelections.some(([caseName, architecture, authentication, audience]) =>
   entry.case === caseName && entry.architecture === architecture && entry.authentication === authentication && entry.audience === audience))
 
-process.stdout.write(JSON.stringify(scope === 'full' ? full : smoke))
+function belongsToStack(caseName, stackName) {
+  if (stackName === 'none') return caseName.endsWith('-none')
+  if (stackName === 'react') return caseName.startsWith('react-')
+  if (stackName === 'react-native') return caseName.startsWith('react-native-')
+  if (['nextjs'].includes(stackName)) return caseName.startsWith(`${stackName}-`)
+  return caseName.includes(stackName)
+}
+
+const stackCases = full.filter((entry) => belongsToStack(entry.case, selectedStack))
+const stack = [...new Map([...stackCases, ...smoke].map((entry) => [JSON.stringify(entry), entry])).values()]
+const selected = scope === 'full' ? full : scope === 'stack' ? stack : smoke
+process.stdout.write(JSON.stringify(selected.map((entry, index) => ({ ...entry, shard: `${index % 4 + 1}/4` }))))
