@@ -175,4 +175,4 @@ See [docs/CONTRIBUTING.md](./docs/CONTRIBUTING.md) — one workflow for every st
 
 ## License
 
-Licensed under the [MIT License](./LICENSE). Copyright © 2026 Win.
+Licensed under the [MIT License](./LICENSE). Copyright © 2026 itsw1n.
