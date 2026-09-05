@@ -1,4 +1,6 @@
 import { defineStackAdapter } from '../../../../lib/stacks/contract.js'
+import { ciContributions } from './ci.js'
+import { dockerContributions } from './docker.js'
 
 export const reactNativeAdapter = defineStackAdapter({
   id: 'react-native',
@@ -14,7 +16,8 @@ export const reactNativeAdapter = defineStackAdapter({
   contributes: {
     environment: ({ backend }) => backend.id === 'none' ? [] : ['API_URL'],
     install: () => [{ cwd: '.', command: 'npm', args: ['install'] }],
-    ci: () => [{ template: 'expo', path: '.github/workflows/ci-frontend.yml' }],
+    docker: dockerContributions,
+    ci: ciContributions,
     verification: () => [
       { backend: 'none', architecture: 'small', authentication: 'public' },
       { backend: 'supabase', architecture: 'medium', authentication: 'supabase' },
@@ -23,4 +26,3 @@ export const reactNativeAdapter = defineStackAdapter({
     ],
   },
 })
-

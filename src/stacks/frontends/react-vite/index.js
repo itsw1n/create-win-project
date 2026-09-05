@@ -1,4 +1,6 @@
 import { defineStackAdapter } from '../../../../lib/stacks/contract.js'
+import { ciContributions } from './ci.js'
+import { dockerContributions } from './docker.js'
 
 const verificationCases = Object.freeze([
   Object.freeze({ backend: 'none', styling: 'css-modules', architecture: 'small', authentication: 'public' }),
@@ -21,9 +23,8 @@ export const reactViteAdapter = defineStackAdapter({
   contributes: {
     environment: ({ backend }) => backend.id === 'none' ? [] : ['API_URL'],
     install: () => [{ cwd: 'frontend', command: 'npm', args: ['install'] }],
-    docker: () => [{ template: 'vite', root: 'frontend', developmentPath: 'Dockerfile.dev', productionPath: 'Dockerfile' }],
-    ci: () => [{ template: 'vite', path: '.github/workflows/ci-frontend.yml' }],
+    docker: dockerContributions,
+    ci: ciContributions,
     verification: () => verificationCases,
   },
 })
-
