@@ -5,7 +5,6 @@ import { loadCompatibility } from '../../engine/tested-versions.js'
 import { buildRulesIndex, copySelectedPlaybooks } from '../../engine/project-guidance.js'
 import { buildVars, render, readTemplate } from '../../engine/render-templates.js'
 import { buildRunnableFiles } from '../../../lib/scaffold.js'
-import { buildLaravelFiles } from '../../../lib/laravel-scaffold.js'
 import {
   contextMd, progressMd, docPlaceholder,
   editorconfig, prettierrc, prTemplate,
@@ -393,7 +392,7 @@ async function generateCI(dest, stack, ciDir, answers, vars) {
 // ─── Runnable application files ─────────────────────────────────────────────────
 
 async function generateRunnableFiles(dest, answers, stack, vars) {
-  const files = { ...buildRunnableFiles(answers, stack, vars), ...buildLaravelFiles(answers, stack, vars) }
+  const files = buildRunnableFiles(answers, stack, vars)
   for (const [filePath, content] of Object.entries(files)) await write(dest, filePath, content)
   if (stack.backendKey === 'springboot') await fs.chmod(path.join(dest, 'backend/mvnw'), 0o755)
   if (stack.backendKey === 'laravel') {

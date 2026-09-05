@@ -1,4 +1,5 @@
 import { defineStackAdapter } from '../../../../lib/stacks/contract.js'
+import { buildLaravelFiles } from './create-files.js'
 
 export const laravelAdapter = defineStackAdapter({
   id: 'laravel',
@@ -13,5 +14,7 @@ export const laravelAdapter = defineStackAdapter({
     authenticationModels: ['public', 'undecided', 'laravel-session', 'sanctum-spa', 'laravel-oidc'],
     runtime: 'php',
   },
-  contributes: {},
+  contributes: {
+    files: ({ answers, stack, vars }) => Object.entries(buildLaravelFiles(answers, stack, vars)),
+  },
 })
