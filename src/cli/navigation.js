@@ -115,6 +115,29 @@ export async function promptWithBack(inquirer, questions, initialAnswers = {}, s
       index = target
       continue
     }
+    if (question.type === 'checkbox' && startIndex > 0 && canGoBack) {
+      // Checkbox Enter only confirms checked items, so a highlighted-but-unchecked
+      // ← Back would silently complete the interview instead of going back.
+      // On re-entry runs, ask explicitly (Enter-selectable). Fresh passes keep
+      // the inline Back + Space hint with no extra prompt.
+      const follow = await inquirer.prompt([{
+        type: 'list',
+        name: '__continue',
+        message: 'Continue with these selections?',
+        choices: [
+          { name: 'Continue', value: 'continue' },
+          { name: '← Back', value: BACK },
+        ],
+      }], answers)
+      if (follow.__continue === BACK) {
+        const target = history.pop()
+        if (target !== undefined) {
+          clearFrom(questions, answers, target)
+          index = target
+          continue
+        }
+      }
+    }
 
     answers[source.name] = value
     history.push(index)

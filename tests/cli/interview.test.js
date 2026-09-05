@@ -97,6 +97,24 @@ describe('navigable interview', () => {
     expect(second).toMatchObject({ a: 'a1', b: 'b1', c: 'c1' })
   })
 
+  it('asks Continue-or-Back after a re-entered checkbox so Enter never traps', async () => {
+    const questions = [
+      { type: 'list', name: 'a', message: 'A?', choices: [{ name: 'A1', value: 'a1' }] },
+      { type: 'checkbox', name: 'b', message: 'B?', choices: [{ name: 'X', value: 'x' }] },
+    ]
+    const first = await promptWithBack(fakeInquirer(['a1', []]), questions)
+    expect(first).toMatchObject({ a: 'a1', b: [] })
+    // Resume at the checkbox, accept unchanged with plain Enter, then go Back
+    // at the follow-up: must land back on A, not return to Ready.
+    const seen = []
+    const second = await promptWithBack(
+      recordingInquirer([[], 'BACK', 'a1', [], 'continue'], seen),
+      questions, first, lastEnabledIndex(questions, first),
+    )
+    expect(seen.map((question) => question.name)).toEqual(['b', '__continue', 'a', 'b', '__continue'])
+    expect(second).toMatchObject({ a: 'a1', b: [] })
+  })
+
   it('shows no resume hint on a fresh start', async () => {
     const seen = []
     await promptWithBack(recordingInquirer(['a1'], seen), [
