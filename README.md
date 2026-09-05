@@ -1,15 +1,8 @@
-```
- ██╗    ██╗  ██╗ ███╗  ██╗
- ██║    ██║ ███║ ████╗ ██║
- ██║ █╗ ██║ ╚██║ ██╔██╗██║
- ██║███╗██║  ██║ ██║╚████║
- ╚███╔███╔╝  ██║ ██║ ╚███║
-  ╚══╝╚══╝   ╚═╝ ╚═╝  ╚══╝
-
- █▀█ █▀█ █▀█   █ █▀▀ █▀▀ ▀█▀
- █▀▀ █▀█ █ █   █ █▀  █    █
- █   █ █ █▄█ █▄█ █▄▄ █▄▄  █
-```
+<div align="center">
+  <img src="./public/logo.svg" alt="W1N Project logo" width="160">
+  <h1>W1N PROJECT</h1>
+  <p>Production-ready project scaffolding.</p>
+</div>
 
 # Are you confused creating architecture rules, AGENTS.md, and folder structures from scratch every time you pick a new stack?
 
