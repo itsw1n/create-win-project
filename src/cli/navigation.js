@@ -55,7 +55,11 @@ export async function promptWithBack(inquirer, questions, initialAnswers = {}, s
     if (!enabled(source, answers)) { index += 1; continue }
 
     const canGoBack = history.length > 0
-    const question = { ...source, when: undefined }
+    // askAnswered: inquirer skips questions whose answer already exists in
+    // the passed answers object. We always want to ask (re-entry after
+    // Back-and-edit arrives with complete answers); defaults pre-fill
+    // previous values via question.default below.
+    const question = { ...source, when: undefined, askAnswered: true }
     const title = await resolved(question.message, answers)
     const controls = question.type === 'checkbox'
       ? 'Arrow keys move • Space selects • Enter continues • Back returns'

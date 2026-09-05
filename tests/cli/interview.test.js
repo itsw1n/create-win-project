@@ -2,12 +2,19 @@ import { describe, expect, it } from 'vitest'
 import { configurationDecisionChoices, lastEnabledIndex, promptWithBack } from '../../src/cli/navigation.js'
 import { buildQuestions } from '../../src/cli/questions.js'
 
-function fakeInquirer(responses) {
+function fakeInquirer(responses, seen = []) {
   return {
     Separator: class Separator {
       constructor(text) { this.text = text }
     },
-    async prompt([question]) {
+    async prompt([question], answersState = {}) {
+      // Simulate real inquirer: skip questions whose answer already exists
+      // unless askAnswered is set (inquirer PromptUI.filterIfRunnable).
+      // Skipped questions never reach the prompt UI, so only record prompted ones.
+      if (question.askAnswered !== true && answersState[question.name] !== undefined) {
+        return { [question.name]: answersState[question.name] }
+      }
+      seen.push(question)
       // Simulate real inquirer: run validate first, retry on error string.
       for (;;) {
         const value = responses.shift()
@@ -24,8 +31,7 @@ function fakeInquirer(responses) {
 }
 
 function recordingInquirer(responses, seen) {
-  const fake = fakeInquirer(responses)
-  return { ...fake, async prompt([question]) { seen.push(question); return fake.prompt([question]) } }
+  return fakeInquirer(responses, seen)
 }
 
 describe('navigable interview', () => {
