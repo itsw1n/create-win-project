@@ -136,7 +136,9 @@ describe('runnable project contract', () => {
     expect(compose).toContain('backend:')
     expect(compose).toContain('postgres:16-alpine')
     expect(await fs.pathExists(path.join(destination, 'Dockerfile.dev'))).toBe(true)
-    expect(await fs.readFile(path.join(destination, 'docs/guides/setup.md'), 'utf8')).toContain('Only Docker with Compose is required')
+    const setup = await fs.readFile(path.join(destination, 'docs/guides/setup.md'), 'utf8')
+    expect(setup).toContain('Default local setup')
+    expect(setup).toContain('Optional Docker setup')
   })
 
   it('generates backend-only Docker services for React Native with Laravel', async () => {
@@ -316,6 +318,10 @@ describe('runnable project contract', () => {
     expect(compose).toContain('${FRONTEND_HOST_PORT:-5173}:5173')
     expect(compose).toContain('${BACKEND_HOST_PORT:-8080}:8080')
     expect(compose).toContain('${POSTGRES_HOST_PORT:-5432}:5432')
+    const environments = await fs.readFile(path.join(destination, 'docs/guides/development-environments.md'), 'utf8')
+    expect(environments).toContain('Default local workflow')
+    expect(environments).toContain('Docker Engine 27 or newer')
+    expect(environments).toContain('never required to run create-win-project itself')
   })
 
   it('does not approximate Supabase with a bare PostgreSQL container', async () => {
@@ -323,6 +329,21 @@ describe('runnable project contract', () => {
     const compose = await fs.readFile(path.join(destination, 'docker-compose.yml'), 'utf8')
     expect(compose).toContain('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY')
     expect(compose).not.toContain('image: postgres')
+  })
+
+  it('keeps Docker optional and documents the local workflow', async () => {
+    const destination = await generate({ backend: 'none', docker: false, projectName: 'local-default' })
+    expect(await fs.pathExists(path.join(destination, 'docker-compose.yml'))).toBe(false)
+    const environments = await fs.readFile(path.join(destination, 'docs/guides/development-environments.md'), 'utf8')
+    expect(environments).toContain('Default local workflow')
+    expect(environments).toContain('Docker files were not selected')
+  })
+
+  it('keeps mobile devices and emulators outside containers', async () => {
+    const destination = await generate({ frontend: 'react-native', backend: 'supabase', applicationShape: 'mobile', projectName: 'mobile-local' })
+    const environments = await fs.readFile(path.join(destination, 'docs/guides/development-environments.md'), 'utf8')
+    expect(environments).toContain('iOS Simulator or Android Emulator')
+    expect(environments).toContain('do not replace the local device/emulator workflow')
   })
 
   it('refuses to overwrite a non-empty destination', async () => {

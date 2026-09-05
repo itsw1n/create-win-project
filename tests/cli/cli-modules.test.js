@@ -30,6 +30,7 @@ describe('CLI modules', () => {
     expect(questions.map((question) => question.name)).toEqual(expect.arrayContaining([
       'applicationShape', 'projectName', 'frontend', 'backend', 'installDependencies',
     ]))
+    expect(questions.find((question) => question.name === 'docker').default).toBe(false)
   })
 
   it('renders a readable summary through the display boundary', () => {
