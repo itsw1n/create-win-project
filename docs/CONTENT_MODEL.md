@@ -9,7 +9,7 @@ The project separates always-loaded instructions, task-routed standards, generat
 | Concern routing | definitions → generated `RULES.md` | Selected stack/capability only |
 | Reusable engineering policy and rationale | `playbooks/**/*.md` | A task touches that concern |
 | Setup, API, architecture, deployment for this product | generated `docs/` | Every project, then maintained with code |
-| Framework configuration and canonical patterns | `lib/scaffold.js` output plus tests | The capability is selected |
+| Framework configuration and canonical patterns | `src/stacks/` file contributions plus tests | The capability is selected |
 
 ## Authoring rules
 

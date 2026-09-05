@@ -36,7 +36,7 @@ Manifests declare capabilities and package names. A tested compatibility profile
 ### Lane 1 — To run *this generator*
 **Node 24 LTS *OR* Docker — that's it.**
 
-- No global `prettier`, `eslint`, or `typescript` — they are generated inside your project (`package.json` devDeps + `.prettierrc` + `.editorconfig` + `eslint.config` via `lib/scaffold.js`).
+- No global `prettier`, `eslint`, or `typescript` — each stack generates them inside your project through its own dependency and file contributions.
 - Prefer zero host setup? Use Docker directly. Make is an optional convenience, never a prerequisite.
 
 ### Lane 2 — To run *what it generates* (depends on your answers)

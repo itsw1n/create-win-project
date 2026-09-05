@@ -101,7 +101,7 @@ Client environment variables are semantic in definitions (`API_URL`) and receive
 
 ### Runnable scaffold (stack-owned vertical)
 
-Each `src/stacks/<id>/create-files.js` is a pure function `(answers, stack, shared) -> FileMap` that owns its minimum executable vertical slice. `shared/` contains helpers only when at least two stacks genuinely share behavior — not forced sharing. `lib/scaffold.js` no longer exists; core composes strictly via `collectContributions('files')`. This intentionally generates a small working example. Domain-specific features are added after product context is known; the generator does not invent business entities.
+Each `src/stacks/{frontends,backends}/<id>/create-files.js` is a pure function `(answers, stack, shared) -> FileMap` that owns its minimum executable vertical slice. `shared/` contains helpers only when at least two stacks genuinely share behavior—not forced sharing. Core composes stack adapters through their contribution hooks. This intentionally generates a small working example. Domain-specific features are added after product context is known; the generator does not invent business entities.
 
 ### Repository and operational files
 
