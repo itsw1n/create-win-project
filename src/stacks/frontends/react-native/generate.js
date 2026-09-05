@@ -1,6 +1,8 @@
 export function buildReactNativeFiles(answers, stack, shared) {
   const files = {
     'package.json': shared.packageFile(answers, stack),
+    '.node-version': `${stack.profile.runtimes.node}\n`,
+    '.npmrc': 'engine-strict=true\n',
     'app.json': shared.json({ expo: { name: answers.projectName, slug: answers.projectName, version: '1.0.0', orientation: 'portrait', scheme: answers.projectName, userInterfaceStyle: 'automatic', plugins: stack.authentication === 'supabase' ? ['expo-router', 'expo-secure-store'] : ['expo-router'], experiments: { typedRoutes: true } } }),
     'tsconfig.json': shared.json({ extends: 'expo/tsconfig.base', compilerOptions: { strict: true, types: ['jest'], paths: { '@/*': ['./*'] } }, include: ['**/*.ts', '**/*.tsx', '.expo/types/**/*.ts', 'expo-env.d.ts'] }),
     'expo-env.d.ts': "/// <reference types=\"expo/types\" />\n",
@@ -17,4 +19,3 @@ export function buildReactNativeFiles(answers, stack, shared) {
   Object.assign(files, shared.nativeStatusFeatureFiles(stack))
   return files
 }
-

@@ -6,6 +6,8 @@
 export function buildNextjsFiles(answers, stack, shared) {
   const files = {}
   files['package.json'] = shared.packageFile(answers, stack)
+  files['.node-version'] = `${stack.profile.runtimes.node}\n`
+  files['.npmrc'] = 'engine-strict=true\n'
   files['tsconfig.json'] = shared.json({
     compilerOptions: {
       target: 'ES2017', lib: ['dom', 'dom.iterable', 'esnext'], allowJs: false,

@@ -60,6 +60,8 @@ describe('runnable project contract', () => {
     expect(await fs.pathExists(path.join(laravelRoot, 'artisan'))).toBe(true)
     expect(await fs.pathExists(path.join(laravelRoot, 'routes/api.php'))).toBe(true)
     expect(await fs.pathExists(path.join(laravelRoot, 'tests/Feature/HealthTest.php'))).toBe(true)
+    expect(await fs.readFile(path.join(laravelRoot, '.php-version'), 'utf8')).toBe('8.5.10\n')
+    expect(await fs.readFile(path.join(destination, 'docs/guides/toolchain.md'), 'utf8')).toContain('Composer')
     const profile = await fs.readJson(path.join(destination, 'create-win-project.profile.json'))
     expect(profile.applicationShape).toBe(applicationShape)
   })
@@ -113,6 +115,8 @@ describe('runnable project contract', () => {
     if (laravelUi === 'inertia-react') {
       const packageJson = await fs.readJson(path.join(destination, 'package.json'))
       expect(packageJson.dependencies['@inertiajs/react']).toMatch(/^\d+\.\d+\.\d+$/)
+      expect(packageJson.packageManager).toBe('npm@11.19.0')
+      expect(await fs.readFile(path.join(destination, '.node-version'), 'utf8')).toBe('24.20.0\n')
     }
     const rules = await fs.readFile(path.join(destination, 'RULES.md'), 'utf8')
     expect(rules).toContain(`platform/laravel-ui/${laravelUi}/architecture.md`)
@@ -191,6 +195,13 @@ describe('runnable project contract', () => {
     expect(packageJson.scripts['format:check']).toBe('prettier --check .')
     expect(packageJson.scripts.check).toBeTruthy()
     expect(packageJson.devDependencies.prettier).toMatch(/^\d+\.\d+\.\d+$/)
+    expect(packageJson.packageManager).toBe('npm@11.19.0')
+    expect(packageJson.engines).toEqual({ node: '>=22.14.0', npm: '>=11.19.0' })
+    expect(await fs.readFile(path.join(packageRoot, '.node-version'), 'utf8')).toBe('24.20.0\n')
+    expect(await fs.readFile(path.join(packageRoot, '.npmrc'), 'utf8')).toBe('engine-strict=true\n')
+    const toolchain = await fs.readFile(path.join(destination, 'docs/guides/toolchain.md'), 'utf8')
+    expect(toolchain).toContain('never as global installations')
+    expect(toolchain).toContain('Different projects can retain different tested dependency versions')
     if (backend !== 'laravel') {
       expect(setupGuide).toContain('Node.js 22.14.0 or newer with npm 11.19.0 or newer')
       expect(setupGuide).toContain('tested on Node.js 24.20.0')
@@ -213,6 +224,8 @@ describe('runnable project contract', () => {
       expect(await fs.pathExists(path.join(destination, 'backend/mvnw'))).toBe(true)
       expect(await fs.pathExists(path.join(destination, 'backend/mvnw.cmd'))).toBe(true)
       expect((await fs.stat(path.join(destination, 'backend/mvnw'))).mode & 0o111).not.toBe(0)
+      expect(await fs.readFile(path.join(destination, 'backend/.java-version'), 'utf8')).toBe('21\n')
+      expect(toolchain).toContain('generated wrapper')
     }
   })
 
@@ -300,6 +313,9 @@ describe('runnable project contract', () => {
     expect(compose).toContain('./frontend:/app')
     expect(compose).not.toContain('dockerfile: frontend/Dockerfile.dev')
     expect(compose).toContain('postgres:16-alpine')
+    expect(compose).toContain('${FRONTEND_HOST_PORT:-5173}:5173')
+    expect(compose).toContain('${BACKEND_HOST_PORT:-8080}:8080')
+    expect(compose).toContain('${POSTGRES_HOST_PORT:-5432}:5432')
   })
 
   it('does not approximate Supabase with a bare PostgreSQL container', async () => {
