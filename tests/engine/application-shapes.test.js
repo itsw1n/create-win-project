@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest'
 import {
   applicationShapeChoices,
   combinationsForShape,
-  exampleForShape,
   inferApplicationShape,
   validateApplicationShape,
   frontendChoicesForShape,
@@ -20,12 +19,6 @@ describe('application shapes', () => {
     expect(choices[0].value).toBe('fullstack')
     expect(choices[0].name).toContain('Next.js or Laravel')
     expect(choices.find((choice) => choice.value === 'separate').name).toContain('React/Vite + Spring Boot')
-  })
-
-  it('extracts inline examples per shape for compact rows', () => {
-    expect(exampleForShape('fullstack')).toBe('Next.js or Laravel')
-    expect(exampleForShape('separate')).toBe('React/Vite + Spring Boot or Laravel')
-    expect(exampleForShape('mobile')).toBeUndefined()
   })
 
   it('keeps existing standalone Vite and Expo combinations', () => {

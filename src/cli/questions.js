@@ -6,9 +6,9 @@ import {
   stylingChoicesFor,
 } from '../engine/load-library.js'
 import {
+  APPLICATION_SHAPES,
   applicationShapeChoices,
   backendChoicesForShape,
-  exampleForShape,
   frontendChoicesForShape,
 } from '../engine/project-shapes.js'
 import { laravelUiPromptContribution } from '../stacks/backends/laravel/ui/index.js'
@@ -27,6 +27,12 @@ function choice(title, value, { hint, recommended } = {}) {
 
 function footerMarker(text) {
   return { type: 'description-footer', text }
+}
+
+export function exampleForShape(shape) {
+  const description = APPLICATION_SHAPES[shape]?.description
+  const match = description?.match(/Example:\s*(.+?)\.?$/)
+  return match ? match[1] : undefined
 }
 
 function describeExisting(entries, description, hintFor) {

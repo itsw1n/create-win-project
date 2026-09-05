@@ -48,11 +48,6 @@ export function applicationShapeChoices() {
   }))
 }
 
-export function exampleForShape(shape) {
-  const match = APPLICATION_SHAPES[shape]?.description.match(/Example:\s*(.+?)\.?$/)
-  return match ? match[1] : undefined
-}
-
 export function combinationsForShape(shape) {
   if (!APPLICATION_SHAPES[shape]) throw new Error(`Unknown application shape: ${shape}`)
   return VALID_COMBINATIONS[shape].map(([frontend, backend]) => ({ frontend, backend }))

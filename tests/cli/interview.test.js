@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { configurationDecisionChoices, lastEnabledIndex, promptWithBack } from '../../src/cli/navigation.js'
-import { buildQuestions } from '../../src/cli/questions.js'
+import { buildQuestions, exampleForShape } from '../../src/cli/questions.js'
 
 function fakeInquirer(responses, seen = []) {
   return {
@@ -19,9 +19,9 @@ function fakeInquirer(responses, seen = []) {
       for (;;) {
         const value = responses.shift()
         const back = question.choices?.find((choice) => choice?.name === '← Back')
-        const resolved = value === 'BACK' ? back.value : value
+        const resolved = value === 'BACK' ? back.value : value === 'ENTER' ? question.default : value
         if (typeof question.validate === 'function') {
-          const verdict = await question.validate(resolved, {})
+          const verdict = await question.validate(resolved, answersState)
           if (verdict !== true) continue
         }
         return { [question.name]: resolved }
@@ -77,6 +77,12 @@ describe('navigable interview', () => {
     expect(seen[1].choices.at(-1).name).toBe('← Back')
   })
 
+  it('extracts only authored shape examples for compact rows', () => {
+    expect(exampleForShape('fullstack')).toBe('Next.js or Laravel')
+    expect(exampleForShape('separate')).toBe('React/Vite + Spring Boot or Laravel')
+    expect(exampleForShape('mobile')).toBeUndefined()
+  })
+
   it('resumes Back-and-edit at the last enabled question with Back available', async () => {
     const questions = [
       { type: 'list', name: 'a', message: 'A?', choices: [{ name: 'A1', value: 'a1' }] },
@@ -108,7 +114,7 @@ describe('navigable interview', () => {
     // at the follow-up: must land back on A, not return to Ready.
     const seen = []
     const second = await promptWithBack(
-      recordingInquirer([[], 'BACK', 'a1', [], 'continue'], seen),
+      recordingInquirer(['ENTER', 'BACK', 'a1', [], 'continue'], seen),
       questions, first, lastEnabledIndex(questions, first),
     )
     expect(seen.map((question) => question.name)).toEqual(['b', '__continue', 'a', 'b', '__continue'])
