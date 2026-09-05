@@ -1,21 +1,21 @@
 import fs from 'fs-extra'
 import path from 'path'
-import { loadCatalog, resolveStack } from '../../engine/load-library.js'
-import { loadCompatibility } from '../../engine/tested-versions.js'
-import { buildRulesIndex, copySelectedPlaybooks } from '../../engine/project-guidance.js'
-import { buildVars, render, readTemplate } from '../../engine/render-templates.js'
-import { buildRunnableFiles } from '../../../lib/scaffold.js'
+import { loadCatalog, resolveStack } from '../engine/load-library.js'
+import { loadCompatibility } from '../engine/tested-versions.js'
+import { buildRulesIndex, copySelectedPlaybooks } from '../engine/project-guidance.js'
+import { buildVars, render, readTemplate } from '../engine/render-templates.js'
+import { buildRunnableFiles } from '../../lib/scaffold.js'
 import {
   contextMd, progressMd, docPlaceholder,
   editorconfig, prettierrc, prTemplate,
-} from '../../engine/project-files.js'
+} from '../engine/project-files.js'
 import {
   projectDestinations,
   writeFile as write,
   writeProjectAtomically,
-} from '../../engine/write-files.js'
-import { writeRenderedFile as writeTemplate } from '../../engine/render-templates.js'
-import { laravelCompose } from '../backends/laravel/docker.js'
+} from '../engine/write-files.js'
+import { writeRenderedFile as writeTemplate } from '../engine/render-templates.js'
+import { laravelCompose } from './backends/laravel/docker.js'
 
 /**
  * Main entry point — generates the full project
