@@ -18,6 +18,7 @@ npm-debug.log*
 
 # Local planning artifacts
 .superpowers/
+docs/superpowers/
 
 # OS / Editor
 .DS_Store
