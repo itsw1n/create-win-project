@@ -1,10 +1,61 @@
 import chalk from 'chalk'
 import ora from 'ora'
-import { APPLICATION_SHAPES } from '../../lib/application-shapes.js'
-export { w1nBanner } from '../../lib/banner.js'
-export { projectLocationNotice } from '../../lib/project-location.js'
-import { w1nBanner } from '../../lib/banner.js'
+import { APPLICATION_SHAPES } from '../engine/project-shapes.js'
+import path from 'node:path'
 
+// ─── Banner (from lib/banner.js) ────────────────────────────────────────────
+const W1N = [
+  ' ██╗    ██╗  ██╗ ███╗  ██╗',
+  ' ██║    ██║ ███║ ████╗ ██║',
+  ' ██║ █╗ ██║ ╚██║ ██╔██╗██║',
+  ' ██║███╗██║  ██║ ██║╚████║',
+  ' ╚███╔███╔╝  ██║ ██║ ╚███║',
+  '  ╚══╝╚══╝   ╚═╝ ╚═╝  ╚══╝',
+]
+const PROJECT = [
+  ' █▀█ █▀█ █▀█   █ █▀▀ █▀▀ ▀█▀',
+  ' █▀▀ █▀█ █ █   █ █▀  █    █ ',
+  ' █   █ █ █▄█ █▄█ █▄▄ █▄▄  █ ',
+]
+function plain() {
+  return [...W1N, '', ...PROJECT].join('\n')
+}
+function colored() {
+  const w1n = W1N.map((l) => chalk.bold.cyan(l)).join('\n')
+  const proj = PROJECT.map((l) => chalk.bold.white(l)).join('\n')
+  return `${w1n}\n${proj}`
+}
+export function w1nBanner() {
+  const noColor = process.env.NO_COLOR !== undefined || process.env.FORCE_COLOR === '0'
+  const isTTY = process.stdout.isTTY
+  const width = process.stdout.columns || 80
+  if (!isTTY || width < 80 || noColor) {
+    if (width < 60) return 'W1N PROJECT'
+    return plain()
+  }
+  return colored()
+}
+export const bannerRaw = plain()
+export const W1N_ART = W1N.join('\n')
+export const PROJECT_ART = PROJECT.join('\n')
+
+// ─── Project location (from src/engine/project-location.js) ─────────────────
+export function isInsideDirectory(candidate, parent) {
+  const relative = path.relative(path.resolve(parent), path.resolve(candidate))
+  return relative === '' || (!relative.startsWith('..') && !path.isAbsolute(relative))
+}
+export function projectLocationNotice({ cwd, cliRoot, projectName }) {
+  if (!isInsideDirectory(cwd, cliRoot)) return null
+  const generatedPath = path.join(path.resolve(cwd), projectName)
+  const suggestedPath = path.join(path.dirname(path.resolve(cliRoot)), projectName)
+  return {
+    generatedPath,
+    suggestedPath,
+    message: `This project was created inside the create-win-project repository. Move or cut the generated folder to your normal projects folder outside this repository before you start committing application work.`,
+  }
+}
+
+// ─── Display helpers ─────────────────────────────────────────────────────────
 export function printBanner(profile, output = console.log) {
   output('')
   output(w1nBanner())
