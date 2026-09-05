@@ -3,7 +3,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import { generateProject } from '../engine/create-project.js'
 import { runDependencySteps } from '../engine/install-dependencies.js'
-import { loadCompatibility } from '../../lib/compatibility.js'
+import { loadCompatibility } from '../engine/tested-versions.js'
 import { buildQuestions, configurationDecisionChoices, promptWithBack } from './questions.js'
 import {
   printBanner,
@@ -27,7 +27,7 @@ import {
 import { parseArguments } from './arguments.js'
 import {
   loadCatalog, resolveStack,
-} from '../../lib/catalog.js'
+} from '../engine/load-library.js'
 import {
   decideInstallation,
   detectSystemVersions,

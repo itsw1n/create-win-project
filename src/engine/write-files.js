@@ -31,4 +31,4 @@ export async function writeFile(destination, filePath, content) {
 }
 
 // Generated documentation/file-content builders remain compatible during the migration.
-export * from '../../lib/files.js'
+export * from './project-files.js'
