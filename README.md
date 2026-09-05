@@ -13,10 +13,10 @@ Stop bikeshedding folders for 3 days. Stop pasting a 500-line `AGENTS.md` that b
 [![CI](https://github.com/itsw1n/create-win-project/actions/workflows/ci.yml/badge.svg)](https://github.com/itsw1n/create-win-project/actions/workflows/ci.yml)
 [![Node](https://img.shields.io/badge/node-24_LTS-green)](https://nodejs.org)
 [![Definition-driven](https://img.shields.io/badge/architecture-definition--driven-blue)](./library)
-[![Lean docs](https://img.shields.io/badge/AGENTS.md-lean%20%26%20lazy-9cf)](./playbooks)
+[![Lean docs](https://img.shields.io/badge/AGENTS.md-lean%20%26%20lazy-9cf)](./library)
 [![Interactive](https://img.shields.io/badge/cli-interactive-ff69b4)](./index.js)
 
-Next.js · React + Vite · Expo (React Native) · Spring Boot · Supabase · PostgreSQL · Tailwind · CSS Modules
+Next.js · React + Vite · Expo (React Native) · Spring Boot · Laravel · Supabase · PostgreSQL · Tailwind · CSS Modules
 
 ---
 
@@ -46,6 +46,7 @@ Manifests declare capabilities and package names. A tested compatibility profile
 | **Expo** | Node 22.14+ with npm 11.19+ (tested on Node 24) + Expo Go app → `npm install` → `npx expo start` | Expo Router layout/screen, `app.json`, Jest, TS |
 | **Supabase** | Docker for the generated local Supabase stack | Pinned local CLI, migrations/RLS tests, platform-native clients; login/callback/secure lifecycle only when login is selected |
 | **Spring Boot / PostgreSQL** | JDK 21 + Docker for DB **only if you selected them** | Maven app, public health + fail-closed security, Flyway/PostgreSQL; server session or OIDC Resource Server when login is selected |
+| **Laravel** | PHP 8.5.10+ and Composer 2.10.3+; Node is also needed for Inertia React assets | API-only or Blade, Livewire, and Inertia React foundations; session, Sanctum SPA, or OIDC authentication according to the selected application shape |
 
 **Hybrid:** the exact commands for *your* stack live in the README inside `./your-project` and `docs/guides/setup.md` — no duplication here. If you didn't enable Docker/Make, no compose file is generated.
 
@@ -112,7 +113,7 @@ Before automatic installation, the CLI checks the current Node, npm, PHP, and Co
 ## Features
 
 - **Three frontend families** — Next.js App Router, React + Vite, and Expo Router.
-- **Optional backends** — every frontend can choose no backend, Supabase, PostgreSQL where supported, or Spring Boot.
+- **Optional backends** — choose no backend, Supabase, PostgreSQL, Spring Boot, or Laravel where supported by the selected application shape.
 - **Styling** — Tailwind CSS or CSS Modules (native-styles for Expo).
 - **Lean agent docs** — `AGENTS.md` (tiny, always on) + `RULES.md` (lazy index) generated per project.
 - **Stack-native profiles** — Small, Medium (recommended/default), and Large map to familiar architecture for each selected stack; Large defaults to a modular monolith, not microservices.
@@ -139,7 +140,29 @@ Before automatic installation, the CLI checks the current Node, npm, PHP, and Co
 
 ## How it works
 
-The generator never hardcodes the folder or playbook list. It loads `library/**/definition.json` and resolves a *stack*:
+The generator separates declarative stack knowledge from executable generation code:
+
+```text
+CLI interview
+    ↓
+validated answers + compatibility profile
+    ↓
+library manifests + explicit stack-adapter registry
+    ↓
+resolved project descriptor
+    ↓
+stack-owned files + shared documentation/tooling contributions
+    ↓
+atomic staged write → optional dependency installation
+```
+
+- `src/cli/` owns arguments, the interview, Back navigation, summaries, and runtime diagnostics.
+- `library/**/definition.json` declares stack identity, compatibility, dependency names, environment variables, constraints, and playbook routing. Exact versions come only from `library/tested-versions.json`.
+- `src/stacks/available-stacks.js` explicitly registers supported adapters. Each adapter under `src/stacks/frontends/` or `src/stacks/backends/` owns its executable files and stack-specific environment, Docker, CI, and installation contributions.
+- `src/engine/` validates answers, loads the catalog and compatibility profile, resolves the project descriptor, renders templates, and coordinates safe writes without importing concrete stack implementations.
+- Generation happens in a staging directory and moves into place only after every step succeeds. A non-empty destination is never overwritten.
+
+A manifest supplies the declarative half of a stack. For example:
 
 ```jsonc
 // library/stacks/nextjs/definition.json (excerpt)
@@ -147,7 +170,7 @@ The generator never hardcodes the folder or playbook list. It loads `library/**/
   "id": "nextjs",
   "kind": "frontend",
   "label": "Next.js",
-  "appliesTo": { "backend": ["none", "supabase", "springboot", "postgres"] },
+  "appliesTo": { "backend": ["none", "supabase", "springboot", "postgres", "laravel"] },
   "architectureProfiles": ["small", "medium", "large"],
   "playbooks": [
     "stack/nextjs/architecture.md",
@@ -157,13 +180,20 @@ The generator never hardcodes the folder or playbook list. It loads `library/**/
     "stack/nextjs/testing.md"
   ],
   "deps": ["next", "react", "react-dom"],
+  "devDeps": ["typescript", "@types/react", "eslint", "eslint-config-next"],
   "concerns": [
-    { "id": "validation", "required": false, "when": "runtime validation needed", "sections": ["Zod for Runtime Validation"] }
+    {
+      "id": "validation",
+      "required": false,
+      "when": "Project has forms / runtime input",
+      "playbook": "concerns/zod.md",
+      "sections": ["Schema First, Always", "Zod Schema Placement"]
+    }
   ]
 }
 ```
 
-Versions are resolved from `library/tested-versions.json`; definitions never own them. The current tested profile is the default, while `--profile=YYYY.MM` selects a retained profile explicitly. Add a policy-only concern with a definition + guidance file. A new executable stack also needs a focused stack implementation and a contract test — this prevents docs from advertising code that doesn't exist.
+The current tested profile is the default; `--profile=YYYY.MM` selects a retained profile explicitly. Adding an executable stack requires both a manifest and a registered adapter with contract and compatibility coverage, so documentation alone can never advertise unsupported behavior. See [Architecture](./docs/ARCHITECTURE.md) for ownership rules and [Contributing](./docs/CONTRIBUTING.md) for the extension workflow.
 
 ## Topics
 
