@@ -135,6 +135,7 @@ describe('runnable project contract', () => {
     const compose = await fs.readFile(path.join(destination, 'docker-compose.yml'), 'utf8')
     expect(compose).toContain('backend:')
     expect(compose).toContain('postgres:16-alpine')
+    expect(compose).not.toContain('API_URL: http://localhost:8000')
     expect(await fs.pathExists(path.join(destination, 'Dockerfile.dev'))).toBe(true)
     const setup = await fs.readFile(path.join(destination, 'docs/guides/setup.md'), 'utf8')
     expect(setup).toContain('Default local setup')
