@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { loadCatalog, resolveStack, stylingChoicesFor, backendChoicesFor, architectureChoicesFor } from '../lib/catalog.js'
+import { loadCatalog, resolveStack, stylingChoicesFor, backendChoicesFor, architectureChoicesFor } from '../../lib/catalog.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const root      = path.resolve(__dirname, '..')
+const root      = path.resolve(__dirname, '..', '..')
 
 describe('catalog loading', () => {
   it('loads all manifests including concerns', async () => {

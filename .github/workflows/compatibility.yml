@@ -49,7 +49,7 @@ jobs:
           fi
           echo "scope=$scope" >> "$GITHUB_OUTPUT"
           echo "current=$(node -e 'const c=require("./compatibility/profiles.json"); process.stdout.write(c.defaultProfile)')" >> "$GITHUB_OUTPUT"
-          echo "matrix=$(node scripts/compatibility-matrix.mjs --scope=$scope)" >> "$GITHUB_OUTPUT"
+          echo "matrix=$(node checks/check-compatibility.js --scope=$scope)" >> "$GITHUB_OUTPUT"
 
   verify:
     needs: prepare
@@ -80,7 +80,7 @@ jobs:
           coverage: none
       - run: npm ci
       - name: Verify generated application
-        run: node scripts/verify-generated.mjs --profile=${{ matrix.profile }} --case=${{ matrix.case }} --architecture=${{ matrix.architecture }} --authentication=${{ matrix.authentication }} --auth-audience=${{ matrix.audience }} --containers=${{ needs.prepare.outputs.scope == 'full' && matrix.profile == needs.prepare.outputs.current }}
+        run: node checks/check-generated-project.js --profile=${{ matrix.profile }} --case=${{ matrix.case }} --architecture=${{ matrix.architecture }} --authentication=${{ matrix.authentication }} --auth-audience=${{ matrix.audience }} --containers=${{ needs.prepare.outputs.scope == 'full' && matrix.profile == needs.prepare.outputs.current }}
 
   compatibility-gate:
     name: compatibility-gate

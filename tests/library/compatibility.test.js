@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import path from 'node:path'
-import { composerPackageVersion, loadCompatibility, resolvePackages, validateCompatibility } from '../lib/compatibility.js'
-import { loadCatalog, resolveStack } from '../lib/catalog.js'
+import { composerPackageVersion, loadCompatibility, resolvePackages, validateCompatibility } from '../../lib/compatibility.js'
+import { loadCatalog, resolveStack } from '../../lib/catalog.js'
 
-const root = path.resolve(import.meta.dirname, '..')
+const root = path.resolve(import.meta.dirname, '..', '..')
 const profilesFile = path.join(root, 'library/tested-versions.json')
 
 describe('compatibility profiles', () => {

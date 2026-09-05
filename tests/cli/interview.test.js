@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { configurationDecisionChoices, promptWithBack } from '../lib/interview.js'
+import { configurationDecisionChoices, promptWithBack } from '../../lib/interview.js'
 
 function fakeInquirer(responses) {
   return {

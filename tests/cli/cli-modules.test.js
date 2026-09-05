@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
-import { parseArguments } from '../src/cli/arguments.js'
-import { buildQuestions } from '../src/cli/questions.js'
-import { printSummary } from '../src/cli/display.js'
+import { parseArguments } from '../../src/cli/arguments.js'
+import { buildQuestions } from '../../src/cli/questions.js'
+import { printSummary } from '../../src/cli/display.js'
 
 describe('CLI modules', () => {
   it('parses aliases and noninteractive flags', () => {

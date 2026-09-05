@@ -1,16 +1,16 @@
 import { describe, expect, it } from 'vitest'
 import path from 'node:path'
-import { loadCatalog, resolveStack } from '../lib/catalog.js'
-import { buildLaravelFiles } from '../lib/stacks/laravel/generate.js'
-import { buildLaravelFiles as buildLaravelFilesFromSource } from '../src/stacks/backends/laravel/generate.js'
-import { laravelAdapter as legacyLaravelAdapter } from '../lib/stacks/laravel/index.js'
-import { laravelAdapter } from '../src/stacks/backends/laravel/index.js'
-import { laravelSessionAuthentication } from '../lib/stacks/laravel/auth/session.js'
-import { sanctumSpaAuthentication } from '../lib/stacks/laravel/auth/sanctum.js'
-import { laravelOidcAuthentication } from '../lib/stacks/laravel/auth/oidc.js'
-import { getLaravelUi, laravelUiPromptContribution, laravelUis } from '../lib/stacks/laravel/ui/index.js'
+import { loadCatalog, resolveStack } from '../../lib/catalog.js'
+import { buildLaravelFiles } from '../../lib/stacks/laravel/generate.js'
+import { buildLaravelFiles as buildLaravelFilesFromSource } from '../../src/stacks/backends/laravel/generate.js'
+import { laravelAdapter as legacyLaravelAdapter } from '../../lib/stacks/laravel/index.js'
+import { laravelAdapter } from '../../src/stacks/backends/laravel/index.js'
+import { laravelSessionAuthentication } from '../../lib/stacks/laravel/auth/session.js'
+import { sanctumSpaAuthentication } from '../../lib/stacks/laravel/auth/sanctum.js'
+import { laravelOidcAuthentication } from '../../lib/stacks/laravel/auth/oidc.js'
+import { getLaravelUi, laravelUiPromptContribution, laravelUis } from '../../lib/stacks/laravel/ui/index.js'
 
-const root = path.resolve(import.meta.dirname, '..')
+const root = path.resolve(import.meta.dirname, '..', '..')
 
 async function laravelStack(overrides = {}) {
   const catalog = await loadCatalog(path.join(root, 'library'))

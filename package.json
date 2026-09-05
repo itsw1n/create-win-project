@@ -18,7 +18,7 @@
     "library",
     "ci",
     "templates",
-    "scripts",
+    "checks",
     "docs/ARCHITECTURE.md",
     "docs/CONTENT_MODEL.md",
     "docs/DEPENDENCY_MAINTENANCE.md",
@@ -29,10 +29,10 @@
     "start": "node index.js",
     "doctor": "node index.js doctor",
     "test": "vitest run",
-    "validate:content": "node scripts/validate-content.mjs",
-    "matrix:smoke": "node scripts/compatibility-matrix.mjs --scope=smoke",
-    "matrix:full": "node scripts/compatibility-matrix.mjs --scope=full",
-    "verify:generated": "node scripts/verify-generated.mjs"
+    "validate:content": "node checks/check-library.js",
+    "matrix:smoke": "node checks/check-compatibility.js --scope=smoke",
+    "matrix:full": "node checks/check-compatibility.js --scope=full",
+    "verify:generated": "node checks/check-generated-project.js"
   },
   "engines": {
     "node": ">=22.14",

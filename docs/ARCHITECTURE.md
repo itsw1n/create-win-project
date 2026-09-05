@@ -33,7 +33,7 @@ The migration target has three explicit source boundaries:
 - `src/engine` owns validated project orchestration, tested-version and library loading, safe writes, dependency installation, and template rendering. It must not import terminal code or concrete stack folders.
 - `src/stacks` owns stack rules, the explicit available-stack list, and stack-specific generated behavior. Stack modules must not import CLI or engine implementation modules.
 
-During the architecture migration, these paths provide compatibility exports backed by the existing `lib` modules. Each later phase moves one responsibility behind the new path, updates callers, and removes its wrapper only after old and new imports are proven equivalent. `tests/architecture-boundaries.test.js` enforces dependency direction, while `tests/architecture-compatibility.test.js` protects public imports, representative paths, and byte-identical generated output.
+During the architecture migration, these paths provide compatibility exports backed by the existing `lib` modules. Each later phase moves one responsibility behind the new path, updates callers, and removes its wrapper only after old and new imports are proven equivalent. `tests/architecture-boundaries.test.js` enforces dependency direction, while `tests/engine/architecture-compatibility.test.js` protects public imports, representative paths, and byte-identical generated output.
 
 Root `index.js` remains the stable executable entry point. Generated-project paths such as `playbooks/`, `RULES.md`, and application folders are user-facing and do not change merely because generator source files move.
 
