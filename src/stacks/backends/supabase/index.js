@@ -1,4 +1,5 @@
 import { defineStackAdapter } from '../../../../lib/stacks/contract.js'
+import { buildSupabaseProjectFiles } from './create-files.js'
 
 export const supabaseAdapter = defineStackAdapter({
   id: 'supabase',
@@ -12,6 +13,7 @@ export const supabaseAdapter = defineStackAdapter({
     runtime: 'docker',
   },
   contributes: {
+    files: ({ stack }) => Object.entries(buildSupabaseProjectFiles(stack)),
     environment: () => ['SUPABASE_URL', 'SUPABASE_PUBLISHABLE_KEY'],
     install: () => [{ cwd: '.', command: 'npm', args: ['run', 'supabase:start'] }],
     docker: () => [{ template: 'supabase', path: 'docker-compose.yml' }],
@@ -23,4 +25,3 @@ export const supabaseAdapter = defineStackAdapter({
     ],
   },
 })
-

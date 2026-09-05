@@ -1,4 +1,5 @@
 import { defineStackAdapter } from '../../../../lib/stacks/contract.js'
+import { buildSpringBootFiles } from './create-files.js'
 
 export const springbootAdapter = defineStackAdapter({
   id: 'springboot',
@@ -12,6 +13,7 @@ export const springbootAdapter = defineStackAdapter({
     runtime: 'java',
   },
   contributes: {
+    files: ({ answers, stack, vars }) => Object.entries(buildSpringBootFiles(answers, vars, stack)),
     environment: () => ['API_URL', 'DATABASE_URL', 'POSTGRES_USER', 'POSTGRES_PASSWORD', 'POSTGRES_DB', 'SPRING_PROFILES_ACTIVE'],
     install: () => [{ cwd: 'backend', command: './mvnw', args: ['dependency:go-offline'] }],
     docker: () => [{ template: 'springboot', developmentPath: 'backend/Dockerfile.dev', productionPath: 'backend/Dockerfile' }],
@@ -24,4 +26,3 @@ export const springbootAdapter = defineStackAdapter({
     ],
   },
 })
-
