@@ -171,11 +171,7 @@ Next.js · React · Spring Boot · Supabase · PostgreSQL · TypeScript · Tailw
 
 ## Contributing
 
-1. Fork and create a feature branch.
-2. `npm install` and `npm test` must stay green.
-3. Add or update a co-located `definition.json` for new stacks/concerns; put package versions only in `library/tested-versions.json`.
-4. Run `npm run verify:generated -- --profile=2026.09 --case=nextjs-supabase --architecture=medium --authentication=yes` for a focused executable check. CI runs every supported combination, architecture/auth model, and retained profile.
-5. Document migration work for major upgrades, then open a pull request.
+See [docs/CONTRIBUTING.md](./docs/CONTRIBUTING.md) — one workflow for every stack: quick start, 6-step vertical stack addition (`library/**` -> `src/stacks/<id>/` -> `available-stacks.js` -> tests/matrix -> verify), testing gates (`npm test`, `matrix:smoke` -> `dev`, `matrix:full` -> `main`), and version ownership (`library/tested-versions.json` only).
 
 ## License
 
