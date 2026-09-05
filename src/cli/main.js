@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url'
 import { generateProject } from '../engine/create-project.js'
 import { runDependencySteps } from '../engine/install-dependencies.js'
 import { loadCompatibility } from '../engine/tested-versions.js'
-import { buildQuestions, configurationDecisionChoices, promptWithBack } from './questions.js'
+import { buildQuestions, configurationDecisionChoices, lastEnabledIndex, promptWithBack } from './questions.js'
 import {
   printBanner,
   generationFailed,
@@ -75,8 +75,10 @@ let answers = {
   backend: backendArg,
 }
 let stack
+let resumeAt = 0
 while (true) {
-answers = await promptWithBack(inquirer, questions, answers)
+answers = await promptWithBack(inquirer, questions, answers, resumeAt)
+resumeAt = 0
 answers.compatibilityProfile = profile.id
 answers.applicationShape = shapeArg || answers.applicationShape
 answers.architecture = architectureArg || answers.architecture || 'medium'
@@ -97,6 +99,7 @@ const { decision } = await inquirer.prompt([{
 }])
 
 if (decision === 'back') {
+  resumeAt = lastEnabledIndex(questions, answers)
   continue
 }
 if (decision === 'cancel') {

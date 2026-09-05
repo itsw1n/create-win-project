@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { configurationDecisionChoices, promptWithBack } from '../../src/cli/navigation.js'
+import { configurationDecisionChoices, lastEnabledIndex, promptWithBack } from '../../src/cli/navigation.js'
 import { buildQuestions } from '../../src/cli/questions.js'
 
 function fakeInquirer(responses) {
@@ -69,6 +69,25 @@ describe('navigable interview', () => {
     // No Back on the first prompt (nothing to return to); Back closes later lists.
     expect(firstChoices.some((choice) => choice?.name === '← Back')).toBe(false)
     expect(seen[1].choices.at(-1).name).toBe('← Back')
+  })
+
+  it('resumes Back-and-edit at the last enabled question with Back available', async () => {
+    const questions = [
+      { type: 'list', name: 'a', message: 'A?', choices: [{ name: 'A1', value: 'a1' }] },
+      { type: 'list', name: 'b', message: 'B?', choices: [{ name: 'B1', value: 'b1' }] },
+      { type: 'list', name: 'c', message: 'C?', choices: [{ name: 'C1', value: 'c1' }] },
+      { type: 'list', name: 'd', message: 'D?', choices: [{ name: 'D1', value: 'd1' }], when: () => false },
+    ]
+    const first = await promptWithBack(fakeInquirer(['a1', 'b1', 'c1']), questions)
+    expect(lastEnabledIndex(questions, first)).toBe(2)
+    const seen = []
+    const second = await promptWithBack(
+      recordingInquirer(['c1'], seen), questions, first, lastEnabledIndex(questions, first),
+    )
+    expect(seen[0].name).toBe('c')
+    expect(seen[0].message).toContain('Step 3 of 4')
+    expect(seen[0].choices.some((choice) => choice?.name === '← Back')).toBe(true)
+    expect(second).toMatchObject({ a: 'a1', b: 'b1', c: 'c1' })
   })
 
   it('offers create, edit, and cancel at confirmation', () => {

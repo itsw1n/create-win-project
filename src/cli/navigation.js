@@ -30,10 +30,24 @@ function clearFrom(questions, answers, index) {
  * Runs Inquirer questions one at a time so users can safely revisit earlier answers.
  * List/checkbox/confirm prompts expose a visible Back choice; text prompts accept `:back`.
  */
-export async function promptWithBack(inquirer, questions, initialAnswers = {}) {
+export function lastEnabledIndex(questions, answers) {
+  let last = 0
+  questions.forEach((question, index) => {
+    if (enabled(question, answers)) last = index
+  })
+  return last
+}
+
+export async function promptWithBack(inquirer, questions, initialAnswers = {}, startIndex = 0) {
   const answers = { ...initialAnswers }
+  // Seed history with previously asked prompts so Back navigation,
+  // step numbering, and clearFrom targets mirror a natural pass.
+  // Skipped (when:false) prompts are never seeded, exactly as a pass never pushes them.
   const history = []
-  let index = 0
+  for (let seed = 0; seed < startIndex; seed += 1) {
+    if (enabled(questions[seed], answers)) history.push(seed)
+  }
+  let index = startIndex
 
   while (index < questions.length) {
     const source = questions[index]

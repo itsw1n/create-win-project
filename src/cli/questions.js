@@ -1,4 +1,4 @@
-export { configurationDecisionChoices, promptWithBack, wrapText } from './navigation.js'
+export { configurationDecisionChoices, lastEnabledIndex, promptWithBack, wrapText } from './navigation.js'
 import chalk from 'chalk'
 import {
   architectureChoicesFor,
