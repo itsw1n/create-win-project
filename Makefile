@@ -7,6 +7,12 @@
 IMAGE   := create-win-project:dev
 COMPOSE := docker compose
 
+# Host IDs for the container user: so files created through bind mounts are
+# owned by you, not root (make clean works without sudo). Falls back to 1000
+# where `id` is unavailable (e.g. some Windows shells); compose defaults match.
+export UID := $(shell id -u 2>/dev/null || echo 1000)
+export GID := $(shell id -g 2>/dev/null || echo 1000)
+
 .DEFAULT_GOAL := help
 
 # ─── Help — grouped by ##@ category ──────────────────────────────────────────
