@@ -21,6 +21,7 @@ function imports(source) {
 
 describe('no legacy lib wrappers', () => {
   it('bans src/** importing lib/** (src is canonical)', async () => {
+    expect(await fs.pathExists(path.join(root, 'lib'))).toBe(false)
     const allowed = new Set([])
     const files = await sourceFiles(path.join(root, 'src'))
     const violations = []
@@ -40,18 +41,5 @@ describe('no legacy lib wrappers', () => {
       }
     }
     expect(violations).toEqual([])
-  })
-
-  it('bans one-line export wrappers to lib in src', async () => {
-    const files = await sourceFiles(path.join(root, 'src'))
-    const wrappers = []
-    for (const file of files) {
-      const content = await fs.readFile(file, 'utf8')
-      const lines = content.trim().split('\n').filter(l => l.trim() && !l.trim().startsWith('//'))
-      if (lines.length <= 2 && /export\s+.*from\s+['"].*\/lib\//.test(content)) {
-        wrappers.push(path.relative(root, file))
-      }
-    }
-    expect(wrappers).toEqual([])
   })
 })

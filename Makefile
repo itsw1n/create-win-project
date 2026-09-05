@@ -56,12 +56,12 @@ clean: ## Remove .demo/ and Docker image
 ##@ Checks (all inside Docker)
 
 .PHONY: audit
-audit: ## Audit lib/ for identity checks and hardcoded env prefixes
-	@$(COMPOSE) run --rm --entrypoint sh app -c 'echo "=== Identity checks in lib/ ==="; grep -rn "isNextjs\|isReact\|isSpringBoot\|isSupabase\|isPrisma" lib/ || echo "  None found ✓"; echo ""; echo "=== Hardcoded env prefixes in lib/ ==="; grep -rn "NEXT_PUBLIC_\|VITE_\|EXPO_PUBLIC_" lib/ || echo "  None found ✓"'
+audit: ## Audit engine boundaries and stack-owned environment prefixes
+	@$(COMPOSE) run --rm --entrypoint sh app -c 'echo "=== Engine stack branching ==="; grep -rn "stack\.frontendKey\|stack\.backendKey" src/engine/ || echo "  None found ✓"; echo ""; echo "=== Stack environment prefixes ==="; grep -rn "NEXT_PUBLIC_\|VITE_\|EXPO_PUBLIC_" src/stacks/ || echo "  None found ✓"'
 
 .PHONY: fix-templates
-fix-templates: ## Check lib/files.js for leftover identity checks
-	@$(COMPOSE) run --rm --entrypoint sh app -c 'echo "Remaining identity checks in lib/files.js:"; grep -n "isNextjs\|isReact\|isSpringBoot\|isSupabase\|isPrisma" lib/files.js || echo "  None found ✓"'
+fix-templates: ## Check engine files for leftover stack identity checks
+	@$(COMPOSE) run --rm --entrypoint sh app -c 'echo "Remaining identity checks in src/engine/:"; grep -rn "isNextjs\|isReact\|isSpringBoot\|isSupabase\|isPrisma" src/engine/ || echo "  None found ✓"'
 
 .PHONY: templates
 templates: ## List all template files

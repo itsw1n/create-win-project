@@ -1,4 +1,4 @@
-import { composerPackageVersion } from '../../../engine/tested-versions.js'
+import { composerPackageVersion } from '../../shared/javascript-package.js'
 import { usesLaravelSession } from './auth/session.js'
 import { isSanctumSpa, sanctumSpaAuthentication } from './auth/sanctum.js'
 import { isLaravelOidc, laravelOidcAuthentication } from './auth/oidc.js'

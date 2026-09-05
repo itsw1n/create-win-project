@@ -1,5 +1,5 @@
 import path from 'node:path'
-import { packageVersion } from '../engine/tested-versions.js'
+import { packageVersion } from './shared/javascript-package.js'
 import { stackRegistry } from './available-stacks.js'
 import { collectContributions } from './shared/contributions.js'
 import { buildSharedTestFiles, buildSupabaseWebFiles } from './backends/supabase/create-files.js'
