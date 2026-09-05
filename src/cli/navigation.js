@@ -48,6 +48,7 @@ export async function promptWithBack(inquirer, questions, initialAnswers = {}, s
     if (enabled(questions[seed], answers)) history.push(seed)
   }
   let index = startIndex
+  let resumeHintShown = startIndex === 0
 
   while (index < questions.length) {
     const source = questions[index]
@@ -62,6 +63,10 @@ export async function promptWithBack(inquirer, questions, initialAnswers = {}, s
         ? 'Type an answer • Enter continues • :back returns'
         : 'Arrow keys move • Enter selects • Back returns'
     question.message = `${chalk.cyan.bold(`Step ${history.length + 1} of ${questions.length} - ${title}`)}\n${chalk.dim(controls)}\n`
+    if (!resumeHintShown) {
+      question.message = `${question.message}${chalk.dim('(editing previous answers — choose ← Back to revisit earlier steps, Enter keeps values and returns)\n')}`
+      resumeHintShown = true
+    }
     if (answers[source.name] !== undefined && question.default === undefined) {
       question.default = answers[source.name]
     }

@@ -86,8 +86,17 @@ describe('navigable interview', () => {
     )
     expect(seen[0].name).toBe('c')
     expect(seen[0].message).toContain('Step 3 of 4')
+    expect(seen[0].message).toContain('editing previous answers')
     expect(seen[0].choices.some((choice) => choice?.name === '← Back')).toBe(true)
     expect(second).toMatchObject({ a: 'a1', b: 'b1', c: 'c1' })
+  })
+
+  it('shows no resume hint on a fresh start', async () => {
+    const seen = []
+    await promptWithBack(recordingInquirer(['a1'], seen), [
+      { type: 'list', name: 'a', message: 'A?', choices: [{ name: 'A1', value: 'a1' }] },
+    ])
+    expect(seen[0].message).not.toContain('editing previous answers')
   })
 
   it('offers create, edit, and cancel at confirmation', () => {
