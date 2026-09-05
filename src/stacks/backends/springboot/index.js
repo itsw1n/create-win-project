@@ -1,4 +1,8 @@
 import { defineStackAdapter } from '../../../../lib/stacks/contract.js'
+import { buildSpringBootFiles } from './create-files.js'
+import { ciContributions } from './ci.js'
+import { dockerContributions } from './docker.js'
+import { environmentContributions } from './environment.js'
 
 export const springbootAdapter = defineStackAdapter({
   id: 'springboot',
@@ -12,10 +16,11 @@ export const springbootAdapter = defineStackAdapter({
     runtime: 'java',
   },
   contributes: {
-    environment: () => ['API_URL', 'DATABASE_URL', 'POSTGRES_USER', 'POSTGRES_PASSWORD', 'POSTGRES_DB', 'SPRING_PROFILES_ACTIVE'],
+    files: ({ answers, stack, vars }) => Object.entries(buildSpringBootFiles(answers, vars, stack)),
+    environment: environmentContributions,
     install: () => [{ cwd: 'backend', command: './mvnw', args: ['dependency:go-offline'] }],
-    docker: () => [{ template: 'springboot', developmentPath: 'backend/Dockerfile.dev', productionPath: 'backend/Dockerfile' }],
-    ci: () => [{ template: 'springboot', path: '.github/workflows/ci-backend.yml' }],
+    docker: dockerContributions,
+    ci: ciContributions,
     verification: () => [
       { frontend: 'nextjs', architecture: 'small', authentication: 'public' },
       { frontend: 'react', architecture: 'medium', authentication: 'session' },
@@ -24,4 +29,3 @@ export const springbootAdapter = defineStackAdapter({
     ],
   },
 })
-

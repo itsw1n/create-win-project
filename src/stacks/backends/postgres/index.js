@@ -1,4 +1,8 @@
 import { defineStackAdapter } from '../../../../lib/stacks/contract.js'
+import { buildPostgresFiles } from './create-files.js'
+import { ciContributions } from './ci.js'
+import { dockerContributions } from './docker.js'
+import { environmentContributions } from './environment.js'
 
 export const postgresAdapter = defineStackAdapter({
   id: 'postgres',
@@ -12,9 +16,11 @@ export const postgresAdapter = defineStackAdapter({
     runtime: 'postgres',
   },
   contributes: {
-    environment: () => ['DATABASE_URL'],
+    files: () => Object.entries(buildPostgresFiles()),
+    environment: environmentContributions,
     install: () => [{ cwd: '.', command: 'npm', args: ['run', 'prisma:generate'] }],
-    docker: () => [{ template: 'postgres', path: 'docker-compose.yml' }],
+    docker: dockerContributions,
+    ci: ciContributions,
     verification: () => [
       { frontend: 'nextjs', architecture: 'small', authentication: 'public' },
       { frontend: 'nextjs', architecture: 'medium', authentication: 'undecided' },
@@ -22,4 +28,3 @@ export const postgresAdapter = defineStackAdapter({
     ],
   },
 })
-
