@@ -5,10 +5,10 @@
  */
 export function buildNextjsFiles(answers, stack, shared) {
   const files = {}
-  files['package.json'] = shared.packageFile(answers, stack)
+  files['package.json'] = packageFile(answers, stack)
   files['.node-version'] = `${stack.profile.runtimes.node}\n`
   files['.npmrc'] = 'engine-strict=true\n'
-  files['tsconfig.json'] = shared.json({
+  files['tsconfig.json'] = json({
     compilerOptions: {
       target: 'ES2017', lib: ['dom', 'dom.iterable', 'esnext'], allowJs: false,
       skipLibCheck: true, strict: true, noEmit: true, esModuleInterop: true,
@@ -41,3 +41,5 @@ export function buildNextjsFiles(answers, stack, shared) {
   if (stack.backendKey === 'postgres') Object.assign(files, shared.prismaFiles())
   return files
 }
+import { json } from '../../shared/javascript-package.js'
+import { packageFile } from './dependencies.js'

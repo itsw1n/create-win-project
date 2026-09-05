@@ -1,10 +1,13 @@
+import { json } from '../../shared/javascript-package.js'
+import { packageFile } from './dependencies.js'
+
 export function buildReactNativeFiles(answers, stack, shared) {
   const files = {
-    'package.json': shared.packageFile(answers, stack),
+    'package.json': packageFile(answers, stack),
     '.node-version': `${stack.profile.runtimes.node}\n`,
     '.npmrc': 'engine-strict=true\n',
-    'app.json': shared.json({ expo: { name: answers.projectName, slug: answers.projectName, version: '1.0.0', orientation: 'portrait', scheme: answers.projectName, userInterfaceStyle: 'automatic', plugins: stack.authentication === 'supabase' ? ['expo-router', 'expo-secure-store'] : ['expo-router'], experiments: { typedRoutes: true } } }),
-    'tsconfig.json': shared.json({ extends: 'expo/tsconfig.base', compilerOptions: { strict: true, types: ['jest'], paths: { '@/*': ['./*'] } }, include: ['**/*.ts', '**/*.tsx', '.expo/types/**/*.ts', 'expo-env.d.ts'] }),
+    'app.json': json({ expo: { name: answers.projectName, slug: answers.projectName, version: '1.0.0', orientation: 'portrait', scheme: answers.projectName, userInterfaceStyle: 'automatic', plugins: stack.authentication === 'supabase' ? ['expo-router', 'expo-secure-store'] : ['expo-router'], experiments: { typedRoutes: true } } }),
+    'tsconfig.json': json({ extends: 'expo/tsconfig.base', compilerOptions: { strict: true, types: ['jest'], paths: { '@/*': ['./*'] } }, include: ['**/*.ts', '**/*.tsx', '.expo/types/**/*.ts', 'expo-env.d.ts'] }),
     'expo-env.d.ts': "/// <reference types=\"expo/types\" />\n",
     'app/_layout.tsx': stack.authentication === 'supabase'
       ? `import { Stack } from 'expo-router'\nimport { useEffect } from 'react'\nimport { bindSupabaseAuthLifecycle } from '@/lib/supabase-lifecycle'\n\nexport default function RootLayout() {\n  useEffect(() => bindSupabaseAuthLifecycle(), [])\n  return <Stack screenOptions={{ headerTitle: '${answers.projectName}' }} />\n}\n`
