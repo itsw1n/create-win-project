@@ -1,4 +1,5 @@
 import { json } from '../../shared/javascript-package.js'
+import { addTestingFiles } from '../../shared/testing-files.js'
 import { packageFile } from './dependencies.js'
 
 export function buildReactNativeFiles(answers, stack, shared) {
@@ -18,7 +19,7 @@ export function buildReactNativeFiles(answers, stack, shared) {
         ? "import { getStarterStatus, StarterStatus } from '@/features/status'"
         : "import { StarterStatus } from '@/features/status/components/StarterStatus'\nimport { getStarterStatus } from '@/features/status/services/getStarterStatus'"}\n\nexport default function HomeScreen() {\n  const status = getStarterStatus()\n  return <SafeAreaView style={styles.safe}><View style={styles.container}><Text>create-win-project</Text><StarterStatus status={status} /><Text>{${JSON.stringify(answers.projectDescription)}}</Text></View></SafeAreaView>\n}\nconst styles = StyleSheet.create({ safe: { flex: 1 }, container: { flex: 1, justifyContent: 'center', padding: 24, gap: 12 } })\n`,
   }
-  shared.testFiles(files, '', stack, answers.testing || 'basic')
+  addTestingFiles(files, '', stack, answers.testing || 'basic')
   Object.assign(files, shared.nativeStatusFeatureFiles(stack))
   return files
 }

@@ -1,4 +1,5 @@
 import { html, json } from '../../shared/javascript-package.js'
+import { addTestingFiles } from '../../shared/testing-files.js'
 import { packageFile } from './dependencies.js'
 
 export function buildReactViteFiles(answers, stack, shared) {
@@ -20,7 +21,7 @@ export function buildReactViteFiles(answers, stack, shared) {
       : "import { StarterStatus } from '@/features/status/components/StarterStatus'\nimport { getStarterStatus } from '@/features/status/services/getStarterStatus'"}\n\nexport function App() {\n  const status = getStarterStatus()\n  return <main><p>create-win-project</p><StarterStatus status={status} /><p>{${JSON.stringify(answers.projectDescription)}}</p><p>Read <code>AGENTS.md</code> before your first agent-assisted change.</p></main>\n}\n`
   files[`${root}/src/styles.css`] = `${stack.styleId === 'tailwind' ? '@import "tailwindcss";\n' : ''}:root { color-scheme: light dark; font-family: system-ui, sans-serif; }\n* { box-sizing: border-box; }\nbody { margin: 0; }\nmain { max-width: 48rem; margin: 0 auto; padding: 4rem 1.5rem; }\n`
   if ((answers.testing || 'basic') !== 'none') files[`${root}/src/App.test.tsx`] = `import { expect, test } from 'vitest'\nimport { render, screen } from '@testing-library/react'\nimport { App } from './App'\n\ntest('renders the starter heading', () => {\n  render(<App />)\n  expect(screen.getByRole('heading', { name: 'Your starter is running' })).toBeInTheDocument()\n})\n`
-  shared.testFiles(files, root, stack, answers.testing || 'basic')
+  addTestingFiles(files, root, stack, answers.testing || 'basic')
   Object.assign(files, shared.statusFeatureFiles(root, stack))
   return files
 }
