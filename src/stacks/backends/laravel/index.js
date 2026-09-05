@@ -1,4 +1,4 @@
-import { defineStackAdapter } from '../../../../lib/stacks/contract.js'
+import { defineStackAdapter } from '../../rules.js'
 import { buildLaravelFiles } from './create-files.js'
 import { dockerContributions } from './docker.js'
 import { ciContributions } from './ci.js'

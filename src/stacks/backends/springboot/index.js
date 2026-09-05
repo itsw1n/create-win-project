@@ -1,4 +1,4 @@
-import { defineStackAdapter } from '../../../../lib/stacks/contract.js'
+import { defineStackAdapter } from '../../rules.js'
 import { buildSpringBootFiles } from './create-files.js'
 import { ciContributions } from './ci.js'
 import { dockerContributions } from './docker.js'
