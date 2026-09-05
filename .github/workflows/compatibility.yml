@@ -48,7 +48,7 @@ jobs:
             scope="full"
           fi
           echo "scope=$scope" >> "$GITHUB_OUTPUT"
-          echo "current=$(node -e 'const c=require("./compatibility/profiles.json"); process.stdout.write(c.defaultProfile)')" >> "$GITHUB_OUTPUT"
+          echo "current=$(node -e 'const c=require("./library/tested-versions.json"); process.stdout.write(c.defaultProfile)')" >> "$GITHUB_OUTPUT"
           echo "matrix=$(node checks/check-compatibility.js --scope=$scope)" >> "$GITHUB_OUTPUT"
 
   verify:
