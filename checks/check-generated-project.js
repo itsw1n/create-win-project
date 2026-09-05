@@ -3,7 +3,7 @@ import os from 'node:os'
 import path from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
-import { generateProject } from '../lib/generator.js'
+import { generateProject } from '../src/engine/create-project.js'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const args = Object.fromEntries(process.argv.slice(2).map((arg) => {

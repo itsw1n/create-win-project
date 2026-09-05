@@ -1,0 +1,410 @@
+{
+  ".editorconfig": {
+    "bytes": 267,
+    "sha256": "69f636afed2febd57be9a78adf9c29ded43d2b1fab0064417a5a7ecb5dfce253"
+  },
+  ".env.example": {
+    "bytes": 246,
+    "sha256": "a312c1ba417e6281cf361e5d4ee7f8ce5e4648540bf3a63914364593081daca7"
+  },
+  ".github/PULL_REQUEST_TEMPLATE.md": {
+    "bytes": 855,
+    "sha256": "e6c9ebd10795622b8e71ba32ffb9a2670fa3f7666726522736f4207cabc70bee"
+  },
+  ".github/workflows/ci-backend.yml": {
+    "bytes": 641,
+    "sha256": "3846a74a02a80be28a547e28310df846ff70b23cb5e66860720d3e5287085ba7"
+  },
+  ".github/workflows/ci-frontend.yml": {
+    "bytes": 733,
+    "sha256": "34748158160cd7685d66db1828f41a84db60f3dddde1ddc3b876394a62f78d40"
+  },
+  ".gitignore": {
+    "bytes": 332,
+    "sha256": "c6be0edb014205f06b541d48a86f286f90b02f71e4ccdc92d88affee3444a7f3"
+  },
+  ".prettierrc": {
+    "bytes": 312,
+    "sha256": "80a265752b65a489bca52d72780a015416322cdaadff944627d8f0fa8828c7aa"
+  },
+  "AGENTS.md": {
+    "bytes": 2189,
+    "sha256": "bf1138a6195afd9c3835892cb86080a3a9e50c664160d9c2852959fd4f29b96e"
+  },
+  "backend/.java-version": {
+    "bytes": 3,
+    "sha256": "6e2ae11dad0616f66bbb2b6e6556f580bb987fd911d7132aa6bee2bfc7cc7b52"
+  },
+  "backend/Dockerfile": {
+    "bytes": 271,
+    "sha256": "a809fc35f3131fc5c4b0e2918e82f93fd006a9cab17bc89bc79e2cd01c869886"
+  },
+  "backend/Dockerfile.dev": {
+    "bytes": 109,
+    "sha256": "75014156d217b42ebbf750e003129465daff3854e7ba432c4edae7990d3bdbbd"
+  },
+  "backend/mvnw": {
+    "bytes": 299,
+    "sha256": "18a5f8d2157a1f589448d5061b850c089e570b31f21b415965ec7cf1695c498f"
+  },
+  "backend/mvnw.cmd": {
+    "bytes": 334,
+    "sha256": "3542823a1425637807ba076b2f3f98c58af7c3111717851a4c5314461b8ef96f"
+  },
+  "backend/pom.xml": {
+    "bytes": 1948,
+    "sha256": "d593ff7d2239d04b6877191603985b4c94280e553ac824f4ad2be7844b1527e4"
+  },
+  "backend/src/main/java/com/example/common/error/ApiExceptionHandler.java": {
+    "bytes": 971,
+    "sha256": "61a7833bf1ca5cff3f1886143366a000635f1e61ccc9da23d02e5d8ccd5c9de8"
+  },
+  "backend/src/main/java/com/example/common/error/AppException.java": {
+    "bytes": 269,
+    "sha256": "d147cdb96e5ac45e047ec1d158ed8ece4ee8b301e5966c672f39193efb7752f4"
+  },
+  "backend/src/main/java/com/example/common/error/ErrorCode.java": {
+    "bytes": 111,
+    "sha256": "1f4b4dd76ed145f986906a025f3449e7f5e763bf4641681e67ca4877e9de5644"
+  },
+  "backend/src/main/java/com/example/config/SecurityConfig.java": {
+    "bytes": 773,
+    "sha256": "73d73e6a8b6854a956883b6a1bb9a4fc0bdd2a5a2793bd5480a34add7e307e76"
+  },
+  "backend/src/main/java/com/example/GoldenReactSpringbootApplication.java": {
+    "bytes": 477,
+    "sha256": "dc66235d165d922e600a04c18f377fd246a3d355c5bf048aa5be20f56789e419"
+  },
+  "backend/src/main/java/com/example/health/HealthController.java": {
+    "bytes": 323,
+    "sha256": "0fad9d790f54dd1af11acc6382cd9c6476026ef176f4d6e1fca9005d4d7992d0"
+  },
+  "backend/src/main/java/com/example/system/api/SystemStatusController.java": {
+    "bytes": 576,
+    "sha256": "0cc4918fa07cbc7ef11ab6f7b519a26ee12a3f6f2c33da4b89fa40a1b56ce444"
+  },
+  "backend/src/main/java/com/example/system/api/SystemStatusResponse.java": {
+    "bytes": 107,
+    "sha256": "ad26d3c9e822e37564561b1339dd2910cbf050419e9b49d60c0fbaa3377802c4"
+  },
+  "backend/src/main/java/com/example/system/service/SystemStatusService.java": {
+    "bytes": 278,
+    "sha256": "b9b16435acad7b67858fb7613c615325794e4591c916ffabc96f711024b12c24"
+  },
+  "backend/src/main/resources/application.yml": {
+    "bytes": 519,
+    "sha256": "06b690018d02850c35b4d71ff02d596246b5948b8a29a6c9f29703b5fb0af3e0"
+  },
+  "backend/src/main/resources/db/migration/V1__baseline.sql": {
+    "bytes": 147,
+    "sha256": "ab5f9e659e51e7ba7b6619b9b2af18af07975eed82936cfd62a112238c5ae5b0"
+  },
+  "backend/src/test/java/com/example/health/HealthControllerTest.java": {
+    "bytes": 898,
+    "sha256": "a05c37c323b466d18ecac474cff71bd873fc6ada71e6c7349deae64e7153a8d6"
+  },
+  "CONTEXT.md": {
+    "bytes": 578,
+    "sha256": "549a91c3232756524abb63f0248e7ee167c899ced2466b93f53eed8239fa9e64"
+  },
+  "create-win-project.profile.json": {
+    "bytes": 555,
+    "sha256": "9af414bbbb8dbd1c52336e84804dae994c256805cba6fa33b1ed7a1acc53dfa3"
+  },
+  "docker-compose.prod.yml": {
+    "bytes": 1599,
+    "sha256": "95612aa1137e9cd5f32b3fc459a1befa3e9e19e6dc0f9a227186f316ee12c55e"
+  },
+  "docker-compose.yml": {
+    "bytes": 1726,
+    "sha256": "3119487f3c9c8674fc2a7689441ffc1580b0fc23fc7bfb3fcc06ad16544b3dda"
+  },
+  "docs/api/endpoints.md": {
+    "bytes": 84,
+    "sha256": "52ef7f870d7072031a07f9d47f27e10b40ef0db2670be5fed3e6ea8a199ca5f6"
+  },
+  "docs/api/errors.md": {
+    "bytes": 108,
+    "sha256": "8752fbc5b0cfc9f82f62568745ddf1cd65dc4c84d439c27e396eaeb69db9ad6f"
+  },
+  "docs/api/overview.md": {
+    "bytes": 262,
+    "sha256": "56ad267a2bfc83e100254c4cc8886d1822ff55c978606e67a315c9e7181d8de3"
+  },
+  "docs/architecture/auth-flow.md": {
+    "bytes": 375,
+    "sha256": "387b58f30f4c35ec635aa7785b6dc70e39c1d58015b06d4808c17f50429b47f5"
+  },
+  "docs/architecture/database-schema.md": {
+    "bytes": 89,
+    "sha256": "e87327e605c00b80ed691147211c7beec30cc910d86f7c2364d293bdd93aed8c"
+  },
+  "docs/architecture/overview.md": {
+    "bytes": 652,
+    "sha256": "6cf3e1d4b92f3de32bd52007c2a18cf1f1dd57e62044b480d901eb6e7ba031e9"
+  },
+  "docs/guides/deployment.md": {
+    "bytes": 78,
+    "sha256": "1d6157e9b7f51c8e9009baf3dc751c4c2a52fd25aece286ef768ecec0477294d"
+  },
+  "docs/guides/development-environments.md": {
+    "bytes": 1168,
+    "sha256": "b1668749c5188eeba6170aced08104e3687c4bd0690f3e1cf6363cb8ebe72dc5"
+  },
+  "docs/guides/env-variables.md": {
+    "bytes": 810,
+    "sha256": "1f676a303d33eaff0d4eab890352722e02b7bf99558d92f5df63d90c11c05f14"
+  },
+  "docs/guides/setup.md": {
+    "bytes": 662,
+    "sha256": "70c6d5cc5bc3a8b860685196a97dbe65c75d7b3ca77c69441a0a89269b573f7f"
+  },
+  "docs/guides/toolchain.md": {
+    "bytes": 1405,
+    "sha256": "c6090ac24538ec4ca29b0348d2d7d228e4483b7ae5bb2ac0b34c4612919e77dd"
+  },
+  "frontend/.env.example": {
+    "bytes": 97,
+    "sha256": "47003fd44b002d594ef34a4f038306aec1bafbfea5e33ccc4b4731d5d60833c6"
+  },
+  "frontend/.node-version": {
+    "bytes": 8,
+    "sha256": "5b9d0e73029969ae9000117cb877f17bb9841c1279bfe8024e294acfcf017800"
+  },
+  "frontend/.npmrc": {
+    "bytes": 19,
+    "sha256": "7151cf397def0c2cb0ab65643701d27d335a72c90f775675b5f826bc7005818a"
+  },
+  "frontend/Dockerfile": {
+    "bytes": 286,
+    "sha256": "1aee20e6f4cc19a18a81d17c23770ab348429e15ac2216966156563b30cdf50b"
+  },
+  "frontend/Dockerfile.dev": {
+    "bytes": 125,
+    "sha256": "df1b0f4d43389ad336d73d295046ba708601e92840a740c435607995b7afb87b"
+  },
+  "frontend/eslint.config.js": {
+    "bytes": 324,
+    "sha256": "2ecc0b5a94a894c2c0d534056fde98074deed6d0d5a1380cce3a8293bdd4f8fe"
+  },
+  "frontend/index.html": {
+    "bytes": 337,
+    "sha256": "f054db9a91c154c1c9003b0fd27a56c08294f58ccf3f58a6227e417357e68078"
+  },
+  "frontend/nginx.conf": {
+    "bytes": 135,
+    "sha256": "5b5c4d0a8d30b6ae2e6bf0965056e206e6cfd4f73c2ad28819e50d141d8858d4"
+  },
+  "frontend/package.json": {
+    "bytes": 1038,
+    "sha256": "b0a28a407e04b95ec36cea7127c559ab28736510be23c4efdf3cca9bf3e99dcf"
+  },
+  "frontend/src/App.test.tsx": {
+    "bytes": 283,
+    "sha256": "bcd03620e4925d3a6418a156d9bb9f634a76b571f7911fc657e27a401ecde66e"
+  },
+  "frontend/src/App.tsx": {
+    "bytes": 411,
+    "sha256": "c3cb942a72ae5a4b55142d057bf8e5d5011b10e9ce9da0e68220d1f857d0df31"
+  },
+  "frontend/src/features/status/api/getBackendStatus.ts": {
+    "bytes": 370,
+    "sha256": "668354343eca6951d763f77414e222e5d45aa7b71bb827c5d1f95a5f754fdf04"
+  },
+  "frontend/src/features/status/components/StarterStatus.tsx": {
+    "bytes": 200,
+    "sha256": "5737083e586ff46dfdcd8c70b9bb592b785aa58df7a76a0b5f8e4453dfbe4feb"
+  },
+  "frontend/src/features/status/services/getStarterStatus.ts": {
+    "bytes": 168,
+    "sha256": "ed08e37c4deed0db23269405c09be5f6f0a9eeb39ab9070c52460814673b31f7"
+  },
+  "frontend/src/features/status/types.ts": {
+    "bytes": 80,
+    "sha256": "ac898305005741554b9b06d749136df0aa6c85b049775789cc294cea2e4543d1"
+  },
+  "frontend/src/main.tsx": {
+    "bytes": 218,
+    "sha256": "eb9dea8e87646ab7e84535d3ac3ef6746115237df2295bc182ce1fe5995c4ff5"
+  },
+  "frontend/src/styles.css": {
+    "bytes": 187,
+    "sha256": "f3d386b895a1ee7e1e355f032a12ba822d77eea3375bb44e5fbe2a9f475c646f"
+  },
+  "frontend/src/test/setup.ts": {
+    "bytes": 42,
+    "sha256": "977afde26bba6a51325908cd7713cbfdc87d18f06b78b237c8f364c44864b7de"
+  },
+  "frontend/src/vite-env.d.ts": {
+    "bytes": 38,
+    "sha256": "65996936fbb042915f7b74a200fcdde7e410f32a669b1ab9597cfaa4b0faddb5"
+  },
+  "frontend/tsconfig.json": {
+    "bytes": 648,
+    "sha256": "9a2ffb425c07189bdc6fc24d6bbf53396028fb977223dde4d56b791839e77df7"
+  },
+  "frontend/vite.config.ts": {
+    "bytes": 260,
+    "sha256": "f888f58486aaed7d109fc233588960eb3ae3bef71931269018c62c6671e3700a"
+  },
+  "frontend/vitest.config.ts": {
+    "bytes": 315,
+    "sha256": "ea6283820bf91925936010b5312b1be0907ae30177f6c70536c9bd2752ee8069"
+  },
+  "Makefile": {
+    "bytes": 3797,
+    "sha256": "9dbbacebaf283fad7d2a65d3a6f022e7bc43696d8ed34116000d1ed93d590554"
+  },
+  "playbooks/capabilities/ci/github-actions.md": {
+    "bytes": 3331,
+    "sha256": "07f14cd7d1c416567598f9117dc9868e4d5336e4aa7e0ac009f685b4bef0c7c2"
+  },
+  "playbooks/capabilities/docker/overview.md": {
+    "bytes": 3075,
+    "sha256": "e3fb3c03eb88c5002bd7bc8021a16b8cfe7ff92d1d89005f19d351a70c6c34f9"
+  },
+  "playbooks/capabilities/flyway/environments.md": {
+    "bytes": 303,
+    "sha256": "925f3773c0d91aadc6f98daf38d4d2daca1085ac2a89b120ded663a99d2e1fd4"
+  },
+  "playbooks/capabilities/flyway/migrations.md": {
+    "bytes": 321,
+    "sha256": "8d90c695c56d3767dc17f6fb4859fcdb5386df4f166c550d024d2513fbdec5d1"
+  },
+  "playbooks/capabilities/flyway/testing.md": {
+    "bytes": 321,
+    "sha256": "510eb62529637ec2c397c318762d84cc0aad9e52c8a6350679a1f8959df659c9"
+  },
+  "playbooks/capabilities/postgresql/architecture.md": {
+    "bytes": 325,
+    "sha256": "43c4e5cc970695b81575643563bc841474c266789313a20fe101a543f5c0464e"
+  },
+  "playbooks/capabilities/postgresql/migrations.md": {
+    "bytes": 330,
+    "sha256": "1f9f01ada8adea176ea758124b2e01c76bfa43998cd0b3b2cbb7d8b4b7532bac"
+  },
+  "playbooks/capabilities/postgresql/schema-design.md": {
+    "bytes": 343,
+    "sha256": "1053c8fea1c1d6637650b15c60a1d8c5f48a4a2370d0a4a540b2055353853677"
+  },
+  "playbooks/capabilities/postgresql/security.md": {
+    "bytes": 328,
+    "sha256": "f71c0fe7317ec215b7ff5fed38d6d5d211593ea83ad968d5552420eb9ab96e08"
+  },
+  "playbooks/capabilities/postgresql/testing.md": {
+    "bytes": 302,
+    "sha256": "1b07238b2fdf17b2c7a37cb7ffbc8c2ca01e82e2dfa9dfc25b8bc4669f796828"
+  },
+  "playbooks/concerns/axios.md": {
+    "bytes": 4121,
+    "sha256": "981e8ab56fc15897575f8f8620c383b97a495855549454aa1e6e273d44082098"
+  },
+  "playbooks/concerns/tanstack-query.md": {
+    "bytes": 4164,
+    "sha256": "96c9186198601490d93602a406d551b6861e854c0510a476bacaf1a91d4af85a"
+  },
+  "playbooks/concerns/zod.md": {
+    "bytes": 5071,
+    "sha256": "9e2592ce64f516067bdddc5b7f65de45af564aa6cfd50cfc05a293887da6c1a2"
+  },
+  "playbooks/concerns/zustand.md": {
+    "bytes": 2254,
+    "sha256": "4f06b463191614f0733207a9762a58b2cecd64bff2415e55802733e37bae933b"
+  },
+  "playbooks/devops/makefile.md": {
+    "bytes": 16050,
+    "sha256": "e9e65435f977c86a8ccc39fed56344fe84f03ffe80829ee782edf8d4f12ab7b3"
+  },
+  "playbooks/devops/pr-template.md": {
+    "bytes": 2393,
+    "sha256": "bc26649a67b314181ac86e82dd602635d5c22e6f53eacaf80ebb6309355c0036"
+  },
+  "playbooks/platform/web.md": {
+    "bytes": 1156,
+    "sha256": "9fd82f2d1ed95139033b4ccf701c8a35c7d02d91d147abdbde40ca28831b01c6"
+  },
+  "playbooks/stack/react-vite/architecture.md": {
+    "bytes": 1049,
+    "sha256": "3923badebc4d9ef979be5a8c5c05836a03b3b89b2f928150864b9725a2ee530a"
+  },
+  "playbooks/stack/react-vite/runtime.md": {
+    "bytes": 622,
+    "sha256": "24ea1b946985aae19962ae653ce7f288605ab2c01b665434a73d414d778dca2a"
+  },
+  "playbooks/stack/react-vite/security.md": {
+    "bytes": 815,
+    "sha256": "9c2ee74549bd1c51697397a6f2ba02f367c9e859c0d02f92a490578e9e580f01"
+  },
+  "playbooks/stack/react-vite/structure.md": {
+    "bytes": 879,
+    "sha256": "bc87c418676875e5baa1c95ade0e8583ea128b2759982b54c6ac454f78ee7077"
+  },
+  "playbooks/stack/react-vite/testing.md": {
+    "bytes": 586,
+    "sha256": "c98624e161d4237c74ae085c439dd44c30c57bb060b00838e495501676467f28"
+  },
+  "playbooks/stack/springboot/architecture.md": {
+    "bytes": 1539,
+    "sha256": "d57cbb377c1b9f172673c1ec87fbcd04e66e06520edb93f8c5d27d5bdd6c20d1"
+  },
+  "playbooks/stack/springboot/runtime.md": {
+    "bytes": 1416,
+    "sha256": "7103499eb6895b12246bdb60874d533461069209bcf85f7d6d5f9bb75536516b"
+  },
+  "playbooks/stack/springboot/security.md": {
+    "bytes": 1504,
+    "sha256": "ad435eac2b862d9f86c025d8a3e57c719400ef0f3da9b60bd347f953eec70e0b"
+  },
+  "playbooks/stack/springboot/structure.md": {
+    "bytes": 1287,
+    "sha256": "5f8a92a7104eaa1b8d9c4b2e31c67989d38052bdf66ee8bd0ec641ead043bcbe"
+  },
+  "playbooks/stack/springboot/testing.md": {
+    "bytes": 1055,
+    "sha256": "1fe41170c6adf55cb29aaf1c62112ce68949f89cf9738e59fa7b1a983f6f9bb2"
+  },
+  "playbooks/styling/css-modules-extensions.md": {
+    "bytes": 5593,
+    "sha256": "fb12f302a8c423c8d5de02809b7caef906816b42911adb8ecb9bc8f9333b17ea"
+  },
+  "playbooks/universal/accessibility.md": {
+    "bytes": 2401,
+    "sha256": "2f1451e99973dee2a6f20e05dd3048a09f397f987dcf20ece9dcbdd127572fad"
+  },
+  "playbooks/universal/coding-rules.md": {
+    "bytes": 6170,
+    "sha256": "48b27fa839e94012015f48d834726e22da87b51421e89f9ae6bcca8898d6a3e8"
+  },
+  "playbooks/universal/error-handling.md": {
+    "bytes": 1608,
+    "sha256": "a1dd0f74dc6d2a1388ab989e9faf2c44fdfff230da4a605132110667ab594952"
+  },
+  "playbooks/universal/git-conventions.md": {
+    "bytes": 5155,
+    "sha256": "6bc31e6c74ceaca9981ec63ed720b49df5b8cbee00f2c3e5a0dd9a271c3e76c9"
+  },
+  "playbooks/universal/observability.md": {
+    "bytes": 1505,
+    "sha256": "8cc942653249a39b99790b84149602a7de2ed069816156c6c5fc09bb2d27d66f"
+  },
+  "playbooks/universal/security.md": {
+    "bytes": 2362,
+    "sha256": "75e151f515874bc6445432a26f3aa095f843288bbde1655ea8cb12d75cae2f2e"
+  },
+  "playbooks/universal/typescript.md": {
+    "bytes": 6252,
+    "sha256": "5e308b9fed7ad7e6f30a5c1fe566e971f5f71774419daa5f0c29cfea3f5758ab"
+  },
+  "PROGRESS.md": {
+    "bytes": 270,
+    "sha256": "8858edf836eca2f87e862d208cb64cc21c73c19bb0bf85bb349330c42b8d8afa"
+  },
+  "README.md": {
+    "bytes": 1184,
+    "sha256": "dd427a3fbf09b24f200093a8d60d7df1d30995743bedf70b86584cf0370f587b"
+  },
+  "RULES.md": {
+    "bytes": 5023,
+    "sha256": "cfc79a915106343c637a7d265358656f698f61eb31c0760edd8315a09c3750da"
+  }
+}

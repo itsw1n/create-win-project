@@ -1,0 +1,374 @@
+{
+  ".editorconfig": {
+    "bytes": 267,
+    "sha256": "69f636afed2febd57be9a78adf9c29ded43d2b1fab0064417a5a7ecb5dfce253"
+  },
+  ".env.example": {
+    "bytes": 318,
+    "sha256": "e0e34a17f165f06ec0afd3f3936f698880d74e85f31ebaa8fb922ed063c7f5af"
+  },
+  ".github/PULL_REQUEST_TEMPLATE.md": {
+    "bytes": 855,
+    "sha256": "e6c9ebd10795622b8e71ba32ffb9a2670fa3f7666726522736f4207cabc70bee"
+  },
+  ".github/workflows/ci-backend.yml": {
+    "bytes": 1356,
+    "sha256": "f1e74e7d0828c171b1b72c538921c4872937599c981f24109b48081d86fea73e"
+  },
+  ".gitignore": {
+    "bytes": 81,
+    "sha256": "e2d940a19462149e6f7860fb3afb3a9dbb13262cc276458fd02f9b27eab98beb"
+  },
+  ".node-version": {
+    "bytes": 8,
+    "sha256": "5b9d0e73029969ae9000117cb877f17bb9841c1279bfe8024e294acfcf017800"
+  },
+  ".npmrc": {
+    "bytes": 19,
+    "sha256": "7151cf397def0c2cb0ab65643701d27d335a72c90f775675b5f826bc7005818a"
+  },
+  ".php-version": {
+    "bytes": 7,
+    "sha256": "b4680cd6c823e25f1aaa614448914fae752c2a3409c96147dc771d0f4f2c75c0"
+  },
+  ".prettierrc": {
+    "bytes": 312,
+    "sha256": "80a265752b65a489bca52d72780a015416322cdaadff944627d8f0fa8828c7aa"
+  },
+  "AGENTS.md": {
+    "bytes": 57,
+    "sha256": "759b844a4513ef3875d1d358ab7d95941c878e2af431cf66d9a9cb3f1333a8d6"
+  },
+  "app/Actions/GetSystemStatus.php": {
+    "bytes": 237,
+    "sha256": "078c6220d503f9fffeaabcd197a2bfd804aaae46bff19dcedf18877abf33e060"
+  },
+  "app/Http/Controllers/AuthController.php": {
+    "bytes": 1457,
+    "sha256": "6e27929f7640fd08aa8c1300e44d1be8044ba8b9d5442c18c1252c7548b4d956"
+  },
+  "app/Http/Controllers/HealthController.php": {
+    "bytes": 270,
+    "sha256": "caa1e765f821bea697153891dddb8601ab0952e21e67cb74863c45262748060b"
+  },
+  "app/Http/Middleware/HandleInertiaRequests.php": {
+    "bytes": 154,
+    "sha256": "c3185d80eafb98b8362bad68f3dd9c40debaf6d9157c195bb4214fc799fd98f5"
+  },
+  "app/Models/User.php": {
+    "bytes": 578,
+    "sha256": "a00967250e34c163a366ee4e3628e9196b3818d9aaf8a5a963621d8ed9976af6"
+  },
+  "app/Providers/AppServiceProvider.php": {
+    "bytes": 210,
+    "sha256": "c1c288c6c1f1ffb6ddbbc202df5d17c8cf54a561cabd4fb1c1a0ebbc3e5821ab"
+  },
+  "artisan": {
+    "bytes": 240,
+    "sha256": "63bdca9e4b7f9dcec558454e71f7c04674324d2c3e4b5a8e04d4190172426e5a"
+  },
+  "bootstrap/app.php": {
+    "bytes": 613,
+    "sha256": "77fed97e83b2437e2f18ed300c2c89372c406d1643b2ddd5b200b036b63703af"
+  },
+  "bootstrap/cache/.gitignore": {
+    "bytes": 14,
+    "sha256": "240a3e0d37d2e86b614063f5347eb02d4f99ca6c254de6b82871ff8d95532a7d"
+  },
+  "bootstrap/providers.php": {
+    "bytes": 82,
+    "sha256": "b86adc688e41b9e9e82101c5047e1589c9f56c911ac3806e4484cecbb2d5020e"
+  },
+  "composer.json": {
+    "bytes": 1319,
+    "sha256": "59e3b18911896ffe3022545e18f55696ce8c3718d4d20d2cec7b0a59d9e4def9"
+  },
+  "config/app.php": {
+    "bytes": 259,
+    "sha256": "dc491097c8646ca1527d2f970e05ac45894f78ea8446ad763691a864b810c6c7"
+  },
+  "config/auth.php": {
+    "bytes": 397,
+    "sha256": "1eff0d770da5e0ed61e9261781ec0660adcf8250dede8ef628d04458084f8097"
+  },
+  "config/database.php": {
+    "bytes": 357,
+    "sha256": "652699b384b418c1bee29d83857708e3003077772739c6faf95b95fa1ab32275"
+  },
+  "config/session.php": {
+    "bytes": 546,
+    "sha256": "4389d5b9b4a73615fac55972e9fb271d9501560fe7ceb79b198a3ffd685ee145"
+  },
+  "CONTEXT.md": {
+    "bytes": 582,
+    "sha256": "2650cfc40a649c709eec104babf5850c825512fc1877deee997b537d2736a6b3"
+  },
+  "create-win-project.profile.json": {
+    "bytes": 560,
+    "sha256": "a978ff195d63e3096c043b63aa4e2e17cab0c153bef40bddd5d0574d593509b3"
+  },
+  "database/factories/UserFactory.php": {
+    "bytes": 456,
+    "sha256": "08d8650321e677781ce494b97b5d66017e874df2853d9ed3904dc40396c82e63"
+  },
+  "database/migrations/0001_01_01_000000_create_users_table.php": {
+    "bytes": 1381,
+    "sha256": "f2cb12669616acd099e162dbf68f7041228a2712c5ddcf73c31843631352f4f3"
+  },
+  "docker-compose.yml": {
+    "bytes": 1005,
+    "sha256": "801fa55df76b50529b4854fc0d3f66fc22f7e56c1dc934b79cb75bad7f4d8269"
+  },
+  "Dockerfile": {
+    "bytes": 494,
+    "sha256": "3273ea4277ecf31550887e2f3fcff12f2ca6136b5a3747a516ef58b7264256e5"
+  },
+  "Dockerfile.dev": {
+    "bytes": 628,
+    "sha256": "445cd42adc46c396e52735298b6dc9f6488ab4c02ed0e66296de976490ad8933"
+  },
+  "docs/api/endpoints.md": {
+    "bytes": 84,
+    "sha256": "52ef7f870d7072031a07f9d47f27e10b40ef0db2670be5fed3e6ea8a199ca5f6"
+  },
+  "docs/api/errors.md": {
+    "bytes": 108,
+    "sha256": "8752fbc5b0cfc9f82f62568745ddf1cd65dc4c84d439c27e396eaeb69db9ad6f"
+  },
+  "docs/api/overview.md": {
+    "bytes": 262,
+    "sha256": "68daa6de87fa0a36c8a9fdf81c784a7456ed698cbd14cd9454a2ab2d8ca04d9e"
+  },
+  "docs/architecture/auth-flow.md": {
+    "bytes": 364,
+    "sha256": "dc61a8c03ea6c4979e8ea047113b530240ded76163b91b9012a82431be520bab"
+  },
+  "docs/architecture/database-schema.md": {
+    "bytes": 89,
+    "sha256": "e87327e605c00b80ed691147211c7beec30cc910d86f7c2364d293bdd93aed8c"
+  },
+  "docs/architecture/overview.md": {
+    "bytes": 669,
+    "sha256": "d7fb5198d369b662ac7b4ffea0d4f8e5fc2322719543045bc886b705d820c00b"
+  },
+  "docs/guides/deployment.md": {
+    "bytes": 78,
+    "sha256": "1d6157e9b7f51c8e9009baf3dc751c4c2a52fd25aece286ef768ecec0477294d"
+  },
+  "docs/guides/development-environments.md": {
+    "bytes": 1168,
+    "sha256": "b1668749c5188eeba6170aced08104e3687c4bd0690f3e1cf6363cb8ebe72dc5"
+  },
+  "docs/guides/env-variables.md": {
+    "bytes": 832,
+    "sha256": "854d43f6f3103ec8c76ce8247df494439f94e85914d6689e0f7e76a423be7902"
+  },
+  "docs/guides/setup.md": {
+    "bytes": 668,
+    "sha256": "811f0510bf08e65fe7d3b4c3ed235897953667e8023b033a2f1c460b8aba1cb3"
+  },
+  "docs/guides/toolchain.md": {
+    "bytes": 1311,
+    "sha256": "3d228f2c5388e69dc8c02b70934bc97d55082c44b22b46d3a407f56e33fea2d6"
+  },
+  "Makefile": {
+    "bytes": 1272,
+    "sha256": "7ee866d8d5eb2d0230d8b368b45c478a269eb5d59644d9ac2f697affa4a3c26a"
+  },
+  "package.json": {
+    "bytes": 438,
+    "sha256": "56b5c2468b47b7a228944bcdd4fab9a021f62886701ac7ba5036192206158b5c"
+  },
+  "phpstan.neon": {
+    "bytes": 96,
+    "sha256": "2369f0013251c4ea18276364f60de1f43bc5ba33902694d553df35734e29396b"
+  },
+  "phpunit.xml": {
+    "bytes": 453,
+    "sha256": "c3a999874599625585c5f8df99d4128a7e72f2514a43e6494200f7d3bee0f97d"
+  },
+  "playbooks/capabilities/ci/github-actions.md": {
+    "bytes": 3331,
+    "sha256": "07f14cd7d1c416567598f9117dc9868e4d5336e4aa7e0ac009f685b4bef0c7c2"
+  },
+  "playbooks/capabilities/docker/overview.md": {
+    "bytes": 3075,
+    "sha256": "e3fb3c03eb88c5002bd7bc8021a16b8cfe7ff92d1d89005f19d351a70c6c34f9"
+  },
+  "playbooks/capabilities/laravel/database.md": {
+    "bytes": 468,
+    "sha256": "5656f32cced994515d20cf13a5a6e0ba9a1fc38e390d9e50732aa3701364b6d2"
+  },
+  "playbooks/capabilities/laravel/migrations.md": {
+    "bytes": 664,
+    "sha256": "487a3d0d77748014c368df7c43cf86cccd1178150e1eee9d2ede33ed5c847576"
+  },
+  "playbooks/capabilities/laravel/session-auth.md": {
+    "bytes": 464,
+    "sha256": "f6de2915e82d8b84e24255af3def21dba9267cd501aa9454e6d4d3651e199d73"
+  },
+  "playbooks/devops/makefile.md": {
+    "bytes": 16050,
+    "sha256": "e9e65435f977c86a8ccc39fed56344fe84f03ffe80829ee782edf8d4f12ab7b3"
+  },
+  "playbooks/devops/pr-template.md": {
+    "bytes": 2393,
+    "sha256": "bc26649a67b314181ac86e82dd602635d5c22e6f53eacaf80ebb6309355c0036"
+  },
+  "playbooks/platform/laravel-ui/inertia-react/architecture.md": {
+    "bytes": 321,
+    "sha256": "5310055964238265779d5ee78b7a6681086cd5cb2054d2f9b74fbc56b5d897da"
+  },
+  "playbooks/platform/laravel-ui/inertia-react/runtime.md": {
+    "bytes": 319,
+    "sha256": "afe2ab27f4c96e0d4cb696b0eddcf5a13c92e79d39399ac0ea5744f52231df55"
+  },
+  "playbooks/platform/laravel-ui/inertia-react/security.md": {
+    "bytes": 313,
+    "sha256": "c335afa048aa340793a487d8acaeee8e2c9129947b215d72f128369828c5013e"
+  },
+  "playbooks/platform/laravel-ui/inertia-react/structure.md": {
+    "bytes": 326,
+    "sha256": "81dee3d4144d052e0cfeede0bace1d24f8ad41e54d553d01996317bb1fe725e8"
+  },
+  "playbooks/platform/laravel-ui/inertia-react/testing.md": {
+    "bytes": 317,
+    "sha256": "16e5a9fdd270e9749c4f528afcd04d1598cc54b6e2f1b8d6291f4edf343eb45b"
+  },
+  "playbooks/platform/web.md": {
+    "bytes": 1156,
+    "sha256": "9fd82f2d1ed95139033b4ccf701c8a35c7d02d91d147abdbde40ca28831b01c6"
+  },
+  "playbooks/stack/laravel/architecture.md": {
+    "bytes": 1271,
+    "sha256": "e8507a523b310eba93f2672965543f0b978dee0824118917d6e3ed0e557a99f7"
+  },
+  "playbooks/stack/laravel/runtime.md": {
+    "bytes": 1112,
+    "sha256": "5ba92aaa24f599aea967add4dabaf5b4fad3d27b36c388fbac237068cb915591"
+  },
+  "playbooks/stack/laravel/security.md": {
+    "bytes": 1147,
+    "sha256": "dcda7f4d271e0698f427bcddca576051a4cebf6b1e5583b861eb320ae93824d6"
+  },
+  "playbooks/stack/laravel/structure.md": {
+    "bytes": 1113,
+    "sha256": "0e7857257c13e81bd65bed288f4cc575e8b958e715b1e1202963e82b151f44f6"
+  },
+  "playbooks/stack/laravel/testing.md": {
+    "bytes": 979,
+    "sha256": "a048ca7e6247af33afacdc1df9c8504dad79c2552be6a713f04bdd35de6d99e6"
+  },
+  "playbooks/styling/tailwind-extensions.md": {
+    "bytes": 4615,
+    "sha256": "a418fbe0c9a466f2e378ebd75bdcb2e1491923d5514234c251ba8f7a8433f35d"
+  },
+  "playbooks/universal/accessibility.md": {
+    "bytes": 2401,
+    "sha256": "2f1451e99973dee2a6f20e05dd3048a09f397f987dcf20ece9dcbdd127572fad"
+  },
+  "playbooks/universal/coding-rules.md": {
+    "bytes": 6170,
+    "sha256": "48b27fa839e94012015f48d834726e22da87b51421e89f9ae6bcca8898d6a3e8"
+  },
+  "playbooks/universal/error-handling.md": {
+    "bytes": 1608,
+    "sha256": "a1dd0f74dc6d2a1388ab989e9faf2c44fdfff230da4a605132110667ab594952"
+  },
+  "playbooks/universal/git-conventions.md": {
+    "bytes": 5155,
+    "sha256": "6bc31e6c74ceaca9981ec63ed720b49df5b8cbee00f2c3e5a0dd9a271c3e76c9"
+  },
+  "playbooks/universal/observability.md": {
+    "bytes": 1505,
+    "sha256": "8cc942653249a39b99790b84149602a7de2ed069816156c6c5fc09bb2d27d66f"
+  },
+  "playbooks/universal/security.md": {
+    "bytes": 2362,
+    "sha256": "75e151f515874bc6445432a26f3aa095f843288bbde1655ea8cb12d75cae2f2e"
+  },
+  "playbooks/universal/typescript.md": {
+    "bytes": 6252,
+    "sha256": "5e308b9fed7ad7e6f30a5c1fe566e971f5f71774419daa5f0c29cfea3f5758ab"
+  },
+  "PROGRESS.md": {
+    "bytes": 270,
+    "sha256": "8858edf836eca2f87e862d208cb64cc21c73c19bb0bf85bb349330c42b8d8afa"
+  },
+  "public/index.php": {
+    "bytes": 205,
+    "sha256": "9ecb5aeedead9f8bf7004101d794e1169a4598ba44c33c7b2425011246ef2449"
+  },
+  "README.md": {
+    "bytes": 242,
+    "sha256": "9c33c549d735c1dd8d9e7d98bedcf9c76cb9bb365c989bd0cfa824b8ee655494"
+  },
+  "resources/js/app.jsx": {
+    "bytes": 310,
+    "sha256": "0ac2f9d2a15dbaad7bec09911ecaa644b1fca03d889ab4f0d44c6790051d5f54"
+  },
+  "resources/js/Pages/Home.jsx": {
+    "bytes": 125,
+    "sha256": "e9537f116e44314bfb2d5d99012ce3ce224eca797e74e93e9e77b8995ab1dd45"
+  },
+  "resources/views/app.blade.php": {
+    "bytes": 223,
+    "sha256": "e216f73440132625a7eb664353886754ea973dd6ee45468eb4770843e0b2273e"
+  },
+  "resources/views/auth/login.blade.php": {
+    "bytes": 463,
+    "sha256": "49c5d753579cf21a2baf654e3e61cb4feb8cd5e90a2fb24a112266f0b117f58e"
+  },
+  "routes/api.php": {
+    "bytes": 309,
+    "sha256": "28d97dc6ba7af0d709bcef80b947c4fd644ef9cb8540af88e54a6e35a75f0753"
+  },
+  "routes/console.php": {
+    "bytes": 140,
+    "sha256": "c1e88f9a69400d96b0713f2975030e585abe99f83c5662159e788ff756c8cbd7"
+  },
+  "routes/web.php": {
+    "bytes": 474,
+    "sha256": "ffe1d556b4253ed9befed2d9c4e43fe5e71d49935b037763280d45814ecdad51"
+  },
+  "RULES.md": {
+    "bytes": 4521,
+    "sha256": "1dadeda0e4865fc162e90bfad0696bb9369c4f481bf04397579d8630bc0da7e1"
+  },
+  "storage/framework/cache/.gitignore": {
+    "bytes": 14,
+    "sha256": "240a3e0d37d2e86b614063f5347eb02d4f99ca6c254de6b82871ff8d95532a7d"
+  },
+  "storage/framework/sessions/.gitignore": {
+    "bytes": 14,
+    "sha256": "240a3e0d37d2e86b614063f5347eb02d4f99ca6c254de6b82871ff8d95532a7d"
+  },
+  "storage/framework/views/.gitignore": {
+    "bytes": 14,
+    "sha256": "240a3e0d37d2e86b614063f5347eb02d4f99ca6c254de6b82871ff8d95532a7d"
+  },
+  "storage/logs/.gitignore": {
+    "bytes": 14,
+    "sha256": "240a3e0d37d2e86b614063f5347eb02d4f99ca6c254de6b82871ff8d95532a7d"
+  },
+  "tests/Feature/AuthenticationTest.php": {
+    "bytes": 787,
+    "sha256": "86ff9dd802eaab067c62ceff1dc97956396aa96ff59f45b783b049368dd040f5"
+  },
+  "tests/Feature/HealthTest.php": {
+    "bytes": 137,
+    "sha256": "c14e0beeabd2425684848247db0b87f36035cc686721c46289ae756ade14406d"
+  },
+  "tests/Pest.php": {
+    "bytes": 76,
+    "sha256": "eb474d7c7de2fcc9cc9c54fe67d80a4de1477cb6cd077d2976a85b842835d534"
+  },
+  "tests/TestCase.php": {
+    "bytes": 134,
+    "sha256": "342ec2392cf8a947613d5ea73c1fde76c09d1cc3bd6f6b6e9f4aa57c9dd5174d"
+  },
+  "vite.config.js": {
+    "bytes": 231,
+    "sha256": "01b197bbb91c6a8e3b8882e0d4a6ce1f5eb239dd44b4f8bc18258eb3c7f3e1ae"
+  }
+}
