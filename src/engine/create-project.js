@@ -1,4 +1,4 @@
-import { scaffoldProject } from '../stacks/shared/scaffold.js'
+import { scaffoldProject } from '../stacks/create-project.js'
 
 /**
  * Runs the generic project-creation pipeline. Stack-owned contributions are
