@@ -3,6 +3,12 @@ name: Publish to npm
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Package version to publish from main
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -14,6 +20,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Require main and the requested package version
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          REQUESTED_VERSION: ${{ inputs.version }}
+        run: |
+          test "$GITHUB_REF_NAME" = "main"
+          test "$(node -p "require('./package.json').version")" = "$REQUESTED_VERSION"
 
       - name: Require compatibility gate on this release commit
         env:
@@ -32,4 +46,12 @@ jobs:
 
       - run: npm test
 
-      - run: npm publish --access public
+      - name: Publish with trusted publishing
+        if: github.event_name == 'release'
+        run: npm publish --access public
+
+      - name: Publish with recovery token
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public
