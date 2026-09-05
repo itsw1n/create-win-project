@@ -19,6 +19,7 @@
     "ci",
     "templates",
     "checks",
+    "public/logo.svg",
     "docs/ARCHITECTURE.md",
     "docs/CONTENT_MODEL.md",
     "docs/DEPENDENCY_MAINTENANCE.md",
