@@ -14,6 +14,7 @@ import {
   printInstallSkipped,
   printLocationNotice,
   printNextSteps,
+  printSupportPrompt,
   printCancelled,
   printRuntimeInstructions,
   printRuntimeMismatch,
@@ -173,6 +174,7 @@ try {
     printInstallSkipped(detectedVersions, steps)
   }
   printNextSteps(answers, stack)
+  if (process.stdout.isTTY) printSupportPrompt()
 } catch (err) {
   generationFailed(spinner, err)
   process.exit(1)
