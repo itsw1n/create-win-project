@@ -1,6 +1,6 @@
 # Contributing
 
-See `docs/ARCHITECTURE.md` for the completed source ownership and `docs/DEPENDENCY_MAINTENANCE.md` for profile promotion. This file is the workflow, not the design.
+See `docs/ARCHITECTURE.md` for completed source ownership and `docs/DEPENDENCY_MAINTENANCE.md` for profile promotion. This file is the workflow, not the design.
 
 ## Quick start
 
@@ -8,22 +8,61 @@ See `docs/ARCHITECTURE.md` for the completed source ownership and `docs/DEPENDEN
 2. `npm ci` — Node 22.14+ with npm 11.19+ required (tested on Node 24).
 3. `npm test` must stay green. No global `prettier`/`eslint`/`typescript` needed — they are generated inside your project.
 
-## Adding a stack
+## Adding a stack — plan first, then declare, then build
 
-Each stack is a self-contained vertical. Adding `django`, `nuxt`, `svelte`, etc. requires only one new directory and one registry line — no engine or unrelated stack edits.
+A stack is **planned content first, then a declaration in `library/`, then executable code in `src/stacks/`**. `library/` never contains business entities — it declares *what* the stack supports; `src/stacks/<id>/create-files.js` implements *how* those files are generated. Do not start with code; start with the content model.
 
-### 1. Declare capability (no executable logic yet)
+### 0. Plan your stack's content (before touching `library/`)
+
+Answer these 5 questions and write them down (a short RFC or issue is enough). If you can't answer them, you can't write a `definition.json` yet.
+
+**a. Identity & compatibility:** What `id` (`django`, `nuxt`), `kind` (`frontend`|`backend`|`data`), `label` (`Django (Python)`), and which existing stacks can it pair with? Example: `nextjs` pairs with `none,postgres,supabase,springboot,laravel`; `react-native` pairs with `none,supabase,springboot,laravel`; `laravel` pairs with `nextjs,react,react-native,no-frontend,laravel-ui`.
+
+**b. Shapes:** Which **applicationShapes** does it enable? Shapes are the *deployment layout*, not the framework. They determine valid `frontend + backend` combos via `lib/application-shapes.js` → `src/engine/project-shapes.js`:
+
+| Shape | Meaning | Example combos |
+|-------|---------|---------------|
+| `fullstack` | One project owns website + server | `nextjs+none`, `nextjs+postgres`, `laravel-ui+laravel` |
+| `separate` | Two apps via API: frontend + backend API | `nextjs+springboot`, `react+supabase`, `react+laravel` |
+| `api` | Backend API only, no generated website | `no-frontend+springboot`, `no-frontend+laravel` |
+| `mobile` | Expo app + API/managed data | `react-native+supabase`, `react-native+springboot` |
+| `frontend` | Browser-only, no generated server | `react+none` |
+
+You don't invent a new shape — you pick from these 5. If `nextjs+django` should be fullstack, add `django` to `fullstack`'s `VALID_COMBINATIONS`. `inferApplicationShape({frontend,backend})` will then infer it; `validateApplicationShape` rejects invalid pairings.
+
+**c. Architecture & auth:** Which `architectureProfiles` (`small,medium,large` — all 3 required for frontends/backends) and which `authenticationModels` (`public,undecided,supabase,session,oidc,laravel-session,sanctum-spa,laravel-oidc`)? Example: `supabase` → `supabase`, `springboot` website → `session`, `springboot` multi-client → `oidc`.
+
+**d. Playbooks & concerns:** Which 5 facets does the stack need? Every stack needs `architecture.md, structure.md, runtime.md, security.md, testing.md` under `playbooks/stack/<id>/`. Which optional concerns (validation `zod`, state `zustand`, etc.) will it surface? Each concern has one home — don't duplicate prose in `AGENTS.md`.
+
+**e. Dependencies & env:** Which npm/composer package *names* and *scripts* will this stack generate, and which env var *names* (semantic, no prefix)? Example: `deps: ["next","react"]`, `env: ["DATABASE_URL"]`, `clientEnv: ["API_URL"]` — the engine will prefix `API_URL` once (`NEXT_PUBLIC_API_URL`). Never put a version here.
+
+If a new stack needs a runtime (`node`, `java`, `php`), add its version to `library/tested-versions.json` (current profile), not to the definition.
+
+### 1. Declare capability in `library/` (no executable logic yet)
 
 - Add `library/stacks/<id>/definition.json`:
+
   ```json
-  { "id": "django", "kind": "backend", "label": "Django (Python)", "appliesTo": { "frontend": ["nextjs","react"] }, "architectureProfiles": ["small","medium","large"], "playbooks": ["stack/django/architecture.md"], "deps": ["django"], "env": ["DATABASE_URL"], "clientEnv": ["API_URL"] }
+  {
+    "id": "django",
+    "kind": "backend",
+    "label": "Django (Python)",
+    "appliesTo": { "frontend": ["nextjs","react","no-frontend"] },
+    "architectureProfiles": ["small","medium","large"],
+    "playbooks": ["stack/django/architecture.md","stack/django/structure.md","stack/django/runtime.md","stack/django/security.md","stack/django/testing.md"],
+    "deps": ["django"],
+    "env": ["DATABASE_URL"],
+    "clientEnv": [],
+    "concerns": [{ "id": "validation", "required": false, "when": "runtime validation needed", "sections": ["Zod for Runtime Validation"] }]
+  }
   ```
+
   - `deps`/`devDeps` are **names only** — never versions or ranges. Exact versions live only in `library/tested-versions.json`.
-  - `env` are semantic names (`API_URL`); the engine prefixes them once (`NEXT_PUBLIC_API_URL`).
+  - `env` are semantic names (`DATABASE_URL`); `clientEnv` subset gets the frontend prefix (`NEXT_PUBLIC_`, `VITE_`, `EXPO_PUBLIC_`).
 
-- Add `playbooks/stack/<id>/{architecture,structure,runtime,security,testing}.md` — the five facets. Keep each file focused; route concerns via definition `concerns[]`, not duplication.
+- Add `playbooks/stack/<id>/{architecture,structure,runtime,security,testing}.md` — the five facets. Keep each file focused; route concerns via definition `concerns[]`, not duplication. Check `docs/CONTENT_MODEL.md` — every concern section must match a Markdown heading (numbered headings normalized).
 
-- Run: `node checks/check-library.js` — catches duplicate ids, unknown dep names, `clientEnv` not in `env`, missing labels.
+- Run: `node checks/check-library.js` — catches duplicate ids, unknown dep names, `clientEnv` not in `env`, missing labels, heading mismatches.
 
 ### 2. Create stack directory (one place, owns everything specific to that stack)
 
@@ -66,7 +105,7 @@ import { djangoAdapter } from './backends/django/index.js'
 export const stackRegistry = createStackRegistry([..., djangoAdapter])
 ```
 
-This is the **only** list of available adapters. Adding a file never silently activates a stack. `lib/stacks/index.js` is now a shim to this file until `lib/` is deleted.
+This is the **only** list of available adapters. Adding a file never silently activates a stack.
 
 ### 4. Add tests and matrix entries
 
@@ -99,7 +138,7 @@ Update `docs/ARCHITECTURE.md` only if source ownership or the generation pipelin
 
 - Contribution history: use merge commits for feature branches so history remains visible. Do not require individual matrix job names; require the stable `compatibility-gate` aggregator.
 
-- `tests/architecture-boundaries.test.js` enforces `src/engine` not importing `cli`/`stacks/frontends|backends` and `src/stacks` not importing `cli`/`engine`. `tests/architecture/no-lib-legacy.test.js` bans `src/** -> lib/**` imports and one-line wrapper regressions.
+- `tests/architecture-boundaries.test.js` enforces `src/engine` not importing `cli`/`stacks/frontends|backends` and `src/stacks` not importing `cli`/`engine` (except `shared/scaffold` allowlist). `tests/architecture/no-lib-legacy.test.js` bans `src/** -> lib/**` imports and one-line wrapper regressions (no `lib/` exists).
 
 ## Version ownership
 
