@@ -2,11 +2,11 @@
   "id": "typescript",
   "kind": "universal",
   "label": "TypeScript",
-  "file": "universal/typescript.md",
+  "playbooks": ["universal/typescript/boundaries.md", "universal/typescript/errors.md", "universal/typescript/patterns.md"],
   "required": true,
   "folders": [],
   "concerns": [
-    { "id": "typescript-strict", "required": true, "sections": ["Strict Mode — Always On", "No any", "Type vs Interface"] },
-    { "id": "validation", "required": false, "when": "Project validates external/runtime input", "sections": ["Zod for Runtime Validation"] }
+    { "id": "typescript-strict", "required": true, "playbook": "universal/typescript/boundaries.md", "sections": ["Strict Mode — Always On", "No any", "Type vs Interface"] },
+    { "id": "validation", "required": false, "when": "Project validates external/runtime input", "playbook": "universal/typescript/patterns.md", "sections": ["Zod for Runtime Validation"] }
   ]
 }

@@ -44,6 +44,6 @@
     { "id": "http-client", "required": false, "when": "The app adopts Axios for a REST API", "playbook": "concerns/axios.md", "sections": ["One Shared Client", "Service Calls apiClient, Hook Calls Service"] },
     { "id": "query", "required": false, "when": "The app needs cached remote server state", "playbook": "concerns/tanstack-query.md", "sections": ["Read Hook", "Mutation Hook", "QueryClient Setup"] },
     { "id": "state", "required": false, "when": "Shared state across multiple screens", "playbook": "concerns/zustand.md", "sections": ["Store Setup", "Auth Store Pattern"] },
-    { "id": "validation", "required": false, "when": "Project has forms", "playbook": "concerns/zod.md", "sections": ["Schema First, Always", "React Native Form (React Hook Form + Controller)"] }
+    { "id": "validation", "required": false, "when": "Project has forms", "playbook": "concerns/zod/validation.md", "sections": ["Schema First, Always", "React Native Form (React Hook Form + Controller)"] }
   ]
 }
