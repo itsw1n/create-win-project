@@ -43,6 +43,6 @@ describe('application shapes', () => {
       .toEqual(['none', 'postgres', 'supabase'])
     expect(frontendChoicesForShape('mobile', catalog).map((choice) => choice.value)).toEqual(['react-native'])
     expect(frontendChoicesForShape('api', catalog).map((choice) => choice.value)).toEqual(['no-frontend'])
-    expect(backendChoicesForShape('api', 'no-frontend', catalog).map((choice) => choice.value)).toEqual(['springboot', 'laravel'])
+    expect(backendChoicesForShape('api', 'no-frontend', catalog).map((choice) => choice.value)).toEqual(['springboot', 'laravel', 'fastapi'])
   })
 })

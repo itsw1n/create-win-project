@@ -20,6 +20,7 @@ export function validateCompatibility(catalog) {
   const statuses = new Map()
   let packageNames
   let composerPackageNames
+  let pythonPackageNames
   for (const [id, profile] of Object.entries(catalog.profiles)) {
     if (!/^\d{4}\.\d{2}$/.test(id)) throw new Error(`Invalid compatibility profile id: ${id}`)
     if (!['current', 'previous'].includes(profile.status)) throw new Error(`Invalid status for profile ${id}`)
@@ -30,10 +31,10 @@ export function validateCompatibility(catalog) {
     statuses.set(profile.status, id)
     if (!EXACT_VERSION.test(profile.springBoot || '')) throw new Error(`Profile ${id} needs an exact Spring Boot version`)
     if (!EXACT_VERSION.test(profile.springModulith || '')) throw new Error(`Profile ${id} needs an exact Spring Modulith version`)
-    for (const key of ['node', 'java', 'maven', 'postgres', 'php', 'composer']) {
+    for (const key of ['node', 'java', 'maven', 'postgres', 'php', 'composer', 'python', 'uv']) {
       if (!profile.runtimes?.[key]) throw new Error(`Profile ${id} is missing runtime ${key}`)
     }
-    for (const key of ['node', 'maven', 'java', 'postgres', 'nginx', 'php', 'composer']) {
+    for (const key of ['node', 'maven', 'java', 'postgres', 'nginx', 'php', 'composer', 'python']) {
       const image = profile.images?.[key]
       if (!image?.repository || !image?.tag || image.tag === 'latest') {
         throw new Error(`Profile ${id} has an invalid ${key} image`)
@@ -56,6 +57,9 @@ export function validateCompatibility(catalog) {
     }
     if (profile.images.composer.repository !== 'composer' || profile.images.composer.tag !== profile.runtimes.composer) {
       throw new Error(`Profile ${id} Composer image must match runtime ${profile.runtimes.composer}`)
+    }
+    if (profile.images.python.repository !== 'python' || !profile.images.python.tag.startsWith(`${profile.runtimes.python}-`)) {
+      throw new Error(`Profile ${id} Python image must match runtime ${profile.runtimes.python}`)
     }
     const names = Object.keys(profile.packages || {}).sort()
     if (!names.length) throw new Error(`Profile ${id} has no package versions`)
@@ -80,6 +84,15 @@ export function validateCompatibility(catalog) {
       throw new Error(`Profile ${id} does not own the same Composer package set as the current profile`)
     }
     composerPackageNames = composerNames
+    const pythonNames = Object.keys(profile.pythonPackages || {}).sort()
+    if (!pythonNames.length) throw new Error(`Profile ${id} has no Python package versions`)
+    for (const [name, version] of Object.entries(profile.pythonPackages)) {
+      if (!EXACT_VERSION.test(version || '')) throw new Error(`Profile ${id} Python package ${name} must use an exact version`)
+    }
+    if (pythonPackageNames && JSON.stringify(pythonNames) !== JSON.stringify(pythonPackageNames)) {
+      throw new Error(`Profile ${id} does not own the same Python package set as the current profile`)
+    }
+    pythonPackageNames = pythonNames
   }
   if (!statuses.has('current') || !statuses.has('previous')) {
     throw new Error('Exactly one current and one previous compatibility profile are required')
@@ -111,6 +124,12 @@ export function packageVersion(profile, name, capability, owner = capability) {
 
 export function composerPackageVersion(profile, name, owner = name) {
   const version = profile.composerPackages?.[name]
+  if (!version) throw new Error(`${owner} requires ${name}, missing from compatibility profile ${profile.id}`)
+  return version
+}
+
+export function pythonPackageVersion(profile, name, owner = name) {
+  const version = profile.pythonPackages?.[name]
   if (!version) throw new Error(`${owner} requires ${name}, missing from compatibility profile ${profile.id}`)
   return version
 }
