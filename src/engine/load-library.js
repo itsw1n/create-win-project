@@ -190,7 +190,8 @@ export function resolveStack(answers, catalog) {
       if (fe.id === 'laravel-ui') authentication = 'laravel-session'
       else authentication = authAudience === 'website' && fe.platform === 'web' ? 'sanctum-spa' : 'laravel-oidc'
     }
-    else throw new Error(`Authentication generation requires Supabase or Spring Boot for ${fe.label}`)
+    else if (be.id === 'fastapi') authentication = 'oidc'
+    else throw new Error(`Authentication generation requires Supabase, Spring Boot, Laravel, or FastAPI for ${fe.label}`)
   }
 
   // ── Collect selected manifests ───────────────────────────────────────────
@@ -277,7 +278,7 @@ export function resolveStack(answers, catalog) {
   // Apply env prefix: clientEnv vars get fe.envPrefix, others stay as-is
   const envPrefix = fe.envPrefix || ''
   if (authentication === 'session') rawEnv.push('SPRING_SECURITY_USER_NAME', 'SPRING_SECURITY_USER_PASSWORD')
-  if (authentication === 'oidc') rawEnv.push('OIDC_ISSUER_URI', 'OIDC_AUDIENCE')
+  if (authentication === 'oidc' && be.id === 'springboot') rawEnv.push('OIDC_ISSUER_URI', 'OIDC_AUDIENCE')
   if (authentication === 'laravel-session') rawEnv.push('SESSION_DOMAIN')
   if (authentication === 'sanctum-spa') rawEnv.push('SESSION_DOMAIN', 'SANCTUM_STATEFUL_DOMAINS', 'CORS_ALLOWED_ORIGINS')
   if (authentication === 'laravel-oidc') rawEnv.push('AUTH0_DOMAIN', 'AUTH0_AUDIENCE')

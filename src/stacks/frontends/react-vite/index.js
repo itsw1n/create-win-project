@@ -14,7 +14,7 @@ export const reactViteAdapter = defineStackAdapter({
   id: 'react',
   kind: 'frontend',
   label: 'React + Vite',
-  compatibleWith: { backend: ['none', 'supabase', 'springboot', 'laravel'] },
+  compatibleWith: { backend: ['none', 'supabase', 'springboot', 'laravel', 'fastapi'] },
   capabilities: {
     applicationShapes: ['separate', 'frontend'],
     architectureProfiles: ['small', 'medium', 'large'],

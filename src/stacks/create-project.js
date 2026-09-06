@@ -132,6 +132,10 @@ async function generateRootFiles(dest, answers, vars, stack, templatesDir) {
   await write(dest,         '.editorconfig', editorconfig())
   await write(dest,         '.prettierrc',   prettierrc())
   if (stack.backendKey === 'springboot') await write(dest, 'backend/.java-version', `${stack.profile.runtimes.java}\n`)
+  if (stack.backendKey === 'fastapi') {
+    const apiRoot = stack.frontendKey === 'no-frontend' ? '' : 'backend/'
+    await write(dest, `${apiRoot}.python-version`, `${stack.profile.runtimes.python}\n`)
+  }
   if (stack.backendKey === 'laravel') {
     const laravelRoot = stack.frontendKey === 'laravel-ui' || stack.frontendKey === 'no-frontend' ? '' : 'backend/'
     await write(dest, `${laravelRoot}.php-version`, `${stack.profile.runtimes.php}\n`)
@@ -147,11 +151,16 @@ async function generateRootFiles(dest, answers, vars, stack, templatesDir) {
   // Mobile frontends run through Expo, but a separate Laravel backend still
   // needs its backend and PostgreSQL services. laravelCompose intentionally
   // omits a frontend service for React Native.
-  if (answers.docker && (!stack.isMobile || stack.backendKey === 'laravel')) {
+  if (answers.docker && (!stack.isMobile || ['laravel', 'fastapi'].includes(stack.backendKey))) {
     // docker-compose.yml
     let composeTpl = null
     if (stack.backendKey === 'laravel') {
       composeTpl = laravelCompose(answers, stack, vars)
+    } else if (stack.backendKey === 'fastapi') {
+      composeTpl = await readTemplate(templatesDir, 'docker/compose', 'fastapi', '.yml')
+      if (stack.frontendKey === 'no-frontend' && composeTpl) {
+        composeTpl = composeTpl.replaceAll('context: ./backend', 'context: .').replaceAll('./backend:/app', '.:/app')
+      }
     } else if (stack.needsPackage) {
       composeTpl = await readTemplate(templatesDir, 'docker/compose', 'springboot', '.yml')
     } else if (stack.backendKey === 'supabase') {
@@ -179,6 +188,17 @@ async function generateRootFiles(dest, answers, vars, stack, templatesDir) {
       if (beDev) await writeTemplate(dest, 'backend/Dockerfile.dev', beDev, vars)
       const beProd = await readTemplate(templatesDir, 'docker/dockerfile', 'springboot.prod', '.dockerfile')
       if (beProd) await writeTemplate(dest, 'backend/Dockerfile', beProd, vars)
+    }
+
+    if (stack.backendKey === 'fastapi') {
+      const apiRoot = stack.frontendKey === 'no-frontend' ? '' : 'backend/'
+      const prodTpl = await readTemplate(templatesDir, 'docker/compose-prod', 'fastapi', '.yml')
+      if (prodTpl) await writeTemplate(dest, 'docker-compose.prod.yml', prodTpl, vars)
+
+      const beDev = await readTemplate(templatesDir, 'docker/dockerfile', 'fastapi.dev', '.dockerfile')
+      if (beDev) await writeTemplate(dest, `${apiRoot}Dockerfile.dev`, beDev, vars)
+      const beProd = await readTemplate(templatesDir, 'docker/dockerfile', 'fastapi.prod', '.dockerfile')
+      if (beProd) await writeTemplate(dest, `${apiRoot}Dockerfile`, beProd, vars)
     }
 
     // frontend dockerfiles — vite vs nextjs
@@ -219,6 +239,13 @@ async function generateRootFiles(dest, answers, vars, stack, templatesDir) {
       const composeProd = await readTemplate(templatesDir, 'docker/compose-prod', 'springboot', '.yml')
       if (composeProd) await writeTemplate(dest, 'docker-compose.prod.yml', composeProd, vars)
     }
+    if (stack.backendKey === 'fastapi') {
+      const apiRoot = stack.frontendKey === 'no-frontend' ? '' : 'backend/'
+      const backendProd = await readTemplate(templatesDir, 'docker/dockerfile', 'fastapi.prod', '.dockerfile')
+      if (backendProd) await writeTemplate(dest, `${apiRoot}Dockerfile`, backendProd, vars)
+      const composeProd = await readTemplate(templatesDir, 'docker/compose-prod', 'fastapi', '.yml')
+      if (composeProd) await writeTemplate(dest, 'docker-compose.prod.yml', composeProd, vars)
+    }
     if (stack.backendKey === 'laravel') {
       const laravelRoot = ['laravel-ui', 'no-frontend'].includes(stack.frontendKey) ? '' : 'backend/'
       const laravelProd = await readTemplate(templatesDir, 'docker/dockerfile', 'laravel.prod', '.dockerfile')
@@ -251,6 +278,11 @@ function toolchainGuide(answers, stack) {
     const root = stack.frontendKey === 'laravel-ui' || stack.frontendKey === 'no-frontend' ? '' : 'backend/'
     rows.push(`| PHP | ${stack.profile.runtimes.php} | Host-run Laravel backend | \`${root}.php-version\` |`)
     rows.push(`| Composer | ${stack.profile.runtimes.composer} | Host-run Laravel backend | \`${root}composer.json\` |`)
+  }
+  if (stack.backendKey === 'fastapi') {
+    const root = stack.frontendKey === 'no-frontend' ? '' : 'backend/'
+    rows.push(`| Python | ${stack.profile.runtimes.python} | Host-run FastAPI backend | \`${root}.python-version\` |`)
+    rows.push(`| uv | ${stack.profile.runtimes.uv} | Host-run FastAPI backend | \`${root}pyproject.toml\` |`)
   }
   if (answers.docker || ['supabase', 'postgres'].includes(stack.backendKey)) {
     rows.push('| Docker with Compose | Current supported release | Generated containers and local managed services | `docker-compose.yml` when selected |')
@@ -312,6 +344,15 @@ async function generateDocs(dest, answers, stack) {
           : ''
     setupGuide = `# Local Setup Guide\n\n## Default local setup\n\nUse PHP ${stack.profile.runtimes.php}, Composer ${stack.profile.runtimes.composer}, and PostgreSQL ${stack.profile.runtimes.postgres}.\n\n\`\`\`bash\ncd ${laravelDir || '.'}\ncomposer install\ncp .env.example .env\nphp artisan key:generate\nphp artisan migrate\nphp artisan serve\n\`\`\`\n${frontendSetup}${answers.docker ? `\n## Optional Docker setup\n\nFrom the repository root:\n\n\`\`\`bash\ndocker compose build\ndocker compose up -d\ndocker compose exec backend php artisan key:generate\ndocker compose exec backend php artisan migrate\n\`\`\`\n\nLater runs use \`docker compose up -d\`; rebuilding remains explicit.\n` : ''}\n## Validate\n\n\`\`\`bash\n${laravelDir ? `cd ${laravelDir}\n` : ''}composer check\n\`\`\`\n\nCommit \`composer.lock\`${stack.frontendKey === 'laravel-ui' && stack.laravelUi === 'inertia-react' ? ' and `package-lock.json`' : ''}.\n`
   }
+  if (stack.backendKey === 'fastapi') {
+    const apiDir = stack.frontendKey === 'no-frontend' ? '' : 'backend/'
+    const frontendSetup = stack.frontendKey === 'react'
+      ? '\nIn another terminal:\n\n```bash\ncd frontend\nnpm install\nnpm run dev\n```\n'
+      : stack.frontendKey === 'nextjs'
+        ? '\nIn another terminal from the repository root:\n\n```bash\nnpm install\nnpm run dev\n```\n'
+        : ''
+    setupGuide = `# Local Setup Guide\n\n## Default local setup\n\nUse Python ${stack.profile.runtimes.python}, uv ${stack.profile.runtimes.uv}, and PostgreSQL ${stack.profile.runtimes.postgres}.\n\n\`\`\`bash\ncd ${apiDir || '.'}\nuv sync\ncp .env.example .env\nalembic upgrade head\nuv run uvicorn app.main:app --reload\n\`\`\`\n${frontendSetup}${answers.docker ? `\n## Optional Docker setup\n\nFrom the repository root:\n\n\`\`\`bash\ndocker compose build\ndocker compose up -d\ndocker compose exec backend uv run alembic upgrade head\n\`\`\`\n\nLater runs use \`docker compose up -d\`; rebuilding remains explicit.\n` : ''}\n## Validate\n\n\`\`\`bash\n${apiDir ? `cd ${apiDir}\n` : ''}uv run ruff check . && uv run ruff format --check . && uv run mypy . && uv run pytest\n\`\`\`\n\nCommit the generated \`uv.lock\`; CI uses \`uv sync --frozen\`.\n`
+  }
   await fs.writeFile(setupPath, setupGuide, 'utf8')
   await write(dest, 'docs/guides/toolchain.md', toolchainGuide(answers, stack))
   await write(dest, 'docs/guides/development-environments.md', developmentEnvironmentGuide(answers, stack))
@@ -327,7 +368,9 @@ async function generateDocs(dest, answers, stack) {
     ? 'GET http://localhost:8080/api/health'
     : stack.backendKey === 'laravel'
       ? 'GET http://localhost:8000/api/health'
-      : stack.frontendKey === 'nextjs' ? 'GET /api/health' : '(No custom HTTP API is generated for this client-only starter.)'
+      : stack.backendKey === 'fastapi'
+        ? 'GET http://localhost:8000/health'
+        : stack.frontendKey === 'nextjs' ? 'GET /api/health' : '(No custom HTTP API is generated for this client-only starter.)'
   await write(dest, 'docs/api/overview.md', `# API Overview\n\n## Health\n\n\`${health}\`\n\nAuthentication and authorization behavior is documented in \`docs/architecture/auth-flow.md\`. Add endpoints to \`docs/api/endpoints.md\` in the same change that adds their implementation and tests.\n`)
 }
 
@@ -335,7 +378,7 @@ function environmentPurpose(name) {
   if (name.endsWith('SUPABASE_URL')) return 'Supabase project URL.'
   if (name.endsWith('SUPABASE_PUBLISHABLE_KEY')) return 'Public Supabase key; RLS protects data.'
   if (name.endsWith('API_URL')) return 'Base URL of the application API.'
-  if (name === 'DATABASE_URL') return 'Server-side PostgreSQL JDBC connection URL.'
+  if (name === 'DATABASE_URL') return 'Server-side PostgreSQL connection URL.'
   if (name === 'POSTGRES_USER') return 'Local/deployed database user.'
   if (name === 'POSTGRES_PASSWORD') return 'Database credential; replace the development example.'
   if (name === 'POSTGRES_DB') return 'Database name.'
@@ -343,7 +386,10 @@ function environmentPurpose(name) {
   if (name === 'SPRING_SECURITY_USER_NAME') return 'Development-only generated Spring login name; replace with the product identity store.'
   if (name === 'SPRING_SECURITY_USER_PASSWORD') return 'Development-only Spring login credential; never commit a real value.'
   if (name === 'OIDC_ISSUER_URI') return 'Trusted OpenID Connect issuer used to validate access tokens.'
+  if (name === 'OIDC_ISSUER') return 'Trusted OpenID Connect issuer used to validate access tokens.'
   if (name === 'OIDC_AUDIENCE') return 'Required audience for tokens accepted by this API.'
+  if (name === 'OIDC_ALGORITHMS') return 'Allowed signing algorithms for accepted access tokens.'
+  if (name === 'OIDC_JWKS_URL') return 'JWKS endpoint for access-token signature validation; defaults to the issuer well-known location.'
   if (name === 'SESSION_DOMAIN') return 'Exact domain scope for the secure session cookie.'
   if (name === 'SANCTUM_STATEFUL_DOMAINS') return 'Comma-separated first-party browser hosts allowed to use Sanctum session authentication.'
   if (name === 'CORS_ALLOWED_ORIGINS') return 'Exact browser origins allowed to make credentialed API requests.'
@@ -361,6 +407,7 @@ function authDocumentation(stack) {
   if (stack.authentication === 'laravel-session') return `# Authentication Flow\n\nLaravel owns the website session. Login regenerates the session identifier, logout invalidates the session and rotates the CSRF token, and protected routes use server-side authorization. The browser receives an HttpOnly session cookie; there is no browser refresh token. Keep CSRF protection enabled for every cookie-authenticated mutation.\n`
   if (stack.authentication === 'sanctum-spa') return `# Authentication Flow\n\nLaravel Sanctum uses Laravel's secure session cookie for this first-party browser application. The SPA first requests \`/sanctum/csrf-cookie\`, then sends credentialed login and API requests. Sanctum does not give this browser a custom bearer/refresh-token system. Configure exact stateful domains and CORS origins, and enforce resource authorization in Laravel.\n`
   if (stack.authentication === 'laravel-oidc') return `# Authentication Flow\n\nAuth0 owns login, access/refresh-token issuance, rotation, revocation, and recovery. Clients use Authorization Code with PKCE. Laravel uses the pinned Auth0 resource-server adapter to accept access tokens only and validate signature, issuer, audience, and time claims. Refresh tokens never go to this API. Configure \`AUTH0_DOMAIN\` and \`AUTH0_AUDIENCE\`; resource ownership and permission checks remain application responsibilities.\n`
+  if (stack.backendKey === 'fastapi') return `# Authentication Flow\n\nAn external OpenID Connect provider owns login, access/refresh token issuance, rotation, revocation, and recovery. Clients use Authorization Code with PKCE. FastAPI validates bearer access tokens: issuer, audience, algorithm, JWKS signature, expiry, and required claims on every protected request. Refresh tokens never go to the FastAPI resource API. Configure \`OIDC_ISSUER\` and \`OIDC_AUDIENCE\`, then test invalid and authorized tokens.\n`
   return `# Authentication Flow\n\nAn external OpenID Connect provider owns login, access/refresh token issuance, rotation, revocation, and recovery. Clients use Authorization Code with PKCE. Spring is an OAuth2 Resource Server: it accepts bearer access tokens and validates signature, issuer, audience, time, and authorities. Refresh tokens never go to the Spring resource API. Configure \`OIDC_ISSUER_URI\` and \`OIDC_AUDIENCE\`, then test invalid and authorized tokens.\n`
 }
 
@@ -423,6 +470,19 @@ async function generateCI(dest, stack, ciDir, answers, vars) {
       if (answers.testing === 'none') content = content.replace('      - run: composer check\n', '      - run: composer format:check\n      - run: composer analyse\n')
       if (stack.frontendKey === 'laravel-ui' && stack.laravelUi === 'inertia-react') {
         content += `      - uses: actions/setup-node@v4\n        with:\n          node-version: "${stack.profile.runtimes.node}"\n          cache: npm\n          cache-dependency-path: package-lock.json\n      - run: npm ci\n      - run: npm run build\n`
+      }
+      await write(dest, `.github/workflows/ci-backend.yml`, render(content, vars))
+    }
+  }
+  if (stack.backendKey === 'fastapi') {
+    const beTpl = path.join(ciDir, 'fastapi.yml')
+    if (await fs.pathExists(beTpl)) {
+      let content = await fs.readFile(beTpl, 'utf-8')
+      if (stack.frontendKey === 'no-frontend') {
+        content = content.replaceAll('backend/**', '**').replaceAll('working-directory: backend', 'working-directory: .')
+      }
+      if (answers.testing === 'none') {
+        content = content.replace('      - name: Run tests\n        run: uv run pytest\n', '')
       }
       await write(dest, `.github/workflows/ci-backend.yml`, render(content, vars))
     }

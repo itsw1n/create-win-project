@@ -7,6 +7,7 @@ import { supabaseAdapter } from './backends/supabase/index.js'
 import { postgresAdapter } from './backends/postgres/index.js'
 import { noBackendAdapter } from './backends/none/index.js'
 import { laravelAdapter } from './backends/laravel/index.js'
+import { fastapiAdapter } from './backends/fastapi/index.js'
 
 export function createStackRegistry(initialAdapters = []) {
   const adapters = new Map()
@@ -59,6 +60,7 @@ export const stackRegistry = createStackRegistry([
   postgresAdapter,
   noBackendAdapter,
   laravelAdapter,
+  fastapiAdapter,
 ])
 
 export { stackRegistry as availableStacks }

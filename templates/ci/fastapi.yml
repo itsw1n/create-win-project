@@ -1,0 +1,44 @@
+name: CI — Backend
+
+on:
+  push:
+    branches: [dev, main]
+    paths:
+      - backend/**
+  pull_request:
+    branches: [dev, main]
+    paths:
+      - backend/**
+
+permissions:
+  contents: read
+
+jobs:
+  ci-backend:
+    name: Test, Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "{{PYTHON_VERSION}}"
+      - uses: astral-sh/setup-uv@v4
+        with:
+          version: "{{UV_VERSION}}"
+      - name: Install dependencies
+        run: uv sync --frozen
+      - name: Check migrations are current
+        run: uv run alembic check
+      - name: Run Ruff
+        run: uv run ruff check .
+      - name: Check formatting
+        run: uv run ruff format --check .
+      - name: Run mypy
+        run: uv run mypy .
+      - name: Run tests
+        run: uv run pytest
+      - name: Build image
+        run: docker build -f Dockerfile .
