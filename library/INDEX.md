@@ -55,4 +55,4 @@ Manifests compose capabilities; `lib/scaffold.js` owns their executable minimum.
 - `playbooks/`: only selected reusable guidance.
 - `docs/`: setup, API, architecture, auth, and deployment for the generated product.
 
-See `docs/CONTENT_MODEL.md` for authoring and deduplication rules and `docs/ARCHITECTURE.md` for the generation pipeline.
+See `docs/maintainers/content-model.md` for authoring and deduplication rules and `docs/maintainers/architecture.md` for the generation pipeline.
