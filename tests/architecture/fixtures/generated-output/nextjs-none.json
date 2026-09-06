@@ -52,8 +52,8 @@
     "sha256": "c9b07db9514c28cc4234e605bffdc33cd701a9bfcd8cb9e382198a0162399d7c"
   },
   "Dockerfile": {
-    "bytes": 477,
-    "sha256": "1cbacb6f0416367b7c83d0d98630263e8fbbe9258bf8b022794cc94c324c9566"
+    "bytes": 487,
+    "sha256": "88c6b3c8258301ee82c15485ee48febb4e8d73d1e6e06c16eb157fcb1a2efcaf"
   },
   "Dockerfile.dev": {
     "bytes": 109,
@@ -84,8 +84,8 @@
     "sha256": "af43dbc2e9dc0fa1e1553eacad876ac2281abe9ed0d0b063b251d63218d47431"
   },
   "docs/guides/deployment.md": {
-    "bytes": 78,
-    "sha256": "1d6157e9b7f51c8e9009baf3dc751c4c2a52fd25aece286ef768ecec0477294d"
+    "bytes": 997,
+    "sha256": "1be746fd1cab6ac2b40e392cd409a1cf17182def17cf68a12a0a3e7b187d482f"
   },
   "docs/guides/development-environments.md": {
     "bytes": 1168,
@@ -94,6 +94,10 @@
   "docs/guides/env-variables.md": {
     "bytes": 403,
     "sha256": "250df9b1494319e32ac3fc95cb69dd844a6ee7c176508939654d6d39818b9567"
+  },
+  "docs/guides/operations.md": {
+    "bytes": 846,
+    "sha256": "1edcf2b3e0124bb0247dd8579602a952a64e380d7b5f8213949a64f9dee505ff"
   },
   "docs/guides/setup.md": {
     "bytes": 370,

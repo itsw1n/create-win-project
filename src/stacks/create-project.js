@@ -188,7 +188,7 @@ async function generateRootFiles(dest, answers, vars, stack, templatesDir) {
       const viteProd = await readTemplate(templatesDir, 'docker/dockerfile', 'vite.prod', '.dockerfile')
       if (viteProd) {
         await writeTemplate(dest, 'frontend/Dockerfile', viteProd, vars)
-        const nginx = `server {\n  listen 80;\n  location / {\n    root /usr/share/nginx/html;\n    index index.html;\n    try_files $uri $uri/ /index.html;\n  }\n}\n`
+        const nginx = `server {\n  listen 8080;\n  server_tokens off;\n  root /usr/share/nginx/html;\n  add_header X-Content-Type-Options nosniff always;\n  add_header Referrer-Policy strict-origin-when-cross-origin always;\n  add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;\n  add_header Content-Security-Policy "default-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'" always;\n  location /assets/ { try_files $uri =404; add_header Cache-Control "public, max-age=31536000, immutable"; }\n  location /api/ { add_header Cache-Control "no-store" always; try_files $uri =404; }\n  location / { index index.html; try_files $uri $uri/ /index.html; add_header Cache-Control "no-cache"; }\n}\n`
         await write(dest, 'frontend/nginx.conf', nginx)
       }
     } else if (stack.frontendKey === 'nextjs') {
@@ -196,6 +196,33 @@ async function generateRootFiles(dest, answers, vars, stack, templatesDir) {
       if (nextDev) await writeTemplate(dest, 'Dockerfile.dev', nextDev, vars)
       const nextProd = await readTemplate(templatesDir, 'docker/dockerfile', 'nextjs.prod', '.dockerfile')
       if (nextProd) await writeTemplate(dest, 'Dockerfile', nextProd, vars)
+    }
+  }
+
+  // Production artifacts are part of the deployable web contract even when
+  // the optional development Docker workflow was not selected.
+  if (!answers.docker && !stack.isMobile) {
+    if (stack.frontendKey === 'nextjs') {
+      const nextProd = await readTemplate(templatesDir, 'docker/dockerfile', 'nextjs.prod', '.dockerfile')
+      if (nextProd) await writeTemplate(dest, 'Dockerfile', nextProd, vars)
+    }
+    if (stack.frontendKey === 'react') {
+      const viteProd = await readTemplate(templatesDir, 'docker/dockerfile', 'vite.prod', '.dockerfile')
+      if (viteProd) {
+        await writeTemplate(dest, 'frontend/Dockerfile', viteProd, vars)
+        await write(dest, 'frontend/nginx.conf', `server {\n  listen 8080;\n  server_tokens off;\n  root /usr/share/nginx/html;\n  add_header X-Content-Type-Options nosniff always;\n  add_header Referrer-Policy strict-origin-when-cross-origin always;\n  add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;\n  add_header Content-Security-Policy "default-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'" always;\n  location /assets/ { try_files $uri =404; add_header Cache-Control "public, max-age=31536000, immutable"; }\n  location /api/ { add_header Cache-Control "no-store" always; try_files $uri =404; }\n  location / { index index.html; try_files $uri $uri/ /index.html; add_header Cache-Control "no-cache"; }\n}\n`)
+      }
+    }
+    if (stack.backendKey === 'springboot') {
+      const backendProd = await readTemplate(templatesDir, 'docker/dockerfile', 'springboot.prod', '.dockerfile')
+      if (backendProd) await writeTemplate(dest, 'backend/Dockerfile', backendProd, vars)
+      const composeProd = await readTemplate(templatesDir, 'docker/compose-prod', 'springboot', '.yml')
+      if (composeProd) await writeTemplate(dest, 'docker-compose.prod.yml', composeProd, vars)
+    }
+    if (stack.backendKey === 'laravel') {
+      const laravelRoot = ['laravel-ui', 'no-frontend'].includes(stack.frontendKey) ? '' : 'backend/'
+      const laravelProd = await readTemplate(templatesDir, 'docker/dockerfile', 'laravel.prod', '.dockerfile')
+      if (laravelProd) await writeTemplate(dest, `${laravelRoot}Dockerfile`, laravelProd, vars)
     }
   }
 
@@ -256,6 +283,8 @@ async function generateDocs(dest, answers, stack) {
   for (const [filePath, title, description] of docs) {
     await write(dest, filePath, docPlaceholder(title, description))
   }
+  await write(dest, 'docs/guides/deployment.md', `# Production deployment and rollback\n\nBuild immutable images from the committed lockfiles and deploy \`docker-compose.prod.yml\` where generated. Validate required environment variables before starting; secrets belong in the deployment platform, never images or client bundles. Run readiness checks before routing traffic and allow the documented graceful-shutdown window during replacement.\n\n## Database preflight\n\nBack up PostgreSQL with encryption before migrations, check available connections and migration compatibility, then run migrations as a single release task. Application instances use a bounded connection pool; size the total across replicas below the database limit.\n\n## Rollback\n\nRetain the previous image digest and a compatible database restore point. Stop routing to the failed release, restore the prior image, and restore data only when the migration is not backward compatible. Test restores automatically on a separate database and document retention and recovery ownership.\n`)
+  await write(dest, 'docs/guides/operations.md', `# Operations\n\nEvery request crossing an HTTP boundary receives or creates an \`X-Request-ID\` and returns it in responses. Errors use a stable JSON shape: \`{ "error": { "code": "stable_code", "message": "safe message", "requestId": "..." } }\`. Never expose stack traces.\n\nList endpoints use cursor pagination with explicit maximum page sizes. Outbound calls have connection and response timeouts; retry only bounded idempotent operations with jitter. Readiness checks include required downstream dependencies while liveness checks remain process-local.\n\nCORS uses an explicit origin allowlist. Cookie-authenticated browser writes require SameSite cookies plus CSRF validation; bearer-token APIs do not use wildcard origins with credentials. Static fingerprinted assets are immutable, HTML revalidates, and API/auth responses default to \`no-store\`.\n`)
 
   const frontendRoot = stack.frontendKey === 'react' ? 'frontend/' : ''
   const validation = stack.isMobile

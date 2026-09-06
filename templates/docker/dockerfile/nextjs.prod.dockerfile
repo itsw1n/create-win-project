@@ -11,6 +11,7 @@ RUN npm run build
 FROM {{NODE_IMAGE}} AS production
 WORKDIR /app
 ENV NODE_ENV=production
+USER node
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public

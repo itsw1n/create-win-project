@@ -92,8 +92,8 @@
     "sha256": "2b031dc51f39073b934bce621e0a0a47683ff1b28deef1b105a2432b6e9b95bc"
   },
   "docs/guides/deployment.md": {
-    "bytes": 78,
-    "sha256": "1d6157e9b7f51c8e9009baf3dc751c4c2a52fd25aece286ef768ecec0477294d"
+    "bytes": 997,
+    "sha256": "1be746fd1cab6ac2b40e392cd409a1cf17182def17cf68a12a0a3e7b187d482f"
   },
   "docs/guides/development-environments.md": {
     "bytes": 1052,
@@ -102,6 +102,10 @@
   "docs/guides/env-variables.md": {
     "bytes": 498,
     "sha256": "c6228c76b6dfeb19ac578ca66e6a3df5c4bc1c9e5a9c6edc6cbafcfdad6b54f0"
+  },
+  "docs/guides/operations.md": {
+    "bytes": 846,
+    "sha256": "1edcf2b3e0124bb0247dd8579602a952a64e380d7b5f8213949a64f9dee505ff"
   },
   "docs/guides/setup.md": {
     "bytes": 539,
