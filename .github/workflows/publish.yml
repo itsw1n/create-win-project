@@ -19,7 +19,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Require main and the requested package version
         if: github.event_name == 'workflow_dispatch'
@@ -36,7 +36,7 @@ jobs:
           conclusion=$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/check-runs" --jq '[.check_runs[] | select(.name == "compatibility-gate")][0].conclusion // "missing"')
           test "$conclusion" = "success"
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 24.20.0
           registry-url: 'https://registry.npmjs.org'
@@ -46,12 +46,17 @@ jobs:
 
       - run: npm test
 
+      - run: npm run package:check
+
+      - name: Generate package SBOM
+        run: npm sbom --sbom-format cyclonedx > create-win-project-sbom.json
+
       - name: Publish with trusted publishing
         if: github.event_name == 'release'
-        run: npm publish --access public
+        run: npm publish --access public --provenance
 
       - name: Publish with recovery token
         if: github.event_name == 'workflow_dispatch'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npm publish --access public
+        run: npm publish --access public --provenance
