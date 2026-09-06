@@ -32,8 +32,8 @@
     "sha256": "80a265752b65a489bca52d72780a015416322cdaadff944627d8f0fa8828c7aa"
   },
   "AGENTS.md": {
-    "bytes": 2189,
-    "sha256": "bf1138a6195afd9c3835892cb86080a3a9e50c664160d9c2852959fd4f29b96e"
+    "bytes": 2500,
+    "sha256": "45833f7bb6e48179676b18dc8deb7a211d307f74982669b86c15dff6e58e3b4a"
   },
   "backend/.java-version": {
     "bytes": 3,
@@ -108,8 +108,8 @@
     "sha256": "a05c37c323b466d18ecac474cff71bd873fc6ada71e6c7349deae64e7153a8d6"
   },
   "CONTEXT.md": {
-    "bytes": 578,
-    "sha256": "549a91c3232756524abb63f0248e7ee167c899ced2466b93f53eed8239fa9e64"
+    "bytes": 817,
+    "sha256": "a7ab19d01cb3362a6a03ad0405af197e3c562512a3b47aa35d3fd4fd1ee891e5"
   },
   "create-win-project.profile.json": {
     "bytes": 874,

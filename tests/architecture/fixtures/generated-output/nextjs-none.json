@@ -36,12 +36,12 @@
     "sha256": "80a265752b65a489bca52d72780a015416322cdaadff944627d8f0fa8828c7aa"
   },
   "AGENTS.md": {
-    "bytes": 2236,
-    "sha256": "db93adcf4ef1f9670343ba9b122cc875a245698c37b49e01ea23fef277ede9f0"
+    "bytes": 2547,
+    "sha256": "1c182868b952796cb41e62a8db4c0ccea266d7d12775e824ccb931d45b14c4f2"
   },
   "CONTEXT.md": {
-    "bytes": 565,
-    "sha256": "7a7d650d03ee6da26231dcfce2583777c838a9d83da1bc41653ece11fdc20e04"
+    "bytes": 804,
+    "sha256": "0d41f5701fd7b3aba7ffc6fa492cd867413f7e2433783827f16b926291ad529e"
   },
   "create-win-project.profile.json": {
     "bytes": 870,
