@@ -72,34 +72,38 @@ jobs:
   verify:
     needs: prepare
     if: needs.prepare.outputs.scope != 'none'
-    name: shard ${{ matrix.shard }} / ${{ matrix.profile }} / ${{ matrix.case }} / ${{ matrix.architecture }} / ${{ matrix.authentication }} / ${{ matrix.audience }}
+    name: shard ${{ matrix.shard }} / 4
     runs-on: ubuntu-latest
     timeout-minutes: 35
     strategy:
       fail-fast: false
-      max-parallel: 20
+      max-parallel: 4
       matrix:
         include: ${{ fromJSON(needs.prepare.outputs.matrix) }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: ${{ matrix.node }}
+          node-version: 24.20.0
           cache: npm
       - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
-        if: contains(matrix.case, 'springboot')
+        if: contains(toJSON(matrix.cases), 'springboot')
         with:
-          java-version: ${{ matrix.java }}
+          java-version: '21'
           distribution: temurin
       - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
-        if: contains(matrix.case, 'laravel')
+        if: contains(toJSON(matrix.cases), 'laravel')
         with:
-          php-version: ${{ matrix.php }}
+          php-version: '8.5.10'
           extensions: pdo_pgsql
           coverage: none
       - run: npm ci
       - name: Verify generated application
-        run: node checks/check-generated-project.js --profile=${{ matrix.profile }} --case=${{ matrix.case }} --architecture=${{ matrix.architecture }} --authentication=${{ matrix.authentication }} --auth-audience=${{ matrix.audience }} --containers=${{ needs.prepare.outputs.scope == 'full' && matrix.profile == needs.prepare.outputs.current }}
+        env:
+          COMPATIBILITY_CASES: ${{ toJSON(matrix.cases) }}
+          CURRENT_PROFILE: ${{ needs.prepare.outputs.current }}
+          VERIFY_CONTAINERS: ${{ needs.prepare.outputs.scope == 'full' }}
+        run: node checks/run-compatibility-shard.js
 
   compatibility-gate:
     name: compatibility-gate
