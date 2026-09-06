@@ -12,8 +12,8 @@
     "sha256": "e6c9ebd10795622b8e71ba32ffb9a2670fa3f7666726522736f4207cabc70bee"
   },
   ".github/workflows/ci-backend.yml": {
-    "bytes": 974,
-    "sha256": "6d9f8b7d8e328099dd2126dd524d50722de44160bbb6db99b65edb0636684408"
+    "bytes": 1017,
+    "sha256": "a58f8f31fff27c7fc00d85ea24b8f287fdd26a3d090e3318fd9371bdcff468ea"
   },
   ".github/workflows/ci-frontend.yml": {
     "bytes": 481,
