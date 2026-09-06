@@ -1,0 +1,39 @@
+{
+  "id": "fastapi",
+  "kind": "backend",
+  "label": "FastAPI",
+  "language": "Python",
+  "appliesTo": { "frontend": ["nextjs", "react", "react-native", "no-frontend"] },
+  "port": 8000,
+  "needsDocker": true,
+  "architectureProfiles": ["small", "medium", "large"],
+  "playbooks": [
+    "stack/fastapi/architecture.md",
+    "stack/fastapi/structure.md",
+    "stack/fastapi/runtime.md",
+    "stack/fastapi/security.md",
+    "stack/fastapi/testing.md",
+    "capabilities/sqlalchemy-alembic.md",
+    { "file": "capabilities/auth/oidc-resource-server.md", "appliesWhen": { "authentication": "oidc" } }
+  ],
+  "makefileTemplate": "fastapi",
+  "folders": [],
+  "deps": [],
+  "devDeps": [],
+  "env": ["API_URL", "DATABASE_URL", "POSTGRES_USER", "POSTGRES_PASSWORD", "POSTGRES_DB", "OIDC_ISSUER", "OIDC_AUDIENCE", "OIDC_ALGORITHMS", "OIDC_JWKS_URL", "CORS_ALLOWED_ORIGINS"],
+  "clientEnv": ["API_URL"],
+  "constraints": [
+    "FastAPI owns server-side business logic, authorization, and data access",
+    "Security starts deny-by-default; add authentication through OIDC bearer validation rather than hand-rolled token code",
+    "Application startup must not automatically migrate production databases"
+  ],
+  "concerns": [
+    { "id": "architecture", "required": true, "playbook": "stack/fastapi/architecture.md", "sections": ["Profiles", "Dependency Direction"] },
+    { "id": "structure", "required": true, "playbook": "stack/fastapi/structure.md", "sections": ["Package by Feature"] },
+    { "id": "runtime", "required": true, "playbook": "stack/fastapi/runtime.md", "sections": ["Configuration and Lifecycle", "Errors and Observability"] },
+    { "id": "stack-security", "required": true, "playbook": "stack/fastapi/security.md", "sections": ["Authentication Models", "Authorization"] },
+    { "id": "stack-testing", "required": true, "playbook": "stack/fastapi/testing.md", "sections": ["Test Layers"] },
+    { "id": "persistence", "required": true, "playbook": "capabilities/sqlalchemy-alembic.md", "sections": ["Session Ownership", "Migrations"] },
+    { "id": "oidc-auth", "required": true, "appliesWhen": { "authentication": "oidc" }, "playbook": "capabilities/auth/oidc-resource-server.md", "sections": ["Provider and API Responsibilities", "Required Tests"] }
+  ]
+}

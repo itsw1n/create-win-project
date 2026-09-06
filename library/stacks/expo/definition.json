@@ -4,7 +4,7 @@
   "label": "React Native (Expo)",
   "language": "TypeScript",
   "platform": "mobile",
-  "appliesTo": { "backend": ["supabase", "springboot", "laravel", "none"] },
+  "appliesTo": { "backend": ["supabase", "springboot", "laravel", "none", "fastapi"] },
   "port": 8081,
   "needsDocker": false,
   "frontendDir": "",

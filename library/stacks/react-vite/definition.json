@@ -4,7 +4,7 @@
   "label": "React + Vite",
   "language": "TypeScript",
   "platform": "web",
-  "appliesTo": { "backend": ["none", "supabase", "springboot", "laravel"] },
+  "appliesTo": { "backend": ["none", "supabase", "springboot", "laravel", "fastapi"] },
   "port": 5173,
   "needsDocker": false,
   "frontendDir": "frontend",
