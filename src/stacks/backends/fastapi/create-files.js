@@ -235,6 +235,8 @@ async def require_auth() -> None:
 
 from __future__ import annotations
 
+from typing import Annotated
+
 import jwt
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -252,7 +254,7 @@ def _jwks_url() -> str:
 
 
 async def require_auth(
-    credentials: HTTPAuthorizationCredentials | None = Depends(_bearer),
+    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(_bearer)] = None,
 ) -> dict:
     """Validate the bearer access token; deny by default."""
     if credentials is None or credentials.scheme.lower() != "bearer":
@@ -329,13 +331,13 @@ async def ready() -> dict:
 function smallApiRouter(authentication) {
   const guard = authentication === 'public'
     ? ''
-    : 'from fastapi import Depends\nfrom .security import require_auth\n\n'
+    : ', Depends\n\nfrom .security import require_auth\n'
   const dep = authentication === 'public' ? '' : ', dependencies=[Depends(require_auth)]'
   return `"""Application routes for the small profile."""
 
 from __future__ import annotations
 
-${guard}from fastapi import APIRouter
+from fastapi import APIRouter${guard}
 
 router = APIRouter(prefix="/api", tags=["status"]${dep})
 
@@ -490,10 +492,11 @@ from __future__ import annotations
 import asyncio
 from logging.config import fileConfig
 
-from alembic import context
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
+
+from alembic import context
 
 from ${configModule} import settings
 from ${dbModule} import Base
@@ -547,6 +550,7 @@ function baselineMigration() {
 from __future__ import annotations
 
 import sqlalchemy as sa
+
 from alembic import op
 
 revision = "0001_baseline"
@@ -559,8 +563,12 @@ def upgrade() -> None:
     op.create_table(
         "examples",
         sa.Column("id", sa.Uuid(), primary_key=True),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
-        sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
+        sa.Column(
+            "created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False
+        ),
+        sa.Column(
+            "updated_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False
+        ),
     )
 
 
@@ -574,7 +582,6 @@ function conftestPy() {
 
 from __future__ import annotations
 
-import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 

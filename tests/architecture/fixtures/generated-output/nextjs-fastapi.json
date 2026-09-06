@@ -48,16 +48,16 @@
     "sha256": "922fe0c3de073b01988e23348ea184456161678c5e329e6f34be89be24383f93"
   },
   "backend/alembic/env.py": {
-    "bytes": 1561,
-    "sha256": "09c64984da268e336387b05823532e72bf7f4e979cec81891e8d7c3543d1f5eb"
+    "bytes": 1562,
+    "sha256": "45a895b29d7945fba10d871f1aeb945ee55d4284eed349815bbb1c2ce2187ab6"
   },
   "backend/alembic/versions/.gitkeep": {
     "bytes": 0,
     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
   },
   "backend/alembic/versions/0001_baseline.py": {
-    "bytes": 645,
-    "sha256": "a03f22a19d4bf99759ab777cc25caa8d12ebb712411ceaec3c7823c1a6f9a112"
+    "bytes": 690,
+    "sha256": "8e6b5e6702ee9edb780bec1089fa7476e05a9edb88625e270c7bbfbc0e67d709"
   },
   "backend/alembic.ini": {
     "bytes": 552,
@@ -84,8 +84,8 @@
     "sha256": "f52c43275b2612504b7103a23923877576c05a8b84f22acd0f1a7f83a8b64ae1"
   },
   "backend/app/core/security.py": {
-    "bytes": 1414,
-    "sha256": "3e398f2ab977bc487ea63e662a78553ac78fd8aef076b65abee2a57ef61f446a"
+    "bytes": 1461,
+    "sha256": "010efdafa100f75e23c8949e9a4202ccea005a6dca109269481bb69e9baf0618"
   },
   "backend/app/features/__init__.py": {
     "bytes": 0,
@@ -144,8 +144,8 @@
     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
   },
   "backend/tests/conftest.py": {
-    "bytes": 393,
-    "sha256": "8f35efaaf2f74f45f0d1c045fca36d52bea9dca7a26a654fc1d2358d0f4515be"
+    "bytes": 379,
+    "sha256": "254fac8808efbd58b5fb209db0c8b1f3ea7451c8634d7f2ae445ef6a5190322c"
   },
   "backend/tests/test_health.py": {
     "bytes": 338,
