@@ -10,6 +10,10 @@ describe('compatibility change classifier', () => {
     expect(classifyChanges(['src/stacks/backends/laravel/generate.js'])).toEqual({ scope: 'stack', stack: 'laravel' })
   })
 
+  it('derives template impact from the compatibility manifest', () => {
+    expect(classifyChanges(['templates/ci/expo.yml'])).toEqual({ scope: 'stack', stack: 'react-native' })
+  })
+
   it('uses full coverage for shared generation and tested versions', () => {
     expect(classifyChanges(['lib/generator.js'])).toEqual({ scope: 'full' })
     expect(classifyChanges(['library/tested-versions.json'])).toEqual({ scope: 'full' })
