@@ -25,6 +25,10 @@ const cases = {
   'react-native-springboot': { frontend: 'react-native', backend: 'springboot', packageName: 'com.example' },
   'react-native-none': { frontend: 'react-native', backend: 'none' },
   'react-native-laravel': { frontend: 'react-native', backend: 'laravel', applicationShape: 'mobile' },
+  'react-native-fastapi': { frontend: 'react-native', backend: 'fastapi', applicationShape: 'mobile' },
+  'nextjs-fastapi': { frontend: 'nextjs', backend: 'fastapi', styling: 'tailwind' },
+  'react-fastapi': { frontend: 'react', backend: 'fastapi', styling: 'tailwind', applicationShape: 'separate' },
+  'fastapi-api': { frontend: 'no-frontend', backend: 'fastapi', applicationShape: 'api' },
   'laravel-api': { frontend: 'no-frontend', backend: 'laravel', applicationShape: 'api' },
   'laravel-blade': { frontend: 'laravel-ui', backend: 'laravel', applicationShape: 'fullstack', laravelUi: 'blade', styling: 'tailwind' },
   'laravel-livewire': { frontend: 'laravel-ui', backend: 'laravel', applicationShape: 'fullstack', laravelUi: 'livewire', styling: 'tailwind' },
@@ -67,7 +71,7 @@ try {
     authentication,
     authAudience,
     testing: selected.frontend === 'react-native' ? 'basic' : 'full',
-    docker: selected.frontend !== 'react-native' || selected.backend === 'laravel',
+    docker: selected.frontend !== 'react-native' || ['laravel', 'fastapi'].includes(selected.backend),
     makefile: false,
     githubActions: true,
     expectedConcerns: [],
@@ -138,6 +142,16 @@ try {
     } finally {
       run('docker', ['compose', 'down', '--volumes'], projectRoot, publicEnv)
     }
+  }
+
+  if (selected.backend === 'fastapi') {
+    const backendRoot = selected.frontend === 'no-frontend' ? projectRoot : path.join(projectRoot, 'backend')
+    run('uv', ['sync'], backendRoot)
+    run('uv', ['run', 'ruff', 'check', '.'], backendRoot)
+    run('uv', ['run', 'ruff', 'format', '--check', '.'], backendRoot)
+    run('uv', ['run', 'mypy', '.'], backendRoot)
+    run('uv', ['run', 'pytest'], backendRoot, publicEnv)
+    run('uv', ['run', 'alembic', 'check'], backendRoot, publicEnv)
   }
 
   if (selected.frontend !== 'react-native') {

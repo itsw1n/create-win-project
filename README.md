@@ -28,11 +28,11 @@ my-project/
 
 | Application | Backends and data |
 |---|---|
-| Next.js | None, Supabase, PostgreSQL, Spring Boot, Laravel |
-| React + Vite | None, Supabase, Spring Boot, Laravel |
-| Expo / React Native | None, Supabase, Spring Boot, Laravel |
+| Next.js | None, Supabase, PostgreSQL, Spring Boot, Laravel, FastAPI |
+| React + Vite | None, Supabase, Spring Boot, Laravel, FastAPI |
+| Expo / React Native | None, Supabase, Spring Boot, Laravel, FastAPI |
 | Laravel UI | Blade, Livewire, or Inertia React with Laravel |
-| API only | Spring Boot or Laravel |
+| API only | Spring Boot, Laravel, or FastAPI |
 
 Authentication follows the chosen stack and audience: Supabase Auth, server sessions, Sanctum SPA, or OIDC validation where supported.
 

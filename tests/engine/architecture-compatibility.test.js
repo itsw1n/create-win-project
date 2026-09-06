@@ -7,7 +7,7 @@ const root = path.resolve(import.meta.dirname, '..', '..')
 
 describe('architecture migration compatibility', () => {
   it.each([
-    ['web stacks', ['nextjs-none', 'nextjs-supabase', 'react-springboot']],
+    ['web stacks', ['nextjs-none', 'nextjs-supabase', 'react-springboot', 'nextjs-fastapi']],
     ['mobile stacks', ['react-native-supabase']],
     ['Laravel stacks', ['laravel-inertia-react']],
   ])('matches committed generated-output golden fixtures for %s', async (_group, caseNames) => {
