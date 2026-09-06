@@ -54,6 +54,22 @@ my-project/
 React + Vite uses the same separation with its client under `frontend/`. A Next.js application
 stays at the repository root because it can own server-side behavior as well as browser UI.
 
+Shared UI does not replace feature ownership. These locations are created when the first real
+shared component needs them rather than as empty starter directories:
+
+```text
+src/                                  frontend/src/ for React + Vite
+├── app/globals.css                  Next.js global styles
+├── styles.css                       React + Vite global styles
+├── components/
+│   ├── ui/                           domain-free UI primitives
+│   └── shared/                       components reused by multiple features
+└── features/<feature>/components/   feature-owned UI
+```
+
+Component-specific CSS Modules stay beside their component. Tailwind utilities stay at their use
+site, with only global imports and tokens in the framework's global stylesheet.
+
 ### Mobile application
 
 Expo Router owns navigation while product code remains feature-oriented:
@@ -68,6 +84,9 @@ my-project/
 ├── lib/                              platform and service adapters
 └── backend/                          present for a paired API
 ```
+
+Expo keeps `StyleSheet` definitions beside the route or component by default. Reusable native UI
+belongs in `components/ui/` once the project has a genuine shared primitive.
 
 ### API-only application
 
