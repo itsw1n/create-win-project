@@ -7,20 +7,21 @@ if (!['none', 'smoke', 'stack', 'full'].includes(scope)) throw new Error('--scop
 if (scope === 'stack' && !selectedStack) throw new Error('--stack is required for stack scope')
 
 const cases = [
-  'nextjs-none', 'nextjs-supabase', 'nextjs-springboot', 'nextjs-postgres', 'nextjs-laravel',
-  'react-none', 'react-supabase', 'react-springboot', 'react-laravel',
-  'react-native-none', 'react-native-supabase', 'react-native-springboot', 'react-native-laravel',
+  'nextjs-none', 'nextjs-supabase', 'nextjs-springboot', 'nextjs-postgres', 'nextjs-laravel', 'nextjs-fastapi',
+  'react-none', 'react-supabase', 'react-springboot', 'react-laravel', 'react-fastapi',
+  'react-native-none', 'react-native-supabase', 'react-native-springboot', 'react-native-laravel', 'react-native-fastapi',
   'laravel-api', 'laravel-blade', 'laravel-livewire', 'laravel-inertia-react',
+  'fastapi-api',
 ]
 
 function authChoices(caseName) {
   const mobile = caseName.startsWith('react-native')
-  const nonBrowser = mobile || caseName === 'laravel-api'
+  const nonBrowser = mobile || caseName === 'laravel-api' || caseName === 'fastapi-api'
   const base = ['not-yet', 'none'].map((authentication) => ({ authentication, audience: nonBrowser ? 'multi-client' : 'website' }))
   if (caseName.includes('supabase')) base.push({ authentication: 'yes', audience: mobile ? 'multi-client' : 'website' })
-  if (caseName.includes('springboot') || caseName.includes('laravel')) {
+  if (caseName.includes('springboot') || caseName.includes('laravel') || caseName.includes('fastapi')) {
     if (caseName.startsWith('laravel-') && caseName !== 'laravel-api') base.push({ authentication: 'yes', audience: 'website' })
-    else if (mobile || caseName === 'laravel-api') base.push({ authentication: 'yes', audience: 'multi-client' })
+    else if (mobile || caseName === 'laravel-api' || caseName === 'fastapi-api') base.push({ authentication: 'yes', audience: 'multi-client' })
     else base.push({ authentication: 'yes', audience: 'website' }, { authentication: 'yes', audience: 'multi-client' })
   }
   return base
@@ -44,6 +45,8 @@ const smokeSelections = [
   ['laravel-livewire', 'medium', 'none', 'website'],
   ['laravel-inertia-react', 'large', 'yes', 'website'],
   ['react-laravel', 'medium', 'yes', 'website'],
+  ['nextjs-fastapi', 'medium', 'yes', 'website'],
+  ['fastapi-api', 'medium', 'not-yet', 'multi-client'],
 ]
 const matchesSmoke = (entry) => smokeSelections.some(([caseName, architecture, authentication, audience]) =>
   entry.case === caseName && entry.architecture === architecture && entry.authentication === authentication && entry.audience === audience)

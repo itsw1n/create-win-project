@@ -97,6 +97,14 @@ jobs:
           php-version: '8.5.10'
           extensions: pdo_pgsql
           coverage: none
+      - uses: actions/setup-python@a26af69be951a213e88c56a2466d3e97d82aa9c8 # v5
+        if: contains(toJSON(matrix.cases), 'fastapi')
+        with:
+          python-version: '3.14.7'
+      - uses: astral-sh/setup-uv@38f3f104447c67c051c4a08e39b64a148898af3a # v4
+        if: contains(toJSON(matrix.cases), 'fastapi')
+        with:
+          version: '0.12.10'
       - run: npm ci
       - name: Verify generated application
         env:

@@ -23,10 +23,10 @@ const authIntents = ['not-yet', 'none']
 for (const frontend of catalog.frontends) {
   for (const backend of frontend.appliesTo?.backend || []) {
     const authCases = [...authIntents]
-    if (['supabase', 'springboot'].includes(backend)) authCases.push('yes')
+    if (['supabase', 'springboot', 'fastapi'].includes(backend)) authCases.push('yes')
     for (const architecture of architectures) {
       for (const authentication of authCases) {
-        const audiences = authentication === 'yes' && backend === 'springboot'
+        const audiences = authentication === 'yes' && ['springboot', 'fastapi'].includes(backend)
           ? ['website', 'multi-client']
           : [frontend.platform === 'mobile' ? 'multi-client' : 'website']
         for (const authAudience of audiences) {
