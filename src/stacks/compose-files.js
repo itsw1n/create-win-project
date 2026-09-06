@@ -31,6 +31,9 @@ function envFiles(answers, stack) {
 
 function projectReadme(answers, stack) {
   if (stack.frontendKey === 'no-frontend') {
+    if (stack.backendKey === 'fastapi') {
+      return `# ${answers.projectName}\n\n> ${answers.projectDescription}\n\nGenerated backend-only ${stack.backendLabel} application.\n\n## Start\n\n\`\`\`bash\ncp .env.example .env\nuv sync\nalembic upgrade head\nuv run uvicorn app.main:app --reload\n\`\`\`\n\n## Validate\n\n\`\`\`bash\nuv run ruff check . && uv run ruff format --check . && uv run mypy . && uv run pytest\n\`\`\`\n`
+    }
     return `# ${answers.projectName}\n\n> ${answers.projectDescription}\n\nGenerated backend-only ${stack.backendLabel} application.\n\n## Start\n\n\`\`\`bash\ncp .env.example .env\ncd backend\n./mvnw spring-boot:run  # use mvnw.cmd on Windows\n\`\`\`\n\n## Validate\n\n\`\`\`bash\ncd backend\n./mvnw --batch-mode test\n./mvnw --batch-mode package -DskipTests\n\`\`\`\n`
   }
   const root = stack.frontendKey === 'react' ? 'frontend/' : ''
