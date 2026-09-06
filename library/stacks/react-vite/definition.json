@@ -39,7 +39,7 @@
     { "id": "stack-security", "required": true, "playbook": "stack/react-vite/security.md", "sections": ["Browser Trust Boundary"] },
     { "id": "stack-testing", "required": true, "playbook": "stack/react-vite/testing.md", "sections": ["Test Layers"] },
     { "id": "http-client", "required": false, "when": "The app adopts Axios instead of the native fetch client", "playbook": "concerns/axios.md", "sections": ["One Shared Client", "Service Calls apiClient, Hook Calls Service"] },
-    { "id": "validation", "required": false, "when": "Project has forms / runtime input", "playbook": "concerns/zod.md", "sections": ["Schema First, Always", "Web Form (React Hook Form)"] },
+    { "id": "validation", "required": false, "when": "Project has forms / runtime input", "playbook": "concerns/zod/validation.md", "sections": ["Schema First, Always", "Web Form (React Hook Form)"] },
     { "id": "query", "required": false, "when": "Client needs cached server state", "playbook": "concerns/tanstack-query.md", "sections": ["Read Hook", "Mutation Hook"] },
     { "id": "state", "required": false, "when": "Shared UI state across pages", "playbook": "concerns/zustand.md", "sections": ["Store Setup"] }
   ]

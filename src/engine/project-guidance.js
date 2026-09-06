@@ -37,7 +37,7 @@ export async function resolvePlaybook(libraryDir, file) {
   const rest = restParts.join('/')
   const name = path.basename(file, '.md')
   const candidates = {
-    universal: [path.join(libraryDir, 'universal', name, path.basename(file))],
+    universal: [path.join(libraryDir, 'universal', rest), path.join(libraryDir, 'universal', name, path.basename(file))],
     platform: [path.join(libraryDir, 'platforms', rest), path.join(libraryDir, 'platforms', name, path.basename(file))],
     stack: [path.join(libraryDir, 'stacks', rest)],
     capabilities: [
@@ -46,6 +46,7 @@ export async function resolvePlaybook(libraryDir, file) {
     ],
     concerns: [path.join(libraryDir, 'optional-features', 'concerns', rest)],
     styling: [
+      path.join(libraryDir, 'optional-features', 'styling', rest),
       path.join(libraryDir, 'optional-features', 'styling', name, path.basename(file)),
       path.join(libraryDir, 'optional-features', 'styling', name.replace(/-extensions$/, ''), path.basename(file)),
     ],
