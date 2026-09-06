@@ -174,7 +174,7 @@ describe('runnable project contract', () => {
     const webSecurity = await fs.readFile(path.join(web, '.github/workflows/security.yml'), 'utf8')
     expect(webSecurity).toContain('npm audit --audit-level=high')
     expect(webSecurity).toContain('languages: javascript-typescript,java-kotlin')
-    expect(webSecurity).toContain('dependency-review-action@e22c389')
+    expect(webSecurity).toContain('dependency-review-action@2031cfc')
     expect(webSecurity).toContain('trufflehog@466da5b')
 
     const laravel = await generate({
