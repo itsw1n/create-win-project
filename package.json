@@ -21,6 +21,8 @@
     "docs/ARCHITECTURE.md",
     "docs/CONTENT_MODEL.md",
     "docs/DEPENDENCY_MAINTENANCE.md",
+    "docs/VERSION_2.md",
+    "docs/MIGRATING_TO_2.md",
     "docs/CONTRIBUTING.md",
     "README.md",
     "LICENSE"

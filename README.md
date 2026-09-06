@@ -29,7 +29,7 @@ You were that dev who rebuilt the same foundation twice — Next.js App Router o
 1. **A small runnable app** — real page/screen, strict TypeScript, ESLint, health endpoint, tests, and the exact config for your stack.
 2. **A task-routed docs layer** — a tiny always-on `AGENTS.md` + a lazy `RULES.md` (`concern → playbook §`). The agent reads only what it touches, when it touches it.
 
-Manifests declare capabilities and package names. A tested compatibility profile owns every exact version, so generated stacks are declarative without letting version strings drift.
+Manifests declare capabilities and package names. A tested compatibility profile owns every exact direct version; package managers resolve and lock transitive dependencies. See the [version 2 production contract](./docs/VERSION_2.md) and [1.x migration guide](./docs/MIGRATING_TO_2.md).
 
 ## Prerequisites — what you actually need to install
 
@@ -120,7 +120,7 @@ Before automatic installation, the CLI checks the current Node, npm, PHP, and Co
 - **Intent-based authentication** — choose Yes, Not yet, or No; the generator maps that intent to Supabase Auth, Spring server sessions, or external-provider OIDC validation as appropriate.
 - **Definition-driven** — `library/**/definition.json` drives compatibility, exact dependency requests, env prefixes (`NEXT_PUBLIC_`/`VITE_`/`EXPO_PUBLIC_`), conditional playbooks, and concern wiring.
 - **Tested compatibility profiles** — exact direct dependencies and runtime/container versions are resolved from one catalog; current and previous profiles are verified in CI.
-- **Optional concerns, never mandated** — validation/Zod, data-fetching, state, t3-env, URL state are advisory (`CONTEXT.md` only) not forced.
+- **Requirement-driven capabilities** — private uploads, durable queues, and mobile offline cache/sync are generated only when explicitly selected and supported.
 - **Runnable foundations** — profile-specific feature slices, health endpoints, security headers, selected auth plumbing, Spring `ProblemDetail`, PostgreSQL Testcontainers, and risk-based tests.
 - **Safety + contracts** — destination-exists guard, definition ↔ heading checks, and a generated-output matrix covering every pairing, architecture profile, and applicable auth model.
 
@@ -136,7 +136,7 @@ Before automatic installation, the CLI checks the current Node, npm, PHP, and Co
 | `create-win-project.profile.json` | Separately records compatibility, architecture, and authentication selections. |
 | `.env.example` | Generated from the stack's declared env vars (prefixes already applied). |
 | Framework source/config | A working page or screen, health endpoint where applicable, strict TypeScript, lint, tests, and build scripts. |
-| `Makefile` / `docker-compose.yml` / `.github/workflows` | Optional, interview-toggled. |
+| Production Docker/EAS and `.github/workflows` | Standard production and CI contracts; development Docker and Make remain optional. |
 
 ## How it works
 
