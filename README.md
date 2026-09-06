@@ -1,207 +1,84 @@
 <div align="center">
   <img src="./public/logo.svg" alt="W1N Project logo" width="160">
   <h1>W1N PROJECT</h1>
-  <p>Production-ready project scaffolding.</p>
+  <p>Generate a tested, production-oriented web or mobile project with stack-specific code, CI, deployment artifacts, documentation, and agent guidance.</p>
 </div>
 
-# Are you confused creating architecture rules, AGENTS.md, and folder structures from scratch every time you pick a new stack?
-
-> **Just answer what tech stack you want.** `create-win-project` turns your answers into a runnable, tested, agent-ready foundation — not an empty folder with a giant doc dump.
-
-Stop bikeshedding folders for 3 days. Stop pasting a 500-line `AGENTS.md` that burns tokens and still lets the agent hallucinate your stack. Your stack, your rules, already wired.
-
-[![CI](https://github.com/itsw1n/create-win-project/actions/workflows/ci.yml/badge.svg)](https://github.com/itsw1n/create-win-project/actions/workflows/ci.yml)
-[![Node](https://img.shields.io/badge/node-24_LTS-green)](https://nodejs.org)
-[![Definition-driven](https://img.shields.io/badge/architecture-definition--driven-blue)](./library)
-[![Lean docs](https://img.shields.io/badge/AGENTS.md-lean%20%26%20lazy-9cf)](./library)
-[![Interactive](https://img.shields.io/badge/cli-interactive-ff69b4)](./index.js)
-
-Next.js · React + Vite · Expo (React Native) · Spring Boot · Laravel · Supabase · PostgreSQL · Tailwind · CSS Modules
-
----
-
-## Why this exists
-
-You were that dev who rebuilt the same foundation twice — Next.js App Router one week, Expo the next, Spring Boot after that. Same questions: where do components live? How does auth refresh? What goes in `AGENTS.md` without drowning the context window?
-
-**The fix:** answer a short, plain-language interview and get **two coordinated outputs**:
-
-1. **A small runnable app** — real page/screen, strict TypeScript, ESLint, health endpoint, tests, and the exact config for your stack.
-2. **A task-routed docs layer** — a tiny always-on `AGENTS.md` + a lazy `RULES.md` (`concern → playbook §`). The agent reads only what it touches, when it touches it.
-
-Manifests declare capabilities and package names. A tested compatibility profile owns every exact direct version; package managers resolve and lock transitive dependencies. See the [version 2 production contract](./docs/VERSION_2.md) and [1.x migration guide](./docs/MIGRATING_TO_2.md).
-
-## Prerequisites — what you actually need to install
-
-### Lane 1 — To run *this generator*
-**Node 24 LTS *OR* Docker — that's it.**
-
-- No global `prettier`, `eslint`, or `typescript` — each stack generates them inside your project through its own dependency and file contributions.
-- Prefer zero host setup? Use Docker directly. Make is an optional convenience, never a prerequisite.
-
-### Lane 2 — To run *what it generates* (depends on your answers)
-| You picked | You need | What the generator includes |
-|---|---|---|
-| **Next.js** or **React + Vite** | Node 22.14+ with npm 11.19+ (tested on Node 24) → `npm install` → `npm run dev` | Page/entry, Vite/Next config, strict TS, ESLint, tests, `frontend/.env.example` |
-| **Expo** | Node 22.14+ with npm 11.19+ (tested on Node 24) + Expo Go app → `npm install` → `npx expo start` | Expo Router layout/screen, `app.json`, Jest, TS |
-| **Supabase** | Docker for the generated local Supabase stack | Pinned local CLI, migrations/RLS tests, platform-native clients; login/callback/secure lifecycle only when login is selected |
-| **Spring Boot / PostgreSQL** | JDK 21 + Docker for DB **only if you selected them** | Maven app, public health + fail-closed security, Flyway/PostgreSQL; server session or OIDC Resource Server when login is selected |
-| **Laravel** | PHP 8.5.10+ and Composer 2.10.3+; Node is also needed for Inertia React assets | API-only or Blade, Livewire, and Inertia React foundations; session, Sanctum SPA, or OIDC authentication according to the selected application shape |
-
-**Hybrid:** the exact commands for *your* stack live in the README inside `./your-project` and `docs/guides/setup.md` — no duplication here. If you didn't enable Docker/Make, no compose file is generated.
-
-## Quick start
-
-**Fastest (no clone required):**
+## Start
 
 ```bash
 npx create-win-project@latest
 ```
 
-**From a clone with Node:**
-
-```bash
-npm ci
-npm run doctor
-npm start
-```
-
-**Docker-first (no host Node or Make needed):**
-
-```bash
-git clone https://github.com/itsw1n/create-win-project && cd create-win-project
-docker compose build
-docker compose run --rm app
-```
-
-`docker compose run` creates a disposable CLI container and reuses the existing image. It does not rebuild an existing image unless you explicitly build again. On systems with Make, `make build` and `make generate` are shortcuts; `make run` remains an alias for `make generate`.
-
-<details>
-<summary>Prefer host Node?</summary>
-
-```bash
-npx create-win-project --install      # install generated dependencies now
-npx create-win-project --no-install   # generate files only
-npx create-win-project doctor         # diagnose available tools
-# then follow the same interview
-```
-
-Requires Node 24 LTS. Still dockerizes the *generated* app only if you enabled it.
-
-</details>
-
-**Then run what you generated:**
-
-```bash
-# Next.js or Expo
-cd your-project
-npm install
-npm run dev
-
-# React + Vite (frontend workspace)
-cd your-project/frontend
-npm install
-npm run dev
-```
-
-The generator asks whether to install dependencies. One local `npm install` provides Prettier, ESLint, TypeScript, and the selected test tools; global installs are neither required nor silently performed.
-
-Before automatic installation, the CLI checks the current Node, npm, PHP, and Composer versions needed by the selected stack. A mismatch never changes global tools: interactive users can create files without installing, view setup instructions, or cancel; noninteractive runs safely create files and skip installation. Node 22 is supported with npm 11.19 or newer. npm 10.9.8 and early npm 11 releases can crash while resolving current generated dependencies, so switch through Mise/NVM or update that managed Node installation before retrying.
-
-> The generator **never overwrites a non-empty folder** — it stages to a temp dir and moves into place only on success.
-
-## Features
-
-- **Three frontend families** — Next.js App Router, React + Vite, and Expo Router.
-- **Optional backends** — choose no backend, Supabase, PostgreSQL, Spring Boot, or Laravel where supported by the selected application shape.
-- **Styling** — Tailwind CSS or CSS Modules (native-styles for Expo).
-- **Lean agent docs** — `AGENTS.md` (tiny, always on) + `RULES.md` (lazy index) generated per project.
-- **Stack-native profiles** — Small, Medium (recommended/default), and Large map to familiar architecture for each selected stack; Large defaults to a modular monolith, not microservices.
-- **Intent-based authentication** — choose Yes, Not yet, or No; the generator maps that intent to Supabase Auth, Spring server sessions, or external-provider OIDC validation as appropriate.
-- **Definition-driven** — `library/**/definition.json` drives compatibility, exact dependency requests, env prefixes (`NEXT_PUBLIC_`/`VITE_`/`EXPO_PUBLIC_`), conditional playbooks, and concern wiring.
-- **Tested compatibility profiles** — exact direct dependencies and runtime/container versions are resolved from one catalog; current and previous profiles are verified in CI.
-- **Requirement-driven capabilities** — private uploads, durable queues, and mobile offline cache/sync are generated only when explicitly selected and supported.
-- **Runnable foundations** — profile-specific feature slices, health endpoints, security headers, selected auth plumbing, Spring `ProblemDetail`, PostgreSQL Testcontainers, and risk-based tests.
-- **Safety + contracts** — destination-exists guard, definition ↔ heading checks, and a generated-output matrix covering every pairing, architecture profile, and applicable auth model.
-
-## What you get
-
-| File | Purpose |
-|------|---------|
-| `AGENTS.md` | Lean, always-loaded guidance for your coding agent. |
-| `RULES.md` | Lazy index — `concern → playbook §`. Read only what you touch. |
-| `CONTEXT.md` | Project context + any advisory "expected concerns". |
-| `playbooks/` | Curated rule playbooks (shipped lean). |
-| `package.json` | Generated from the selected stack's definition. |
-| `create-win-project.profile.json` | Separately records compatibility, architecture, and authentication selections. |
-| `.env.example` | Generated from the stack's declared env vars (prefixes already applied). |
-| Framework source/config | A working page or screen, health endpoint where applicable, strict TypeScript, lint, tests, and build scripts. |
-| Production Docker/EAS and `.github/workflows` | Standard production and CI contracts; development Docker and Make remain optional. |
-
-## How it works
-
-The generator separates declarative stack knowledge from executable generation code:
+Answer product questions, choose whether dependencies should be installed, then follow the generated project README. Existing non-empty destinations are never overwritten.
 
 ```text
-CLI interview
-    ↓
-validated answers + compatibility profile
-    ↓
-library manifests + explicit stack-adapter registry
-    ↓
-resolved project descriptor
-    ↓
-stack-owned files + shared documentation/tooling contributions
-    ↓
-atomic staged write → optional dependency installation
+my-project/
+├── application source and tests
+├── .github/workflows/       CI and security checks
+├── Dockerfile / eas.json    production artifacts when applicable
+├── AGENTS.md                small agent operating contract
+├── RULES.md                 task-to-playbook router
+├── CONTEXT.md               product decisions and approved deviations
+├── playbooks/               selected stack guidance
+└── create-win-project.profile.json
 ```
 
-- `src/cli/` owns arguments, the interview, Back navigation, summaries, and runtime diagnostics.
-- `library/**/definition.json` declares stack identity, compatibility, dependency names, environment variables, constraints, and playbook routing. Exact versions come only from `library/tested-versions.json`.
-- `src/stacks/available-stacks.js` explicitly registers supported adapters. Each adapter under `src/stacks/frontends/` or `src/stacks/backends/` owns its executable files and stack-specific environment, Docker, CI, and installation contributions.
-- `src/engine/` validates answers, loads the catalog and compatibility profile, resolves the project descriptor, renders templates, and coordinates safe writes without importing concrete stack implementations.
-- Generation happens in a staging directory and moves into place only after every step succeeds. A non-empty destination is never overwritten.
+## Supported stacks
 
-A manifest supplies the declarative half of a stack. For example:
+| Application | Backends and data |
+|---|---|
+| Next.js | None, Supabase, PostgreSQL, Spring Boot, Laravel |
+| React + Vite | None, Supabase, Spring Boot, Laravel |
+| Expo / React Native | None, Supabase, Spring Boot, Laravel |
+| Laravel UI | Blade, Livewire, or Inertia React with Laravel |
+| API only | Spring Boot or Laravel |
 
-```jsonc
-// library/stacks/nextjs/definition.json (excerpt)
-{
-  "id": "nextjs",
-  "kind": "frontend",
-  "label": "Next.js",
-  "appliesTo": { "backend": ["none", "supabase", "springboot", "postgres", "laravel"] },
-  "architectureProfiles": ["small", "medium", "large"],
-  "playbooks": [
-    "stack/nextjs/architecture.md",
-    "stack/nextjs/structure.md",
-    "stack/nextjs/runtime.md",
-    "stack/nextjs/security.md",
-    "stack/nextjs/testing.md"
-  ],
-  "deps": ["next", "react", "react-dom"],
-  "devDeps": ["typescript", "@types/react", "eslint", "eslint-config-next"],
-  "concerns": [
-    {
-      "id": "validation",
-      "required": false,
-      "when": "Project has forms / runtime input",
-      "playbook": "concerns/zod.md",
-      "sections": ["Schema First, Always", "Zod Schema Placement"]
-    }
-  ]
-}
+Authentication follows the chosen stack and audience: Supabase Auth, server sessions, Sanctum SPA, or OIDC validation where supported.
+
+## Production-oriented by default
+
+Version 2 generates stack-appropriate tests, CI and security checks, production builds, environment guidance, operations documentation, and cloud-neutral deployment artifacts. Web tests include Playwright; Expo uses Jest and React Native Testing Library.
+
+Optional complexity remains requirement-driven:
+
+- Private object-storage uploads appear only when uploads are required.
+- Durable queue conventions appear only when background jobs are required.
+- Offline cache or synchronization appears only for mobile when selected.
+- Development Docker and Make remain optional.
+
+The baseline is not a substitute for product authorization, infrastructure sizing, compliance, secrets, monitoring, deployment approval, backups, or restore drills. See the [production contract](./docs/production-contract.md).
+
+## Agent-flexible defaults
+
+Agents may propose different architecture, providers, authentication, data boundaries, or major dependencies, but must obtain approval and record the decision in `CONTEXT.md` before changing them.
+
+Exact tested direct versions come from dated profiles. Package managers resolve transitive dependencies and create project-owned lockfiles. Existing projects can run a read-only comparison:
+
+```bash
+create-win-project upgrade-report .
 ```
 
-The current tested profile is the default; `--profile=YYYY.MM` selects a retained profile explicitly. Adding an executable stack requires both a manifest and a registered adapter with contract and compatibility coverage, so documentation alone can never advertise unsupported behavior. See [Architecture](./docs/ARCHITECTURE.md) for ownership rules and [Contributing](./docs/CONTRIBUTING.md) for the extension workflow.
+## Documentation
 
-## Topics
+- [Documentation map](./docs/README.md)
+- [Getting started](./docs/getting-started.md)
+- [Production contract](./docs/production-contract.md)
+- [Stacks and capabilities](./docs/capabilities.md)
+- [Understanding a generated project](./docs/generated-project.md)
+- [Compatibility and upgrades](./docs/compatibility.md)
+- [Migrating from version 1](./docs/migration-v2.md)
 
-Next.js · React · Spring Boot · Supabase · PostgreSQL · TypeScript · Tailwind CSS · CSS Modules · project scaffolding · project template · `AGENTS.md` · coding agents · definition-driven · lean documentation · lazy rules index
+## Development
 
-## Contributing
+```bash
+git clone https://github.com/itsw1n/create-win-project
+cd create-win-project
+npm ci
+npm test
+```
 
-See [docs/CONTRIBUTING.md](./docs/CONTRIBUTING.md) — one workflow for every stack: quick start, 6-step vertical stack addition (`library/**` -> `src/stacks/<id>/` -> `available-stacks.js` -> tests/matrix -> verify), testing gates (`npm test`, `matrix:smoke` -> `dev`, `matrix:full` -> `main`), and version ownership (`library/tested-versions.json` only).
+See the [maintainer documentation](./docs/maintainers/contributing.md) before changing manifests, generated behavior, compatibility profiles, or CI.
 
 ## License
 

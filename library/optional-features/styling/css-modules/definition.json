@@ -2,10 +2,11 @@
   "id": "css-modules",
   "kind": "styling",
   "label": "CSS Modules",
-  "file": "styling/css-modules-extensions.md",
+  "playbooks": ["styling/css-modules/theme.md", "styling/css-modules/responsive.md"],
   "required": false,
   "folders": [],
   "concerns": [
-    { "id": "styling", "required": true, "sections": ["Dark Mode with CSS Variables", "Responsive in Module File"] }
+    { "id": "styling-theme", "required": true, "playbook": "styling/css-modules/theme.md", "sections": ["Dark Mode with CSS Variables"] },
+    { "id": "styling-responsive", "required": true, "playbook": "styling/css-modules/responsive.md", "sections": ["Responsive in Module File"] }
   ]
 }

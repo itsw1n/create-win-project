@@ -131,6 +131,18 @@
     "bytes": 3331,
     "sha256": "07f14cd7d1c416567598f9117dc9868e4d5336e4aa7e0ac009f685b4bef0c7c2"
   },
+  "playbooks/capabilities/devops/makefile/commands.md": {
+    "bytes": 493,
+    "sha256": "099eab4ec02b65334a6a2d3f673d77da9e57fde96dbe82e01b73107b90a8855d"
+  },
+  "playbooks/capabilities/devops/makefile/docker.md": {
+    "bytes": 379,
+    "sha256": "0b8a04a2c3ddb34b329f61c5a50c3e48e9efefaf3d258d4d36023c82f60bbffe"
+  },
+  "playbooks/capabilities/devops/makefile/validation.md": {
+    "bytes": 268,
+    "sha256": "a7761776f7cc7cce40c7ab2e7ddf48651f4f5d42fc6d4e989004f44cf627b9b2"
+  },
   "playbooks/capabilities/docker/overview.md": {
     "bytes": 3075,
     "sha256": "e3fb3c03eb88c5002bd7bc8021a16b8cfe7ff92d1d89005f19d351a70c6c34f9"
@@ -155,17 +167,13 @@
     "bytes": 4164,
     "sha256": "96c9186198601490d93602a406d551b6861e854c0510a476bacaf1a91d4af85a"
   },
-  "playbooks/concerns/zod.md": {
-    "bytes": 5071,
-    "sha256": "9e2592ce64f516067bdddc5b7f65de45af564aa6cfd50cfc05a293887da6c1a2"
+  "playbooks/concerns/zod/validation.md": {
+    "bytes": 1109,
+    "sha256": "4cb0c30b8bd24e3b725e5d99c121b39733aa52d98255c9ec2e7ab75896b0ed83"
   },
   "playbooks/concerns/zustand.md": {
     "bytes": 2254,
     "sha256": "4f06b463191614f0733207a9762a58b2cecd64bff2415e55802733e37bae933b"
-  },
-  "playbooks/devops/makefile.md": {
-    "bytes": 16050,
-    "sha256": "e9e65435f977c86a8ccc39fed56344fe84f03ffe80829ee782edf8d4f12ab7b3"
   },
   "playbooks/devops/pr-template.md": {
     "bytes": 2393,
@@ -203,17 +211,29 @@
     "bytes": 2401,
     "sha256": "2f1451e99973dee2a6f20e05dd3048a09f397f987dcf20ece9dcbdd127572fad"
   },
-  "playbooks/universal/coding-rules.md": {
-    "bytes": 6170,
-    "sha256": "48b27fa839e94012015f48d834726e22da87b51421e89f9ae6bcca8898d6a3e8"
+  "playbooks/universal/coding-rules/hygiene.md": {
+    "bytes": 491,
+    "sha256": "43ab286dadf487fee04e85e4438935054d189aef3f770966d167cb8d67d16896"
+  },
+  "playbooks/universal/coding-rules/naming.md": {
+    "bytes": 585,
+    "sha256": "cfc7f0ca071fbb21792ff924f347f32be69668d477f057786d294cc973b76bea"
   },
   "playbooks/universal/error-handling.md": {
     "bytes": 1608,
     "sha256": "a1dd0f74dc6d2a1388ab989e9faf2c44fdfff230da4a605132110667ab594952"
   },
-  "playbooks/universal/git-conventions.md": {
-    "bytes": 5155,
-    "sha256": "6bc31e6c74ceaca9981ec63ed720b49df5b8cbee00f2c3e5a0dd9a271c3e76c9"
+  "playbooks/universal/git-conventions/branches.md": {
+    "bytes": 251,
+    "sha256": "2196e4a58d51216070e0853b6cf39699e61322902620e0af6387b4d3e8480b22"
+  },
+  "playbooks/universal/git-conventions/commits.md": {
+    "bytes": 309,
+    "sha256": "9e0d7ffdcd32ddfc1962a2051b3ff4c8eeadfbc1dfdfba2b651759f966d069ca"
+  },
+  "playbooks/universal/git-conventions/workflow.md": {
+    "bytes": 288,
+    "sha256": "22477052a8e1b3b1dbdbe5956981d14cbe59f3f3a1f8bd4ec75ec87ba35863e4"
   },
   "playbooks/universal/observability.md": {
     "bytes": 1505,
@@ -223,9 +243,17 @@
     "bytes": 2362,
     "sha256": "75e151f515874bc6445432a26f3aa095f843288bbde1655ea8cb12d75cae2f2e"
   },
-  "playbooks/universal/typescript.md": {
-    "bytes": 6252,
-    "sha256": "5e308b9fed7ad7e6f30a5c1fe566e971f5f71774419daa5f0c29cfea3f5758ab"
+  "playbooks/universal/typescript/boundaries.md": {
+    "bytes": 622,
+    "sha256": "eb75a7cdbb12da7cceb80be36e920bef6461e36d32aa26898c8735f326b504a6"
+  },
+  "playbooks/universal/typescript/errors.md": {
+    "bytes": 242,
+    "sha256": "0bd81830df57c8b5273bcc26ea478b03351d8f6435d56455c857df1d314b6bf5"
+  },
+  "playbooks/universal/typescript/patterns.md": {
+    "bytes": 439,
+    "sha256": "d673ab7474fba3b0d2da8749e17565f79a5e3252c9c1e0141a4a7d665f118b4f"
   },
   "postcss.config.mjs": {
     "bytes": 81,
@@ -240,8 +268,8 @@
     "sha256": "8721254f959d68cd5a739d19d84a6855574eeec0ac2f2f59b4f89ff591c45bb8"
   },
   "RULES.md": {
-    "bytes": 5087,
-    "sha256": "12b733c7b67fa8eb021a7b283635c0b9316be9c96c84669e589fa134e0c331fe"
+    "bytes": 5318,
+    "sha256": "3a6d6540d821666bcb493b8117afd22006202db73064d4de0e9e16b54a24e50f"
   },
   "src/app/api/health/route.ts": {
     "bytes": 67,

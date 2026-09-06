@@ -2,10 +2,12 @@
   "id": "git-conventions",
   "kind": "universal",
   "label": "Git Conventions",
-  "file": "universal/git-conventions.md",
+  "playbooks": ["universal/git-conventions/branches.md", "universal/git-conventions/commits.md", "universal/git-conventions/workflow.md"],
   "required": true,
   "folders": [],
   "concerns": [
-    { "id": "git", "required": true, "sections": ["Branch Structure", "Commit Convention", "Daily Workflow"] }
+    { "id": "git-branches", "required": true, "playbook": "universal/git-conventions/branches.md", "sections": ["Branch Structure"] },
+    { "id": "git-commits", "required": true, "playbook": "universal/git-conventions/commits.md", "sections": ["Commit Convention"] },
+    { "id": "git-workflow", "required": true, "playbook": "universal/git-conventions/workflow.md", "sections": ["Daily Workflow"] }
   ]
 }

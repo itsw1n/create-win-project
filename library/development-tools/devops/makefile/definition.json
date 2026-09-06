@@ -2,10 +2,10 @@
   "id": "makefile",
   "kind": "devops",
   "label": "Makefile",
-  "file": "devops/makefile.md",
+  "playbooks": ["capabilities/devops/makefile/commands.md", "capabilities/devops/makefile/docker.md", "capabilities/devops/makefile/validation.md"],
   "required": false,
   "folders": [],
   "concerns": [
-    { "id": "makefile", "required": true, "sections": ["Core Rules"] }
+    { "id": "makefile", "required": true, "playbook": "capabilities/devops/makefile/commands.md", "sections": ["Core Rules"] }
   ]
 }

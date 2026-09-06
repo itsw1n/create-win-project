@@ -1,4 +1,4 @@
-# Architecture (completed — v1.4.0 target)
+# Architecture
 
 `create-win-project` composes a validated project specification into two coordinated outputs:
 
@@ -124,7 +124,7 @@ Exactly one profile is `current` and one is `previous`. The current profile is t
 | `RULES.md` | Generated concern-to-playbook section router. |
 | `playbooks/` | Reusable standards, recipes, rationale, and stack guidance. |
 | `docs/` | Documentation for the generator (ARCHITECTURE, CONTRIBUTING, etc.), not generic framework teaching. |
-| `docs/CONTRIBUTING.md` | How to add a stack and run checks — the workflow, not the design. |
+| `docs/maintainers/contributing.md` | How to add a stack and run checks — the workflow, not the design. |
 
 Manifest section names are checked against Markdown headings. Numbered headings are normalized for matching, and generated contract tests reject unresolved `RULES.md` entries.
 
@@ -147,7 +147,7 @@ Canonical Markdown code examples should progressively move into extracted fixtur
 
 ## Extension workflow
 
-When adding a stack or capability (see `docs/CONTRIBUTING.md` for the full checklist):
+When adding a stack or capability (see `docs/maintainers/contributing.md` for the full checklist):
 
 1. Add its `library/**/definition.json` (names only, no versions), playbooks, and `library/tested-versions.json` entry remains version-free.
 2. Create one new `src/stacks/<frontends|backends>/<id>/` directory with `index.js` (`defineStackAdapter`), `create-files.js`, `dependencies.js`/`environment.js` where needed, and `auth/`+`ui/` subfolders for Laravel-style stacks.
