@@ -71,6 +71,11 @@ describe('fastapi adapter', () => {
     expect(files['backend/alembic/env.py']).toContain('alembic upgrade head')
     expect(files['backend/alembic/versions/0001_baseline.py']).toContain('examples')
     expect(files['backend/tests/test_health.py']).toContain('/health')
+    for (const name of ['app/main.py', 'app/config.py', 'app/db.py', 'app/security.py', 'app/routes_health.py', 'app/routes_api.py']) {
+      const content = files[`backend/${name}`]
+      const firstImport = content.split('\n').find((line) => /^(from|import) /.test(line))
+      expect(firstImport).toBe('from __future__ import annotations')
+    }
   })
 
   it('generates medium and large profiles with feature modules and boundary tests', async () => {

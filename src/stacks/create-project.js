@@ -16,6 +16,7 @@ import {
 } from '../engine/write-files.js'
 import { writeRenderedFile as writeTemplate } from '../engine/render-templates.js'
 import { laravelCompose } from './backends/laravel/docker.js'
+import { fastapiCompose } from './backends/fastapi/docker.js'
 
 /**
  * Main entry point — generates the full project
@@ -157,10 +158,7 @@ async function generateRootFiles(dest, answers, vars, stack, templatesDir) {
     if (stack.backendKey === 'laravel') {
       composeTpl = laravelCompose(answers, stack, vars)
     } else if (stack.backendKey === 'fastapi') {
-      composeTpl = await readTemplate(templatesDir, 'docker/compose', 'fastapi', '.yml')
-      if (stack.frontendKey === 'no-frontend' && composeTpl) {
-        composeTpl = composeTpl.replaceAll('context: ./backend', 'context: .').replaceAll('./backend:/app', '.:/app')
-      }
+      composeTpl = fastapiCompose(answers, stack, vars)
     } else if (stack.needsPackage) {
       composeTpl = await readTemplate(templatesDir, 'docker/compose', 'springboot', '.yml')
     } else if (stack.backendKey === 'supabase') {
@@ -193,7 +191,12 @@ async function generateRootFiles(dest, answers, vars, stack, templatesDir) {
     if (stack.backendKey === 'fastapi') {
       const apiRoot = stack.frontendKey === 'no-frontend' ? '' : 'backend/'
       const prodTpl = await readTemplate(templatesDir, 'docker/compose-prod', 'fastapi', '.yml')
-      if (prodTpl) await writeTemplate(dest, 'docker-compose.prod.yml', prodTpl, vars)
+      if (prodTpl) {
+        const rendered = stack.frontendKey === 'no-frontend'
+          ? prodTpl.replaceAll('context: ./backend', 'context: .').replaceAll('./backend:/app', '.:/app')
+          : prodTpl
+        await writeTemplate(dest, 'docker-compose.prod.yml', rendered, vars)
+      }
 
       const beDev = await readTemplate(templatesDir, 'docker/dockerfile', 'fastapi.dev', '.dockerfile')
       if (beDev) await writeTemplate(dest, `${apiRoot}Dockerfile.dev`, beDev, vars)
@@ -244,7 +247,12 @@ async function generateRootFiles(dest, answers, vars, stack, templatesDir) {
       const backendProd = await readTemplate(templatesDir, 'docker/dockerfile', 'fastapi.prod', '.dockerfile')
       if (backendProd) await writeTemplate(dest, `${apiRoot}Dockerfile`, backendProd, vars)
       const composeProd = await readTemplate(templatesDir, 'docker/compose-prod', 'fastapi', '.yml')
-      if (composeProd) await writeTemplate(dest, 'docker-compose.prod.yml', composeProd, vars)
+      if (composeProd) {
+        const rendered = stack.frontendKey === 'no-frontend'
+          ? composeProd.replaceAll('context: ./backend', 'context: .')
+          : composeProd
+        await writeTemplate(dest, 'docker-compose.prod.yml', rendered, vars)
+      }
     }
     if (stack.backendKey === 'laravel') {
       const laravelRoot = ['laravel-ui', 'no-frontend'].includes(stack.frontendKey) ? '' : 'backend/'
