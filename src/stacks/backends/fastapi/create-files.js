@@ -87,6 +87,8 @@ from __future__ import annotations
 
 import logging
 import uuid
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -94,6 +96,7 @@ from fastapi.responses import JSONResponse
 
 from ${core}.config import settings
 from ${core}.db import close_engine
+
 from .routes_health import router as health_router
 from .status_router import router as status_router
 
@@ -109,8 +112,14 @@ class AppError(Exception):
         self.status = status
 
 
+@asynccontextmanager
+async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+    yield
+    await close_engine()
+
+
 def create_app() -> FastAPI:
-    app = FastAPI(title="API", version="0.1.0")
+    app = FastAPI(title="API", version="0.1.0", lifespan=lifespan)
 
     origins = [o.strip() for o in settings.cors_allowed_origins.split(",") if o.strip()]
     app.add_middleware(
@@ -135,10 +144,6 @@ def create_app() -> FastAPI:
             status_code=exc.status,
             content={"error": {"code": exc.code, "message": str(exc), "requestId": request_id}},
         )
-
-    @app.on_event("shutdown")
-    async def shutdown() -> None:
-        await close_engine()
 
     app.include_router(health_router)
     app.include_router(status_router)
@@ -179,15 +184,26 @@ function dbPy(configModule) {
 from __future__ import annotations
 
 from collections.abc import AsyncIterator
+from datetime import datetime
+from uuid import UUID
 
+from sqlalchemy import DateTime, func
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from ${configModule} import settings
 
 
 class Base(DeclarativeBase):
     pass
+
+
+class Example(Base):
+    __tablename__ = "examples"
+
+    id: Mapped[UUID] = mapped_column(primary_key=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
 _engine = create_async_engine(settings.database_url, pool_size=5, max_overflow=10)
@@ -255,14 +271,14 @@ def _jwks_url() -> str:
 
 async def require_auth(
     credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(_bearer)] = None,
-) -> dict:
+) -> dict[str, object]:
     """Validate the bearer access token; deny by default."""
     if credentials is None or credentials.scheme.lower() != "bearer":
         raise HTTPException(status_code=401, detail="Missing bearer token.")
     algorithms = [a.strip() for a in settings.oidc_algorithms.split(",") if a.strip()]
     try:
         signing_key = PyJWKClient(_jwks_url()).get_signing_key_from_jwt(credentials.credentials)
-        claims: dict = jwt.decode(
+        claims: dict[str, object] = jwt.decode(
             credentials.credentials,
             signing_key.key,
             algorithms=algorithms,
@@ -288,12 +304,12 @@ router = APIRouter(tags=["health"])
 
 
 @router.get("/health")
-async def health() -> dict:
+async def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
 @router.get("/ready")
-async def ready() -> dict:
+async def ready() -> dict[str, str]:
     from .db import _engine  # noqa: PLC0415
 
     async with _engine.connect() as connection:
@@ -316,12 +332,12 @@ router = APIRouter(tags=["health"])
 
 
 @router.get("/health")
-async def health() -> dict:
+async def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
 @router.get("/ready")
-async def ready() -> dict:
+async def ready() -> dict[str, str]:
     async with _engine.connect() as connection:
         await connection.execute(text("SELECT 1"))
     return {"status": "ready"}
@@ -343,7 +359,7 @@ router = APIRouter(prefix="/api", tags=["status"]${dep})
 
 
 @router.get("/status")
-async def status() -> dict:
+async def status() -> dict[str, str]:
     return {"status": "ok", "architecture": "small"}
 `
 }
@@ -367,7 +383,7 @@ from __future__ import annotations
 
 
 class StatusRepository:
-    def current(self) -> dict:
+    def current(self) -> dict[str, str]:
         return {"status": "ok", "architecture": "${architecture}"}
 `,
     [`${prefix}/service.py`]: `"""Application operations for the status feature."""
@@ -399,7 +415,7 @@ router = APIRouter(prefix="/api", tags=["status"])
 
 
 @router.get("/status", dependencies=[Depends(require_auth)])
-async def status() -> dict:
+async def status() -> dict[str, object]:
     return StatusService().current().model_dump()
 `,
   }
@@ -581,6 +597,8 @@ function conftestPy() {
 
 from __future__ import annotations
 
+from collections.abc import AsyncIterator
+
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 
@@ -588,7 +606,7 @@ from app.main import create_app
 
 
 @pytest_asyncio.fixture
-async def client():
+async def client() -> AsyncIterator[AsyncClient]:
     app = create_app()
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
@@ -703,7 +721,7 @@ export function buildFastApiFiles(answers, vars, stack) {
 
 from __future__ import annotations
 
-from app.features.status.router import router
+from app.features.status.router import router as router
 `
     files[`${root}app/core/__init__.py`] = ''
     files[`${root}app/core/config.py`] = configPy()
@@ -734,7 +752,7 @@ def configure_logging() -> None:
 
 from __future__ import annotations
 
-from app.modules.status import router
+from app.modules.status import router as router
 `
     files[`${root}app/core/__init__.py`] = ''
     files[`${root}app/core/config.py`] = configPy()
@@ -771,7 +789,7 @@ router = APIRouter(prefix="/api", tags=["status"])
 
 
 @router.get("/status", dependencies=[Depends(require_auth)])
-async def status() -> dict:
+async def status() -> dict[str, object]:
     return StatusService().current().model_dump()
 `
     files[`${root}tests/test_boundaries.py`] = boundaryTest()
@@ -788,6 +806,8 @@ from __future__ import annotations
 
 import logging
 import uuid
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -810,8 +830,14 @@ class AppError(Exception):
         self.status = status
 
 
+@asynccontextmanager
+async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+    yield
+    await close_engine()
+
+
 def create_app() -> FastAPI:
-    app = FastAPI(title="API", version="0.1.0")
+    app = FastAPI(title="API", version="0.1.0", lifespan=lifespan)
 
     origins = [o.strip() for o in settings.cors_allowed_origins.split(",") if o.strip()]
     app.add_middleware(
@@ -836,10 +862,6 @@ def create_app() -> FastAPI:
             status_code=exc.status,
             content={"error": {"code": exc.code, "message": str(exc), "requestId": request_id}},
         )
-
-    @app.on_event("shutdown")
-    async def shutdown() -> None:
-        await close_engine()
 
     app.include_router(health_router)
     app.include_router(api_router)

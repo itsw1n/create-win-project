@@ -76,16 +76,16 @@
     "sha256": "49af62dd6a8bafabd070ffa76c825d44cd083636c52fe6d30a9af0f54f6c9d2f"
   },
   "backend/app/core/db.py": {
-    "bytes": 711,
-    "sha256": "70936277bd85e47aaa9edb1b14675319e022aa0448c34a74ffec013e798344e6"
+    "bytes": 1136,
+    "sha256": "35377debf0258a0e868cdf9e01c40ffbe567f28e071335947408203844626c75"
   },
   "backend/app/core/logging.py": {
     "bytes": 227,
     "sha256": "f52c43275b2612504b7103a23923877576c05a8b84f22acd0f1a7f83a8b64ae1"
   },
   "backend/app/core/security.py": {
-    "bytes": 1468,
-    "sha256": "f7b3f444c244a0f862e859d15305b46e15d630ce4a948d2499297115221461c5"
+    "bytes": 1494,
+    "sha256": "d8dae67ade8fdef4759b76482fe77ba070e67accfbc1a461fd0945ed04c25268"
   },
   "backend/app/features/__init__.py": {
     "bytes": 0,
@@ -96,12 +96,12 @@
     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
   },
   "backend/app/features/status/repository.py": {
-    "bytes": 202,
-    "sha256": "e36274eae12d6e395ade619bad088a48e75528fdabd323725688c22488d54e11"
+    "bytes": 212,
+    "sha256": "683fbb14ea6bcc5e4d7ed71138a5dafd1427fce75bd30c6eba79282d8857bc92"
   },
   "backend/app/features/status/router.py": {
-    "bytes": 392,
-    "sha256": "79e624686518379030c6d2e7caeac00f9e069686392bb4842fb4d597841030a5"
+    "bytes": 405,
+    "sha256": "07ad283dd7033373111e09d68cf9973f23006d35a65ad58e37ab68fe079a28ac"
   },
   "backend/app/features/status/schemas.py": {
     "bytes": 189,
@@ -112,16 +112,16 @@
     "sha256": "969e7ddac09a39676746ec1af295a79c98f42c70dd6138428dcf0adf2b5e250c"
   },
   "backend/app/main.py": {
-    "bytes": 2055,
-    "sha256": "623aa86ade228094926b8fa83e457283abe5e509b6525665234dce1903561a1f"
+    "bytes": 2179,
+    "sha256": "7448e4c55f4a0dcd3634aeb58d2987cf9d1a833ad17a2bec9fb34302e3481a87"
   },
   "backend/app/routes_health.py": {
-    "bytes": 469,
-    "sha256": "86db7587cfde527996202c8772b4667f934264cab6cbc74acca63b2b65ead23a"
+    "bytes": 489,
+    "sha256": "2844b265c85369d1bf422228b4725a6ffe2e0bfa3c06625d4386818f3e945587"
   },
   "backend/app/status_router.py": {
-    "bytes": 133,
-    "sha256": "10c748df7283178b8e7f4d7fb32b180b9a46c3a5c28da6f78f2e6628e354e8d8"
+    "bytes": 143,
+    "sha256": "289de281a932f56bcda0a5de53a2dc7088aa2a187c7fe95d3dca14b0af0a910b"
   },
   "backend/Dockerfile": {
     "bytes": 421,
@@ -144,8 +144,8 @@
     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
   },
   "backend/tests/conftest.py": {
-    "bytes": 379,
-    "sha256": "254fac8808efbd58b5fb209db0c8b1f3ea7451c8634d7f2ae445ef6a5190322c"
+    "bytes": 452,
+    "sha256": "bdd8045554902736634761e8dcbafc15735dfd40f7dfd313dfb0ee30d44a386a"
   },
   "backend/tests/test_health.py": {
     "bytes": 338,

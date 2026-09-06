@@ -70,6 +70,8 @@ describe('fastapi adapter', () => {
     expect(files['backend/.python-version'].trim()).toBe(p.runtimes.python)
     expect(files['backend/app/routes_health.py']).toContain('/health')
     expect(files['backend/app/routes_api.py']).toContain('prefix="/api"')
+    expect(files['backend/app/main.py']).toContain('lifespan=lifespan')
+    expect(files['backend/app/db.py']).toContain('class Example(Base)')
     expect(files['backend/alembic/env.py']).toContain('from app.config import settings')
     expect(files['backend/alembic/env.py']).toContain('from app.db import Base')
     expect(files['backend/alembic/versions/0001_baseline.py']).toContain('examples')
@@ -90,6 +92,7 @@ describe('fastapi adapter', () => {
     expect(medium['backend/app/core/security.py']).toContain('require_auth')
     expect(medium['backend/app/core/security.py']).toContain('from app.core.config import settings')
     expect(medium['backend/app/core/db.py']).toContain('from app.core.config import settings')
+    expect(medium['backend/app/core/db.py']).toContain('class Example(Base)')
 
     const large = buildFiles(answers, {}, { ...stackFor({ architecture: 'large' }), profile: p })
     expect(large['backend/app/modules/status/__init__.py']).toContain('__all__')
