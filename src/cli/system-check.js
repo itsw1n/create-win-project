@@ -145,10 +145,10 @@ export function collectDiagnostics(profile) {
   ]
 }
 
-export function printDoctor(profile, output = console.log) {
+export function printDoctor(profile, output = console.log, diagnostics = collectDiagnostics(profile)) {
   output(`create-win-project doctor (profile ${profile.id})`)
   output('Use either the Node/npm lane or the Docker/Compose lane; Java is only needed for host-run Spring projects.')
-  for (const item of collectDiagnostics(profile)) {
+  for (const item of diagnostics) {
     const expectation = item.expected ? ` (tested: ${item.expected})` : ''
     output(`${item.found ? '✓' : '○'} ${item.name}: ${item.found || 'not found'}${expectation}`)
   }
