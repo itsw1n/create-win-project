@@ -106,12 +106,12 @@ export function buildQuestions({ args, catalog }) {
     },
     {
       type: 'list', name: 'authentication',
-      message: (answers) => ['supabase', 'springboot', 'laravel'].includes(answers.backend)
+      message: (answers) => ['supabase', 'springboot', 'laravel', 'fastapi'].includes(answers.backend)
         ? 'User authentication'
         : `User authentication ${chalk.yellow(`(generation unavailable for ${answers.backend === 'none' ? 'a frontend-only project' : 'a PostgreSQL-only backend'})`)}`,
       choices: (answers) => {
         const choices = []
-        if (['supabase', 'springboot', 'laravel'].includes(answers.backend)) {
+        if (['supabase', 'springboot', 'laravel', 'fastapi'].includes(answers.backend)) {
           choices.push(choice('Yes', 'yes'))
         }
         choices.push(
@@ -130,7 +130,7 @@ export function buildQuestions({ args, catalog }) {
         { name: 'Website and mobile — use a trusted identity provider for every client', value: 'multi-client' },
       ],
       default: 'website',
-      when: (answers) => ['springboot', 'laravel'].includes(answers.backend) && answers.frontend !== 'laravel-ui' &&
+      when: (answers) => ['springboot', 'laravel', 'fastapi'].includes(answers.backend) && answers.frontend !== 'laravel-ui' &&
         (args.authentication || answers.authentication) === 'yes' && !args.authAudience,
     },
     {

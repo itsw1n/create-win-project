@@ -171,6 +171,10 @@ try {
     const laravelRoot = ['laravel-ui', 'no-frontend'].includes(stack.frontendKey) ? generatedProjectRoot : path.join(generatedProjectRoot, 'backend')
     steps.push({ command: process.platform === 'win32' ? 'composer.bat' : 'composer', args: ['install'], cwd: laravelRoot, retry: `cd ${path.relative(process.cwd(), laravelRoot)} && composer install` })
   }
+  if (stack.backendKey === 'fastapi') {
+    const apiRoot = stack.frontendKey === 'no-frontend' ? generatedProjectRoot : path.join(generatedProjectRoot, 'backend')
+    steps.push({ command: 'uv', args: ['sync'], cwd: apiRoot, retry: `cd ${path.relative(process.cwd(), apiRoot)} && uv sync` })
+  }
   const needsNpm = stack.frontendKey !== 'no-frontend' && (stack.frontendKey !== 'laravel-ui' || answers.laravelUi === 'inertia-react')
   if (needsNpm) {
     const npmRoot = stack.frontendKey === 'react' ? path.join(generatedProjectRoot, 'frontend') : generatedProjectRoot

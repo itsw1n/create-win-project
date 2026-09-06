@@ -30,6 +30,8 @@ export function detectSystemVersions({ run = spawnSync, nodeVersion = process.ve
     npm: probe(process.platform === 'win32' ? 'npm.cmd' : 'npm', ['--version'], run),
     php: probe('php', ['--version'], run),
     composer: probe(process.platform === 'win32' ? 'composer.bat' : 'composer', ['--version'], run),
+    python: probe('python', ['--version'], run),
+    uv: probe('uv', ['--version'], run),
   }
 }
 
@@ -56,6 +58,14 @@ export function installationIssues(stack, profile, versions) {
     }
     if (!versionAtLeast(versions.composer, profile.runtimes.composer)) {
       issues.push({ tool: 'Composer', found: versions.composer, required: profile.runtimes.composer })
+    }
+  }
+  if (stack.backendKey === 'fastapi') {
+    if (!versionAtLeast(versions.python, profile.runtimes.python)) {
+      issues.push({ tool: 'Python', found: versions.python, required: profile.runtimes.python })
+    }
+    if (!versionAtLeast(versions.uv, profile.runtimes.uv)) {
+      issues.push({ tool: 'uv', found: versions.uv, required: profile.runtimes.uv })
     }
   }
   return issues
@@ -91,6 +101,12 @@ export function runtimeSetupInstructions(profile, issues = []) {
       'Verify: php --version && composer --version',
     )
   }
+  if (tools.has('Python') || tools.has('uv')) {
+    instructions.push(
+      `Install Python ${profile.runtimes.python} and uv ${profile.runtimes.uv} (https://docs.astral.sh/uv/), or use the generated Docker workflow.`,
+      'Verify: python --version && uv --version',
+    )
+  }
   return instructions
 }
 
@@ -116,12 +132,16 @@ export function collectDiagnostics(profile) {
   const dockerVersion = probeDoctor('docker')
   const composeVersion = dockerVersion ? probeDoctor('docker', ['compose', 'version']) : null
   const javaVersion = probeDoctor('java', ['-version'])
+  const pythonVersion = probeDoctor('python')
+  const uvVersion = probeDoctor('uv')
   return [
     { name: 'Node.js', found: nodeVersion, expected: profile.runtimes.node, required: false },
     { name: 'npm', found: npmVersion, required: false },
     { name: 'Docker', found: dockerVersion, required: false },
     { name: 'Docker Compose', found: composeVersion, required: false },
     { name: 'Java', found: javaVersion, expected: profile.runtimes.java, required: false },
+    { name: 'Python', found: pythonVersion, expected: profile.runtimes.python, required: false },
+    { name: 'uv', found: uvVersion, expected: profile.runtimes.uv, required: false },
   ]
 }
 
