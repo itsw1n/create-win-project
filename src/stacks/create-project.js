@@ -17,6 +17,7 @@ import {
 import { writeRenderedFile as writeTemplate } from '../engine/render-templates.js'
 import { laravelCompose } from './backends/laravel/docker.js'
 import { fastapiCompose } from './backends/fastapi/docker.js'
+import { architectureOverview } from './shared/architecture-documentation.js'
 
 /**
  * Main entry point — generates the full project
@@ -57,10 +58,10 @@ export async function scaffoldProject(answers, cliRoot) {
 
     // 4. Small, runnable framework foundations. These files are the executable
     // contract that the playbooks describe.
-    await generateRunnableFiles(dest, resolvedAnswers, stack, vars)
+    const runnableFilePaths = await generateRunnableFiles(dest, resolvedAnswers, stack, vars)
 
     // 5. Product documentation
-    await generateDocs(dest, resolvedAnswers, stack)
+    await generateDocs(dest, resolvedAnswers, stack, runnableFilePaths)
 
     // 6. GitHub Actions CI (template-driven)
     if (resolvedAnswers.githubActions) {
@@ -308,7 +309,7 @@ function developmentEnvironmentGuide(answers, stack) {
   return `# Development Environments\n\n## Default local workflow\n\nRun the generator directly on the host, then use the commands in \`setup.md\`. Docker is optional and is never required to run create-win-project itself. Local files and package-manager metadata remain the source of truth.\n${docker}${mobile}\n## Dev Containers\n\nA generic Dev Container is intentionally not generated: JavaScript, Java, PHP, and mobile stacks need different host/device boundaries. VS Code and Codespaces users can open the generated repository normally and add a stack-specific Dev Container later without changing the supported local or Compose workflows.\n`
 }
 
-async function generateDocs(dest, answers, stack) {
+async function generateDocs(dest, answers, stack, runnableFilePaths) {
   const docs = [
     ['docs/api/overview.md',              'API Overview',           'Base URL, authentication method, and response format.'],
     ['docs/api/endpoints.md',             'API Endpoints',          'All endpoint documentation goes here.'],
@@ -369,7 +370,7 @@ async function generateDocs(dest, answers, stack) {
   const envLocation = stack.frontendKey === 'react' ? '`frontend/.env` for client values' : stack.isMobile ? '`.env`' : '`.env.local`'
   await write(dest, 'docs/guides/env-variables.md', `# Environment Variables\n\nCopy the generated example before starting. Client environment location: ${envLocation}.\n\n| Variable | Visibility | Required | Purpose |\n|---|---|---:|---|\n${stack.env.map((name) => `| \`${name}\` | ${name.startsWith(stack.envPrefix) ? 'client/public' : 'server only'} | yes | ${environmentPurpose(name)} |`).join('\n')}\n\nValues with \`${stack.envPrefix}\` are bundled into client code and must never contain secrets. Keep real environment files out of version control.\n`)
 
-  await write(dest, 'docs/architecture/overview.md', `# Architecture Overview\n\n## Runtime shape\n\n- Frontend: ${stack.frontendLabel}\n- Backend/data: ${stack.backendLabel}\n- Platform: ${stack.platform}\n- Architecture profile: ${stack.architecture}\n- Authentication: ${stack.authentication}\n\nThe generated application is intentionally a small vertical slice. Add domain features only after recording product goals and boundaries in \`CONTEXT.md\`. Keep entry points thin, validate at trust boundaries, and enforce authorization beside protected data or side effects.\n\n## Verification boundary\n\nThe starter is considered healthy when its lint/typecheck/tests/build commands pass. Documentation explains those executable patterns; it does not override working code and tests.\n`)
+  await write(dest, 'docs/architecture/overview.md', architectureOverview(stack, runnableFilePaths, answers.projectName))
 
   await write(dest, 'docs/architecture/auth-flow.md', authDocumentation(stack))
 
@@ -510,6 +511,7 @@ async function generateRunnableFiles(dest, answers, stack, vars) {
     const artisan = stack.frontendKey === 'laravel-ui' || stack.frontendKey === 'no-frontend' ? 'artisan' : 'backend/artisan'
     await fs.chmod(path.join(dest, artisan), 0o755)
   }
+  return Object.keys(files)
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────

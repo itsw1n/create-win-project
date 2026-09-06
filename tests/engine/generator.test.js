@@ -173,6 +173,7 @@ describe('runnable project contract', () => {
     ['no-frontend', 'api', 'medium'],
     ['react', 'separate', 'small'],
   ])('generates a FastAPI service for %s (%s)', async (frontend, applicationShape, architecture) => {
+    const projectName = `fastapi-${frontend}`
     const destination = await generate({
       frontend,
       backend: 'fastapi',
@@ -180,7 +181,7 @@ describe('runnable project contract', () => {
       architecture,
       styling: frontend === 'react' ? 'tailwind' : undefined,
       githubActions: false,
-      projectName: `fastapi-${frontend}`,
+      projectName,
     })
     const apiRoot = frontend === 'no-frontend' ? destination : path.join(destination, 'backend')
     const pyproject = await fs.readFile(path.join(apiRoot, 'pyproject.toml'), 'utf8')
@@ -192,6 +193,11 @@ describe('runnable project contract', () => {
     expect(await fs.pathExists(path.join(apiRoot, 'tests/test_health.py'))).toBe(true)
     expect(await fs.readFile(path.join(apiRoot, '.python-version'), 'utf8')).toBe('3.14.7\n')
     expect(await fs.readFile(path.join(destination, 'docs/guides/toolchain.md'), 'utf8')).toContain('uv')
+    const architectureGuide = await fs.readFile(path.join(destination, 'docs/architecture/overview.md'), 'utf8')
+    expect(architectureGuide).toContain(`\`\`\`text\n${projectName}/`)
+    expect(architectureGuide).toContain('main.py')
+    expect(architectureGuide).toContain('playbooks/stack/fastapi/structure.md')
+    if (frontend === 'react') expect(architectureGuide).toContain('styles.css')
     const profile = await fs.readJson(path.join(destination, 'create-win-project.profile.json'))
     expect(profile.applicationShape).toBe(applicationShape)
   })
