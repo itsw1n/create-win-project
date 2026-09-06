@@ -50,6 +50,9 @@ const architectureArg = args.architecture
 const authenticationArg = args.authentication
 const authAudienceArg = args.authAudience
 const laravelUiArg = args.laravelUi
+const uploadsArg = args.uploads
+const backgroundJobsArg = args.backgroundJobs
+const offlineArg = args.offline
 const wantsInstall = args.install
 const skipsInstall = args.noInstall
 const { profile } = await loadCompatibility(
@@ -85,6 +88,11 @@ answers.architecture = architectureArg || answers.architecture || 'medium'
 answers.authentication = authenticationArg || answers.authentication || 'not-yet'
 answers.authAudience = authAudienceArg || answers.authAudience || (catalog.byId[answers.frontend]?.platform === 'mobile' ? 'multi-client' : 'website')
 answers.laravelUi = laravelUiArg || answers.laravelUi || (answers.frontend === 'laravel-ui' ? 'blade' : undefined)
+answers.uploads = uploadsArg || answers.uploads || 'none'
+answers.backgroundJobs = backgroundJobsArg || answers.backgroundJobs || 'none'
+answers.offline = offlineArg || answers.offline || 'none'
+answers.testing = answers.frontend === 'react-native' ? 'basic' : 'full'
+answers.githubActions = true
 if (wantsInstall) answers.installDependencies = true
 if (skipsInstall) answers.installDependencies = false
 

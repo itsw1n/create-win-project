@@ -9,9 +9,11 @@ describe('CLI modules', () => {
     expect(parseArguments([
       '--shape=mobile', '--frontend=expo', '--backend=supabase', '--architecture=small',
       '--authentication=yes', '--auth-audience=multi-client', '--no-install',
+      '--uploads=object-storage', '--background-jobs=queue', '--offline=sync',
     ])).toMatchObject({
       shape: 'mobile', frontend: 'react-native', backend: 'supabase', architecture: 'small',
       authentication: 'yes', authAudience: 'multi-client', noInstall: true,
+      uploads: 'object-storage', backgroundJobs: 'queue', offline: 'sync',
     })
   })
 
@@ -19,6 +21,9 @@ describe('CLI modules', () => {
     [['--shape=unknown'], '--shape'],
     [['--architecture=huge'], '--architecture'],
     [['--authentication=maybe'], '--authentication'],
+    [['--uploads=public'], '--uploads'],
+    [['--background-jobs=cron'], '--background-jobs'],
+    [['--offline=always'], '--offline'],
     [['--install', '--no-install'], 'either --install or --no-install'],
   ])('rejects invalid arguments', (args, message) => {
     expect(() => parseArguments(args)).toThrow(message)

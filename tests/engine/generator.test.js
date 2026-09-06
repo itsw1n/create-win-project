@@ -169,6 +169,24 @@ describe('runnable project contract', () => {
     expect(workflow).toContain('composer check')
   })
 
+  it('generates stack-aware security CI for successful projects', async () => {
+    const web = await generate({ frontend: 'nextjs', backend: 'springboot', packageName: 'com.example', projectName: 'secure-web' })
+    const webSecurity = await fs.readFile(path.join(web, '.github/workflows/security.yml'), 'utf8')
+    expect(webSecurity).toContain('npm audit --audit-level=high')
+    expect(webSecurity).toContain('languages: javascript-typescript,java-kotlin')
+    expect(webSecurity).toContain('dependency-review-action@2031cfc')
+    expect(webSecurity).toContain('trufflehog@466da5b')
+
+    const laravel = await generate({
+      frontend: 'no-frontend', backend: 'laravel', applicationShape: 'api',
+      githubActions: true, projectName: 'secure-laravel',
+    })
+    const laravelSecurity = await fs.readFile(path.join(laravel, '.github/workflows/security.yml'), 'utf8')
+    expect(laravelSecurity).toContain('composer audit --locked')
+    expect(laravelSecurity).not.toContain('npm audit')
+    expect(laravelSecurity).not.toContain('github/codeql-action/init')
+  })
+
   it.each([
     ['nextjs', 'none', 'tailwind'],
     ['nextjs', 'supabase', 'tailwind'],
@@ -211,13 +229,15 @@ describe('runnable project contract', () => {
     }
     expect(await fs.pathExists(path.join(destination, 'AGENTS.md'))).toBe(true)
     const profile = await fs.readJson(path.join(destination, 'create-win-project.profile.json'))
-    expect(profile.schemaVersion).toBe(3)
+    expect(profile.schemaVersion).toBe(2)
     expect(profile.compatibilityProfile.id).toBe('2026.09')
     expect(profile.architectureProfile).toBe('medium')
     expect(profile.authentication).toEqual({
       intent: 'not-yet', model: 'undecided', audience: 'website',
     })
     expect(profile.stack).toBe(`${frontend}-${backend}`)
+    expect(profile.productionBaseline.tests).toBe(true)
+    expect(profile.capabilities).toEqual({ uploads: 'none', backgroundJobs: 'none', offline: 'none' })
     expect(await fs.readFile(path.join(destination, 'RULES.md'), 'utf8')).not.toMatch(/section not found|MISSING/)
     if (frontend === 'nextjs') expect(await fs.pathExists(path.join(destination, 'src/app/page.tsx'))).toBe(true)
     if (frontend === 'react') expect(await fs.pathExists(path.join(destination, 'frontend/src/main.tsx'))).toBe(true)
@@ -232,13 +252,17 @@ describe('runnable project contract', () => {
     }
   })
 
-  it('makes the testing choice real', async () => {
-    const destination = await generate({ testing: 'none', projectName: 'without-tests' })
-    const packageJson = await fs.readJson(path.join(destination, 'package.json'))
-    expect(packageJson.scripts.test).toBeUndefined()
-    expect(packageJson.devDependencies.vitest).toBeUndefined()
-    expect(await fs.pathExists(path.join(destination, 'src/app/page.test.tsx'))).toBe(false)
-    expect(await fs.readFile(path.join(destination, '.github/workflows/ci-frontend.yml'), 'utf8')).not.toContain('npm run test')
+  it('rejects unsupported production-ready without tests paths', async () => {
+    await expect(generate({ testing: 'none', projectName: 'without-tests' })).rejects.toThrow('Unknown testing setup')
+  })
+
+  it('rejects unsupported capabilities before creating a destination', async () => {
+    await expect(generate({ frontend: 'nextjs', backend: 'none', uploads: 'object-storage', projectName: 'bad-uploads' }))
+      .rejects.toThrow('Object storage uploads require')
+    await expect(generate({ frontend: 'nextjs', backend: 'supabase', offline: 'sync', projectName: 'bad-offline' }))
+      .rejects.toThrow('only for mobile')
+    await expect(generate({ frontend: 'react-native', backend: 'supabase', backgroundJobs: 'queue', projectName: 'bad-queue' }))
+      .rejects.toThrow('Queues require')
   })
 
   it('honors the Makefile option for a frontend-only project', async () => {
@@ -247,17 +271,17 @@ describe('runnable project contract', () => {
     expect(makefile).toContain('npm --prefix $(NPM_DIR) run check')
   })
 
-  it('removes Spring test fixtures and CI steps when testing is none', async () => {
+  it('keeps Spring test fixtures and CI in the production baseline', async () => {
     const destination = await generate({
-      frontend: 'react', backend: 'springboot', styling: 'css-modules', testing: 'none',
+      frontend: 'react', backend: 'springboot', styling: 'css-modules', testing: 'full',
       packageName: 'com.example', projectName: 'spring-without-tests',
     })
     const pom = await fs.readFile(path.join(destination, 'backend/pom.xml'), 'utf8')
     const workflow = await fs.readFile(path.join(destination, '.github/workflows/ci-backend.yml'), 'utf8')
-    expect(await fs.pathExists(path.join(destination, 'backend/src/test/resources/application.yml'))).toBe(false)
-    expect(pom).not.toContain('spring-boot-starter-webmvc-test')
-    expect(pom).not.toContain('spring-security-test')
-    expect(workflow).not.toContain('mvn --batch-mode test')
+    expect(await fs.pathExists(path.join(destination, 'backend/src/test/java/com/example/health/HealthControllerTest.java'))).toBe(true)
+    expect(pom).toContain('spring-boot-starter-webmvc-test')
+    expect(pom).toContain('spring-security-test')
+    expect(workflow).toContain('./mvnw --batch-mode test')
   })
 
   it('generates current Supabase SSR session plumbing for Next.js', async () => {
@@ -357,7 +381,7 @@ describe('runnable project contract', () => {
     try {
       await expect(generateProject({
         projectName: 'occupied', projectDescription: 'Must remain safe', frontend: 'nextjs',
-        backend: 'supabase', styling: 'tailwind', testing: 'none',
+        backend: 'supabase', styling: 'tailwind', testing: 'full',
       }, root)).rejects.toThrow(/already exists/)
     } finally {
       process.chdir(previous)

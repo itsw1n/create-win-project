@@ -15,6 +15,10 @@
     "bytes": 585,
     "sha256": "07265f1cb8102de68379dd6de731cd4e5c975e6439b2252c8605e3adc90922e2"
   },
+  ".github/workflows/security.yml": {
+    "bytes": 1689,
+    "sha256": "9037568326f0009cbaae8c13a5e3761a3160dc4bd1988e9384ffcf23caef0778"
+  },
   ".gitignore": {
     "bytes": 335,
     "sha256": "2c866acae818e220b1eeac946bbf8381c2348590d522bbeab00dcfdf367779a3"
@@ -60,8 +64,8 @@
     "sha256": "368a8b2c17e6108f4cf2347f845f254ff173ec9908a13f54669e638710a05c91"
   },
   "create-win-project.profile.json": {
-    "bytes": 558,
-    "sha256": "63902f5b85de91acafc7fd4ce25f659eb7e16a282cc3a4f7cc82cbf5806a8854"
+    "bytes": 861,
+    "sha256": "4fbedc0058c1c79c8873431adff83fa50227915c545bebb8afda53b3e39242dd"
   },
   "docs/api/endpoints.md": {
     "bytes": 84,

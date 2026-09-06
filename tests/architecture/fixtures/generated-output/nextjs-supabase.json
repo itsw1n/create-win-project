@@ -15,6 +15,10 @@
     "bytes": 670,
     "sha256": "419e71db61914d0767e7c44c47f12bd8c40b51753820407442da60c872da674d"
   },
+  ".github/workflows/security.yml": {
+    "bytes": 1689,
+    "sha256": "9037568326f0009cbaae8c13a5e3761a3160dc4bd1988e9384ffcf23caef0778"
+  },
   ".gitignore": {
     "bytes": 353,
     "sha256": "1b65c5ffdde9899cbddf0ba615184045cc2d1bc31d9d494fa1f2b7d12eb1253d"
@@ -40,8 +44,8 @@
     "sha256": "1e68022fe23dbd9b63f558a82892743b6b6927925ef3a68d2cd5c813fefddc15"
   },
   "create-win-project.profile.json": {
-    "bytes": 550,
-    "sha256": "8f6e8c30cef706e090327ee0c52f577703b92fad0bafc70b225306394c97b0ce"
+    "bytes": 869,
+    "sha256": "19bf73989d3c0877f42e36804b5ac9176b92f4d7e003823afdb3dc609245da70"
   },
   "docker-compose.yml": {
     "bytes": 663,

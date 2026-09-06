@@ -216,7 +216,7 @@ export function buildRunnableFiles(answers, stack, vars) {
   if (stack.frontendKey === 'react') files = augmentViteFiles(files, stack)
   Object.assign(files, envFiles(answers, stack))
   files['create-win-project.profile.json'] = json({
-    schemaVersion: 3,
+    schemaVersion: 2,
     applicationShape: stack.applicationShape,
     compatibilityProfile: {
       id: stack.profile.id,
@@ -230,6 +230,19 @@ export function buildRunnableFiles(answers, stack, vars) {
       audience: stack.authAudience,
     },
     stack: stack.key,
+    productionBaseline: {
+      tests: true,
+      continuousIntegration: true,
+      productionBuild: !stack.isMobile,
+      securityRules: true,
+      operationsDocumentation: true,
+      deployment: stack.isMobile ? 'eas' : 'cloud-neutral-docker',
+    },
+    capabilities: {
+      uploads: answers.uploads || 'none',
+      backgroundJobs: answers.backgroundJobs || 'none',
+      offline: answers.offline || 'none',
+    },
     runtimes: stack.profile.runtimes,
   })
   files['README.md'] = projectReadme(answers, stack)
