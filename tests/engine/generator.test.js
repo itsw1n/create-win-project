@@ -169,6 +169,86 @@ describe('runnable project contract', () => {
     expect(workflow).toContain('composer check')
   })
 
+  it.each([
+    ['no-frontend', 'api', 'medium'],
+    ['react', 'separate', 'small'],
+  ])('generates a FastAPI service for %s (%s)', async (frontend, applicationShape, architecture) => {
+    const destination = await generate({
+      frontend,
+      backend: 'fastapi',
+      applicationShape,
+      architecture,
+      styling: frontend === 'react' ? 'tailwind' : undefined,
+      githubActions: false,
+      projectName: `fastapi-${frontend}`,
+    })
+    const apiRoot = frontend === 'no-frontend' ? destination : path.join(destination, 'backend')
+    const pyproject = await fs.readFile(path.join(apiRoot, 'pyproject.toml'), 'utf8')
+    expect(pyproject).toContain('fastapi==0.141.1')
+    expect(pyproject).toContain('sqlalchemy==2.0.52')
+    expect(await fs.pathExists(path.join(apiRoot, 'app/main.py'))).toBe(true)
+    expect(await fs.pathExists(path.join(apiRoot, 'alembic/env.py'))).toBe(true)
+    expect(await fs.pathExists(path.join(apiRoot, 'tests/test_health.py'))).toBe(true)
+    expect(await fs.readFile(path.join(apiRoot, '.python-version'), 'utf8')).toBe('3.14.7\n')
+    expect(await fs.readFile(path.join(destination, 'docs/guides/toolchain.md'), 'utf8')).toContain('uv')
+    const profile = await fs.readJson(path.join(destination, 'create-win-project.profile.json'))
+    expect(profile.applicationShape).toBe(applicationShape)
+  })
+
+  it.each([
+    ['none', 'public'],
+    ['not-yet', 'undecided'],
+    ['yes', 'oidc'],
+  ])('generates honest FastAPI authentication for %s', async (authentication, model) => {
+    const destination = await generate({
+      frontend: 'react', backend: 'fastapi', applicationShape: 'separate', architecture: 'medium',
+      authentication, authAudience: 'website', styling: 'tailwind', githubActions: false,
+      projectName: `fastapi-auth-${authentication}`,
+    })
+    const security = await fs.readFile(path.join(destination, 'backend/app/core/security.py'), 'utf8')
+    expect(security.includes('PyJWKClient')).toBe(authentication === 'yes')
+    expect(security.includes('403')).toBe(authentication === 'not-yet')
+    const tests = await fs.readFile(path.join(destination, 'backend/tests/test_security.py'), 'utf8')
+    expect(tests.includes('401')).toBe(authentication === 'yes')
+    const profile = await fs.readJson(path.join(destination, 'create-win-project.profile.json'))
+    expect(profile.authentication.model).toBe(model)
+  })
+
+  it('generates backend-only Docker services for React Native with FastAPI', async () => {
+    const destination = await generate({
+      frontend: 'react-native', backend: 'fastapi', applicationShape: 'mobile', architecture: 'small',
+      authentication: 'not-yet', authAudience: 'multi-client', docker: true, makefile: false,
+      githubActions: false, projectName: 'mobile-fastapi-docker',
+    })
+    const compose = await fs.readFile(path.join(destination, 'docker-compose.yml'), 'utf8')
+
+    expect(compose).toContain('  backend:')
+    expect(compose).toContain('  db:')
+    expect(compose).not.toContain('  frontend:')
+    expect(await fs.pathExists(path.join(destination, 'backend/Dockerfile.dev'))).toBe(true)
+  })
+
+  it('generates FastAPI CI in the correct application directory', async () => {
+    const destination = await generate({
+      frontend: 'react', backend: 'fastapi', applicationShape: 'separate', architecture: 'medium',
+      authentication: 'none', docker: false, makefile: false, githubActions: true,
+      projectName: 'fastapi-ci-api',
+    })
+    const workflow = await fs.readFile(path.join(destination, '.github/workflows/ci-backend.yml'), 'utf8')
+    expect(workflow).toContain('working-directory: backend')
+    expect(workflow).toContain('python-version: "3.14.7"')
+    expect(workflow).toContain('uv sync --frozen')
+    expect(workflow).toContain('uv run pytest')
+
+    const apiOnly = await generate({
+      frontend: 'no-frontend', backend: 'fastapi', applicationShape: 'api', architecture: 'medium',
+      authentication: 'none', docker: false, makefile: false, githubActions: true,
+      projectName: 'fastapi-ci-root',
+    })
+    const rootWorkflow = await fs.readFile(path.join(apiOnly, '.github/workflows/ci-backend.yml'), 'utf8')
+    expect(rootWorkflow).toContain('working-directory: .')
+  })
+
   it('generates stack-aware security CI for successful projects', async () => {
     const web = await generate({ frontend: 'nextjs', backend: 'springboot', packageName: 'com.example', projectName: 'secure-web' })
     const webSecurity = await fs.readFile(path.join(web, '.github/workflows/security.yml'), 'utf8')
