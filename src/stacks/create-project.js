@@ -199,6 +199,33 @@ async function generateRootFiles(dest, answers, vars, stack, templatesDir) {
     }
   }
 
+  // Production artifacts are part of the deployable web contract even when
+  // the optional development Docker workflow was not selected.
+  if (!answers.docker && !stack.isMobile) {
+    if (stack.frontendKey === 'nextjs') {
+      const nextProd = await readTemplate(templatesDir, 'docker/dockerfile', 'nextjs.prod', '.dockerfile')
+      if (nextProd) await writeTemplate(dest, 'Dockerfile', nextProd, vars)
+    }
+    if (stack.frontendKey === 'react') {
+      const viteProd = await readTemplate(templatesDir, 'docker/dockerfile', 'vite.prod', '.dockerfile')
+      if (viteProd) {
+        await writeTemplate(dest, 'frontend/Dockerfile', viteProd, vars)
+        await write(dest, 'frontend/nginx.conf', `server {\n  listen 8080;\n  server_tokens off;\n  root /usr/share/nginx/html;\n  add_header X-Content-Type-Options nosniff always;\n  add_header Referrer-Policy strict-origin-when-cross-origin always;\n  add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;\n  add_header Content-Security-Policy "default-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'" always;\n  location /assets/ { try_files $uri =404; add_header Cache-Control "public, max-age=31536000, immutable"; }\n  location /api/ { add_header Cache-Control "no-store" always; try_files $uri =404; }\n  location / { index index.html; try_files $uri $uri/ /index.html; add_header Cache-Control "no-cache"; }\n}\n`)
+      }
+    }
+    if (stack.backendKey === 'springboot') {
+      const backendProd = await readTemplate(templatesDir, 'docker/dockerfile', 'springboot.prod', '.dockerfile')
+      if (backendProd) await writeTemplate(dest, 'backend/Dockerfile', backendProd, vars)
+      const composeProd = await readTemplate(templatesDir, 'docker/compose-prod', 'springboot', '.yml')
+      if (composeProd) await writeTemplate(dest, 'docker-compose.prod.yml', composeProd, vars)
+    }
+    if (stack.backendKey === 'laravel') {
+      const laravelRoot = ['laravel-ui', 'no-frontend'].includes(stack.frontendKey) ? '' : 'backend/'
+      const laravelProd = await readTemplate(templatesDir, 'docker/dockerfile', 'laravel.prod', '.dockerfile')
+      if (laravelProd) await writeTemplate(dest, `${laravelRoot}Dockerfile`, laravelProd, vars)
+    }
+  }
+
   // PR template
   if (answers.githubActions) {
     await write(dest, '.github/PULL_REQUEST_TEMPLATE.md', prTemplate())

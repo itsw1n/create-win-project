@@ -271,6 +271,17 @@ describe('runnable project contract', () => {
     expect(makefile).toContain('npm --prefix $(NPM_DIR) run check')
   })
 
+  it('generates production artifacts when development Docker is disabled', async () => {
+    const next = await generate({ backend: 'none', docker: false, projectName: 'next-production' })
+    expect(await fs.pathExists(path.join(next, 'Dockerfile'))).toBe(true)
+    expect(await fs.pathExists(path.join(next, 'Dockerfile.dev'))).toBe(false)
+    const spring = await generate({ frontend: 'react', backend: 'springboot', packageName: 'com.example', docker: false, projectName: 'spring-production' })
+    expect(await fs.pathExists(path.join(spring, 'frontend/Dockerfile'))).toBe(true)
+    expect(await fs.pathExists(path.join(spring, 'backend/Dockerfile'))).toBe(true)
+    expect(await fs.pathExists(path.join(spring, 'docker-compose.prod.yml'))).toBe(true)
+    expect(await fs.pathExists(path.join(spring, 'docker-compose.yml'))).toBe(false)
+  })
+
   it('keeps Spring test fixtures and CI in the production baseline', async () => {
     const destination = await generate({
       frontend: 'react', backend: 'springboot', styling: 'css-modules', testing: 'full',
