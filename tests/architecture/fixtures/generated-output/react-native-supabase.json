@@ -15,6 +15,10 @@
     "bytes": 585,
     "sha256": "07265f1cb8102de68379dd6de731cd4e5c975e6439b2252c8605e3adc90922e2"
   },
+  ".github/workflows/security.yml": {
+    "bytes": 1685,
+    "sha256": "d9cd12f023ecf4bb906677bd87e14d6816e87b4cf0552627523fe543630ea80d"
+  },
   ".gitignore": {
     "bytes": 335,
     "sha256": "2c866acae818e220b1eeac946bbf8381c2348590d522bbeab00dcfdf367779a3"

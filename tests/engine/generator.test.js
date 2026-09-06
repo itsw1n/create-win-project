@@ -169,6 +169,24 @@ describe('runnable project contract', () => {
     expect(workflow).toContain('composer check')
   })
 
+  it('generates stack-aware security CI for successful projects', async () => {
+    const web = await generate({ frontend: 'nextjs', backend: 'springboot', packageName: 'com.example', projectName: 'secure-web' })
+    const webSecurity = await fs.readFile(path.join(web, '.github/workflows/security.yml'), 'utf8')
+    expect(webSecurity).toContain('npm audit --audit-level=high')
+    expect(webSecurity).toContain('languages: javascript-typescript,java-kotlin')
+    expect(webSecurity).toContain('dependency-review-action@e22c389')
+    expect(webSecurity).toContain('trufflehog@466da5b')
+
+    const laravel = await generate({
+      frontend: 'no-frontend', backend: 'laravel', applicationShape: 'api',
+      githubActions: true, projectName: 'secure-laravel',
+    })
+    const laravelSecurity = await fs.readFile(path.join(laravel, '.github/workflows/security.yml'), 'utf8')
+    expect(laravelSecurity).toContain('composer audit --locked')
+    expect(laravelSecurity).not.toContain('npm audit')
+    expect(laravelSecurity).not.toContain('github/codeql-action/init')
+  })
+
   it.each([
     ['nextjs', 'none', 'tailwind'],
     ['nextjs', 'supabase', 'tailwind'],
