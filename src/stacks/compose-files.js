@@ -1,6 +1,7 @@
 import path from 'node:path'
 import { packageVersion } from './shared/javascript-package.js'
 import { stackRegistry } from './available-stacks.js'
+import { capabilityPackFiles } from './shared/capability-packs.js'
 import { collectContributions } from './shared/contributions.js'
 import { buildSharedTestFiles, buildSupabaseWebFiles } from './backends/supabase/create-files.js'
 import { augmentSupabaseNativeFiles } from './backends/supabase/native.js'
@@ -30,6 +31,9 @@ function envFiles(answers, stack) {
 
 function projectReadme(answers, stack) {
   if (stack.frontendKey === 'no-frontend') {
+    if (stack.backendKey === 'fastapi') {
+      return `# ${answers.projectName}\n\n> ${answers.projectDescription}\n\nGenerated backend-only ${stack.backendLabel} application.\n\n## Start\n\n\`\`\`bash\ncp .env.example .env\nuv sync\nalembic upgrade head\nuv run uvicorn app.main:app --reload\n\`\`\`\n\n## Validate\n\n\`\`\`bash\nuv run ruff check . && uv run ruff format --check . && uv run mypy . && uv run pytest\n\`\`\`\n`
+    }
     return `# ${answers.projectName}\n\n> ${answers.projectDescription}\n\nGenerated backend-only ${stack.backendLabel} application.\n\n## Start\n\n\`\`\`bash\ncp .env.example .env\ncd backend\n./mvnw spring-boot:run  # use mvnw.cmd on Windows\n\`\`\`\n\n## Validate\n\n\`\`\`bash\ncd backend\n./mvnw --batch-mode test\n./mvnw --batch-mode package -DskipTests\n\`\`\`\n`
   }
   const root = stack.frontendKey === 'react' ? 'frontend/' : ''
@@ -215,8 +219,9 @@ export function buildRunnableFiles(answers, stack, vars) {
   let files = stack.isMobile ? nativeFiles(answers, stack) : frontendFiles(answers, stack)
   if (stack.frontendKey === 'react') files = augmentViteFiles(files, stack)
   Object.assign(files, envFiles(answers, stack))
+  Object.assign(files, capabilityPackFiles(answers, stack))
   files['create-win-project.profile.json'] = json({
-    schemaVersion: 3,
+    schemaVersion: 2,
     applicationShape: stack.applicationShape,
     compatibilityProfile: {
       id: stack.profile.id,
@@ -230,6 +235,19 @@ export function buildRunnableFiles(answers, stack, vars) {
       audience: stack.authAudience,
     },
     stack: stack.key,
+    productionBaseline: {
+      tests: true,
+      continuousIntegration: true,
+      productionBuild: !stack.isMobile,
+      securityRules: true,
+      operationsDocumentation: true,
+      deployment: stack.isMobile ? 'eas' : 'cloud-neutral-docker',
+    },
+    capabilities: {
+      uploads: answers.uploads || 'none',
+      backgroundJobs: answers.backgroundJobs || 'none',
+      offline: answers.offline || 'none',
+    },
     runtimes: stack.profile.runtimes,
   })
   files['README.md'] = projectReadme(answers, stack)

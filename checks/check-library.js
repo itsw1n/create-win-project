@@ -23,10 +23,10 @@ const authIntents = ['not-yet', 'none']
 for (const frontend of catalog.frontends) {
   for (const backend of frontend.appliesTo?.backend || []) {
     const authCases = [...authIntents]
-    if (['supabase', 'springboot'].includes(backend)) authCases.push('yes')
+    if (['supabase', 'springboot', 'fastapi'].includes(backend)) authCases.push('yes')
     for (const architecture of architectures) {
       for (const authentication of authCases) {
-        const audiences = authentication === 'yes' && backend === 'springboot'
+        const audiences = authentication === 'yes' && ['springboot', 'fastapi'].includes(backend)
           ? ['website', 'multi-client']
           : [frontend.platform === 'mobile' ? 'multi-client' : 'website']
         for (const authAudience of audiences) {
@@ -48,8 +48,12 @@ const markdownFiles = (await fs.readdir(playbooksDir, { recursive: true, withFil
 for (const file of markdownFiles) {
   const content = await fs.readFile(file, 'utf8')
   const relative = path.relative(playbooksDir, file)
-  const limit = relative.startsWith('stacks/') || relative.startsWith('platforms/') || relative.startsWith('features/') ? 250 : 650
+  const limit = 200
   if (content.split('\n').length > limit) errors.push(`${relative}: exceeds ${limit} lines`)
+  const headings = [...content.matchAll(/^#{1,2}\s+(.+)$/gm)].map((match) => match[1].trim().toLocaleLowerCase('en'))
+  for (const heading of new Set(headings.filter((value, index) => headings.indexOf(value) !== index))) {
+    errors.push(`${relative}: duplicate heading ${heading}`)
+  }
   for (const match of content.matchAll(/\[[^\]]*\]\(([^)]+)\)/g)) {
     const target = match[1].split('#')[0]
     if (!target || /^(?:https?:|mailto:)/.test(target)) continue
@@ -64,8 +68,14 @@ for (const directory of [path.join(root, 'README.md'), path.join(root, 'docs'), 
     ? (await fs.readdir(directory, { recursive: true, withFileTypes: true })).filter((entry) => entry.isFile() && entry.name.endsWith('.md')).map((entry) => path.join(entry.parentPath, entry.name))
     : [directory]
   for (const file of files) {
+    if (path.relative(root, file).startsWith(`docs${path.sep}superpowers${path.sep}`)) continue
     const content = await fs.readFile(file, 'utf8')
     for (const stale of staleClaims) if (content.includes(stale)) errors.push(`${path.relative(root, file)}: stale reference ${stale}`)
+    for (const match of content.matchAll(/\[[^\]]*\]\(([^)]+)\)/g)) {
+      const target = match[1].split('#')[0]
+      if (!target || /^(?:https?:|mailto:)/.test(target)) continue
+      if (!await fs.pathExists(path.resolve(path.dirname(file), target))) errors.push(`${path.relative(root, file)}: broken link ${match[1]}`)
+    }
   }
 }
 

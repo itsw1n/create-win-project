@@ -15,6 +15,10 @@
     "bytes": 1356,
     "sha256": "f1e74e7d0828c171b1b72c538921c4872937599c981f24109b48081d86fea73e"
   },
+  ".github/workflows/security.yml": {
+    "bytes": 2129,
+    "sha256": "94c0f1a8305adbbe034adce4906b8693cb2fe819f67293edc8378a4081f6affe"
+  },
   ".gitignore": {
     "bytes": 81,
     "sha256": "e2d940a19462149e6f7860fb3afb3a9dbb13262cc276458fd02f9b27eab98beb"
@@ -100,12 +104,12 @@
     "sha256": "4389d5b9b4a73615fac55972e9fb271d9501560fe7ceb79b198a3ffd685ee145"
   },
   "CONTEXT.md": {
-    "bytes": 582,
-    "sha256": "2650cfc40a649c709eec104babf5850c825512fc1877deee997b537d2736a6b3"
+    "bytes": 821,
+    "sha256": "dcb4760e0456d61c332de5b33cef57dc2517a52c77f162e7e8218ea9c1a8883a"
   },
   "create-win-project.profile.json": {
-    "bytes": 560,
-    "sha256": "a978ff195d63e3096c043b63aa4e2e17cab0c153bef40bddd5d0574d593509b3"
+    "bytes": 924,
+    "sha256": "62a8e0b380e64784027ffd0ee3351fdb90ec8c3d6f8eca068ef8059a9f511125"
   },
   "database/factories/UserFactory.php": {
     "bytes": 456,
@@ -152,16 +156,20 @@
     "sha256": "d7fb5198d369b662ac7b4ffea0d4f8e5fc2322719543045bc886b705d820c00b"
   },
   "docs/guides/deployment.md": {
-    "bytes": 78,
-    "sha256": "1d6157e9b7f51c8e9009baf3dc751c4c2a52fd25aece286ef768ecec0477294d"
+    "bytes": 997,
+    "sha256": "1be746fd1cab6ac2b40e392cd409a1cf17182def17cf68a12a0a3e7b187d482f"
   },
   "docs/guides/development-environments.md": {
     "bytes": 1168,
     "sha256": "b1668749c5188eeba6170aced08104e3687c4bd0690f3e1cf6363cb8ebe72dc5"
   },
   "docs/guides/env-variables.md": {
-    "bytes": 832,
-    "sha256": "854d43f6f3103ec8c76ce8247df494439f94e85914d6689e0f7e76a423be7902"
+    "bytes": 827,
+    "sha256": "7a9a3f4bc1323d81486d341f8f82c95cd9ce45e1c46a08f6ab56e21c6beebff4"
+  },
+  "docs/guides/operations.md": {
+    "bytes": 846,
+    "sha256": "1edcf2b3e0124bb0247dd8579602a952a64e380d7b5f8213949a64f9dee505ff"
   },
   "docs/guides/setup.md": {
     "bytes": 668,
@@ -191,6 +199,18 @@
     "bytes": 3331,
     "sha256": "07f14cd7d1c416567598f9117dc9868e4d5336e4aa7e0ac009f685b4bef0c7c2"
   },
+  "playbooks/capabilities/devops/makefile/commands.md": {
+    "bytes": 493,
+    "sha256": "099eab4ec02b65334a6a2d3f673d77da9e57fde96dbe82e01b73107b90a8855d"
+  },
+  "playbooks/capabilities/devops/makefile/docker.md": {
+    "bytes": 379,
+    "sha256": "0b8a04a2c3ddb34b329f61c5a50c3e48e9efefaf3d258d4d36023c82f60bbffe"
+  },
+  "playbooks/capabilities/devops/makefile/validation.md": {
+    "bytes": 268,
+    "sha256": "a7761776f7cc7cce40c7ab2e7ddf48651f4f5d42fc6d4e989004f44cf627b9b2"
+  },
   "playbooks/capabilities/docker/overview.md": {
     "bytes": 3075,
     "sha256": "e3fb3c03eb88c5002bd7bc8021a16b8cfe7ff92d1d89005f19d351a70c6c34f9"
@@ -206,10 +226,6 @@
   "playbooks/capabilities/laravel/session-auth.md": {
     "bytes": 464,
     "sha256": "f6de2915e82d8b84e24255af3def21dba9267cd501aa9454e6d4d3651e199d73"
-  },
-  "playbooks/devops/makefile.md": {
-    "bytes": 16050,
-    "sha256": "e9e65435f977c86a8ccc39fed56344fe84f03ffe80829ee782edf8d4f12ab7b3"
   },
   "playbooks/devops/pr-template.md": {
     "bytes": 2393,
@@ -267,17 +283,29 @@
     "bytes": 2401,
     "sha256": "2f1451e99973dee2a6f20e05dd3048a09f397f987dcf20ece9dcbdd127572fad"
   },
-  "playbooks/universal/coding-rules.md": {
-    "bytes": 6170,
-    "sha256": "48b27fa839e94012015f48d834726e22da87b51421e89f9ae6bcca8898d6a3e8"
+  "playbooks/universal/coding-rules/hygiene.md": {
+    "bytes": 491,
+    "sha256": "43ab286dadf487fee04e85e4438935054d189aef3f770966d167cb8d67d16896"
+  },
+  "playbooks/universal/coding-rules/naming.md": {
+    "bytes": 585,
+    "sha256": "cfc7f0ca071fbb21792ff924f347f32be69668d477f057786d294cc973b76bea"
   },
   "playbooks/universal/error-handling.md": {
     "bytes": 1608,
     "sha256": "a1dd0f74dc6d2a1388ab989e9faf2c44fdfff230da4a605132110667ab594952"
   },
-  "playbooks/universal/git-conventions.md": {
-    "bytes": 5155,
-    "sha256": "6bc31e6c74ceaca9981ec63ed720b49df5b8cbee00f2c3e5a0dd9a271c3e76c9"
+  "playbooks/universal/git-conventions/branches.md": {
+    "bytes": 251,
+    "sha256": "2196e4a58d51216070e0853b6cf39699e61322902620e0af6387b4d3e8480b22"
+  },
+  "playbooks/universal/git-conventions/commits.md": {
+    "bytes": 309,
+    "sha256": "9e0d7ffdcd32ddfc1962a2051b3ff4c8eeadfbc1dfdfba2b651759f966d069ca"
+  },
+  "playbooks/universal/git-conventions/workflow.md": {
+    "bytes": 288,
+    "sha256": "22477052a8e1b3b1dbdbe5956981d14cbe59f3f3a1f8bd4ec75ec87ba35863e4"
   },
   "playbooks/universal/observability.md": {
     "bytes": 1505,
@@ -287,9 +315,17 @@
     "bytes": 2362,
     "sha256": "75e151f515874bc6445432a26f3aa095f843288bbde1655ea8cb12d75cae2f2e"
   },
-  "playbooks/universal/typescript.md": {
-    "bytes": 6252,
-    "sha256": "5e308b9fed7ad7e6f30a5c1fe566e971f5f71774419daa5f0c29cfea3f5758ab"
+  "playbooks/universal/typescript/boundaries.md": {
+    "bytes": 622,
+    "sha256": "eb75a7cdbb12da7cceb80be36e920bef6461e36d32aa26898c8735f326b504a6"
+  },
+  "playbooks/universal/typescript/errors.md": {
+    "bytes": 242,
+    "sha256": "0bd81830df57c8b5273bcc26ea478b03351d8f6435d56455c857df1d314b6bf5"
+  },
+  "playbooks/universal/typescript/patterns.md": {
+    "bytes": 439,
+    "sha256": "d673ab7474fba3b0d2da8749e17565f79a5e3252c9c1e0141a4a7d665f118b4f"
   },
   "PROGRESS.md": {
     "bytes": 270,
@@ -332,8 +368,8 @@
     "sha256": "ffe1d556b4253ed9befed2d9c4e43fe5e71d49935b037763280d45814ecdad51"
   },
   "RULES.md": {
-    "bytes": 4521,
-    "sha256": "1dadeda0e4865fc162e90bfad0696bb9369c4f481bf04397579d8630bc0da7e1"
+    "bytes": 4752,
+    "sha256": "dbfd60633db8c3fcdfec4ef02bd1099d58040162d4511652d15c17f69a56ed69"
   },
   "storage/framework/cache/.gitignore": {
     "bytes": 14,

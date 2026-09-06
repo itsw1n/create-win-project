@@ -170,6 +170,113 @@ describe('runnable project contract', () => {
   })
 
   it.each([
+    ['no-frontend', 'api', 'medium'],
+    ['react', 'separate', 'small'],
+  ])('generates a FastAPI service for %s (%s)', async (frontend, applicationShape, architecture) => {
+    const destination = await generate({
+      frontend,
+      backend: 'fastapi',
+      applicationShape,
+      architecture,
+      styling: frontend === 'react' ? 'tailwind' : undefined,
+      githubActions: false,
+      projectName: `fastapi-${frontend}`,
+    })
+    const apiRoot = frontend === 'no-frontend' ? destination : path.join(destination, 'backend')
+    const pyproject = await fs.readFile(path.join(apiRoot, 'pyproject.toml'), 'utf8')
+    expect(pyproject).toContain('fastapi==0.141.1')
+    expect(pyproject).toContain('sqlalchemy==2.0.52')
+    expect(await fs.pathExists(path.join(apiRoot, 'README.md'))).toBe(true)
+    expect(await fs.pathExists(path.join(apiRoot, 'app/main.py'))).toBe(true)
+    expect(await fs.pathExists(path.join(apiRoot, 'alembic/env.py'))).toBe(true)
+    expect(await fs.pathExists(path.join(apiRoot, 'tests/test_health.py'))).toBe(true)
+    expect(await fs.readFile(path.join(apiRoot, '.python-version'), 'utf8')).toBe('3.14.7\n')
+    expect(await fs.readFile(path.join(destination, 'docs/guides/toolchain.md'), 'utf8')).toContain('uv')
+    const profile = await fs.readJson(path.join(destination, 'create-win-project.profile.json'))
+    expect(profile.applicationShape).toBe(applicationShape)
+  })
+
+  it.each([
+    ['none', 'public'],
+    ['not-yet', 'undecided'],
+    ['yes', 'oidc'],
+  ])('generates honest FastAPI authentication for %s', async (authentication, model) => {
+    const destination = await generate({
+      frontend: 'react', backend: 'fastapi', applicationShape: 'separate', architecture: 'medium',
+      authentication, authAudience: 'website', styling: 'tailwind', githubActions: false,
+      projectName: `fastapi-auth-${authentication}`,
+    })
+    const security = await fs.readFile(path.join(destination, 'backend/app/core/security.py'), 'utf8')
+    expect(security.includes('PyJWKClient')).toBe(authentication === 'yes')
+    expect(security.includes('403')).toBe(authentication === 'not-yet')
+    const tests = await fs.readFile(path.join(destination, 'backend/tests/test_security.py'), 'utf8')
+    expect(tests.includes('401')).toBe(authentication === 'yes')
+    const profile = await fs.readJson(path.join(destination, 'create-win-project.profile.json'))
+    expect(profile.authentication.model).toBe(model)
+  })
+
+  it('generates backend-only Docker services for React Native with FastAPI', async () => {
+    const destination = await generate({
+      frontend: 'react-native', backend: 'fastapi', applicationShape: 'mobile', architecture: 'small',
+      authentication: 'not-yet', authAudience: 'multi-client', docker: true, makefile: false,
+      githubActions: false, projectName: 'mobile-fastapi-docker',
+    })
+    const compose = await fs.readFile(path.join(destination, 'docker-compose.yml'), 'utf8')
+
+    expect(compose).toContain('  backend:')
+    expect(compose).toContain('  db:')
+    expect(compose).not.toContain('  frontend:')
+    expect(compose).toContain('postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}')
+    expect(await fs.pathExists(path.join(destination, 'backend/Dockerfile.dev'))).toBe(true)
+    const dockerfile = await fs.readFile(path.join(destination, 'backend/Dockerfile.dev'), 'utf8')
+    expect(dockerfile).toContain('uv sync --frozen --no-install-project')
+    expect(dockerfile.indexOf('COPY . .')).toBeLessThan(dockerfile.lastIndexOf('uv sync --frozen'))
+  })
+
+  it('generates FastAPI CI in the correct application directory', async () => {
+    const destination = await generate({
+      frontend: 'react', backend: 'fastapi', applicationShape: 'separate', architecture: 'medium',
+      authentication: 'none', docker: false, makefile: false, githubActions: true,
+      projectName: 'fastapi-ci-api',
+    })
+    const workflow = await fs.readFile(path.join(destination, '.github/workflows/ci-backend.yml'), 'utf8')
+    expect(workflow).toContain('working-directory: backend')
+    expect(workflow).toContain('python-version: "3.14.7"')
+    expect(workflow).toContain('uv sync --frozen')
+    expect(workflow).toContain('postgresql+asyncpg://postgres:postgres@127.0.0.1:5432/app_test')
+    expect(workflow).toContain('uv run alembic upgrade head')
+    expect(workflow).toContain('uv run pytest')
+
+    const apiOnly = await generate({
+      frontend: 'no-frontend', backend: 'fastapi', applicationShape: 'api', architecture: 'medium',
+      authentication: 'none', docker: false, makefile: false, githubActions: true,
+      projectName: 'fastapi-ci-root',
+    })
+    const rootWorkflow = await fs.readFile(path.join(apiOnly, '.github/workflows/ci-backend.yml'), 'utf8')
+    expect(rootWorkflow).toContain('working-directory: .')
+    expect(rootWorkflow).toContain("      - '**'")
+    expect(rootWorkflow).not.toContain('      - **\n')
+  })
+
+  it('generates stack-aware security CI for successful projects', async () => {
+    const web = await generate({ frontend: 'nextjs', backend: 'springboot', packageName: 'com.example', projectName: 'secure-web' })
+    const webSecurity = await fs.readFile(path.join(web, '.github/workflows/security.yml'), 'utf8')
+    expect(webSecurity).toContain('npm audit --audit-level=high')
+    expect(webSecurity).toContain('languages: javascript-typescript,java-kotlin')
+    expect(webSecurity).toContain('dependency-review-action@2031cfc')
+    expect(webSecurity).toContain('trufflehog@466da5b')
+
+    const laravel = await generate({
+      frontend: 'no-frontend', backend: 'laravel', applicationShape: 'api',
+      githubActions: true, projectName: 'secure-laravel',
+    })
+    const laravelSecurity = await fs.readFile(path.join(laravel, '.github/workflows/security.yml'), 'utf8')
+    expect(laravelSecurity).toContain('composer audit --locked')
+    expect(laravelSecurity).not.toContain('npm audit')
+    expect(laravelSecurity).not.toContain('github/codeql-action/init')
+  })
+
+  it.each([
     ['nextjs', 'none', 'tailwind'],
     ['nextjs', 'supabase', 'tailwind'],
     ['nextjs', 'springboot', 'css-modules'],
@@ -211,13 +318,15 @@ describe('runnable project contract', () => {
     }
     expect(await fs.pathExists(path.join(destination, 'AGENTS.md'))).toBe(true)
     const profile = await fs.readJson(path.join(destination, 'create-win-project.profile.json'))
-    expect(profile.schemaVersion).toBe(3)
+    expect(profile.schemaVersion).toBe(2)
     expect(profile.compatibilityProfile.id).toBe('2026.09')
     expect(profile.architectureProfile).toBe('medium')
     expect(profile.authentication).toEqual({
       intent: 'not-yet', model: 'undecided', audience: 'website',
     })
     expect(profile.stack).toBe(`${frontend}-${backend}`)
+    expect(profile.productionBaseline.tests).toBe(true)
+    expect(profile.capabilities).toEqual({ uploads: 'none', backgroundJobs: 'none', offline: 'none' })
     expect(await fs.readFile(path.join(destination, 'RULES.md'), 'utf8')).not.toMatch(/section not found|MISSING/)
     if (frontend === 'nextjs') expect(await fs.pathExists(path.join(destination, 'src/app/page.tsx'))).toBe(true)
     if (frontend === 'react') expect(await fs.pathExists(path.join(destination, 'frontend/src/main.tsx'))).toBe(true)
@@ -232,13 +341,39 @@ describe('runnable project contract', () => {
     }
   })
 
-  it('makes the testing choice real', async () => {
-    const destination = await generate({ testing: 'none', projectName: 'without-tests' })
-    const packageJson = await fs.readJson(path.join(destination, 'package.json'))
-    expect(packageJson.scripts.test).toBeUndefined()
-    expect(packageJson.devDependencies.vitest).toBeUndefined()
-    expect(await fs.pathExists(path.join(destination, 'src/app/page.test.tsx'))).toBe(false)
-    expect(await fs.readFile(path.join(destination, '.github/workflows/ci-frontend.yml'), 'utf8')).not.toContain('npm run test')
+  it('rejects unsupported production-ready without tests paths', async () => {
+    await expect(generate({ testing: 'none', projectName: 'without-tests' })).rejects.toThrow('Unknown testing setup')
+  })
+
+  it('rejects unsupported capabilities before creating a destination', async () => {
+    await expect(generate({ frontend: 'nextjs', backend: 'none', uploads: 'object-storage', projectName: 'bad-uploads' }))
+      .rejects.toThrow('Object storage uploads require')
+    await expect(generate({ frontend: 'nextjs', backend: 'supabase', offline: 'sync', projectName: 'bad-offline' }))
+      .rejects.toThrow('only for mobile')
+    await expect(generate({ frontend: 'react-native', backend: 'supabase', backgroundJobs: 'queue', projectName: 'bad-queue' }))
+      .rejects.toThrow('Queues require')
+  })
+
+  it('generates only explicitly selected supported capability packs', async () => {
+    const destination = await generate({
+      frontend: 'nextjs', backend: 'laravel', applicationShape: 'separate',
+      uploads: 'object-storage', backgroundJobs: 'queue', projectName: 'capability-packs',
+    })
+    const upload = await fs.readJson(path.join(destination, 'config/capabilities/uploads.json'))
+    const queue = await fs.readJson(path.join(destination, 'config/capabilities/queue.json'))
+    expect(upload).toMatchObject({ visibility: 'private', quarantineBeforeUse: true, malwareScanRequired: true })
+    expect(queue).toMatchObject({ adapter: 'laravel-queue', idempotencyRequired: true, failedJobStore: true })
+    expect(await fs.pathExists(path.join(destination, 'config/capabilities/offline.json'))).toBe(false)
+  })
+
+  it('generates an EAS-ready mobile production contract', async () => {
+    const destination = await generate({ frontend: 'react-native', backend: 'supabase', offline: 'cache', projectName: 'mobile-production' })
+    const eas = await fs.readJson(path.join(destination, 'eas.json'))
+    const app = await fs.readJson(path.join(destination, 'app.json'))
+    expect(Object.keys(eas.build)).toEqual(['development', 'preview', 'production'])
+    expect(app.expo.runtimeVersion).toEqual({ policy: 'appVersion' })
+    expect(await fs.readFile(path.join(destination, 'lib/deep-links.ts'), 'utf8')).toContain('allowedRoutes')
+    expect(await fs.readJson(path.join(destination, 'config/capabilities/offline.json'))).toMatchObject({ mode: 'cache', owner: 'mobile-client' })
   })
 
   it('honors the Makefile option for a frontend-only project', async () => {
@@ -247,17 +382,28 @@ describe('runnable project contract', () => {
     expect(makefile).toContain('npm --prefix $(NPM_DIR) run check')
   })
 
-  it('removes Spring test fixtures and CI steps when testing is none', async () => {
+  it('generates production artifacts when development Docker is disabled', async () => {
+    const next = await generate({ backend: 'none', docker: false, projectName: 'next-production' })
+    expect(await fs.pathExists(path.join(next, 'Dockerfile'))).toBe(true)
+    expect(await fs.pathExists(path.join(next, 'Dockerfile.dev'))).toBe(false)
+    const spring = await generate({ frontend: 'react', backend: 'springboot', packageName: 'com.example', docker: false, projectName: 'spring-production' })
+    expect(await fs.pathExists(path.join(spring, 'frontend/Dockerfile'))).toBe(true)
+    expect(await fs.pathExists(path.join(spring, 'backend/Dockerfile'))).toBe(true)
+    expect(await fs.pathExists(path.join(spring, 'docker-compose.prod.yml'))).toBe(true)
+    expect(await fs.pathExists(path.join(spring, 'docker-compose.yml'))).toBe(false)
+  })
+
+  it('keeps Spring test fixtures and CI in the production baseline', async () => {
     const destination = await generate({
-      frontend: 'react', backend: 'springboot', styling: 'css-modules', testing: 'none',
+      frontend: 'react', backend: 'springboot', styling: 'css-modules', testing: 'full',
       packageName: 'com.example', projectName: 'spring-without-tests',
     })
     const pom = await fs.readFile(path.join(destination, 'backend/pom.xml'), 'utf8')
     const workflow = await fs.readFile(path.join(destination, '.github/workflows/ci-backend.yml'), 'utf8')
-    expect(await fs.pathExists(path.join(destination, 'backend/src/test/resources/application.yml'))).toBe(false)
-    expect(pom).not.toContain('spring-boot-starter-webmvc-test')
-    expect(pom).not.toContain('spring-security-test')
-    expect(workflow).not.toContain('mvn --batch-mode test')
+    expect(await fs.pathExists(path.join(destination, 'backend/src/test/java/com/example/health/HealthControllerTest.java'))).toBe(true)
+    expect(pom).toContain('spring-boot-starter-webmvc-test')
+    expect(pom).toContain('spring-security-test')
+    expect(workflow).toContain('./mvnw --batch-mode test')
   })
 
   it('generates current Supabase SSR session plumbing for Next.js', async () => {
@@ -357,7 +503,7 @@ describe('runnable project contract', () => {
     try {
       await expect(generateProject({
         projectName: 'occupied', projectDescription: 'Must remain safe', frontend: 'nextjs',
-        backend: 'supabase', styling: 'tailwind', testing: 'none',
+        backend: 'supabase', styling: 'tailwind', testing: 'full',
       }, root)).rejects.toThrow(/already exists/)
     } finally {
       process.chdir(previous)

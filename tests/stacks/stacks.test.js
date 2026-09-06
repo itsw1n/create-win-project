@@ -137,7 +137,7 @@ describe('registered stack capabilities', () => {
     const native = stackRegistry.require('react-native')
     const context = { backend: { id: 'springboot' } }
 
-    expect(native.compatibleWith.backend).toEqual(['none', 'supabase', 'springboot', 'laravel'])
+    expect(native.compatibleWith.backend).toEqual(['none', 'supabase', 'springboot', 'laravel', 'fastapi'])
     expect(native.capabilities.applicationShapes).toEqual(['mobile'])
     expect(native.capabilities.architectureProfiles).toEqual(['small', 'medium', 'large'])
     expect(native.contributes.environment(context)).toEqual(['API_URL'])
@@ -152,7 +152,7 @@ describe('registered stack capabilities', () => {
     const react = stackRegistry.require('react')
     const context = { backend: { id: 'springboot' } }
 
-    expect(react.compatibleWith.backend).toEqual(['none', 'supabase', 'springboot', 'laravel'])
+    expect(react.compatibleWith.backend).toEqual(['none', 'supabase', 'springboot', 'laravel', 'fastapi'])
     expect(react.capabilities.applicationShapes).toEqual(['separate', 'frontend'])
     expect(react.capabilities.architectureProfiles).toEqual(['small', 'medium', 'large'])
     expect(react.contributes.environment(context)).toEqual(['API_URL'])
@@ -170,7 +170,7 @@ describe('registered stack capabilities', () => {
 
     expect(nextjs.kind).toBe('frontend')
     expect(nextjs.compatibleWith.backend).toEqual([
-      'none', 'postgres', 'supabase', 'springboot', 'laravel',
+      'none', 'postgres', 'supabase', 'springboot', 'laravel', 'fastapi',
     ])
     expect(nextjs.capabilities.applicationShapes).toEqual(['fullstack', 'separate'])
     expect(nextjs.capabilities.architectureProfiles).toEqual(['small', 'medium', 'large'])

@@ -1,6 +1,6 @@
 # Contributing
 
-See `docs/ARCHITECTURE.md` for completed source ownership and `docs/DEPENDENCY_MAINTENANCE.md` for profile promotion. This file is the workflow, not the design.
+See `docs/maintainers/architecture.md` for source ownership and `docs/maintainers/dependencies.md` for profile promotion. This file is the workflow, not the design.
 
 ## Quick start
 
@@ -60,7 +60,7 @@ If a new stack needs a runtime (`node`, `java`, `php`), add its version to `libr
   - `deps`/`devDeps` are **names only** — never versions or ranges. Exact versions live only in `library/tested-versions.json`.
   - `env` are semantic names (`DATABASE_URL`); `clientEnv` subset gets the frontend prefix (`NEXT_PUBLIC_`, `VITE_`, `EXPO_PUBLIC_`).
 
-- Add `playbooks/stack/<id>/{architecture,structure,runtime,security,testing}.md` — the five facets. Keep each file focused; route concerns via definition `concerns[]`, not duplication. Check `docs/CONTENT_MODEL.md` — every concern section must match a Markdown heading (numbered headings normalized).
+- Add `playbooks/stack/<id>/{architecture,structure,runtime,security,testing}.md` — the five facets. Keep each file focused; route concerns via definition `concerns[]`, not duplication. Check `docs/maintainers/content-model.md` — every concern section must match a Markdown heading (numbered headings normalized).
 
 - Run: `node checks/check-library.js` — catches duplicate ids, unknown dep names, `clientEnv` not in `env`, missing labels, heading mismatches.
 
@@ -124,15 +124,15 @@ npm run verify:generated -- --profile=$(jq -r .defaultProfile library/tested-ver
 
 - `verify:generated` compares byte-identical output via `generateProject` vs legacy shim for your new stack.
 - Run `npm run matrix:smoke` (10 smoke projects) before any `feature -> dev` PR.
-- Full matrix `npm run matrix:full` (every profile x stack x arch x auth, with install/build/Maven/Expo/Compose checks) is only required on `dev -> main` promotion per `docs/CI_STRATEGY.md`.
+- Full matrix `npm run matrix:full` (every profile x stack x arch x auth, with install/build/Maven/Expo/Compose checks) is only required on `dev -> main` promotion per `docs/maintainers/ci-strategy.md`.
 
 ### 6. Docs (only if ownership changed)
 
-Update `docs/ARCHITECTURE.md` only if source ownership or the generation pipeline changed — not for every stack. If you added concerns/playbooks, verify `docs/CONTENT_MODEL.md` checklist (concern has one home, `RULES.md` sections resolve).
+Update `docs/maintainers/architecture.md` only if source ownership or the generation pipeline changed — not for every stack. If you added concerns/playbooks, verify `docs/maintainers/content-model.md` checklist (concern has one home, `RULES.md` sections resolve).
 
 ## Testing and PRs
 
-- Required checks per `docs/CI_STRATEGY.md`:
+- Required checks per `docs/maintainers/ci-strategy.md`:
   - `feature -> dev`: `quality` + `compatibility-gate` (repository tests + 10 smoke projects)
   - `dev -> main`: `quality` + `compatibility-gate` (every profile x stack x arch x applicable auth)
 
@@ -142,7 +142,7 @@ Update `docs/ARCHITECTURE.md` only if source ownership or the generation pipelin
 
 ## Version ownership
 
-Exact versions belong only to `library/tested-versions.json`. Never add a version to a `definition.json` or a `create-files.js`. `packageVersion(profile, name, capability)` and `composerPackageVersion(profile, name)` are the only version sources; they reject ranges and unknown package requests. See `docs/DEPENDENCY_MAINTENANCE.md` for current/previous profile promotion and Renovate flow.
+Exact versions belong only to `library/tested-versions.json`. Never add a version to a `definition.json` or a `create-files.js`. `packageVersion(profile, name, capability)` and `composerPackageVersion(profile, name)` are the only version sources; they reject ranges and unknown package requests. See `docs/maintainers/dependencies.md` for current/previous profile promotion and Renovate flow.
 
 ## Docs workflow
 
@@ -151,4 +151,4 @@ Exact versions belong only to `library/tested-versions.json`. Never add a versio
 - `playbooks/` — reusable standards; add the five facets per stack (`architecture.md`, `structure.md`, `runtime.md`, `security.md`, `testing.md`).
 - `docs/guides/` inside generated projects — architecture, API, setup, deployment for *this* product.
 
-Do not advertise a capability solely because a playbook mentions it. A generated capability must have executable configuration and contract coverage. For questions, read `docs/ARCHITECTURE.md` first, then this file.
+Do not advertise a capability solely because a playbook mentions it. A generated capability must have executable configuration and contract coverage. For questions, read `docs/maintainers/architecture.md` first, then this file.

@@ -6,6 +6,7 @@ function option(args, name) {
 }
 
 export function parseArguments(args) {
+  const upgradeReportIndex = args.indexOf('upgrade-report')
   const profile = option(args, 'profile')
   const shape = option(args, 'shape')
   const frontendValue = option(args, 'frontend')
@@ -16,6 +17,9 @@ export function parseArguments(args) {
   const authentication = option(args, 'authentication')
   const authAudience = option(args, 'auth-audience')
   const laravelUi = option(args, 'laravel-ui')
+  const uploads = option(args, 'uploads')
+  const backgroundJobs = option(args, 'background-jobs')
+  const offline = option(args, 'offline')
   const install = args.includes('--install')
   const noInstall = args.includes('--no-install')
 
@@ -34,6 +38,9 @@ export function parseArguments(args) {
   if (laravelUi && !laravelUis.some((ui) => ui.id === laravelUi)) {
     throw new Error('--laravel-ui must be blade, livewire, or inertia-react')
   }
+  if (uploads && !['none', 'object-storage'].includes(uploads)) throw new Error('--uploads must be none or object-storage')
+  if (backgroundJobs && !['none', 'queue'].includes(backgroundJobs)) throw new Error('--background-jobs must be none or queue')
+  if (offline && !['none', 'cache', 'sync'].includes(offline)) throw new Error('--offline must be none, cache, or sync')
   if (install && noInstall) throw new Error('Use either --install or --no-install, not both')
 
   return Object.freeze({
@@ -45,8 +52,12 @@ export function parseArguments(args) {
     authentication,
     authAudience,
     laravelUi,
+    uploads,
+    backgroundJobs,
+    offline,
     install,
     noInstall,
     doctor: args[0] === 'doctor' || args.includes('--doctor'),
+    upgradeReportPath: upgradeReportIndex >= 0 ? (args[upgradeReportIndex + 1] || '.') : undefined,
   })
 }

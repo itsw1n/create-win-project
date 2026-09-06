@@ -3,7 +3,7 @@
 // Static helpers only — no stack identity checks. Stack-specific files are
 // now template-driven via templates/ and readTemplate().
 
-export function contextMd(vars, expectedConcerns) {
+export function contextMd(vars, expectedConcerns, capabilities = {}) {
   const concernsBlock = (expectedConcerns && expectedConcerns.length)
     ? expectedConcerns.map((c) => `- ${c}`).join('\n')
     : '- (none selected — all optional concerns remain available)'
@@ -22,6 +22,15 @@ export function contextMd(vars, expectedConcerns) {
 
 ## Key Decisions
 <!-- Architecture and tech decisions made during the project -->
+
+- Production baseline: generated default; deviations require approval.
+- Uploads: ${capabilities.uploads || 'none'}
+- Background jobs: ${capabilities.backgroundJobs || 'none'}
+- Offline: ${capabilities.offline || 'none'}
+
+## Approved Deviations
+<!-- Record date, approver, rationale, affected files, and recovery path. -->
+- (none)
 
 ## Out of Scope
 <!-- What this project explicitly does NOT do -->

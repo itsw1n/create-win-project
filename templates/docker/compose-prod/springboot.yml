@@ -16,6 +16,11 @@ services:
     networks:
       - app-network
     restart: always
+    read_only: true
+    tmpfs: [/tmp]
+    deploy:
+      resources:
+        limits: { cpus: "1.0", memory: 512M }
 
   backend:
     container_name: {{PROJECT_NAME}}-backend-prod
@@ -35,7 +40,17 @@ services:
         condition: service_healthy
     networks:
       - app-network
+      - data-network
     restart: always
+    stop_grace_period: 30s
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/api/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    deploy:
+      resources:
+        limits: { cpus: "1.0", memory: 768M }
 
   db:
     container_name: {{PROJECT_NAME}}-db-prod
@@ -47,7 +62,7 @@ services:
     volumes:
       - postgres-data-prod:/var/lib/postgresql/data
     networks:
-      - app-network
+      - data-network
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
@@ -62,3 +77,6 @@ volumes:
 networks:
   app-network:
     name: {{PROJECT_NAME}}-network-prod
+  data-network:
+    name: {{PROJECT_NAME}}-data-network-prod
+    internal: true

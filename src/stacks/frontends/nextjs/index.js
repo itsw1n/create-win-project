@@ -16,7 +16,7 @@ export const nextjsAdapter = defineStackAdapter({
   kind: 'frontend',
   label: 'Next.js',
   compatibleWith: {
-    backend: ['none', 'postgres', 'supabase', 'springboot', 'laravel'],
+    backend: ['none', 'postgres', 'supabase', 'springboot', 'laravel', 'fastapi'],
   },
   capabilities: {
     applicationShapes: ['fullstack', 'separate'],

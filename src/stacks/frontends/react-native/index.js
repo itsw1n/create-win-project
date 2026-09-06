@@ -7,7 +7,7 @@ export const reactNativeAdapter = defineStackAdapter({
   id: 'react-native',
   kind: 'frontend',
   label: 'React Native (Expo)',
-  compatibleWith: { backend: ['none', 'supabase', 'springboot', 'laravel'] },
+  compatibleWith: { backend: ['none', 'supabase', 'springboot', 'laravel', 'fastapi'] },
   capabilities: {
     applicationShapes: ['mobile'],
     architectureProfiles: ['small', 'medium', 'large'],

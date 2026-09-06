@@ -15,6 +15,10 @@
     "bytes": 585,
     "sha256": "07265f1cb8102de68379dd6de731cd4e5c975e6439b2252c8605e3adc90922e2"
   },
+  ".github/workflows/security.yml": {
+    "bytes": 1689,
+    "sha256": "9037568326f0009cbaae8c13a5e3761a3160dc4bd1988e9384ffcf23caef0778"
+  },
   ".gitignore": {
     "bytes": 335,
     "sha256": "2c866acae818e220b1eeac946bbf8381c2348590d522bbeab00dcfdf367779a3"
@@ -32,8 +36,8 @@
     "sha256": "80a265752b65a489bca52d72780a015416322cdaadff944627d8f0fa8828c7aa"
   },
   "AGENTS.md": {
-    "bytes": 2300,
-    "sha256": "d13d2b244505439190b17703012923c8ea482dc889cef1f5a5638d6bb557598d"
+    "bytes": 2611,
+    "sha256": "c63dc4efbc89b744b01045aff82042be0c0820cbcb83960673562c5e76a3381d"
   },
   "app/_layout.tsx": {
     "bytes": 315,
@@ -52,16 +56,16 @@
     "sha256": "06d7f4d5da1bc4b1d055463ba30d8fbe215d559c107bac47c8bd0b3495690a78"
   },
   "app.json": {
-    "bytes": 372,
-    "sha256": "b8c92356e1cd985782fc679ccf44aa3644c9e7dbb8b4ccd86b6f5e6176244491"
+    "bytes": 529,
+    "sha256": "1fd06521fd0df635253336337d6aa78e78a67062feb5a694a1c6827b99288cda"
   },
   "CONTEXT.md": {
-    "bytes": 590,
-    "sha256": "368a8b2c17e6108f4cf2347f845f254ff173ec9908a13f54669e638710a05c91"
+    "bytes": 829,
+    "sha256": "dcf61b3dff9f18128c140a91dd01fccb64338c8f66cf30dd1273a7110dfa44ec"
   },
   "create-win-project.profile.json": {
-    "bytes": 558,
-    "sha256": "63902f5b85de91acafc7fd4ce25f659eb7e16a282cc3a4f7cc82cbf5806a8854"
+    "bytes": 906,
+    "sha256": "34864076496cd4827d7e5223d2ef5bf51c36d7b8c567e91614fa11ef890a91c2"
   },
   "docs/api/endpoints.md": {
     "bytes": 84,
@@ -88,8 +92,8 @@
     "sha256": "2b031dc51f39073b934bce621e0a0a47683ff1b28deef1b105a2432b6e9b95bc"
   },
   "docs/guides/deployment.md": {
-    "bytes": 78,
-    "sha256": "1d6157e9b7f51c8e9009baf3dc751c4c2a52fd25aece286ef768ecec0477294d"
+    "bytes": 997,
+    "sha256": "1be746fd1cab6ac2b40e392cd409a1cf17182def17cf68a12a0a3e7b187d482f"
   },
   "docs/guides/development-environments.md": {
     "bytes": 1052,
@@ -99,6 +103,10 @@
     "bytes": 498,
     "sha256": "c6228c76b6dfeb19ac578ca66e6a3df5c4bc1c9e5a9c6edc6cbafcfdad6b54f0"
   },
+  "docs/guides/operations.md": {
+    "bytes": 846,
+    "sha256": "1edcf2b3e0124bb0247dd8579602a952a64e380d7b5f8213949a64f9dee505ff"
+  },
   "docs/guides/setup.md": {
     "bytes": 539,
     "sha256": "e7b466906eb06067bb9704545d17f68ce8d29134805c5997d752210137ebe2a7"
@@ -106,6 +114,14 @@
   "docs/guides/toolchain.md": {
     "bytes": 1183,
     "sha256": "d9b5de65da858a2c3bf46ca8062359e8bb7b5dc86419c1f1625663738c9fbfde"
+  },
+  "docs/mobile/production.md": {
+    "bytes": 691,
+    "sha256": "2a290d2ce1c51091dcb08570a28772dc9174430ab235177ec0ebab1a12a13260"
+  },
+  "eas.json": {
+    "bytes": 434,
+    "sha256": "905ea9c88a41dbac941c0bd3721f25ac7eb1f670e0ef7abe2076debae7e4f554"
   },
   "expo-env.d.ts": {
     "bytes": 37,
@@ -127,6 +143,10 @@
     "bytes": 39,
     "sha256": "d412e753779d88d8391de8fbdd51204693b8710f45351d56e7955e0dc0f4453b"
   },
+  "lib/deep-links.ts": {
+    "bytes": 367,
+    "sha256": "950fadea53631e4643ab8623d8ba0bd1d580771bace764e08eb38319403f9a56"
+  },
   "lib/supabase-lifecycle.test.ts": {
     "bytes": 744,
     "sha256": "12608064c8000c5032c94bf031baa93b4dbaf259d2cc69681ffc19d68a240e38"
@@ -146,6 +166,18 @@
   "playbooks/capabilities/ci/github-actions.md": {
     "bytes": 3331,
     "sha256": "07f14cd7d1c416567598f9117dc9868e4d5336e4aa7e0ac009f685b4bef0c7c2"
+  },
+  "playbooks/capabilities/devops/makefile/commands.md": {
+    "bytes": 493,
+    "sha256": "099eab4ec02b65334a6a2d3f673d77da9e57fde96dbe82e01b73107b90a8855d"
+  },
+  "playbooks/capabilities/devops/makefile/docker.md": {
+    "bytes": 379,
+    "sha256": "0b8a04a2c3ddb34b329f61c5a50c3e48e9efefaf3d258d4d36023c82f60bbffe"
+  },
+  "playbooks/capabilities/devops/makefile/validation.md": {
+    "bytes": 268,
+    "sha256": "a7761776f7cc7cce40c7ab2e7ddf48651f4f5d42fc6d4e989004f44cf627b9b2"
   },
   "playbooks/capabilities/supabase/architecture.md": {
     "bytes": 311,
@@ -179,17 +211,13 @@
     "bytes": 4164,
     "sha256": "96c9186198601490d93602a406d551b6861e854c0510a476bacaf1a91d4af85a"
   },
-  "playbooks/concerns/zod.md": {
-    "bytes": 5071,
-    "sha256": "9e2592ce64f516067bdddc5b7f65de45af564aa6cfd50cfc05a293887da6c1a2"
+  "playbooks/concerns/zod/validation.md": {
+    "bytes": 1109,
+    "sha256": "4cb0c30b8bd24e3b725e5d99c121b39733aa52d98255c9ec2e7ab75896b0ed83"
   },
   "playbooks/concerns/zustand.md": {
     "bytes": 2254,
     "sha256": "4f06b463191614f0733207a9762a58b2cecd64bff2415e55802733e37bae933b"
-  },
-  "playbooks/devops/makefile.md": {
-    "bytes": 16050,
-    "sha256": "e9e65435f977c86a8ccc39fed56344fe84f03ffe80829ee782edf8d4f12ab7b3"
   },
   "playbooks/devops/pr-template.md": {
     "bytes": 2393,
@@ -227,17 +255,29 @@
     "bytes": 2401,
     "sha256": "2f1451e99973dee2a6f20e05dd3048a09f397f987dcf20ece9dcbdd127572fad"
   },
-  "playbooks/universal/coding-rules.md": {
-    "bytes": 6170,
-    "sha256": "48b27fa839e94012015f48d834726e22da87b51421e89f9ae6bcca8898d6a3e8"
+  "playbooks/universal/coding-rules/hygiene.md": {
+    "bytes": 491,
+    "sha256": "43ab286dadf487fee04e85e4438935054d189aef3f770966d167cb8d67d16896"
+  },
+  "playbooks/universal/coding-rules/naming.md": {
+    "bytes": 585,
+    "sha256": "cfc7f0ca071fbb21792ff924f347f32be69668d477f057786d294cc973b76bea"
   },
   "playbooks/universal/error-handling.md": {
     "bytes": 1608,
     "sha256": "a1dd0f74dc6d2a1388ab989e9faf2c44fdfff230da4a605132110667ab594952"
   },
-  "playbooks/universal/git-conventions.md": {
-    "bytes": 5155,
-    "sha256": "6bc31e6c74ceaca9981ec63ed720b49df5b8cbee00f2c3e5a0dd9a271c3e76c9"
+  "playbooks/universal/git-conventions/branches.md": {
+    "bytes": 251,
+    "sha256": "2196e4a58d51216070e0853b6cf39699e61322902620e0af6387b4d3e8480b22"
+  },
+  "playbooks/universal/git-conventions/commits.md": {
+    "bytes": 309,
+    "sha256": "9e0d7ffdcd32ddfc1962a2051b3ff4c8eeadfbc1dfdfba2b651759f966d069ca"
+  },
+  "playbooks/universal/git-conventions/workflow.md": {
+    "bytes": 288,
+    "sha256": "22477052a8e1b3b1dbdbe5956981d14cbe59f3f3a1f8bd4ec75ec87ba35863e4"
   },
   "playbooks/universal/observability.md": {
     "bytes": 1505,
@@ -247,9 +287,17 @@
     "bytes": 2362,
     "sha256": "75e151f515874bc6445432a26f3aa095f843288bbde1655ea8cb12d75cae2f2e"
   },
-  "playbooks/universal/typescript.md": {
-    "bytes": 6252,
-    "sha256": "5e308b9fed7ad7e6f30a5c1fe566e971f5f71774419daa5f0c29cfea3f5758ab"
+  "playbooks/universal/typescript/boundaries.md": {
+    "bytes": 622,
+    "sha256": "eb75a7cdbb12da7cceb80be36e920bef6461e36d32aa26898c8735f326b504a6"
+  },
+  "playbooks/universal/typescript/errors.md": {
+    "bytes": 242,
+    "sha256": "0bd81830df57c8b5273bcc26ea478b03351d8f6435d56455c857df1d314b6bf5"
+  },
+  "playbooks/universal/typescript/patterns.md": {
+    "bytes": 439,
+    "sha256": "d673ab7474fba3b0d2da8749e17565f79a5e3252c9c1e0141a4a7d665f118b4f"
   },
   "PROGRESS.md": {
     "bytes": 270,
@@ -260,8 +308,8 @@
     "sha256": "803b6fae1759bdc6c80badf3c4e60cc7b4528f4eb77e544b04254a51404cc7d5"
   },
   "RULES.md": {
-    "bytes": 5076,
-    "sha256": "31c82da843ddccdfbf9a997723c63f420684c63736ae42a9d489939bacf34e27"
+    "bytes": 5307,
+    "sha256": "9620593e687f96e3bc2270241dc5e203059389afdae9c986e5bcd6a0eb58a214"
   },
   "supabase/config.toml": {
     "bytes": 232,

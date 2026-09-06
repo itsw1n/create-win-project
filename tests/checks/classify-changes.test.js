@@ -3,11 +3,15 @@ import { classifyChanges } from '../../checks/classify-changes.js'
 
 describe('compatibility change classifier', () => {
   it('skips generated checks for documentation-only changes', () => {
-    expect(classifyChanges(['README.md', 'docs/ARCHITECTURE.md'])).toEqual({ scope: 'none' })
+    expect(classifyChanges(['AGENTS.md', 'README.md', 'docs/ARCHITECTURE.md'])).toEqual({ scope: 'none' })
   })
 
   it('selects one changed stack', () => {
     expect(classifyChanges(['src/stacks/backends/laravel/generate.js'])).toEqual({ scope: 'stack', stack: 'laravel' })
+  })
+
+  it('derives template impact from the compatibility manifest', () => {
+    expect(classifyChanges(['templates/ci/expo.yml'])).toEqual({ scope: 'stack', stack: 'react-native' })
   })
 
   it('uses full coverage for shared generation and tested versions', () => {

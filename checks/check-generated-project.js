@@ -25,6 +25,10 @@ const cases = {
   'react-native-springboot': { frontend: 'react-native', backend: 'springboot', packageName: 'com.example' },
   'react-native-none': { frontend: 'react-native', backend: 'none' },
   'react-native-laravel': { frontend: 'react-native', backend: 'laravel', applicationShape: 'mobile' },
+  'react-native-fastapi': { frontend: 'react-native', backend: 'fastapi', applicationShape: 'mobile' },
+  'nextjs-fastapi': { frontend: 'nextjs', backend: 'fastapi', styling: 'tailwind' },
+  'react-fastapi': { frontend: 'react', backend: 'fastapi', styling: 'tailwind', applicationShape: 'separate' },
+  'fastapi-api': { frontend: 'no-frontend', backend: 'fastapi', applicationShape: 'api' },
   'laravel-api': { frontend: 'no-frontend', backend: 'laravel', applicationShape: 'api' },
   'laravel-blade': { frontend: 'laravel-ui', backend: 'laravel', applicationShape: 'fullstack', laravelUi: 'blade', styling: 'tailwind' },
   'laravel-livewire': { frontend: 'laravel-ui', backend: 'laravel', applicationShape: 'fullstack', laravelUi: 'livewire', styling: 'tailwind' },
@@ -32,7 +36,7 @@ const cases = {
 }
 
 if (!args.profile || !cases[args.case]) {
-  throw new Error(`Usage: npm run verify:generated -- --profile=<id> --case=<${Object.keys(cases).join('|')}> [--architecture=small|medium|large] [--authentication=yes|not-yet|none] [--auth-audience=website|multi-client]`)
+  throw new Error(`Usage: npm run verify:generated -- --profile=<id> --case=<${Object.keys(cases).join('|')}> [--architecture=small|medium|large] [--authentication=yes|not-yet|none] [--auth-audience=website|multi-client] [--native=true|false]`)
 }
 
 const architecture = args.architecture || 'medium'
@@ -67,7 +71,7 @@ try {
     authentication,
     authAudience,
     testing: selected.frontend === 'react-native' ? 'basic' : 'full',
-    docker: selected.frontend !== 'react-native' || selected.backend === 'laravel',
+    docker: selected.frontend !== 'react-native' || ['laravel', 'fastapi'].includes(selected.backend),
     makefile: false,
     githubActions: true,
     expectedConcerns: [],
@@ -80,6 +84,9 @@ try {
       metadata.authentication.intent !== authentication || metadata.authentication.audience !== authAudience) {
     throw new Error('Generated profile metadata does not match the requested matrix entry')
   }
+  if (args.native === 'false') {
+    console.log(`Generated contract verified: ${projectName}`)
+  } else {
   const packageRoot = selected.frontend === 'react' ? path.join(projectRoot, 'frontend') : projectRoot
   const publicEnv = {
     NEXT_PUBLIC_SUPABASE_URL: 'https://example.supabase.co',
@@ -94,7 +101,7 @@ try {
     POSTGRES_USER: 'postgres',
     POSTGRES_PASSWORD: 'compatibility-test',
     POSTGRES_DB: projectName.replaceAll('-', '_'),
-    DATABASE_URL: `postgresql://postgres:compatibility-test@localhost:5432/${projectName.replaceAll('-', '_')}`,
+    DATABASE_URL: `postgresql+asyncpg://postgres:compatibility-test@localhost:5432/${projectName.replaceAll('-', '_')}`,
     SPRING_PROFILES_ACTIVE: 'test',
     OIDC_ISSUER_URI: 'http://localhost:9090/realms/app',
     OIDC_AUDIENCE: 'api',
@@ -140,12 +147,29 @@ try {
     }
   }
 
+  if (selected.backend === 'fastapi') {
+    const backendRoot = selected.frontend === 'no-frontend' ? projectRoot : path.join(projectRoot, 'backend')
+    run('uv', ['sync'], backendRoot)
+    run('docker', ['compose', 'up', '-d', '--wait', 'db'], projectRoot, publicEnv)
+    try {
+      run('uv', ['run', 'ruff', 'check', '.'], backendRoot)
+      run('uv', ['run', 'ruff', 'format', '--check', '.'], backendRoot)
+      run('uv', ['run', 'mypy', '.'], backendRoot)
+      run('uv', ['run', 'pytest'], backendRoot, publicEnv)
+      run('uv', ['run', 'alembic', 'upgrade', 'head'], backendRoot, publicEnv)
+      run('uv', ['run', 'alembic', 'check'], backendRoot, publicEnv)
+    } finally {
+      run('docker', ['compose', 'down', '--volumes'], projectRoot, publicEnv)
+    }
+  }
+
   if (selected.frontend !== 'react-native') {
     run('docker', ['compose', 'config'], projectRoot, publicEnv)
     if (args.containers === 'true') {
       run('docker', ['compose', 'build'], projectRoot, publicEnv)
       if (selected.backend === 'postgres') run('docker', ['build', '-t', `${projectName}:compat`, '.'], projectRoot, publicEnv)
     }
+  }
   }
 } finally {
   process.chdir(root)

@@ -14,12 +14,16 @@ const existingStacks = [
   ['separate', 'react', 'springboot', 'web', 'tailwind', 'vite', 'springboot'],
   ['separate', 'react', 'laravel', 'web', 'tailwind', 'vite', 'laravel'],
   ['separate', 'react', 'supabase', 'web', 'tailwind', 'vite', 'supabase'],
+  ['separate', 'nextjs', 'fastapi', 'web', 'tailwind', 'nextjs', 'fastapi'],
+  ['separate', 'react', 'fastapi', 'web', 'tailwind', 'vite', 'fastapi'],
   ['api', 'no-frontend', 'springboot', 'api', null, 'none', 'springboot'],
   ['api', 'no-frontend', 'laravel', 'api', null, 'none', 'laravel'],
+  ['api', 'no-frontend', 'fastapi', 'api', null, 'none', 'fastapi'],
   ['mobile', 'react-native', 'none', 'mobile', 'native-styles', 'expo', null],
   ['mobile', 'react-native', 'supabase', 'mobile', 'native-styles', 'expo', null],
   ['mobile', 'react-native', 'springboot', 'mobile', 'native-styles', 'expo', null],
   ['mobile', 'react-native', 'laravel', 'mobile', 'native-styles', 'expo', null],
+  ['mobile', 'react-native', 'fastapi', 'mobile', 'native-styles', 'expo', null],
   ['frontend', 'react', 'none', 'web', 'tailwind', 'vite', 'frontend'],
 ]
 

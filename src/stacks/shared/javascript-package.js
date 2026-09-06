@@ -13,6 +13,12 @@ export function composerPackageVersion(profile, name, owner = name) {
   return resolved
 }
 
+export function pythonPackageVersion(profile, name, owner = name) {
+  const resolved = profile.pythonPackages?.[name]
+  if (!resolved) throw new Error(`${owner} requires ${name} in compatibility profile ${profile.id}`)
+  return resolved
+}
+
 export function json(value) {
   return `${JSON.stringify(value, null, 2)}\n`
 }

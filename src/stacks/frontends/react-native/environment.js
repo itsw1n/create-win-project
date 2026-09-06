@@ -2,6 +2,6 @@ import { partitionEnvironment, renderEnvironment } from '../../shared/environmen
 
 export function buildEnvironmentFiles(answers, stack) {
   const { publicNames, serverNames } = partitionEnvironment(stack)
-  const names = stack.backendKey === 'springboot' ? [...publicNames, ...serverNames] : publicNames
+  const names = ['springboot', 'fastapi'].includes(stack.backendKey) ? [...publicNames, ...serverNames] : publicNames
   return { '.env.example': renderEnvironment(names, answers) }
 }

@@ -1,11 +1,15 @@
 export const environmentHeader = '# Copy to .env or .env.local. Never commit real credentials.\n\n'
 
 export function environmentLine(name, answers) {
+  const isFastApi = answers.backend === 'fastapi'
+  const apiPort = isFastApi ? '8000' : '8080'
   const defaults = {
-    NEXT_PUBLIC_API_URL: 'http://localhost:8080',
-    VITE_API_URL: 'http://localhost:8080',
-    EXPO_PUBLIC_API_URL: 'http://localhost:8080',
-    DATABASE_URL: `jdbc:postgresql://localhost:5432/${answers.projectName.replaceAll('-', '_')}`,
+    NEXT_PUBLIC_API_URL: `http://localhost:${apiPort}`,
+    VITE_API_URL: `http://localhost:${apiPort}`,
+    EXPO_PUBLIC_API_URL: `http://localhost:${apiPort}`,
+    DATABASE_URL: isFastApi
+      ? `postgresql+asyncpg://localhost:5432/${answers.projectName.replaceAll('-', '_')}`
+      : `jdbc:postgresql://localhost:5432/${answers.projectName.replaceAll('-', '_')}`,
     POSTGRES_USER: 'postgres',
     POSTGRES_PASSWORD: 'change-me',
     POSTGRES_DB: answers.projectName.replaceAll('-', '_'),
@@ -13,7 +17,11 @@ export function environmentLine(name, answers) {
     SPRING_SECURITY_USER_NAME: 'developer',
     SPRING_SECURITY_USER_PASSWORD: 'change-me-before-production',
     OIDC_ISSUER_URI: 'http://localhost:9090/realms/app',
+    OIDC_ISSUER: '',
     OIDC_AUDIENCE: 'api',
+    OIDC_ALGORITHMS: 'RS256',
+    OIDC_JWKS_URL: '',
+    CORS_ALLOWED_ORIGINS: 'http://localhost:3000',
   }
   return `${name}=${defaults[name] || ''}`
 }

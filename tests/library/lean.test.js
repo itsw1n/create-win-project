@@ -19,7 +19,7 @@ describe('lean shipped playbooks', () => {
 
   it('concern files exist and are standalone', () => {
     const concerns = [
-      'zustand.md', 'tanstack-query.md', 'zod.md',
+      'zustand.md', 'tanstack-query.md', 'zod/validation.md',
       'axios.md', 't3-env.md', 'nuqs.md',
       'next-safe-action.md', 'next-themes.md',
     ]

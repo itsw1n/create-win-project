@@ -1,0 +1,14 @@
+{
+  "stacks": {
+    "nextjs": ["src/stacks/frontends/nextjs/", "library/stacks/nextjs/", "templates/agents/nextjs.", "templates/ci/nextjs."],
+    "react": ["src/stacks/frontends/react-vite/", "library/stacks/react-vite/", "templates/agents/react-vite.", "templates/ci/vite."],
+    "react-native": ["src/stacks/frontends/react-native/", "library/stacks/expo/", "templates/agents/react-native.", "templates/ci/expo."],
+    "springboot": ["src/stacks/backends/springboot/", "library/stacks/springboot/", "library/features/flyway/", "templates/ci/springboot."],
+    "fastapi": ["src/stacks/backends/fastapi/", "library/stacks/fastapi/", "library/features/sqlalchemy-alembic.md", "templates/ci/fastapi."],
+    "laravel": ["src/stacks/backends/laravel/", "library/stacks/laravel/", "library/features/laravel", "templates/ci/laravel."],
+    "supabase": ["src/stacks/backends/supabase/", "library/features/supabase/"],
+    "postgres": ["src/stacks/backends/postgres/", "library/features/postgresql/", "library/features/prisma/"],
+    "none": ["src/stacks/backends/none/"]
+  },
+  "shared": ["library/tested-versions.json", "lib/", "src/engine/", "src/stacks/shared/", "templates/docker/", "templates/gitignore/", "templates/makefile/", "checks/check-compatibility.js", "checks/check-generated-project.js"]
+}

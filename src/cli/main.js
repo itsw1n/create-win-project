@@ -26,6 +26,7 @@ import {
   startProjectSpinner,
 } from './display.js'
 import { parseArguments } from './arguments.js'
+import { createUpgradeReport } from '../engine/upgrade-report.js'
 import {
   loadCatalog, resolveStack,
 } from '../engine/load-library.js'
@@ -50,8 +51,16 @@ const architectureArg = args.architecture
 const authenticationArg = args.authentication
 const authAudienceArg = args.authAudience
 const laravelUiArg = args.laravelUi
+const uploadsArg = args.uploads
+const backgroundJobsArg = args.backgroundJobs
+const offlineArg = args.offline
 const wantsInstall = args.install
 const skipsInstall = args.noInstall
+if (args.upgradeReportPath) {
+  const report = await createUpgradeReport(args.upgradeReportPath, path.join(projectRoot, 'library/tested-versions.json'))
+  process.stdout.write(`${JSON.stringify(report, null, 2)}\n`)
+  return
+}
 const { profile } = await loadCompatibility(
   path.join(projectRoot, 'library/tested-versions.json'),
   profileArg,
@@ -85,6 +94,11 @@ answers.architecture = architectureArg || answers.architecture || 'medium'
 answers.authentication = authenticationArg || answers.authentication || 'not-yet'
 answers.authAudience = authAudienceArg || answers.authAudience || (catalog.byId[answers.frontend]?.platform === 'mobile' ? 'multi-client' : 'website')
 answers.laravelUi = laravelUiArg || answers.laravelUi || (answers.frontend === 'laravel-ui' ? 'blade' : undefined)
+answers.uploads = uploadsArg || answers.uploads || 'none'
+answers.backgroundJobs = backgroundJobsArg || answers.backgroundJobs || 'none'
+answers.offline = offlineArg || answers.offline || 'none'
+answers.testing = answers.frontend === 'react-native' ? 'basic' : 'full'
+answers.githubActions = true
 if (wantsInstall) answers.installDependencies = true
 if (skipsInstall) answers.installDependencies = false
 
@@ -156,6 +170,10 @@ try {
   if (stack.backendKey === 'laravel') {
     const laravelRoot = ['laravel-ui', 'no-frontend'].includes(stack.frontendKey) ? generatedProjectRoot : path.join(generatedProjectRoot, 'backend')
     steps.push({ command: process.platform === 'win32' ? 'composer.bat' : 'composer', args: ['install'], cwd: laravelRoot, retry: `cd ${path.relative(process.cwd(), laravelRoot)} && composer install` })
+  }
+  if (stack.backendKey === 'fastapi') {
+    const apiRoot = stack.frontendKey === 'no-frontend' ? generatedProjectRoot : path.join(generatedProjectRoot, 'backend')
+    steps.push({ command: 'uv', args: ['sync'], cwd: apiRoot, retry: `cd ${path.relative(process.cwd(), apiRoot)} && uv sync` })
   }
   const needsNpm = stack.frontendKey !== 'no-frontend' && (stack.frontendKey !== 'laravel-ui' || answers.laravelUi === 'inertia-react')
   if (needsNpm) {
