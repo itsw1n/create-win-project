@@ -84,9 +84,18 @@ function validateAnswers(answers) {
   if (typeof answers.projectDescription !== 'string' || !answers.projectDescription.trim()) {
     throw new Error('Project description is required')
   }
-  if (answers.testing && !['none', 'basic', 'full'].includes(answers.testing)) {
+  if (answers.testing && !['basic', 'full'].includes(answers.testing)) {
     throw new Error(`Unknown testing setup: ${answers.testing}`)
   }
+  const uploads = answers.uploads || 'none'
+  const jobs = answers.backgroundJobs || 'none'
+  const offline = answers.offline || 'none'
+  if (!['none', 'object-storage'].includes(uploads)) throw new Error(`Unknown uploads requirement: ${uploads}`)
+  if (!['none', 'queue'].includes(jobs)) throw new Error(`Unknown background-jobs requirement: ${jobs}`)
+  if (!['none', 'cache', 'sync'].includes(offline)) throw new Error(`Unknown offline requirement: ${offline}`)
+  if (offline !== 'none' && answers.frontend !== 'react-native') throw new Error('Offline capabilities are supported only for mobile applications')
+  if (jobs === 'queue' && !['springboot', 'laravel'].includes(answers.backend)) throw new Error('Queues require a Spring Boot or Laravel backend')
+  if (uploads === 'object-storage' && answers.backend === 'none') throw new Error('Object storage uploads require a backend or managed data service')
   if (answers.architecture && !['small', 'medium', 'large'].includes(answers.architecture)) {
     throw new Error(`Unknown architecture profile: ${answers.architecture}`)
   }

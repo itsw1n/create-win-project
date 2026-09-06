@@ -134,18 +134,19 @@ export function buildQuestions({ args, catalog }) {
         (args.authentication || answers.authentication) === 'yes' && !args.authAudience,
     },
     {
-      type: 'list', name: 'testing', message: 'Testing setup?',
-      choices: (answers) => catalog.byId[answers.frontend]?.platform === 'mobile'
-        ? [
-            { name: 'Basic  (Jest + React Native Testing Library)', value: 'basic' },
-            { name: 'None', value: 'none' },
-          ]
-        : [
-            { name: 'Full   (Vitest + React Testing Library + Playwright)', value: 'full' },
-            { name: 'Basic  (Vitest + React Testing Library)', value: 'basic' },
-            { name: 'None', value: 'none' },
-          ],
-      default: (answers) => catalog.byId[answers.frontend]?.platform === 'mobile' ? 'basic' : 'full',
+      type: 'list', name: 'uploads', message: 'User-provided file uploads',
+      choices: [{ name: 'None', value: 'none' }, { name: 'Private object storage', value: 'object-storage' }],
+      default: 'none', when: () => !args.uploads,
+    },
+    {
+      type: 'list', name: 'backgroundJobs', message: 'Background work',
+      choices: [{ name: 'None', value: 'none' }, { name: 'Durable queue', value: 'queue' }],
+      default: 'none', when: (answers) => catalog.byId[answers.frontend]?.platform !== 'mobile' && !args.backgroundJobs,
+    },
+    {
+      type: 'list', name: 'offline', message: 'Offline behavior',
+      choices: [{ name: 'None', value: 'none' }, { name: 'Local cache', value: 'cache' }, { name: 'Synchronization', value: 'sync' }],
+      default: 'none', when: (answers) => catalog.byId[answers.frontend]?.platform === 'mobile' && !args.offline,
     },
     {
       type: 'confirm', name: 'docker', message: 'Add optional Docker development files', default: false,
