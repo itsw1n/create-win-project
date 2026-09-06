@@ -104,8 +104,8 @@
     "sha256": "2650cfc40a649c709eec104babf5850c825512fc1877deee997b537d2736a6b3"
   },
   "create-win-project.profile.json": {
-    "bytes": 560,
-    "sha256": "a978ff195d63e3096c043b63aa4e2e17cab0c153bef40bddd5d0574d593509b3"
+    "bytes": 879,
+    "sha256": "d703de02c7722c728cd787965a8be2a7a3fc93bbf08729e96471bdb0d1252a3c"
   },
   "database/factories/UserFactory.php": {
     "bytes": 456,

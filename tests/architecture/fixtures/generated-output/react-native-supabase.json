@@ -60,8 +60,8 @@
     "sha256": "368a8b2c17e6108f4cf2347f845f254ff173ec9908a13f54669e638710a05c91"
   },
   "create-win-project.profile.json": {
-    "bytes": 558,
-    "sha256": "63902f5b85de91acafc7fd4ce25f659eb7e16a282cc3a4f7cc82cbf5806a8854"
+    "bytes": 861,
+    "sha256": "4fbedc0058c1c79c8873431adff83fa50227915c545bebb8afda53b3e39242dd"
   },
   "docs/api/endpoints.md": {
     "bytes": 84,
