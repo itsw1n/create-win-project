@@ -36,7 +36,7 @@ const cases = {
 }
 
 if (!args.profile || !cases[args.case]) {
-  throw new Error(`Usage: npm run verify:generated -- --profile=<id> --case=<${Object.keys(cases).join('|')}> [--architecture=small|medium|large] [--authentication=yes|not-yet|none] [--auth-audience=website|multi-client]`)
+  throw new Error(`Usage: npm run verify:generated -- --profile=<id> --case=<${Object.keys(cases).join('|')}> [--architecture=small|medium|large] [--authentication=yes|not-yet|none] [--auth-audience=website|multi-client] [--native=true|false]`)
 }
 
 const architecture = args.architecture || 'medium'
@@ -84,6 +84,9 @@ try {
       metadata.authentication.intent !== authentication || metadata.authentication.audience !== authAudience) {
     throw new Error('Generated profile metadata does not match the requested matrix entry')
   }
+  if (args.native === 'false') {
+    console.log(`Generated contract verified: ${projectName}`)
+  } else {
   const packageRoot = selected.frontend === 'react' ? path.join(projectRoot, 'frontend') : projectRoot
   const publicEnv = {
     NEXT_PUBLIC_SUPABASE_URL: 'https://example.supabase.co',
@@ -166,6 +169,7 @@ try {
       run('docker', ['compose', 'build'], projectRoot, publicEnv)
       if (selected.backend === 'postgres') run('docker', ['build', '-t', `${projectName}:compat`, '.'], projectRoot, publicEnv)
     }
+  }
   }
 } finally {
   process.chdir(root)

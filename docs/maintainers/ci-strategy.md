@@ -8,7 +8,7 @@ commits for feature branches so contribution history remains visible.
 | Pull request | Required checks | Coverage |
 |---|---|---|
 | feature → `dev` | `quality`, `compatibility-gate` | Repository tests plus 10 current-profile smoke projects |
-| `dev` → `main` | `quality`, `compatibility-gate` | Every current/previous profile, stack, architecture, and applicable auth model |
+| `dev` → `main` | `quality`, `compatibility-gate` | Every current/previous contract plus representative native and container lanes |
 
 Configure both branches to require pull requests, resolve conversations, reject force pushes and
 deletions, and require branches to be current before merging. Restrict direct pushes to `main`.
@@ -23,8 +23,10 @@ which can leave a required pull request waiting forever or accidentally encourag
 compatibility default or investigating a release candidate; choose `smoke` for a quick diagnostic.
 The pull-request base branch still determines automatic scope: `dev` gets smoke, `main` gets full.
 
-The quality suite runs once per revision. Matrix jobs only generate and verify projects, avoiding
-the previous duplication of repository tests, content validation, and package dry-runs in every job.
+The quality suite runs once per revision. The full matrix generates every supported combination
+and checks its metadata contract. Representative risk-bearing lanes additionally install and run
+native tooling; one current-profile lane per container family builds images. This avoids repeating
+the same expensive installation or image build across hundreds of structurally equivalent cases.
 
 ## Definition of done for generated behavior
 

@@ -45,11 +45,22 @@ const smokeSelections = [
   ['laravel-livewire', 'medium', 'none', 'website'],
   ['laravel-inertia-react', 'large', 'yes', 'website'],
   ['react-laravel', 'medium', 'yes', 'website'],
+  ['nextjs-fastapi', 'small', 'none', 'website'],
   ['nextjs-fastapi', 'medium', 'yes', 'website'],
   ['fastapi-api', 'medium', 'not-yet', 'multi-client'],
+  ['fastapi-api', 'large', 'yes', 'multi-client'],
 ]
 const matchesSmoke = (entry) => smokeSelections.some(([caseName, architecture, authentication, audience]) =>
   entry.case === caseName && entry.architecture === architecture && entry.authentication === authentication && entry.audience === audience)
+const containerSelections = new Set([
+  'nextjs-none:small:not-yet:website',
+  'react-springboot:large:yes:website',
+  'laravel-inertia-react:large:yes:website',
+  'nextjs-fastapi:medium:yes:website',
+])
+const verifiesContainers = (entry) => entry.profile === current && containerSelections.has(
+  `${entry.case}:${entry.architecture}:${entry.authentication}:${entry.audience}`,
+)
 const smoke = currentFull.filter(matchesSmoke)
 // A complete run exhaustively verifies the current profile and keeps every
 // retained profile alive through the same representative compatibility lanes.
@@ -65,7 +76,20 @@ function belongsToStack(caseName, stackName) {
 
 const stackCases = full.filter((entry) => belongsToStack(entry.case, selectedStack))
 const stack = [...new Map([...stackCases, ...smoke].map((entry) => [JSON.stringify(entry), entry])).values()]
-const selected = scope === 'full' ? full : scope === 'stack' ? stack : smoke
+const selected = (scope === 'full' ? full : scope === 'stack' ? stack : smoke)
+  .map((entry) => ({
+    ...entry,
+    native: scope === 'smoke' || matchesSmoke(entry),
+    containers: verifiesContainers(entry),
+  }))
 const shards = Array.from({ length: 4 }, (_, index) => ({ shard: index + 1, cases: [] }))
-selected.forEach((entry, index) => shards[index % shards.length].cases.push(entry))
+const containerCases = selected.filter((entry) => entry.containers)
+const nativeCases = selected.filter((entry) => entry.native && !entry.containers)
+const contractCases = selected.filter((entry) => !entry.native)
+containerCases.forEach((entry, index) => shards[index % shards.length].cases.push(entry))
+nativeCases.forEach((entry, index) => shards[index % shards.length].cases.push(entry))
+contractCases.forEach((entry) => {
+  const shortest = shards.reduce((best, shard) => shard.cases.length < best.cases.length ? shard : best)
+  shortest.cases.push(entry)
+})
 process.stdout.write(JSON.stringify(shards.filter(({ cases }) => cases.length)))

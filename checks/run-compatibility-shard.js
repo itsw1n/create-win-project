@@ -11,8 +11,9 @@ for (const testCase of cases) {
     `--architecture=${testCase.architecture}`,
     `--authentication=${testCase.authentication}`,
     `--auth-audience=${testCase.audience}`,
+    `--native=${testCase.native !== false}`,
   ]
-  if (process.env.VERIFY_CONTAINERS === 'true' && testCase.profile === process.env.CURRENT_PROFILE) args.push('--containers=true')
+  if (testCase.native !== false && testCase.containers && process.env.VERIFY_CONTAINERS === 'true') args.push('--containers=true')
   console.log(`::group::${testCase.profile} ${testCase.case} ${testCase.architecture} ${testCase.authentication}`)
   const result = spawnSync(process.execPath, args, { stdio: 'inherit' })
   console.log('::endgroup::')
