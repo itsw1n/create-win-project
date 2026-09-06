@@ -140,6 +140,8 @@ app = create_app()
 function configPy() {
   return `"""Validated application configuration."""
 
+from __future__ import annotations
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -314,13 +316,13 @@ async def ready() -> dict:
 function smallApiRouter(authentication) {
   const guard = authentication === 'public'
     ? ''
-    : '\nfrom fastapi import Depends\nfrom .security import require_auth'
+    : 'from fastapi import Depends\nfrom .security import require_auth\n\n'
   const dep = authentication === 'public' ? '' : ', dependencies=[Depends(require_auth)]'
   return `"""Application routes for the small profile."""
-${guard}
+
 from __future__ import annotations
 
-from fastapi import APIRouter
+${guard}from fastapi import APIRouter
 
 router = APIRouter(prefix="/api", tags=["status"]${dep})
 
