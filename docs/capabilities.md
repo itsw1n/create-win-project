@@ -1,8 +1,8 @@
 # Stacks and capabilities
 
-Frontends include Next.js, React with Vite, Expo/React Native, and Laravel Blade, Livewire, or Inertia React. Server/data boundaries include none, Supabase, PostgreSQL through Prisma, Spring Boot, and Laravel. Unsupported pairings fail before files are written.
+Frontends include Next.js, React with Vite, Expo/React Native, and Laravel Blade, Livewire, or Inertia React. Server/data boundaries include none, Supabase, PostgreSQL through Prisma, Spring Boot, Laravel, and FastAPI (Python with uv, async SQLAlchemy/PostgreSQL, and Alembic). Unsupported pairings fail before files are written.
 
-Authentication is intent-based. The generator selects Supabase Auth, a server-managed browser session, Sanctum SPA, or OIDC validation according to stack and audience.
+Authentication is intent-based. The generator selects Supabase Auth, a server-managed browser session, Sanctum SPA, or OIDC validation according to stack and audience. FastAPI uses OIDC bearer validation only; it does not offer session authentication.
 
 ## Conditional capabilities
 
