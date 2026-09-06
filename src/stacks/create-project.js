@@ -360,6 +360,7 @@ async function generateDocs(dest, answers, stack) {
         ? '\nIn another terminal from the repository root:\n\n```bash\nnpm install\nnpm run dev\n```\n'
         : ''
     setupGuide = `# Local Setup Guide\n\n## Default local setup\n\nUse Python ${stack.profile.runtimes.python}, uv ${stack.profile.runtimes.uv}, and PostgreSQL ${stack.profile.runtimes.postgres}.\n\n\`\`\`bash\ncd ${apiDir || '.'}\nuv sync\ncp .env.example .env\nalembic upgrade head\nuv run uvicorn app.main:app --reload\n\`\`\`\n${frontendSetup}${answers.docker ? `\n## Optional Docker setup\n\nFrom the repository root:\n\n\`\`\`bash\ndocker compose build\ndocker compose up -d\ndocker compose exec backend uv run alembic upgrade head\n\`\`\`\n\nLater runs use \`docker compose up -d\`; rebuilding remains explicit.\n` : ''}\n## Validate\n\n\`\`\`bash\n${apiDir ? `cd ${apiDir}\n` : ''}uv run ruff check . && uv run ruff format --check . && uv run mypy . && uv run pytest\n\`\`\`\n\nCommit the generated \`uv.lock\`; CI uses \`uv sync --frozen\`.\n`
+    setupGuide = setupGuide.replace('\nalembic upgrade head\n', '\nuv run alembic upgrade head\n')
   }
   await fs.writeFile(setupPath, setupGuide, 'utf8')
   await write(dest, 'docs/guides/toolchain.md', toolchainGuide(answers, stack))
@@ -487,7 +488,8 @@ async function generateCI(dest, stack, ciDir, answers, vars) {
     if (await fs.pathExists(beTpl)) {
       let content = await fs.readFile(beTpl, 'utf-8')
       if (stack.frontendKey === 'no-frontend') {
-        content = content.replaceAll('backend/**', '**').replaceAll('working-directory: backend', 'working-directory: .')
+        content = content.replaceAll('      - backend/**', "      - '**'")
+          .replaceAll('working-directory: backend', 'working-directory: .')
       }
       if (answers.testing === 'none') {
         content = content.replace('      - name: Run tests\n        run: uv run pytest\n', '')

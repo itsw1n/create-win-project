@@ -226,7 +226,11 @@ describe('runnable project contract', () => {
     expect(compose).toContain('  backend:')
     expect(compose).toContain('  db:')
     expect(compose).not.toContain('  frontend:')
+    expect(compose).toContain('postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}')
     expect(await fs.pathExists(path.join(destination, 'backend/Dockerfile.dev'))).toBe(true)
+    const dockerfile = await fs.readFile(path.join(destination, 'backend/Dockerfile.dev'), 'utf8')
+    expect(dockerfile).toContain('uv sync --frozen --no-install-project')
+    expect(dockerfile.indexOf('COPY . .')).toBeLessThan(dockerfile.lastIndexOf('uv sync --frozen'))
   })
 
   it('generates FastAPI CI in the correct application directory', async () => {
@@ -239,6 +243,8 @@ describe('runnable project contract', () => {
     expect(workflow).toContain('working-directory: backend')
     expect(workflow).toContain('python-version: "3.14.7"')
     expect(workflow).toContain('uv sync --frozen')
+    expect(workflow).toContain('postgresql+asyncpg://postgres:postgres@127.0.0.1:5432/app_test')
+    expect(workflow).toContain('uv run alembic upgrade head')
     expect(workflow).toContain('uv run pytest')
 
     const apiOnly = await generate({
@@ -248,6 +254,8 @@ describe('runnable project contract', () => {
     })
     const rootWorkflow = await fs.readFile(path.join(apiOnly, '.github/workflows/ci-backend.yml'), 'utf8')
     expect(rootWorkflow).toContain('working-directory: .')
+    expect(rootWorkflow).toContain("      - '**'")
+    expect(rootWorkflow).not.toContain('      - **\n')
   })
 
   it('generates stack-aware security CI for successful projects', async () => {

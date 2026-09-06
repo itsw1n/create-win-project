@@ -70,7 +70,8 @@ describe('fastapi adapter', () => {
     expect(files['backend/.python-version'].trim()).toBe(p.runtimes.python)
     expect(files['backend/app/routes_health.py']).toContain('/health')
     expect(files['backend/app/routes_api.py']).toContain('prefix="/api"')
-    expect(files['backend/alembic/env.py']).toContain('alembic upgrade head')
+    expect(files['backend/alembic/env.py']).toContain('from app.config import settings')
+    expect(files['backend/alembic/env.py']).toContain('from app.db import Base')
     expect(files['backend/alembic/versions/0001_baseline.py']).toContain('examples')
     expect(files['backend/tests/test_health.py']).toContain('/health')
     for (const name of ['app/main.py', 'app/config.py', 'app/db.py', 'app/security.py', 'app/routes_health.py', 'app/routes_api.py']) {
@@ -87,6 +88,8 @@ describe('fastapi adapter', () => {
     expect(medium['backend/app/features/status/router.py']).toContain('prefix="/api"')
     expect(medium['backend/app/features/status/service.py']).toContain('StatusService')
     expect(medium['backend/app/core/security.py']).toContain('require_auth')
+    expect(medium['backend/app/core/security.py']).toContain('from app.core.config import settings')
+    expect(medium['backend/app/core/db.py']).toContain('from app.core.config import settings')
 
     const large = buildFiles(answers, {}, { ...stackFor({ architecture: 'large' }), profile: p })
     expect(large['backend/app/modules/status/__init__.py']).toContain('__all__')

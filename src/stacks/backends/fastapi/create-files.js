@@ -694,7 +694,7 @@ export function buildFastApiFiles(answers, vars, stack) {
     files[`${root}app/security.py`] = securityPy(auth, '.config')
     files[`${root}app/routes_health.py`] = healthRouter()
     files[`${root}app/routes_api.py`] = smallApiRouter(auth)
-    files[`${root}alembic/env.py`] = alembicEnv('.config', '.db')
+    files[`${root}alembic/env.py`] = alembicEnv('app.config', 'app.db')
     files[`${root}alembic/versions/0001_baseline.py`] = baselineMigration()
   } else if (stack.architecture === 'medium') {
     files[`${root}app/__init__.py`] = ''
@@ -708,8 +708,8 @@ from app.features.status.router import router
 `
     files[`${root}app/core/__init__.py`] = ''
     files[`${root}app/core/config.py`] = configPy()
-    files[`${root}app/core/db.py`] = dbPy('app.core')
-    files[`${root}app/core/security.py`] = securityPy(auth, 'app.core')
+    files[`${root}app/core/db.py`] = dbPy('app.core.config')
+    files[`${root}app/core/security.py`] = securityPy(auth, 'app.core.config')
     files[`${root}app/core/logging.py`] = `"""Structured PII-safe logging configuration."""
 
 from __future__ import annotations
@@ -739,8 +739,8 @@ from app.modules.status import router
 `
     files[`${root}app/core/__init__.py`] = ''
     files[`${root}app/core/config.py`] = configPy()
-    files[`${root}app/core/db.py`] = dbPy('app.core')
-    files[`${root}app/core/security.py`] = securityPy(auth, 'app.core')
+    files[`${root}app/core/db.py`] = dbPy('app.core.config')
+    files[`${root}app/core/security.py`] = securityPy(auth, 'app.core.config')
     files[`${root}app/core/logging.py`] = `"""Structured PII-safe logging configuration."""
 
 from __future__ import annotations

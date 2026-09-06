@@ -24,11 +24,13 @@ ${frontend}  backend:
       - ${apiDir}:/app
       - uv-cache:/root/.cache/uv
     environment:
-      - DATABASE_URL=postgresql+asyncpg://db:5432/\${POSTGRES_DB}
+      - DATABASE_URL=postgresql+asyncpg://\${POSTGRES_USER}:\${POSTGRES_PASSWORD}@db:5432/\${POSTGRES_DB}
       - POSTGRES_USER=\${POSTGRES_USER}
       - POSTGRES_PASSWORD=\${POSTGRES_PASSWORD}
       - OIDC_ISSUER=\${OIDC_ISSUER}
       - OIDC_AUDIENCE=\${OIDC_AUDIENCE}
+      - OIDC_ALGORITHMS=\${OIDC_ALGORITHMS}
+      - OIDC_JWKS_URL=\${OIDC_JWKS_URL}
       - CORS_ALLOWED_ORIGINS=\${CORS_ALLOWED_ORIGINS}
     depends_on:
       db:

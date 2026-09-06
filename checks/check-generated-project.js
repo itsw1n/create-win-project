@@ -98,7 +98,7 @@ try {
     POSTGRES_USER: 'postgres',
     POSTGRES_PASSWORD: 'compatibility-test',
     POSTGRES_DB: projectName.replaceAll('-', '_'),
-    DATABASE_URL: `postgresql://postgres:compatibility-test@localhost:5432/${projectName.replaceAll('-', '_')}`,
+    DATABASE_URL: `postgresql+asyncpg://postgres:compatibility-test@localhost:5432/${projectName.replaceAll('-', '_')}`,
     SPRING_PROFILES_ACTIVE: 'test',
     OIDC_ISSUER_URI: 'http://localhost:9090/realms/app',
     OIDC_AUDIENCE: 'api',
@@ -147,11 +147,17 @@ try {
   if (selected.backend === 'fastapi') {
     const backendRoot = selected.frontend === 'no-frontend' ? projectRoot : path.join(projectRoot, 'backend')
     run('uv', ['sync'], backendRoot)
-    run('uv', ['run', 'ruff', 'check', '.'], backendRoot)
-    run('uv', ['run', 'ruff', 'format', '--check', '.'], backendRoot)
-    run('uv', ['run', 'mypy', '.'], backendRoot)
-    run('uv', ['run', 'pytest'], backendRoot, publicEnv)
-    run('uv', ['run', 'alembic', 'check'], backendRoot, publicEnv)
+    run('docker', ['compose', 'up', '-d', '--wait', 'db'], projectRoot, publicEnv)
+    try {
+      run('uv', ['run', 'ruff', 'check', '.'], backendRoot)
+      run('uv', ['run', 'ruff', 'format', '--check', '.'], backendRoot)
+      run('uv', ['run', 'mypy', '.'], backendRoot)
+      run('uv', ['run', 'pytest'], backendRoot, publicEnv)
+      run('uv', ['run', 'alembic', 'upgrade', 'head'], backendRoot, publicEnv)
+      run('uv', ['run', 'alembic', 'check'], backendRoot, publicEnv)
+    } finally {
+      run('docker', ['compose', 'down', '--volumes'], projectRoot, publicEnv)
+    }
   }
 
   if (selected.frontend !== 'react-native') {

@@ -12,8 +12,8 @@
     "sha256": "e6c9ebd10795622b8e71ba32ffb9a2670fa3f7666726522736f4207cabc70bee"
   },
   ".github/workflows/ci-backend.yml": {
-    "bytes": 1017,
-    "sha256": "a58f8f31fff27c7fc00d85ea24b8f287fdd26a3d090e3318fd9371bdcff468ea"
+    "bytes": 1656,
+    "sha256": "26456d8076b0ea8d38250a2b9dbfe51569411c6593e4e885736406a307e83c49"
   },
   ".github/workflows/ci-frontend.yml": {
     "bytes": 481,
@@ -76,16 +76,16 @@
     "sha256": "49af62dd6a8bafabd070ffa76c825d44cd083636c52fe6d30a9af0f54f6c9d2f"
   },
   "backend/app/core/db.py": {
-    "bytes": 704,
-    "sha256": "e52e5f4b1e5ae71725608d6381d55d673bdc149810bd8f0d2bf6954317820a50"
+    "bytes": 711,
+    "sha256": "70936277bd85e47aaa9edb1b14675319e022aa0448c34a74ffec013e798344e6"
   },
   "backend/app/core/logging.py": {
     "bytes": 227,
     "sha256": "f52c43275b2612504b7103a23923877576c05a8b84f22acd0f1a7f83a8b64ae1"
   },
   "backend/app/core/security.py": {
-    "bytes": 1461,
-    "sha256": "010efdafa100f75e23c8949e9a4202ccea005a6dca109269481bb69e9baf0618"
+    "bytes": 1468,
+    "sha256": "f7b3f444c244a0f862e859d15305b46e15d630ce4a948d2499297115221461c5"
   },
   "backend/app/features/__init__.py": {
     "bytes": 0,
@@ -124,12 +124,12 @@
     "sha256": "10c748df7283178b8e7f4d7fb32b180b9a46c3a5c28da6f78f2e6628e354e8d8"
   },
   "backend/Dockerfile": {
-    "bytes": 367,
-    "sha256": "7987ac0ee6a2504a5f9350d1754b9dd022c14ba4cfe4be55802a8f0b8d65355f"
+    "bytes": 421,
+    "sha256": "991044c47e17e5da4cc61e66801d07293a049596d2ab1902a9a8e4b50b98e8e6"
   },
   "backend/Dockerfile.dev": {
-    "bytes": 268,
-    "sha256": "8a7da080a0bf27f6ae841809872da5d0279302871a94b88b44c457d93698876c"
+    "bytes": 337,
+    "sha256": "4e0cf2da3ee856e88499c643c55d8265e10d26d810737eb4e51ce44c9c19871b"
   },
   "backend/pyproject.toml": {
     "bytes": 869,
@@ -164,12 +164,12 @@
     "sha256": "659221c77b946b2cb4d322480a1fb12997a4a81ef776295755918cbf9dfed5c3"
   },
   "docker-compose.prod.yml": {
-    "bytes": 1340,
-    "sha256": "49792333be0c53defdf79ee68a8dc390f667dab0c470bb08ab6abf75e4c39f7c"
+    "bytes": 1422,
+    "sha256": "9cf31dff490fbee6aa909c3a22bc10abf639436b69a937e2d065d64e020c683e"
   },
   "docker-compose.yml": {
-    "bytes": 2058,
-    "sha256": "befcb7962a2c3ade140368063d3505d37c4c50c752daff4416e39c96db31a883"
+    "bytes": 2178,
+    "sha256": "23226a6283af43871368d8d804ab65da90ef9b6dbdc45aeabd30c28becad0ba9"
   },
   "Dockerfile": {
     "bytes": 487,
@@ -220,8 +220,8 @@
     "sha256": "1edcf2b3e0124bb0247dd8579602a952a64e380d7b5f8213949a64f9dee505ff"
   },
   "docs/guides/setup.md": {
-    "bytes": 709,
-    "sha256": "ecaf45493faa5ce9e5ade4497287403494a5a030b3c0a11d9c9185a8959d6fc8"
+    "bytes": 716,
+    "sha256": "ab10d5ca404a16ada088f6e8bd4c3485f2d56767f6a98fe371dfacc2a7ebdb09"
   },
   "docs/guides/toolchain.md": {
     "bytes": 1329,
