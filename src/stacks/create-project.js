@@ -337,6 +337,18 @@ function authDocumentation(stack) {
 
 // ─── CI — template-driven ─────────────────────────────────────────────────────
 
+function generatedSecurityWorkflow(stack) {
+  const hasJavaScript = stack.frontendKey !== 'no-frontend' &&
+    !(stack.frontendKey === 'laravel-ui' && stack.laravelUi !== 'inertia-react')
+  const npmDirectory = stack.frontendKey === 'react' ? 'frontend' : '.'
+  const laravelDirectory = ['laravel-ui', 'no-frontend'].includes(stack.frontendKey) ? '.' : 'backend'
+  const codeqlLanguages = [hasJavaScript && 'javascript-typescript', stack.backendKey === 'springboot' && 'java-kotlin'].filter(Boolean)
+  const npmAudit = hasJavaScript ? `\n  npm-audit:\n    runs-on: ubuntu-latest\n    defaults:\n      run:\n        working-directory: ${npmDirectory}\n    steps:\n      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4\n      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4\n        with:\n          node-version: "${stack.profile.runtimes.node}"\n          cache: npm\n          cache-dependency-path: ${npmDirectory === '.' ? 'package-lock.json' : `${npmDirectory}/package-lock.json`}\n      - run: npm ci\n      - run: npm audit --audit-level=high\n` : ''
+  const composerAudit = stack.backendKey === 'laravel' ? `\n  composer-audit:\n    runs-on: ubuntu-latest\n    defaults:\n      run:\n        working-directory: ${laravelDirectory}\n    steps:\n      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4\n      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2\n        with:\n          php-version: "${stack.profile.runtimes.php}"\n          coverage: none\n      - run: composer install --no-interaction --prefer-dist\n      - run: composer audit --locked\n` : ''
+  const codeql = codeqlLanguages.length ? `\n  codeql:\n    permissions:\n      contents: read\n      security-events: write\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4\n      - uses: github/codeql-action/init@5ba2889ada762081db2c4f32a729827dce632c7b # v3\n        with:\n          languages: ${codeqlLanguages.join(',')}\n      - uses: github/codeql-action/analyze@5ba2889ada762081db2c4f32a729827dce632c7b # v3\n` : ''
+  return `name: Security\n\non:\n  pull_request:\n    branches: [dev, main]\n  push:\n    branches: [dev, main]\n  schedule:\n    - cron: '31 4 * * 1'\n\npermissions:\n  contents: read\n\njobs:\n  dependency-review:\n    if: github.event_name == 'pull_request'\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4\n      - uses: actions/dependency-review-action@e22c389904149dbc22b58101806040fa8d37a610 # v4\n        with:\n          fail-on-severity: high\n\n  secret-scan:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4\n        with:\n          fetch-depth: 0\n      - uses: trufflesecurity/trufflehog@466da5b0bb161144f6afca9afe5d57975828c410 # v3.90.8\n        with:\n          extra_args: --results=verified,unknown\n${npmAudit}${composerAudit}${codeql}`
+}
+
 async function generateCI(dest, stack, ciDir, answers, vars) {
   // Frontend CI — read from ci/{ciTemplate}.yml
   const feTpl = path.join(ciDir, `${stack.ciTemplate}.yml`)
@@ -386,6 +398,7 @@ async function generateCI(dest, stack, ciDir, answers, vars) {
       await write(dest, `.github/workflows/ci-backend.yml`, render(content, vars))
     }
   }
+  await write(dest, '.github/workflows/security.yml', generatedSecurityWorkflow(stack))
 }
 
 // ─── Runnable application files ─────────────────────────────────────────────────
