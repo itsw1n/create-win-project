@@ -54,6 +54,8 @@ export function buildVars(answers, stack) {
     SPRING_MODULITH_VERSION: profile.springModulith,
     PHP_VERSION:         profile.runtimes.php,
     COMPOSER_VERSION:    profile.runtimes.composer,
+    PYTHON_VERSION:      profile.runtimes.python,
+    UV_VERSION:          profile.runtimes.uv,
     LARAVEL_VERSION:     profile.composerPackages['laravel/framework'],
     LARAVEL_DIR:         ['laravel-ui', 'no-frontend'].includes(stack.frontendKey) ? '.' : 'backend',
     TESTCONTAINERS_VERSION: profile.packages["testcontainers-junit-jupiter"] || profile.packages["testcontainers-postgresql"] || "1.19.8",
@@ -65,6 +67,7 @@ export function buildVars(answers, stack) {
     NGINX_IMAGE:         `${profile.images.nginx.repository}:${profile.images.nginx.tag}`,
     PHP_IMAGE:           `${profile.images.php.repository}:${profile.images.php.tag}`,
     COMPOSER_IMAGE:      `${profile.images.composer.repository}:${profile.images.composer.tag}`,
+    PYTHON_IMAGE:        `${profile.images.python.repository}:${profile.images.python.tag}`,
     COMPATIBILITY_PROFILE: profile.id,
   }
 }

@@ -29,13 +29,13 @@ const VALID_COMBINATIONS = Object.freeze({
     ['laravel-ui', 'laravel'],
   ],
   separate: [
-    ['nextjs', 'springboot'], ['nextjs', 'laravel'],
-    ['react', 'springboot'], ['react', 'laravel'], ['react', 'supabase'],
+    ['nextjs', 'springboot'], ['nextjs', 'laravel'], ['nextjs', 'fastapi'],
+    ['react', 'springboot'], ['react', 'laravel'], ['react', 'supabase'], ['react', 'fastapi'],
   ],
-  api: [['no-frontend', 'springboot'], ['no-frontend', 'laravel']],
+  api: [['no-frontend', 'springboot'], ['no-frontend', 'laravel'], ['no-frontend', 'fastapi']],
   mobile: [
     ['react-native', 'none'], ['react-native', 'supabase'],
-    ['react-native', 'springboot'], ['react-native', 'laravel'],
+    ['react-native', 'springboot'], ['react-native', 'laravel'], ['react-native', 'fastapi'],
   ],
   frontend: [['react', 'none']],
 })
