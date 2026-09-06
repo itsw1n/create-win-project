@@ -110,11 +110,11 @@ function validateAnswers(answers) {
 // ─── Root files ───────────────────────────────────────────────────────────────
 
 async function generateRootFiles(dest, answers, vars, stack, templatesDir) {
-  await writeTemplate(dest, 'CONTEXT.md',    contextMd(vars, answers.expectedConcerns), vars)
+  await writeTemplate(dest, 'CONTEXT.md', contextMd(vars, answers.expectedConcerns, answers), vars)
   // AGENTS.md — template-driven
   {
     const tpl = await readTemplate(templatesDir, 'agents', stack.agentsTemplate, '.md')
-    if (tpl) await writeTemplate(dest, 'AGENTS.md', tpl, vars)
+    if (tpl) await writeTemplate(dest, 'AGENTS.md', `${tpl}\n## Deviation policy\n\nAgents may recommend alternatives, but must propose the change and receive explicit approval before changing the selected architecture, provider, authentication model, data boundary, production baseline, or major dependency. Record approved deviations and their rationale in \`CONTEXT.md\`.\n`, vars)
     else await write(dest, 'AGENTS.md', `# AGENTS.md\nStack: ${stack.label}\n`)
   }
   await write(dest,         'PROGRESS.md',   progressMd())
