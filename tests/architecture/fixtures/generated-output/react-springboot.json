@@ -40,8 +40,8 @@
     "sha256": "6e2ae11dad0616f66bbb2b6e6556f580bb987fd911d7132aa6bee2bfc7cc7b52"
   },
   "backend/Dockerfile": {
-    "bytes": 271,
-    "sha256": "a809fc35f3131fc5c4b0e2918e82f93fd006a9cab17bc89bc79e2cd01c869886"
+    "bytes": 378,
+    "sha256": "576549f9a43b37baa610102e60ae04cecbaa2ce9c2fda1490059d0980adf8073"
   },
   "backend/Dockerfile.dev": {
     "bytes": 109,
@@ -116,8 +116,8 @@
     "sha256": "354ee71d2421c7c91125dde7114b30899e7270525d1696ec164591bb18be810f"
   },
   "docker-compose.prod.yml": {
-    "bytes": 1599,
-    "sha256": "95612aa1137e9cd5f32b3fc459a1befa3e9e19e6dc0f9a227186f316ee12c55e"
+    "bytes": 2067,
+    "sha256": "a4000ed007ed6c587d7376e6c884b5cf698b34a8613ac41b67d9a7c179a88b3b"
   },
   "docker-compose.yml": {
     "bytes": 1726,
@@ -148,8 +148,8 @@
     "sha256": "6cf3e1d4b92f3de32bd52007c2a18cf1f1dd57e62044b480d901eb6e7ba031e9"
   },
   "docs/guides/deployment.md": {
-    "bytes": 78,
-    "sha256": "1d6157e9b7f51c8e9009baf3dc751c4c2a52fd25aece286ef768ecec0477294d"
+    "bytes": 997,
+    "sha256": "1be746fd1cab6ac2b40e392cd409a1cf17182def17cf68a12a0a3e7b187d482f"
   },
   "docs/guides/development-environments.md": {
     "bytes": 1168,
@@ -158,6 +158,10 @@
   "docs/guides/env-variables.md": {
     "bytes": 810,
     "sha256": "1f676a303d33eaff0d4eab890352722e02b7bf99558d92f5df63d90c11c05f14"
+  },
+  "docs/guides/operations.md": {
+    "bytes": 846,
+    "sha256": "1edcf2b3e0124bb0247dd8579602a952a64e380d7b5f8213949a64f9dee505ff"
   },
   "docs/guides/setup.md": {
     "bytes": 662,
@@ -180,8 +184,8 @@
     "sha256": "7151cf397def0c2cb0ab65643701d27d335a72c90f775675b5f826bc7005818a"
   },
   "frontend/Dockerfile": {
-    "bytes": 286,
-    "sha256": "1aee20e6f4cc19a18a81d17c23770ab348429e15ac2216966156563b30cdf50b"
+    "bytes": 299,
+    "sha256": "6a50ffe33aeff9422f9e32b65db48c4dedd9f12c3a903f76ca0a173ce70553bb"
   },
   "frontend/Dockerfile.dev": {
     "bytes": 125,
@@ -196,8 +200,8 @@
     "sha256": "f054db9a91c154c1c9003b0fd27a56c08294f58ccf3f58a6227e417357e68078"
   },
   "frontend/nginx.conf": {
-    "bytes": 135,
-    "sha256": "5b5c4d0a8d30b6ae2e6bf0965056e206e6cfd4f73c2ad28819e50d141d8858d4"
+    "bytes": 708,
+    "sha256": "f8b6fb74e76b7e148de7a0427022d5ac27ed369269f41b322cf7615d9fdb1385"
   },
   "frontend/package.json": {
     "bytes": 1038,
