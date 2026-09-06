@@ -1,6 +1,7 @@
 import path from 'node:path'
 import { packageVersion } from './shared/javascript-package.js'
 import { stackRegistry } from './available-stacks.js'
+import { capabilityPackFiles } from './shared/capability-packs.js'
 import { collectContributions } from './shared/contributions.js'
 import { buildSharedTestFiles, buildSupabaseWebFiles } from './backends/supabase/create-files.js'
 import { augmentSupabaseNativeFiles } from './backends/supabase/native.js'
@@ -215,6 +216,7 @@ export function buildRunnableFiles(answers, stack, vars) {
   let files = stack.isMobile ? nativeFiles(answers, stack) : frontendFiles(answers, stack)
   if (stack.frontendKey === 'react') files = augmentViteFiles(files, stack)
   Object.assign(files, envFiles(answers, stack))
+  Object.assign(files, capabilityPackFiles(answers, stack))
   files['create-win-project.profile.json'] = json({
     schemaVersion: 2,
     applicationShape: stack.applicationShape,

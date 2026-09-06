@@ -265,6 +265,18 @@ describe('runnable project contract', () => {
       .rejects.toThrow('Queues require')
   })
 
+  it('generates only explicitly selected supported capability packs', async () => {
+    const destination = await generate({
+      frontend: 'nextjs', backend: 'laravel', applicationShape: 'separate',
+      uploads: 'object-storage', backgroundJobs: 'queue', projectName: 'capability-packs',
+    })
+    const upload = await fs.readJson(path.join(destination, 'config/capabilities/uploads.json'))
+    const queue = await fs.readJson(path.join(destination, 'config/capabilities/queue.json'))
+    expect(upload).toMatchObject({ visibility: 'private', quarantineBeforeUse: true, malwareScanRequired: true })
+    expect(queue).toMatchObject({ adapter: 'laravel-queue', idempotencyRequired: true, failedJobStore: true })
+    expect(await fs.pathExists(path.join(destination, 'config/capabilities/offline.json'))).toBe(false)
+  })
+
   it('honors the Makefile option for a frontend-only project', async () => {
     const destination = await generate({ backend: 'none', makefile: true, projectName: 'frontend-only' })
     const makefile = await fs.readFile(path.join(destination, 'Makefile'), 'utf8')
