@@ -22,7 +22,8 @@ must not accumulate new stack-specific file bodies when the adapter can own them
 ## Working rules
 
 - Read the relevant adapter, templates, compatibility profile, tests, and maintainer docs
-  before changing generated behavior.
+  before changing generated behavior. Load only the documents relevant to the affected stack;
+  do not preload the entire repository documentation set.
 - Preserve unrelated user changes and do not rewrite history or use destructive Git commands.
 - Keep commits logical; a branch or PR may contain multiple focused commits.
 - Target feature PRs at `dev`. Promotion from `dev` to `main` is the release boundary.

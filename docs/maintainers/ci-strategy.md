@@ -25,3 +25,20 @@ The pull-request base branch still determines automatic scope: `dev` gets smoke,
 
 The quality suite runs once per revision. Matrix jobs only generate and verify projects, avoiding
 the previous duplication of repository tests, content validation, and package dry-runs in every job.
+
+## Definition of done for generated behavior
+
+Repository unit tests are necessary but are not sufficient evidence for a generator change. For
+each affected stack shape, verification must generate a project in a temporary directory and use
+that project's native tools to exercise the behavior users receive:
+
+1. Install the exact profile dependencies without weakening install-script controls.
+2. Run the generated formatter, linter, type checker, and tests.
+3. Apply migrations to the declared database, then check for migration drift.
+4. Build the application and validate Compose; build containers for full verification.
+5. Exercise each affected root layout, architecture profile, and authentication model.
+
+A warning may be reported separately, but a failed native command is a failed implementation.
+Do not approve a PR based only on generated file presence, string assertions, fixture hashes, or
+the agent's completion statement. The stable `compatibility-gate` is the executable acceptance
+boundary.

@@ -1,7 +1,7 @@
 import { pathToFileURL } from 'node:url'
 import impact from '../library/compatibility-impact.json' with { type: 'json' }
 
-const DOCUMENTATION = /^(?:README\.md|LICENSE|docs\/|\.github\/ISSUE_TEMPLATE\/|\.github\/PULL_REQUEST_TEMPLATE)/
+const DOCUMENTATION = /^(?:AGENTS\.md|README\.md|LICENSE|docs\/|\.github\/ISSUE_TEMPLATE\/|\.github\/PULL_REQUEST_TEMPLATE)/
 const STACK_PATHS = Object.entries(impact.stacks)
 
 export function classifyChanges(files) {

@@ -3,7 +3,7 @@ import { classifyChanges } from '../../checks/classify-changes.js'
 
 describe('compatibility change classifier', () => {
   it('skips generated checks for documentation-only changes', () => {
-    expect(classifyChanges(['README.md', 'docs/ARCHITECTURE.md'])).toEqual({ scope: 'none' })
+    expect(classifyChanges(['AGENTS.md', 'README.md', 'docs/ARCHITECTURE.md'])).toEqual({ scope: 'none' })
   })
 
   it('selects one changed stack', () => {
