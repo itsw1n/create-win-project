@@ -331,7 +331,7 @@ async def ready() -> dict:
 function smallApiRouter(authentication) {
   const guard = authentication === 'public'
     ? ''
-    : ', Depends\n\nfrom .security import require_auth\n'
+    : ', Depends\n\nfrom .security import require_auth'
   const dep = authentication === 'public' ? '' : ', dependencies=[Depends(require_auth)]'
   return `"""Application routes for the small profile."""
 
@@ -497,7 +497,6 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
-
 from ${configModule} import settings
 from ${dbModule} import Base
 

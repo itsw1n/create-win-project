@@ -48,8 +48,8 @@
     "sha256": "922fe0c3de073b01988e23348ea184456161678c5e329e6f34be89be24383f93"
   },
   "backend/alembic/env.py": {
-    "bytes": 1562,
-    "sha256": "45a895b29d7945fba10d871f1aeb945ee55d4284eed349815bbb1c2ce2187ab6"
+    "bytes": 1561,
+    "sha256": "d6e3fe48e0b1a6112b08cecd701eeb7663ae51550e1d6948d64e493511be9ae8"
   },
   "backend/alembic/versions/.gitkeep": {
     "bytes": 0,
