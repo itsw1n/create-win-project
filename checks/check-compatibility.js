@@ -63,4 +63,6 @@ function belongsToStack(caseName, stackName) {
 const stackCases = full.filter((entry) => belongsToStack(entry.case, selectedStack))
 const stack = [...new Map([...stackCases, ...smoke].map((entry) => [JSON.stringify(entry), entry])).values()]
 const selected = scope === 'full' ? full : scope === 'stack' ? stack : smoke
-process.stdout.write(JSON.stringify(selected.map((entry, index) => ({ ...entry, shard: `${index % 4 + 1}/4` }))))
+const shards = Array.from({ length: 4 }, (_, index) => ({ shard: index + 1, cases: [] }))
+selected.forEach((entry, index) => shards[index % shards.length].cases.push(entry))
+process.stdout.write(JSON.stringify(shards.filter(({ cases }) => cases.length)))
