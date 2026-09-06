@@ -6,6 +6,7 @@ function option(args, name) {
 }
 
 export function parseArguments(args) {
+  const upgradeReportIndex = args.indexOf('upgrade-report')
   const profile = option(args, 'profile')
   const shape = option(args, 'shape')
   const frontendValue = option(args, 'frontend')
@@ -57,5 +58,6 @@ export function parseArguments(args) {
     install,
     noInstall,
     doctor: args[0] === 'doctor' || args.includes('--doctor'),
+    upgradeReportPath: upgradeReportIndex >= 0 ? (args[upgradeReportIndex + 1] || '.') : undefined,
   })
 }

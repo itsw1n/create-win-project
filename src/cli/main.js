@@ -26,6 +26,7 @@ import {
   startProjectSpinner,
 } from './display.js'
 import { parseArguments } from './arguments.js'
+import { createUpgradeReport } from '../engine/upgrade-report.js'
 import {
   loadCatalog, resolveStack,
 } from '../engine/load-library.js'
@@ -55,6 +56,11 @@ const backgroundJobsArg = args.backgroundJobs
 const offlineArg = args.offline
 const wantsInstall = args.install
 const skipsInstall = args.noInstall
+if (args.upgradeReportPath) {
+  const report = await createUpgradeReport(args.upgradeReportPath, path.join(projectRoot, 'library/tested-versions.json'))
+  process.stdout.write(`${JSON.stringify(report, null, 2)}\n`)
+  return
+}
 const { profile } = await loadCompatibility(
   path.join(projectRoot, 'library/tested-versions.json'),
   profileArg,
