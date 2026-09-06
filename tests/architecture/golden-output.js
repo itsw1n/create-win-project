@@ -22,6 +22,7 @@ export const goldenCases = Object.freeze({
   'nextjs-supabase': { frontend: 'nextjs', backend: 'supabase', applicationShape: 'fullstack', styling: 'tailwind', authentication: 'yes' },
   'react-springboot': { frontend: 'react', backend: 'springboot', applicationShape: 'separate', styling: 'css-modules', packageName: 'com.example' },
   'react-native-supabase': { frontend: 'react-native', backend: 'supabase', applicationShape: 'mobile', authentication: 'yes', authAudience: 'multi-client', docker: false },
+  'nextjs-fastapi': { frontend: 'nextjs', backend: 'fastapi', applicationShape: 'separate', styling: 'tailwind', authentication: 'yes' },
   'laravel-inertia-react': { frontend: 'laravel-ui', backend: 'laravel', applicationShape: 'fullstack', laravelUi: 'inertia-react', styling: 'tailwind', authentication: 'yes' },
 })
 
