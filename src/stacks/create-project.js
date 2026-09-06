@@ -188,7 +188,7 @@ async function generateRootFiles(dest, answers, vars, stack, templatesDir) {
       const viteProd = await readTemplate(templatesDir, 'docker/dockerfile', 'vite.prod', '.dockerfile')
       if (viteProd) {
         await writeTemplate(dest, 'frontend/Dockerfile', viteProd, vars)
-        const nginx = `server {\n  listen 80;\n  location / {\n    root /usr/share/nginx/html;\n    index index.html;\n    try_files $uri $uri/ /index.html;\n  }\n}\n`
+        const nginx = `server {\n  listen 8080;\n  server_tokens off;\n  root /usr/share/nginx/html;\n  add_header X-Content-Type-Options nosniff always;\n  add_header Referrer-Policy strict-origin-when-cross-origin always;\n  add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;\n  add_header Content-Security-Policy "default-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'" always;\n  location /assets/ { try_files $uri =404; add_header Cache-Control "public, max-age=31536000, immutable"; }\n  location /api/ { add_header Cache-Control "no-store" always; try_files $uri =404; }\n  location / { index index.html; try_files $uri $uri/ /index.html; add_header Cache-Control "no-cache"; }\n}\n`
         await write(dest, 'frontend/nginx.conf', nginx)
       }
     } else if (stack.frontendKey === 'nextjs') {
