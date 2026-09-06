@@ -277,6 +277,16 @@ describe('runnable project contract', () => {
     expect(await fs.pathExists(path.join(destination, 'config/capabilities/offline.json'))).toBe(false)
   })
 
+  it('generates an EAS-ready mobile production contract', async () => {
+    const destination = await generate({ frontend: 'react-native', backend: 'supabase', offline: 'cache', projectName: 'mobile-production' })
+    const eas = await fs.readJson(path.join(destination, 'eas.json'))
+    const app = await fs.readJson(path.join(destination, 'app.json'))
+    expect(Object.keys(eas.build)).toEqual(['development', 'preview', 'production'])
+    expect(app.expo.runtimeVersion).toEqual({ policy: 'appVersion' })
+    expect(await fs.readFile(path.join(destination, 'lib/deep-links.ts'), 'utf8')).toContain('allowedRoutes')
+    expect(await fs.readJson(path.join(destination, 'config/capabilities/offline.json'))).toMatchObject({ mode: 'cache', owner: 'mobile-client' })
+  })
+
   it('honors the Makefile option for a frontend-only project', async () => {
     const destination = await generate({ backend: 'none', makefile: true, projectName: 'frontend-only' })
     const makefile = await fs.readFile(path.join(destination, 'Makefile'), 'utf8')

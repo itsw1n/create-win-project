@@ -56,8 +56,8 @@
     "sha256": "06d7f4d5da1bc4b1d055463ba30d8fbe215d559c107bac47c8bd0b3495690a78"
   },
   "app.json": {
-    "bytes": 372,
-    "sha256": "b8c92356e1cd985782fc679ccf44aa3644c9e7dbb8b4ccd86b6f5e6176244491"
+    "bytes": 529,
+    "sha256": "1fd06521fd0df635253336337d6aa78e78a67062feb5a694a1c6827b99288cda"
   },
   "CONTEXT.md": {
     "bytes": 590,
@@ -115,6 +115,14 @@
     "bytes": 1183,
     "sha256": "d9b5de65da858a2c3bf46ca8062359e8bb7b5dc86419c1f1625663738c9fbfde"
   },
+  "docs/mobile/production.md": {
+    "bytes": 691,
+    "sha256": "2a290d2ce1c51091dcb08570a28772dc9174430ab235177ec0ebab1a12a13260"
+  },
+  "eas.json": {
+    "bytes": 434,
+    "sha256": "905ea9c88a41dbac941c0bd3721f25ac7eb1f670e0ef7abe2076debae7e4f554"
+  },
   "expo-env.d.ts": {
     "bytes": 37,
     "sha256": "57d45be957186273b21383b09f6a6aa3ca599b28d1fb742fb3edfac464504b90"
@@ -134,6 +142,10 @@
   "jest.config.js": {
     "bytes": 39,
     "sha256": "d412e753779d88d8391de8fbdd51204693b8710f45351d56e7955e0dc0f4453b"
+  },
+  "lib/deep-links.ts": {
+    "bytes": 367,
+    "sha256": "950fadea53631e4643ab8623d8ba0bd1d580771bace764e08eb38319403f9a56"
   },
   "lib/supabase-lifecycle.test.ts": {
     "bytes": 744,
