@@ -49,6 +49,9 @@ dev = [
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+
 [tool.ruff]
 target-version = "py313"
 line-length = 100
@@ -64,6 +67,16 @@ ignore_missing_imports = true
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+`
+}
+
+function backendReadme(answers) {
+  return `# ${answers.projectName} backend
+
+FastAPI service for ${answers.projectDescription}.
+
+Run \`uv sync\` to install the exact tested dependencies, then use the commands in the
+repository documentation to develop, test, and operate the service.
 `
 }
 
@@ -660,6 +673,10 @@ export function buildFastApiFiles(answers, vars, stack) {
     [`${root}tests/conftest.py`]: conftestPy(),
     [`${root}tests/test_health.py`]: healthTest(),
     [`${root}tests/test_security.py`]: securityTest(auth),
+  }
+
+  if (root) {
+    files[`${root}README.md`] = backendReadme(answers)
   }
 
   if (stack.architecture === 'small') {

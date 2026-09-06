@@ -186,6 +186,7 @@ describe('runnable project contract', () => {
     const pyproject = await fs.readFile(path.join(apiRoot, 'pyproject.toml'), 'utf8')
     expect(pyproject).toContain('fastapi==0.141.1')
     expect(pyproject).toContain('sqlalchemy==2.0.52')
+    expect(await fs.pathExists(path.join(apiRoot, 'README.md'))).toBe(true)
     expect(await fs.pathExists(path.join(apiRoot, 'app/main.py'))).toBe(true)
     expect(await fs.pathExists(path.join(apiRoot, 'alembic/env.py'))).toBe(true)
     expect(await fs.pathExists(path.join(apiRoot, 'tests/test_health.py'))).toBe(true)

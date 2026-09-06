@@ -132,8 +132,12 @@
     "sha256": "8a7da080a0bf27f6ae841809872da5d0279302871a94b88b44c457d93698876c"
   },
   "backend/pyproject.toml": {
-    "bytes": 816,
-    "sha256": "338886db7c6d40e33c6295027dc4f1da818306f1d19b3665e796f1dddad68741"
+    "bytes": 869,
+    "sha256": "9f10bae9480bbf534056df137bcc783f40e5e2c01e7a100659ce2d160ba3bfe0"
+  },
+  "backend/README.md": {
+    "bytes": 236,
+    "sha256": "913a48cc61143a2e553ecbff1aafdf9c7bd12a220c2af9b05c04b952358c4260"
   },
   "backend/tests/__init__.py": {
     "bytes": 0,

@@ -65,6 +65,8 @@ describe('fastapi adapter', () => {
 
     expect(files['backend/pyproject.toml']).toContain(`fastapi==${p.pythonPackages.fastapi}`)
     expect(files['backend/pyproject.toml']).toContain(`sqlalchemy==${p.pythonPackages.sqlalchemy}`)
+    expect(files['backend/pyproject.toml']).toContain('packages = ["app"]')
+    expect(files['backend/README.md']).toContain('# demo-app backend')
     expect(files['backend/.python-version'].trim()).toBe(p.runtimes.python)
     expect(files['backend/app/routes_health.py']).toContain('/health')
     expect(files['backend/app/routes_api.py']).toContain('prefix="/api"')
@@ -98,6 +100,7 @@ describe('fastapi adapter', () => {
 
     expect(files['pyproject.toml']).toBeDefined()
     expect(files['backend/pyproject.toml']).toBeUndefined()
+    expect(files['backend/README.md']).toBeUndefined()
     expect(files['app/main.py']).toBeDefined()
   })
 
