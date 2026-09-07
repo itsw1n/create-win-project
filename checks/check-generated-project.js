@@ -80,8 +80,14 @@ try {
 
   const projectRoot = path.join(fixtureRoot, projectName)
   const metadata = await fs.readJson(path.join(projectRoot, 'create-win-project.profile.json'))
+  const expectedStyling = selected.frontend === 'react-native'
+    ? 'native-styles'
+    : selected.frontend === 'no-frontend'
+      ? 'none'
+      : selected.styling || 'tailwind'
   if (metadata.compatibilityProfile.id !== args.profile || metadata.architectureProfile !== architecture ||
-      metadata.authentication.intent !== authentication || metadata.authentication.audience !== authAudience) {
+      metadata.authentication.intent !== authentication || metadata.authentication.audience !== authAudience ||
+      metadata.styling?.mode !== expectedStyling) {
     throw new Error('Generated profile metadata does not match the requested matrix entry')
   }
   if (args.native === 'false') {

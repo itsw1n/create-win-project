@@ -327,6 +327,9 @@ describe('runnable project contract', () => {
     expect(profile.schemaVersion).toBe(2)
     expect(profile.compatibilityProfile.id).toBe('2026.09')
     expect(profile.architectureProfile).toBe('medium')
+    expect(profile.styling).toEqual({
+      mode: frontend === 'react-native' ? 'native-styles' : styling,
+    })
     expect(profile.authentication).toEqual({
       intent: 'not-yet', model: 'undecided', audience: 'website',
     })

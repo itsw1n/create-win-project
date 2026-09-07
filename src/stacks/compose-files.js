@@ -229,6 +229,9 @@ export function buildRunnableFiles(answers, stack, vars) {
       supportedUntil: stack.profile.supportedUntil,
     },
     architectureProfile: stack.architecture,
+    styling: {
+      mode: stack.styleId || 'none',
+    },
     authentication: {
       intent: stack.authenticationIntent,
       model: stack.authentication,
