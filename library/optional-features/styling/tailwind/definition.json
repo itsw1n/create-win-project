@@ -2,10 +2,20 @@
   "id": "tailwind",
   "kind": "styling",
   "label": "Tailwind CSS",
-  "file": "styling/tailwind-extensions.md",
+  "playbooks": [
+    "styling/ownership.md",
+    "styling/tailwind/architecture.md",
+    "styling/tailwind/tokens.md",
+    "styling/tailwind/components.md",
+    "styling/tailwind/responsive.md"
+  ],
   "required": false,
   "folders": [],
   "concerns": [
-    { "id": "styling", "required": true, "sections": ["Responsive"] }
+    { "id": "styling-ownership", "required": true, "playbook": "styling/ownership.md", "sections": ["Component Ownership", "Dependency Direction"] },
+    { "id": "styling-mode", "required": true, "playbook": "styling/tailwind/architecture.md", "sections": ["Primary Mode", "File Structure", "Browser Inspection"] },
+    { "id": "styling-tokens", "required": true, "playbook": "styling/tailwind/tokens.md", "sections": ["Tailwind v4 Tokens", "Theme Boundary"] },
+    { "id": "styling-components", "required": true, "playbook": "styling/tailwind/components.md", "sections": ["Class Strategy", "Common Button"] },
+    { "id": "styling-responsive", "required": true, "playbook": "styling/tailwind/responsive.md", "sections": ["Responsive and Accessible UI"] }
   ]
 }

@@ -2,11 +2,20 @@
   "id": "css-modules",
   "kind": "styling",
   "label": "CSS Modules",
-  "playbooks": ["styling/css-modules/theme.md", "styling/css-modules/responsive.md"],
+  "playbooks": [
+    "styling/ownership.md",
+    "styling/css-modules/architecture.md",
+    "styling/css-modules/tokens.md",
+    "styling/css-modules/components.md",
+    "styling/css-modules/responsive.md"
+  ],
   "required": false,
   "folders": [],
   "concerns": [
-    { "id": "styling-theme", "required": true, "playbook": "styling/css-modules/theme.md", "sections": ["Dark Mode with CSS Variables"] },
+    { "id": "styling-ownership", "required": true, "playbook": "styling/ownership.md", "sections": ["Component Ownership", "Dependency Direction"] },
+    { "id": "styling-mode", "required": true, "playbook": "styling/css-modules/architecture.md", "sections": ["Primary Mode", "File Structure", "Browser Inspection"] },
+    { "id": "styling-tokens", "required": true, "playbook": "styling/css-modules/tokens.md", "sections": ["Global Foundation", "Theme Boundary"] },
+    { "id": "styling-components", "required": true, "playbook": "styling/css-modules/components.md", "sections": ["Component Ownership", "Common Button"] },
     { "id": "styling-responsive", "required": true, "playbook": "styling/css-modules/responsive.md", "sections": ["Responsive in Module File"] }
   ]
 }

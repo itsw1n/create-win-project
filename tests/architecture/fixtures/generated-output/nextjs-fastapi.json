@@ -351,9 +351,25 @@
     "bytes": 894,
     "sha256": "b4f1b988ac7ce7a7a8637cf58d1d2b14ac0904c37f618a804d0841db01f2e05d"
   },
-  "playbooks/styling/tailwind-extensions.md": {
-    "bytes": 4615,
-    "sha256": "a418fbe0c9a466f2e378ebd75bdcb2e1491923d5514234c251ba8f7a8433f35d"
+  "playbooks/styling/ownership.md": {
+    "bytes": 1289,
+    "sha256": "cde8ce895df5a6aca76b2a6aae6c927e0a5a64e17bf840954c759a9174cf898e"
+  },
+  "playbooks/styling/tailwind/architecture.md": {
+    "bytes": 1253,
+    "sha256": "1bdb3b77fd31a7e66755de8dddfe8b8c3bc1d32589441bef9cd4a2dc7de86a70"
+  },
+  "playbooks/styling/tailwind/components.md": {
+    "bytes": 1030,
+    "sha256": "4db797d56f355e256f6042080933fd388282270ddd4193eb66d59d874912ff96"
+  },
+  "playbooks/styling/tailwind/responsive.md": {
+    "bytes": 567,
+    "sha256": "fad48f0d2e707e92881fe362e36d5b63b3fbb6a6a725aa927b1b4c247fad8421"
+  },
+  "playbooks/styling/tailwind/tokens.md": {
+    "bytes": 997,
+    "sha256": "c8f049f179f8f02cd675882e6c3e2bd34c5d00fe22f3f8b1d1095b0ceb5e7729"
   },
   "playbooks/universal/accessibility.md": {
     "bytes": 2401,
@@ -416,8 +432,8 @@
     "sha256": "a7f679b448b57b348ecd6dc6313f4046664a444836bee9414e25e24ba452c899"
   },
   "RULES.md": {
-    "bytes": 5618,
-    "sha256": "cc91626a4b7e13a7cfa81f524ccbddcd508ce5fb0e1a6fcdd7e617cd7e541958"
+    "bytes": 6372,
+    "sha256": "b804a425f7e47ae3ea6a3599e445b22341a54b9d5341ab8bdd81067792ac6b51"
   },
   "src/app/api/health/route.ts": {
     "bytes": 67,
