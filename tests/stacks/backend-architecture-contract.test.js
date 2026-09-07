@@ -2,6 +2,8 @@ import fs from 'fs/promises'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { describe, expect, it } from 'vitest'
+import { loadCatalog, resolveStack } from '../../src/engine/load-library.js'
+import { buildRulesIndex } from '../../src/engine/project-guidance.js'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..')
 
@@ -39,5 +41,18 @@ describe('backend stack architecture contracts', () => {
     )
     expect(laravel).toHaveProperty('app/Actions/GetSystemStatus.php')
     expect(laravel).toHaveProperty('app/Http/Controllers/HealthController.php')
+  })
+
+  it.each([
+    ['fastapi', 'no-frontend'],
+    ['springboot', 'no-frontend'],
+    ['laravel', 'no-frontend'],
+  ])('routes %s structure headings without gaps', async (backend, frontend) => {
+    const catalog = await loadCatalog(path.join(root, 'library'))
+    const stack = resolveStack({ frontend, backend }, catalog)
+    const rules = await buildRulesIndex(stack, catalog, path.join(root, 'library'))
+    expect(rules).toContain('Canonical Reference Tree')
+    expect(rules).toContain('Architecture Cleanup')
+    expect(rules).not.toContain('(section not found)')
   })
 })
