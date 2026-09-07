@@ -4,6 +4,8 @@
   <p>Generate a tested, production-oriented web or mobile project with stack-specific code, CI, deployment artifacts, documentation, and agent guidance.</p>
 </div>
 
+> **Just answer what tech stack you want.** create-win-project turns your answers into a runnable, tested, agent-ready foundation
+
 ## Start
 
 ```bash
@@ -12,27 +14,48 @@ npx create-win-project@latest
 
 Answer product questions, choose whether dependencies should be installed, then follow the generated project README. Existing non-empty destinations are never overwritten.
 
+For example, a Next.js + FastAPI project using the Medium architecture profile has this
+feature-oriented shape:
+
 ```text
-my-project/
-├── application source and tests
-├── .github/workflows/       CI and security checks
-├── Dockerfile / eas.json    production artifacts when applicable
-├── AGENTS.md                small agent operating contract
-├── RULES.md                 task-to-playbook router
-├── CONTEXT.md               product decisions and approved deviations
-├── playbooks/               selected stack guidance
+sample-project/
+├── src/
+│   ├── app/                         Next.js routes and entry points
+│   └── features/status/
+│       ├── components/
+│       ├── services/
+│       └── types.ts
+├── backend/
+│   ├── app/
+│   │   ├── core/                    shared backend infrastructure
+│   │   └── features/status/
+│   │       ├── router.py
+│   │       ├── service.py
+│   │       ├── repository.py
+│   │       └── schemas.py
+│   └── tests/
+├── .github/workflows/             CI and security checks
+├── Dockerfile                     production frontend image
+├── docs/                          project-specific guides
+├── playbooks/                     selected stack guidance
+├── AGENTS.md                      small agent operating contract
+├── RULES.md                       task-to-playbook router
+├── CONTEXT.md                     product decisions and deviations
 └── create-win-project.profile.json
 ```
 
+The exact folders change with the selected stack and Small, Medium, or Large architecture
+profile. See [Understanding a generated project](./docs/generated-project.md).
+
 ## Supported stacks
 
-| Application | Backends and data |
-|---|---|
-| Next.js | None, Supabase, PostgreSQL, Spring Boot, Laravel, FastAPI |
-| React + Vite | None, Supabase, Spring Boot, Laravel, FastAPI |
-| Expo / React Native | None, Supabase, Spring Boot, Laravel, FastAPI |
-| Laravel UI | Blade, Livewire, or Inertia React with Laravel |
-| API only | Spring Boot, Laravel, or FastAPI |
+| Application         | Backends and data                                         |
+| ------------------- | --------------------------------------------------------- |
+| Next.js             | None, Supabase, PostgreSQL, Spring Boot, Laravel, FastAPI |
+| React + Vite        | None, Supabase, Spring Boot, Laravel, FastAPI             |
+| Expo / React Native | None, Supabase, Spring Boot, Laravel, FastAPI             |
+| Laravel UI          | Blade, Livewire, or Inertia React with Laravel            |
+| API only            | Spring Boot, Laravel, or FastAPI                          |
 
 Authentication follows the chosen stack and audience: Supabase Auth, server sessions, Sanctum SPA, or OIDC validation where supported.
 
