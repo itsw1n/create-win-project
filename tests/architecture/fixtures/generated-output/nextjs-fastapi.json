@@ -312,8 +312,8 @@
     "sha256": "9fd82f2d1ed95139033b4ccf701c8a35c7d02d91d147abdbde40ca28831b01c6"
   },
   "playbooks/stack/fastapi/architecture.md": {
-    "bytes": 1554,
-    "sha256": "14d17d0e0b9a591da32fd9ae635d6bf1133894b5ea6e2989056bacccb1f00c45"
+    "bytes": 2018,
+    "sha256": "e6e24996b46be244c644741c283a39b50ea45562101c430f64b5cbd21c0a51de"
   },
   "playbooks/stack/fastapi/runtime.md": {
     "bytes": 1209,
@@ -324,8 +324,8 @@
     "sha256": "f604d1d4891dcb10f8929d061e3810056a27b241089bfacda13915d146d1f90e"
   },
   "playbooks/stack/fastapi/structure.md": {
-    "bytes": 1241,
-    "sha256": "e6acdadc3df8fe8708edb3f0d0439ce64f82c4a4c7ddd23f084dff4d8cddcd7c"
+    "bytes": 2400,
+    "sha256": "4265258e2a173da6c24d0bdee803d789e703754afdda953c58cf1abf7fc8c0c3"
   },
   "playbooks/stack/fastapi/testing.md": {
     "bytes": 1076,
@@ -432,8 +432,8 @@
     "sha256": "a7f679b448b57b348ecd6dc6313f4046664a444836bee9414e25e24ba452c899"
   },
   "RULES.md": {
-    "bytes": 6372,
-    "sha256": "b804a425f7e47ae3ea6a3599e445b22341a54b9d5341ab8bdd81067792ac6b51"
+    "bytes": 6611,
+    "sha256": "aaead767f2c28b781cde2d7147893da16201b07ac037d09a83358ae71ca0f568"
   },
   "src/app/api/health/route.ts": {
     "bytes": 67,
