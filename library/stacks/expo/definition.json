@@ -36,7 +36,7 @@
   ],
   "concerns": [
     { "id": "architecture", "required": true, "playbook": "stack/expo/architecture.md", "sections": ["Profiles", "Dependency Direction"] },
-    { "id": "navigation", "required": true, "playbook": "stack/expo/structure.md", "sections": ["Expo Router", "Feature Ownership"] },
+    { "id": "navigation", "required": true, "playbook": "stack/expo/structure.md", "sections": ["Canonical Reference Tree", "Profile Differences", "File Placement", "Architecture Cleanup"] },
     { "id": "runtime", "required": true, "playbook": "stack/expo/runtime.md", "sections": ["Lifecycle and Remote State"] },
     { "id": "stack-security", "required": true, "playbook": "stack/expo/security.md", "sections": ["Mobile Trust Boundary", "Session Storage"] },
     { "id": "stack-testing", "required": true, "playbook": "stack/expo/testing.md", "sections": ["Test Layers"] },
