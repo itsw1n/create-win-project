@@ -109,7 +109,7 @@ Each `src/stacks/{frontends,backends}/<id>/create-files.js` is a pure function `
 
 Engine infrastructure is separated from generated-file decisions. `src/engine/write-files.js` validates destinations, stages writes, removes failed staging trees, and publishes completed trees atomically. `src/engine/render-templates.js` combines rendering with that safe write boundary (`writeRenderedFile` + `render`/`readTemplate`/`buildVars`). `src/engine/install-dependencies.js` is the only engine process runner and stops at the first failed package-manager step. `src/engine/tested-versions.js` and `src/engine/load-library.js` expose version resolution and library loading separately. After the migration `lib/` shims are deleted; `src/` is the sole implementation.
 
-The first `npm install` creates the lockfile. Generated CI uses `npm ci`, so the lockfile must be committed before CI is enabled. `create-win-project.profile.json` separately records the compatibility profile, architecture profile, and authentication intent/model/audience; after generation, that project owns its own upgrade lifecycle.
+The first `npm install` creates the lockfile. Generated CI uses `npm ci`, so the lockfile must be committed before CI is enabled. `create-win-project.profile.json` separately records the compatibility profile, architecture profile, styling mode, and authentication intent/model/audience; after generation, that project owns its own upgrade lifecycle.
 
 ### Compatibility profile lifecycle
 
