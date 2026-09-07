@@ -132,7 +132,60 @@ function packageFile(answers, stack) {
 
 function boundaryScript(sourceRoot) {
   return `/* eslint-disable no-undef -- node script runs outside linted frontend bundle */
-import fs from 'node:fs'\nimport path from 'node:path'\n\nconst root = path.resolve(${JSON.stringify(sourceRoot)}, 'features')\nconst violations = []\nif (fs.existsSync(root)) {\n  for (const feature of fs.readdirSync(root, { withFileTypes: true }).filter((entry) => entry.isDirectory()).map((entry) => entry.name)) {\n    const featureRoot = path.join(root, feature)\n    const visit = (directory) => {\n      for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {\n        const file = path.join(directory, entry.name)\n        if (entry.isDirectory()) visit(file)\n        else if (/\\.[cm]?[jt]sx?$/.test(entry.name)) {\n          const content = fs.readFileSync(file, 'utf8')\n          for (const match of content.matchAll(/from\\s+['\"]@\\/features\\/([^/'\"]+)(\\/[^'\"]+)?['\"]/g)) {\n            if (match[1] !== feature && match[2]) violations.push(\`${'${file}'} deep-imports feature ${'${match[1]}'}; import its public API instead\`)\n          }\n        }\n      }\n    }\n    visit(featureRoot)\n  }\n}\nif (violations.length) { console.error(violations.join('\\n')); process.exit(1) }\nconsole.log('Feature boundaries are valid.')\n`
+import fs from 'node:fs'
+import path from 'node:path'
+
+const root = path.resolve(${JSON.stringify(sourceRoot)})
+const violations = []
+
+function owner(relativePath) {
+  const normalized = relativePath.split(path.sep).join('/')
+  if (normalized.startsWith('components/common/')) return { layer: 'common' }
+  if (normalized.startsWith('components/layout/')) return { layer: 'layout' }
+  const feature = normalized.match(/^features\\/([^/]+)(?:\\/(.*))?$/)
+  return feature ? { layer: 'feature', name: feature[1], path: feature[2] || '' } : { layer: 'other' }
+}
+
+function resolveImport(file, specifier) {
+  if (specifier.startsWith('@/')) return path.resolve(root, specifier.slice(2))
+  if (specifier.startsWith('.')) return path.resolve(path.dirname(file), specifier)
+  return null
+}
+
+function visit(directory) {
+  if (!fs.existsSync(directory)) return
+  for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+    const file = path.join(directory, entry.name)
+    if (entry.isDirectory()) visit(file)
+    else if (/\\.[cm]?[jt]sx?$/.test(entry.name)) {
+      const sourceOwner = owner(path.relative(root, file))
+      const content = fs.readFileSync(file, 'utf8')
+      for (const match of content.matchAll(/(?:from\\s+|import\\s*\\()['"]([^'"]+)['"]/g)) {
+        const target = resolveImport(file, match[1])
+        if (!target) continue
+        const targetOwner = owner(path.relative(root, target))
+        if (sourceOwner.layer === 'common' && ['layout', 'feature'].includes(targetOwner.layer)) {
+          violations.push(\`${'${path.relative(root, file)}'}: common cannot import ${'${targetOwner.layer}'}\`)
+        }
+        if (sourceOwner.layer === 'layout' && targetOwner.layer === 'feature') {
+          violations.push(\`${'${path.relative(root, file)}'}: layout cannot import feature\`)
+        }
+        if (sourceOwner.layer === 'feature' && targetOwner.layer === 'layout') {
+          violations.push(\`${'${path.relative(root, file)}'}: feature cannot import layout\`)
+        }
+        if (sourceOwner.layer === 'feature' && targetOwner.layer === 'feature' &&
+            sourceOwner.name !== targetOwner.name && !['', 'index'].includes(targetOwner.path)) {
+          violations.push(\`${'${path.relative(root, file)}'}: import feature ${'${targetOwner.name}'} through its public API\`)
+        }
+      }
+    }
+  }
+}
+
+visit(root)
+if (violations.length) { console.error(violations.join('\\n')); process.exit(1) }
+console.log('Component and feature boundaries are valid.')
+`
 }
 
 function statusFeatureFiles(root, stack) {
@@ -229,6 +282,9 @@ export function buildRunnableFiles(answers, stack, vars) {
       supportedUntil: stack.profile.supportedUntil,
     },
     architectureProfile: stack.architecture,
+    styling: {
+      mode: stack.styleId || 'none',
+    },
     authentication: {
       intent: stack.authenticationIntent,
       model: stack.authentication,

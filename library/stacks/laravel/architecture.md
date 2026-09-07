@@ -32,3 +32,12 @@ Eloquent is the default persistence abstraction. Add a repository or query objec
 for complex repeated queries, multiple data sources, or a boundary with measurable value.
 Create a directory only with its first real file.
 
+| Add | When |
+|---|---|
+| Action | A meaningful use case deserves a name or more than one entry point invokes it |
+| Service | A capability is reused across multiple use cases |
+| Repository/Query | Eloquent access is complex, repeated, spans sources, or needs a stable boundary |
+| Module | Large domain boundaries need explicit public APIs and dependency enforcement |
+
+Do not introduce a second vocabulary for an existing responsibility. Before removing or
+reorganizing a user-created layer, explain the reason and recovery path and ask for approval.

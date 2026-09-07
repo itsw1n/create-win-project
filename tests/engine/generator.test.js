@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import fs from 'fs-extra'
 import os from 'node:os'
 import path from 'node:path'
+import { spawnSync } from 'node:child_process'
 import { generateProject } from '../../src/engine/create-project.js'
 
 const root = path.resolve(import.meta.dirname, '..', '..')
@@ -33,6 +34,16 @@ async function generate(overrides) {
     process.chdir(previous)
   }
   return path.join(workingDirectory, overrides.projectName || 'example-app')
+}
+
+async function sourceText(directory) {
+  const contents = []
+  for (const entry of await fs.readdir(directory, { withFileTypes: true })) {
+    const target = path.join(directory, entry.name)
+    if (entry.isDirectory()) contents.push(await sourceText(target))
+    else if (/\.(?:css|jsx?|tsx?)$/.test(entry.name)) contents.push(await fs.readFile(target, 'utf8'))
+  }
+  return contents.flat().join('\n')
 }
 
 afterEach(async () => {
@@ -106,17 +117,34 @@ describe('runnable project contract', () => {
   ])('generates the %s Laravel full-stack UI', async (laravelUi, expectedFile, composerPackage) => {
     const destination = await generate({
       frontend: 'laravel-ui', backend: 'laravel', applicationShape: 'fullstack', laravelUi,
-      architecture: 'medium', authentication: 'yes', styling: 'tailwind', githubActions: false,
+      architecture: 'medium', authentication: 'yes', styling: 'tailwind', githubActions: true,
       projectName: `laravel-${laravelUi}`,
     })
     expect(await fs.pathExists(path.join(destination, expectedFile))).toBe(true)
     const composer = await fs.readJson(path.join(destination, 'composer.json'))
+    const packageJson = await fs.readJson(path.join(destination, 'package.json'))
+    expect(packageJson.devDependencies.tailwindcss).toBe('4.3.3')
+    expect(packageJson.devDependencies['@tailwindcss/vite']).toBe('4.3.3')
+    expect(await fs.readFile(path.join(destination, 'resources/css/app.css'), 'utf8')).toContain('@theme')
+    expect(await fs.readFile(path.join(destination, 'vite.config.js'), 'utf8')).toContain('tailwindcss()')
+    expect(await fs.pathExists(path.join(destination, 'resources/views/components/layout/container.blade.php'))).toBe(true)
+    expect(await fs.pathExists(path.join(destination, 'resources/views/components/common/button.blade.php'))).toBe(true)
+    const dockerfile = await fs.readFile(path.join(destination, 'Dockerfile'), 'utf8')
+    expect(dockerfile).toContain('FROM node:24.20.0-alpine AS assets')
+    expect(dockerfile).toContain('COPY --from=assets /app/public/build ./public/build')
+    const workflow = await fs.readFile(path.join(destination, '.github/workflows/ci-backend.yml'), 'utf8')
+    expect(workflow).toContain('npm test --if-present')
+    expect(workflow).toContain('npm run build')
+    const security = await fs.readFile(path.join(destination, '.github/workflows/security.yml'), 'utf8')
+    expect(security).toContain('npm audit --audit-level=high')
     if (composerPackage) expect(composer.require[composerPackage]).toMatch(/^\d+\.\d+\.\d+$/)
     if (laravelUi === 'inertia-react') {
-      const packageJson = await fs.readJson(path.join(destination, 'package.json'))
       expect(packageJson.dependencies['@inertiajs/react']).toMatch(/^\d+\.\d+\.\d+$/)
+      expect(packageJson.dependencies['class-variance-authority']).toBe('0.7.1')
       expect(packageJson.packageManager).toBe('npm@11.19.0')
       expect(await fs.readFile(path.join(destination, '.node-version'), 'utf8')).toBe('24.20.0\n')
+      expect(await fs.pathExists(path.join(destination, 'resources/js/components/layout/Container.jsx'))).toBe(true)
+      expect(await fs.pathExists(path.join(destination, 'resources/js/components/common/Button.test.jsx'))).toBe(true)
     }
     const rules = await fs.readFile(path.join(destination, 'RULES.md'), 'utf8')
     expect(rules).toContain(`platform/laravel-ui/${laravelUi}/architecture.md`)
@@ -173,6 +201,7 @@ describe('runnable project contract', () => {
     ['no-frontend', 'api', 'medium'],
     ['react', 'separate', 'small'],
   ])('generates a FastAPI service for %s (%s)', async (frontend, applicationShape, architecture) => {
+    const projectName = `fastapi-${frontend}`
     const destination = await generate({
       frontend,
       backend: 'fastapi',
@@ -180,7 +209,7 @@ describe('runnable project contract', () => {
       architecture,
       styling: frontend === 'react' ? 'tailwind' : undefined,
       githubActions: false,
-      projectName: `fastapi-${frontend}`,
+      projectName,
     })
     const apiRoot = frontend === 'no-frontend' ? destination : path.join(destination, 'backend')
     const pyproject = await fs.readFile(path.join(apiRoot, 'pyproject.toml'), 'utf8')
@@ -192,6 +221,11 @@ describe('runnable project contract', () => {
     expect(await fs.pathExists(path.join(apiRoot, 'tests/test_health.py'))).toBe(true)
     expect(await fs.readFile(path.join(apiRoot, '.python-version'), 'utf8')).toBe('3.14.7\n')
     expect(await fs.readFile(path.join(destination, 'docs/guides/toolchain.md'), 'utf8')).toContain('uv')
+    const architectureGuide = await fs.readFile(path.join(destination, 'docs/architecture/overview.md'), 'utf8')
+    expect(architectureGuide).toContain(`\`\`\`text\n${projectName}/`)
+    expect(architectureGuide).toContain('main.py')
+    expect(architectureGuide).toContain('playbooks/stack/fastapi/structure.md')
+    if (frontend === 'react') expect(architectureGuide).toContain('styles.css')
     const profile = await fs.readJson(path.join(destination, 'create-win-project.profile.json'))
     expect(profile.applicationShape).toBe(applicationShape)
   })
@@ -321,6 +355,9 @@ describe('runnable project contract', () => {
     expect(profile.schemaVersion).toBe(2)
     expect(profile.compatibilityProfile.id).toBe('2026.09')
     expect(profile.architectureProfile).toBe('medium')
+    expect(profile.styling).toEqual({
+      mode: frontend === 'react-native' ? 'native-styles' : styling,
+    })
     expect(profile.authentication).toEqual({
       intent: 'not-yet', model: 'undecided', audience: 'website',
     })
@@ -339,6 +376,133 @@ describe('runnable project contract', () => {
       expect(await fs.readFile(path.join(destination, 'backend/.java-version'), 'utf8')).toBe('21\n')
       expect(toolchain).toContain('generated wrapper')
     }
+  })
+
+  it('generates honest Next.js styling foundations for both web modes', async () => {
+    const tailwind = await generate({
+      frontend: 'nextjs', backend: 'none', styling: 'tailwind', architecture: 'small',
+      projectName: 'next-tailwind-foundation',
+    })
+    const tailwindPackage = await fs.readJson(path.join(tailwind, 'package.json'))
+    expect(tailwindPackage.dependencies).toMatchObject({
+      'class-variance-authority': '0.7.1', clsx: '2.1.1', 'tailwind-merge': '3.6.0',
+    })
+    expect(await fs.readFile(path.join(tailwind, 'src/app/globals.css'), 'utf8')).toContain('@theme')
+    expect(await fs.readFile(path.join(tailwind, 'src/app/page.tsx'), 'utf8')).toContain('ui="hero"')
+    expect(await fs.readFile(path.join(tailwind, 'src/components/layout/Container.tsx'), 'utf8')).toContain('data-ui="container"')
+    expect(await fs.readFile(path.join(tailwind, 'src/components/common/Button.tsx'), 'utf8')).toContain('cva(')
+    expect(await fs.pathExists(path.join(tailwind, 'src/components/common/Button.test.tsx'))).toBe(true)
+
+    const modules = await generate({
+      frontend: 'nextjs', backend: 'springboot', styling: 'css-modules', architecture: 'medium',
+      packageName: 'com.example', projectName: 'next-modules-foundation',
+    })
+    const modulesPackage = await fs.readJson(path.join(modules, 'package.json'))
+    expect(modulesPackage.dependencies).not.toHaveProperty('class-variance-authority')
+    expect(modulesPackage.dependencies).not.toHaveProperty('clsx')
+    expect(modulesPackage.dependencies).not.toHaveProperty('tailwind-merge')
+    const modulesPage = await fs.readFile(path.join(modules, 'src/app/page.tsx'), 'utf8')
+    expect(modulesPage).toContain("import styles from './page.module.css'")
+    expect(modulesPage).not.toContain('data-ui')
+    expect(await sourceText(path.join(modules, 'src'))).not.toContain('data-ui')
+    expect(await fs.pathExists(path.join(modules, 'src/styles/tokens.css'))).toBe(true)
+    expect(await fs.pathExists(path.join(modules, 'src/components/layout/Section/Section.module.css'))).toBe(true)
+    expect(await fs.pathExists(path.join(modules, 'src/components/common/Button/Button.test.tsx'))).toBe(true)
+    expect(await fs.pathExists(path.join(modules, 'src/features/status/components/StarterStatus.tsx'))).toBe(false)
+    expect(await fs.pathExists(path.join(modules, 'src/features/status/components/StarterStatus/StarterStatus.module.css'))).toBe(true)
+  })
+
+  it('generates honest React + Vite styling foundations for both web modes', async () => {
+    const tailwind = await generate({
+      frontend: 'react', backend: 'supabase', styling: 'tailwind', architecture: 'medium',
+      projectName: 'vite-tailwind-foundation',
+    })
+    const tailwindPackage = await fs.readJson(path.join(tailwind, 'frontend/package.json'))
+    expect(tailwindPackage.dependencies).toMatchObject({
+      'class-variance-authority': '0.7.1', clsx: '2.1.1', 'tailwind-merge': '3.6.0',
+    })
+    expect(await fs.readFile(path.join(tailwind, 'frontend/src/styles.css'), 'utf8')).toContain('@theme')
+    expect(await fs.readFile(path.join(tailwind, 'frontend/src/App.tsx'), 'utf8')).toContain('ui="hero"')
+    expect(await fs.readFile(path.join(tailwind, 'frontend/src/components/common/Button.tsx'), 'utf8')).toContain('cva(')
+
+    const modules = await generate({
+      frontend: 'react', backend: 'none', applicationShape: 'frontend', styling: 'css-modules', architecture: 'small',
+      projectName: 'vite-modules-foundation',
+    })
+    const modulesPackage = await fs.readJson(path.join(modules, 'frontend/package.json'))
+    expect(modulesPackage.dependencies).not.toHaveProperty('clsx')
+    const modulesApp = await fs.readFile(path.join(modules, 'frontend/src/App.tsx'), 'utf8')
+    expect(modulesApp).toContain("import styles from './App.module.css'")
+    expect(modulesApp).not.toContain('data-ui')
+    expect(await sourceText(path.join(modules, 'frontend/src'))).not.toContain('data-ui')
+    expect(await fs.pathExists(path.join(modules, 'frontend/src/styles/tokens.css'))).toBe(true)
+    expect(await fs.pathExists(path.join(modules, 'frontend/src/components/layout/Container/Container.module.css'))).toBe(true)
+    expect(await fs.pathExists(path.join(modules, 'frontend/src/components/common/Button/Button.test.tsx'))).toBe(true)
+  })
+
+  it('generates the native styling ownership foundation for Expo', async () => {
+    const destination = await generate({
+      frontend: 'react-native', backend: 'none', applicationShape: 'mobile', architecture: 'small',
+      projectName: 'expo-native-foundation',
+    })
+    const home = await fs.readFile(path.join(destination, 'app/index.tsx'), 'utf8')
+    expect(home).toContain("import { Screen } from '@/components/layout/Screen'")
+    expect(home).toContain("import { Content } from '@/components/layout/Content'")
+    expect(home).not.toContain('data-ui')
+    expect(await sourceText(destination)).not.toContain('data-ui')
+    expect(await fs.pathExists(path.join(destination, 'theme/tokens.ts'))).toBe(true)
+    expect(await fs.pathExists(path.join(destination, 'components/common/Button.tsx'))).toBe(true)
+    expect(await fs.pathExists(path.join(destination, 'components/common/Button.test.tsx'))).toBe(true)
+  })
+
+  it('keeps styling ownership stable across architecture sizes', async () => {
+    for (const architecture of ['small', 'medium', 'large']) {
+      for (const [frontend, styling] of [['nextjs', 'tailwind'], ['nextjs', 'css-modules'], ['react', 'tailwind'], ['react', 'css-modules']]) {
+        const destination = await generate({
+          frontend, backend: 'none', applicationShape: frontend === 'react' ? 'frontend' : 'fullstack',
+          styling, architecture, authentication: 'none', githubActions: false,
+          projectName: `${frontend}-${styling}-${architecture}`,
+        })
+        const sourceRoot = frontend === 'react' ? path.join(destination, 'frontend/src') : path.join(destination, 'src')
+        const componentRoot = path.join(sourceRoot, 'components')
+        if (styling === 'tailwind') {
+          expect(await fs.pathExists(path.join(componentRoot, 'layout/Container.tsx'))).toBe(true)
+          expect(await fs.pathExists(path.join(componentRoot, 'layout/Section.tsx'))).toBe(true)
+          expect(await fs.pathExists(path.join(componentRoot, 'common/Button.tsx'))).toBe(true)
+        } else {
+          expect(await fs.pathExists(path.join(componentRoot, 'layout/Container/Container.module.css'))).toBe(true)
+          expect(await fs.pathExists(path.join(componentRoot, 'layout/Section/Section.module.css'))).toBe(true)
+          expect(await fs.pathExists(path.join(componentRoot, 'common/Button/Button.module.css'))).toBe(true)
+        }
+      }
+
+      const native = await generate({
+        frontend: 'react-native', backend: 'none', applicationShape: 'mobile', architecture,
+        authentication: 'none', githubActions: false, projectName: `expo-native-${architecture}`,
+      })
+      expect(await fs.pathExists(path.join(native, 'components/layout/Screen.tsx'))).toBe(true)
+      expect(await fs.pathExists(path.join(native, 'components/layout/Content.tsx'))).toBe(true)
+      expect(await fs.pathExists(path.join(native, 'components/common/Button.tsx'))).toBe(true)
+    }
+  })
+
+  it('enforces generated component ownership boundaries', async () => {
+    const destination = await generate({
+      frontend: 'nextjs', backend: 'supabase', styling: 'tailwind', architecture: 'large',
+      authentication: 'yes', projectName: 'ownership-boundaries',
+    })
+    const runBoundaryCheck = () => spawnSync(process.execPath, ['scripts/check-boundaries.mjs'], {
+      cwd: destination, encoding: 'utf8',
+    })
+    const clean = runBoundaryCheck()
+    expect(clean.status, clean.stderr).toBe(0)
+
+    const button = path.join(destination, 'src/components/common/Button.tsx')
+    const validButton = await fs.readFile(button, 'utf8')
+    await fs.writeFile(button, `import { Section } from '@/components/layout/Section'\n${validButton}`)
+    const violation = runBoundaryCheck()
+    expect(violation.status).toBe(1)
+    expect(violation.stderr).toContain('common cannot import layout')
   })
 
   it('rejects unsupported production-ready without tests paths', async () => {

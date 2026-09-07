@@ -28,7 +28,7 @@
   ],
   "concerns": [
     { "id": "architecture", "required": true, "playbook": "stack/springboot/architecture.md", "sections": ["Profiles", "Dependency Direction"] },
-    { "id": "structure", "required": true, "playbook": "stack/springboot/structure.md", "sections": ["Package by Feature"] },
+    { "id": "structure", "required": true, "playbook": "stack/springboot/structure.md", "sections": ["Canonical Reference Tree", "Profile Differences", "File Placement", "Architecture Cleanup"] },
     { "id": "runtime", "required": true, "playbook": "stack/springboot/runtime.md", "sections": ["Transactions", "Errors and Observability"] },
     { "id": "stack-security", "required": true, "playbook": "stack/springboot/security.md", "sections": ["Authentication Models", "Authorization"] },
     { "id": "stack-testing", "required": true, "playbook": "stack/springboot/testing.md", "sections": ["Test Layers"] },

@@ -92,6 +92,11 @@ export function buildJavaScriptPackage(answers, stack, owner) {
     if (owner === 'react') devDependencies['@tailwindcss/vite'] = packageVersion(stack.profile, '@tailwindcss/vite', owner)
   }
   const dependencies = { ...stack.deps }
+  if (stack.styleId === 'tailwind') {
+    dependencies['class-variance-authority'] = packageVersion(stack.profile, 'class-variance-authority', owner)
+    dependencies.clsx = packageVersion(stack.profile, 'clsx', owner)
+    dependencies['tailwind-merge'] = packageVersion(stack.profile, 'tailwind-merge', owner)
+  }
   if (owner !== 'nextjs') delete dependencies['@supabase/ssr']
   if (owner === 'react-native' && stack.authentication === 'supabase') {
     dependencies['expo-secure-store'] = packageVersion(stack.profile, 'expo-secure-store', owner)

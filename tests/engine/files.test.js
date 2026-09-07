@@ -47,6 +47,14 @@ describe('template rendering', () => {
     expect(makeTpl).toBeNull()
   })
 
+  it('renders no styling mode for an API-only project', async () => {
+    const catalog = await loadCatalog(path.join(process.cwd(), 'library'))
+    const stack = resolveStack({ frontend: 'no-frontend', backend: 'fastapi' }, catalog)
+    const vars = buildVars({ projectName: 'api', projectDescription: 'API' }, stack)
+
+    expect(vars.STYLE_MODE).toBe('NONE')
+  })
+
   it('missing template file returns null without throwing', async () => {
     const missing = await readTemplate(templatesDir, 'makefile', 'nonexistent-template-xyz', '.mk')
     expect(missing).toBeNull()

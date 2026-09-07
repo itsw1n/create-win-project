@@ -25,3 +25,18 @@ product needs them.
 Routes compose screens. Screens call features. Features call shared platform/transport
 adapters. Transport code never imports navigation or visual components. The backend or
 Supabase RLS remains the trusted policy boundary.
+
+## Mobile Boundary Decisions
+
+| Need | Preferred boundary |
+|---|---|
+| Route or deep-link composition | Expo Router screen |
+| Reusable interaction | Feature Component or hook |
+| Remote HTTP call | Feature `api/` module |
+| Direct Supabase access | Feature `data/` module with RLS |
+| Device or multi-step UI workflow | Client Service when coordination justifies it |
+| Secure storage or platform lifecycle | Shared `lib/` adapter |
+
+Add sync, background, offline, or platform layers only when corresponding runtime behavior exists.
+Before removing or reorganizing user-created folders, explain the reason and recovery path and ask
+for approval.

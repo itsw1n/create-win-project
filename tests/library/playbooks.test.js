@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest'
+import fs from 'fs/promises'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { loadCatalog, resolveStack } from '../../src/engine/load-library.js'
@@ -68,6 +69,23 @@ describe('collectPlaybookFiles', () => {
     expect(files.some((f) => f.startsWith('concerns/'))).toBe(true)
   })
 
+  it.each([
+    ['tailwind', 'styling/tailwind/architecture.md', 'styling/tailwind/components.md'],
+    ['css-modules', 'styling/css-modules/architecture.md', 'styling/css-modules/components.md'],
+  ])('routes the complete %s styling contract', async (styling, architecture, components) => {
+    const catalog = await loadCatalog(path.join(root, 'library'))
+    const stack = resolveStack({ frontend: 'nextjs', backend: 'none', styling }, catalog)
+    const files = collectPlaybookFiles(stack)
+    const rules = await buildRulesIndex(stack, catalog, path.join(root, 'library'))
+
+    expect(files).toContain('styling/ownership.md')
+    expect(files).toContain(architecture)
+    expect(files).toContain(components)
+    expect(rules).toContain('styling-ownership')
+    expect(rules).toContain('styling-components')
+    expect(files).not.toContain('styling/tailwind-extensions.md')
+  })
+
   it('does not duplicate files', async () => {
     const catalog = await loadCatalog(path.join(root, 'library'))
     const stack   = resolveStack({ frontend: 'react-native', backend: 'supabase' }, catalog)
@@ -75,4 +93,21 @@ describe('collectPlaybookFiles', () => {
     const unique  = new Set(files)
     expect(files.length).toBe(unique.size)
   })
+})
+
+describe('frontend component ownership vocabulary', () => {
+  it.each(['nextjs', 'react-vite', 'expo'])(
+    'documents layout/common ownership for %s',
+    async (stackId) => {
+      const structure = await fs.readFile(
+        path.join(root, 'library', 'stacks', stackId, 'structure.md'),
+        'utf8',
+      )
+
+      expect(structure).toContain('components/layout')
+      expect(structure).toContain('components/common')
+      expect(structure).not.toContain('components/ui')
+      expect(structure).not.toContain('components/shared')
+    },
+  )
 })

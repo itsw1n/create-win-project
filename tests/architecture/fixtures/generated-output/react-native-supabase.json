@@ -48,8 +48,8 @@
     "sha256": "e73c6c1c3fcd276e35ccd68a5ad5ea66dda510c122e53a4484474f3dab507ac0"
   },
   "app/index.tsx": {
-    "bytes": 681,
-    "sha256": "b2f51497a7eb88a46fee68a30694a997e889330c86da7ad20812fca10bcf3c72"
+    "bytes": 861,
+    "sha256": "1d7a2a98bda4126cbdab17d65e573f3ac490fb01edf63c3e0db1e69228fd53d1"
   },
   "app/login.tsx": {
     "bytes": 1319,
@@ -59,13 +59,29 @@
     "bytes": 529,
     "sha256": "1fd06521fd0df635253336337d6aa78e78a67062feb5a694a1c6827b99288cda"
   },
+  "components/common/Button.test.tsx": {
+    "bytes": 361,
+    "sha256": "da300ac53afa44763a5a376ee4d44b25e45cd2ef727b02dc8f837d2631891345"
+  },
+  "components/common/Button.tsx": {
+    "bytes": 1296,
+    "sha256": "3b9b007d9e2a0d740a3804a2fb2d86845ab3f1a01a98312786e6e137a32f9802"
+  },
+  "components/layout/Content.tsx": {
+    "bytes": 358,
+    "sha256": "5d56005d54b7a4c0c6137893760b8852a64f205909ca491d8c1ea7bf6fe8f2d8"
+  },
+  "components/layout/Screen.tsx": {
+    "bytes": 529,
+    "sha256": "832502a88877e02c6cbeb38f8393def793c1a4195d83e5ea5266fda40544ff88"
+  },
   "CONTEXT.md": {
     "bytes": 829,
     "sha256": "dcf61b3dff9f18128c140a91dd01fccb64338c8f66cf30dd1273a7110dfa44ec"
   },
   "create-win-project.profile.json": {
-    "bytes": 906,
-    "sha256": "34864076496cd4827d7e5223d2ef5bf51c36d7b8c567e91614fa11ef890a91c2"
+    "bytes": 954,
+    "sha256": "cbdde51c79a4f04654c84ef3c7a96fbf1e2ceb680cc50c6de8e041f5f3aa792c"
   },
   "docs/api/endpoints.md": {
     "bytes": 84,
@@ -88,8 +104,8 @@
     "sha256": "e87327e605c00b80ed691147211c7beec30cc910d86f7c2364d293bdd93aed8c"
   },
   "docs/architecture/overview.md": {
-    "bytes": 658,
-    "sha256": "2b031dc51f39073b934bce621e0a0a47683ff1b28deef1b105a2432b6e9b95bc"
+    "bytes": 2088,
+    "sha256": "89e512e2fc4f0073120e75f5905bf34bcb4889c49bcfb3eac5aa7556d71f3132"
   },
   "docs/guides/deployment.md": {
     "bytes": 997,
@@ -128,8 +144,8 @@
     "sha256": "57d45be957186273b21383b09f6a6aa3ca599b28d1fb742fb3edfac464504b90"
   },
   "features/status/components/StarterStatus.tsx": {
-    "bytes": 273,
-    "sha256": "ecf390eb478782ab7318cc2170eaf0b379e1e7132d062df27997d06b92a9f77c"
+    "bytes": 620,
+    "sha256": "33818afd85c6ebd94c2f59a60d90af77309420842027e8f74b21716037af24aa"
   },
   "features/status/services/getStarterStatus.ts": {
     "bytes": 168,
@@ -228,8 +244,8 @@
     "sha256": "230d1eb6de679e59015152f9f74799341057ea49c3c71be459b294e14426fd7d"
   },
   "playbooks/stack/expo/architecture.md": {
-    "bytes": 880,
-    "sha256": "bfb8b1afae467db59eed23a70f76cf3d7a1bc41d9e8be9e1318dd4db00b2f762"
+    "bytes": 1529,
+    "sha256": "5889add2527a8216fb5388a303fd7af4fb65a32a1dd2c0a0652405434bb3c983"
   },
   "playbooks/stack/expo/runtime.md": {
     "bytes": 766,
@@ -240,8 +256,8 @@
     "sha256": "f3057eff1030a71fbfe18a860c9bc2803d2061ddf76a46d0a6969b38078e336b"
   },
   "playbooks/stack/expo/structure.md": {
-    "bytes": 920,
-    "sha256": "769e1212c0c8323cf840b84005afa5c6e9680a82cb7462069441464494200e82"
+    "bytes": 2745,
+    "sha256": "53f20c5580c2c13d222bf77e4b98fe03c810c6e119cb548576487eb3c83ff97d"
   },
   "playbooks/stack/expo/testing.md": {
     "bytes": 601,
@@ -308,8 +324,8 @@
     "sha256": "803b6fae1759bdc6c80badf3c4e60cc7b4528f4eb77e544b04254a51404cc7d5"
   },
   "RULES.md": {
-    "bytes": 5307,
-    "sha256": "9620593e687f96e3bc2270241dc5e203059389afdae9c986e5bcd6a0eb58a214"
+    "bytes": 5472,
+    "sha256": "e5e0870aefafcd301f1d623769b518f3e9820f667f4da5c2b7d265dcaad9551d"
   },
   "supabase/config.toml": {
     "bytes": 232,
@@ -322,6 +338,10 @@
   "supabase/tests/examples_rls.test.sql": {
     "bytes": 1462,
     "sha256": "b12c2a438738234e5c89aaa4a2c265adc59f419171b53a363d674cb1c16df4ea"
+  },
+  "theme/tokens.ts": {
+    "bytes": 308,
+    "sha256": "9e14d63a6b82b00f9422c3d68331688c24cfc9237b801ef2079519d74e7dfe77"
   },
   "tsconfig.json": {
     "bytes": 277,

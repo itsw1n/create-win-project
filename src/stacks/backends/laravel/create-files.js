@@ -357,7 +357,8 @@ it('reports application health', function () {
   for (const [path, content] of Object.entries(buildLaravelArchitectureFiles(stack))) files[at(path)] = content
   for (const [path, content] of Object.entries(authFiles(stack))) files[at(path)] = content
   for (const [path, content] of Object.entries(uiFiles(answers, stack))) files[at(path)] = content
-  files['README.md'] = `# ${answers.projectName}\n\n> ${answers.projectDescription}\n\n## Start Laravel\n\n\`\`\`bash\n${root ? `cd ${root.slice(0, -1)}\n` : ''}cp .env.example .env\ncomposer install\nphp artisan key:generate\nphp artisan serve\n\`\`\`\n\nHealth: \`GET /api/health\`\n\n## Validate\n\n\`\`\`bash\ncomposer check\n\`\`\`\n`
+  const uiCommands = stack.frontendKey === 'laravel-ui' ? 'npm install\nnpm run dev  # run in a second terminal\n' : ''
+  const uiValidation = stack.frontendKey === 'laravel-ui' ? '\nnpm test --if-present\nnpm run build' : ''
+  files['README.md'] = `# ${answers.projectName}\n\n> ${answers.projectDescription}\n\n## Start Laravel\n\n\`\`\`bash\n${root ? `cd ${root.slice(0, -1)}\n` : ''}cp .env.example .env\ncomposer install\nphp artisan key:generate\n${uiCommands}php artisan serve\n\`\`\`\n\nHealth: \`GET /api/health\`\n\n## Validate\n\n\`\`\`bash\ncomposer check${uiValidation}\n\`\`\`\n`
   return files
 }
-

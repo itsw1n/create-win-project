@@ -38,3 +38,14 @@ web/API → application operation → domain policy → persistence/external ada
 - External side effects are not assumed successful merely because a transaction commits.
 
 Start at the selected project baseline and let each feature create only the files it uses.
+
+## Escalation Decisions
+
+| Add | When |
+|---|---|
+| Service | Policy, coordination, transactions, reuse, or independent testing exists |
+| Repository | Persistence queries are complex, repeated, or need isolation |
+| Public module interface | Large boundaries are enforced across features |
+
+Do not add parallel names for an existing responsibility. Before removing or reorganizing a
+user-created layer, explain the reason and recovery path and ask for approval.

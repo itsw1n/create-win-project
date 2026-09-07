@@ -17,6 +17,7 @@ import {
 import { writeRenderedFile as writeTemplate } from '../engine/render-templates.js'
 import { laravelCompose } from './backends/laravel/docker.js'
 import { fastapiCompose } from './backends/fastapi/docker.js'
+import { architectureOverview } from './shared/architecture-documentation.js'
 
 /**
  * Main entry point — generates the full project
@@ -57,10 +58,10 @@ export async function scaffoldProject(answers, cliRoot) {
 
     // 4. Small, runnable framework foundations. These files are the executable
     // contract that the playbooks describe.
-    await generateRunnableFiles(dest, resolvedAnswers, stack, vars)
+    const runnableFilePaths = await generateRunnableFiles(dest, resolvedAnswers, stack, vars)
 
     // 5. Product documentation
-    await generateDocs(dest, resolvedAnswers, stack)
+    await generateDocs(dest, resolvedAnswers, stack, runnableFilePaths)
 
     // 6. GitHub Actions CI (template-driven)
     if (resolvedAnswers.githubActions) {
@@ -170,10 +171,11 @@ async function generateRootFiles(dest, answers, vars, stack, templatesDir) {
 
     if (stack.backendKey === 'laravel') {
       const laravelRoot = stack.frontendKey === 'laravel-ui' || stack.frontendKey === 'no-frontend' ? '' : 'backend/'
-      const dockerfileName = stack.frontendKey === 'laravel-ui' && stack.laravelUi === 'inertia-react' ? 'laravel-inertia.dev' : 'laravel.dev'
+      const dockerfileName = stack.frontendKey === 'laravel-ui' ? 'laravel-ui.dev' : 'laravel.dev'
       const laravelDev = await readTemplate(templatesDir, 'docker/dockerfile', dockerfileName, '.dockerfile')
       if (laravelDev) await writeTemplate(dest, `${laravelRoot}Dockerfile.dev`, laravelDev, vars)
-      const laravelProd = await readTemplate(templatesDir, 'docker/dockerfile', 'laravel.prod', '.dockerfile')
+      const productionDockerfile = stack.frontendKey === 'laravel-ui' ? 'laravel-ui.prod' : 'laravel.prod'
+      const laravelProd = await readTemplate(templatesDir, 'docker/dockerfile', productionDockerfile, '.dockerfile')
       if (laravelProd) await writeTemplate(dest, `${laravelRoot}Dockerfile`, laravelProd, vars)
     }
 
@@ -256,7 +258,8 @@ async function generateRootFiles(dest, answers, vars, stack, templatesDir) {
     }
     if (stack.backendKey === 'laravel') {
       const laravelRoot = ['laravel-ui', 'no-frontend'].includes(stack.frontendKey) ? '' : 'backend/'
-      const laravelProd = await readTemplate(templatesDir, 'docker/dockerfile', 'laravel.prod', '.dockerfile')
+      const productionDockerfile = stack.frontendKey === 'laravel-ui' ? 'laravel-ui.prod' : 'laravel.prod'
+      const laravelProd = await readTemplate(templatesDir, 'docker/dockerfile', productionDockerfile, '.dockerfile')
       if (laravelProd) await writeTemplate(dest, `${laravelRoot}Dockerfile`, laravelProd, vars)
     }
   }
@@ -271,8 +274,7 @@ async function generateRootFiles(dest, answers, vars, stack, templatesDir) {
 
 function toolchainGuide(answers, stack) {
   const javascriptRoot = stack.frontendKey === 'react' ? 'frontend/' : ''
-  const hasJavaScript = stack.frontendKey !== 'no-frontend' &&
-    !(stack.frontendKey === 'laravel-ui' && stack.laravelUi !== 'inertia-react')
+  const hasJavaScript = stack.frontendKey !== 'no-frontend'
   const rows = []
   if (hasJavaScript) {
     rows.push(`| Node.js | ${stack.profile.runtimes.nodeMinimum}+ (tested ${stack.profile.runtimes.node}) | JavaScript application | \`${javascriptRoot}.node-version\`, \`${javascriptRoot}package.json\` |`)
@@ -308,7 +310,7 @@ function developmentEnvironmentGuide(answers, stack) {
   return `# Development Environments\n\n## Default local workflow\n\nRun the generator directly on the host, then use the commands in \`setup.md\`. Docker is optional and is never required to run create-win-project itself. Local files and package-manager metadata remain the source of truth.\n${docker}${mobile}\n## Dev Containers\n\nA generic Dev Container is intentionally not generated: JavaScript, Java, PHP, and mobile stacks need different host/device boundaries. VS Code and Codespaces users can open the generated repository normally and add a stack-specific Dev Container later without changing the supported local or Compose workflows.\n`
 }
 
-async function generateDocs(dest, answers, stack) {
+async function generateDocs(dest, answers, stack, runnableFilePaths) {
   const docs = [
     ['docs/api/overview.md',              'API Overview',           'Base URL, authentication method, and response format.'],
     ['docs/api/endpoints.md',             'API Endpoints',          'All endpoint documentation goes here.'],
@@ -347,10 +349,10 @@ async function generateDocs(dest, answers, stack) {
       ? '\nIn another terminal:\n\n```bash\ncd frontend\nnpm install\nnpm run dev\n```\n'
       : stack.frontendKey === 'nextjs'
         ? '\nIn another terminal from the repository root:\n\n```bash\nnpm install\nnpm run dev\n```\n'
-        : stack.frontendKey === 'laravel-ui' && stack.laravelUi === 'inertia-react'
+        : stack.frontendKey === 'laravel-ui'
           ? '\nIn another terminal from the repository root:\n\n```bash\nnpm install\nnpm run dev\n```\n'
           : ''
-    setupGuide = `# Local Setup Guide\n\n## Default local setup\n\nUse PHP ${stack.profile.runtimes.php}, Composer ${stack.profile.runtimes.composer}, and PostgreSQL ${stack.profile.runtimes.postgres}.\n\n\`\`\`bash\ncd ${laravelDir || '.'}\ncomposer install\ncp .env.example .env\nphp artisan key:generate\nphp artisan migrate\nphp artisan serve\n\`\`\`\n${frontendSetup}${answers.docker ? `\n## Optional Docker setup\n\nFrom the repository root:\n\n\`\`\`bash\ndocker compose build\ndocker compose up -d\ndocker compose exec backend php artisan key:generate\ndocker compose exec backend php artisan migrate\n\`\`\`\n\nLater runs use \`docker compose up -d\`; rebuilding remains explicit.\n` : ''}\n## Validate\n\n\`\`\`bash\n${laravelDir ? `cd ${laravelDir}\n` : ''}composer check\n\`\`\`\n\nCommit \`composer.lock\`${stack.frontendKey === 'laravel-ui' && stack.laravelUi === 'inertia-react' ? ' and `package-lock.json`' : ''}.\n`
+    setupGuide = `# Local Setup Guide\n\n## Default local setup\n\nUse PHP ${stack.profile.runtimes.php}, Composer ${stack.profile.runtimes.composer}, and PostgreSQL ${stack.profile.runtimes.postgres}.${stack.frontendKey === 'laravel-ui' ? ` Use Node.js ${stack.profile.runtimes.nodeMinimum}+ with npm ${stack.profile.runtimes.npmMinimum}+ for Tailwind assets.` : ''}\n\n\`\`\`bash\ncd ${laravelDir || '.'}\ncomposer install\ncp .env.example .env\nphp artisan key:generate\nphp artisan migrate\nphp artisan serve\n\`\`\`\n${frontendSetup}${answers.docker ? `\n## Optional Docker setup\n\nFrom the repository root:\n\n\`\`\`bash\ndocker compose build\ndocker compose up -d\ndocker compose exec backend php artisan key:generate\ndocker compose exec backend php artisan migrate\n\`\`\`\n\nLater runs use \`docker compose up -d\`; rebuilding remains explicit.\n` : ''}\n## Validate\n\n\`\`\`bash\n${laravelDir ? `cd ${laravelDir}\n` : ''}composer check${stack.frontendKey === 'laravel-ui' ? '\nnpm test --if-present\nnpm run build' : ''}\n\`\`\`\n\nCommit \`composer.lock\`${stack.frontendKey === 'laravel-ui' ? ' and `package-lock.json`' : ''}.\n`
   }
   if (stack.backendKey === 'fastapi') {
     const apiDir = stack.frontendKey === 'no-frontend' ? '' : 'backend/'
@@ -369,7 +371,7 @@ async function generateDocs(dest, answers, stack) {
   const envLocation = stack.frontendKey === 'react' ? '`frontend/.env` for client values' : stack.isMobile ? '`.env`' : '`.env.local`'
   await write(dest, 'docs/guides/env-variables.md', `# Environment Variables\n\nCopy the generated example before starting. Client environment location: ${envLocation}.\n\n| Variable | Visibility | Required | Purpose |\n|---|---|---:|---|\n${stack.env.map((name) => `| \`${name}\` | ${name.startsWith(stack.envPrefix) ? 'client/public' : 'server only'} | yes | ${environmentPurpose(name)} |`).join('\n')}\n\nValues with \`${stack.envPrefix}\` are bundled into client code and must never contain secrets. Keep real environment files out of version control.\n`)
 
-  await write(dest, 'docs/architecture/overview.md', `# Architecture Overview\n\n## Runtime shape\n\n- Frontend: ${stack.frontendLabel}\n- Backend/data: ${stack.backendLabel}\n- Platform: ${stack.platform}\n- Architecture profile: ${stack.architecture}\n- Authentication: ${stack.authentication}\n\nThe generated application is intentionally a small vertical slice. Add domain features only after recording product goals and boundaries in \`CONTEXT.md\`. Keep entry points thin, validate at trust boundaries, and enforce authorization beside protected data or side effects.\n\n## Verification boundary\n\nThe starter is considered healthy when its lint/typecheck/tests/build commands pass. Documentation explains those executable patterns; it does not override working code and tests.\n`)
+  await write(dest, 'docs/architecture/overview.md', architectureOverview(stack, runnableFilePaths, answers.projectName))
 
   await write(dest, 'docs/architecture/auth-flow.md', authDocumentation(stack))
 
@@ -423,8 +425,7 @@ function authDocumentation(stack) {
 // ─── CI — template-driven ─────────────────────────────────────────────────────
 
 function generatedSecurityWorkflow(stack) {
-  const hasJavaScript = stack.frontendKey !== 'no-frontend' &&
-    !(stack.frontendKey === 'laravel-ui' && stack.laravelUi !== 'inertia-react')
+  const hasJavaScript = stack.frontendKey !== 'no-frontend'
   const npmDirectory = stack.frontendKey === 'react' ? 'frontend' : '.'
   const laravelDirectory = ['laravel-ui', 'no-frontend'].includes(stack.frontendKey) ? '.' : 'backend'
   const codeqlLanguages = [hasJavaScript && 'javascript-typescript', stack.backendKey === 'springboot' && 'java-kotlin'].filter(Boolean)
@@ -477,8 +478,9 @@ async function generateCI(dest, stack, ciDir, answers, vars) {
     if (await fs.pathExists(beTpl)) {
       let content = await fs.readFile(beTpl, 'utf-8')
       if (answers.testing === 'none') content = content.replace('      - run: composer check\n', '      - run: composer format:check\n      - run: composer analyse\n')
-      if (stack.frontendKey === 'laravel-ui' && stack.laravelUi === 'inertia-react') {
-        content += `      - uses: actions/setup-node@v4\n        with:\n          node-version: "${stack.profile.runtimes.node}"\n          cache: npm\n          cache-dependency-path: package-lock.json\n      - run: npm ci\n      - run: npm run build\n`
+      if (stack.frontendKey === 'laravel-ui') {
+        content += `      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4\n        with:\n          node-version: "${stack.profile.runtimes.node}"\n          cache: npm\n          cache-dependency-path: package-lock.json\n      - run: npm ci\n      - run: npm run build\n`
+        content = content.replace('      - run: npm run build\n', '      - run: npm test --if-present\n      - run: npm run build\n')
       }
       await write(dest, `.github/workflows/ci-backend.yml`, render(content, vars))
     }
@@ -510,6 +512,7 @@ async function generateRunnableFiles(dest, answers, stack, vars) {
     const artisan = stack.frontendKey === 'laravel-ui' || stack.frontendKey === 'no-frontend' ? 'artisan' : 'backend/artisan'
     await fs.chmod(path.join(dest, artisan), 0o755)
   }
+  return Object.keys(files)
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────

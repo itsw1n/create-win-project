@@ -31,7 +31,7 @@ export function buildVars(answers, stack) {
     PROJECT_DESCRIPTION: answers.projectDescription,
     PACKAGE_NAME:        answers.packageName ?? 'com.app',
     PACKAGE_PATH:        packagePath,
-    STYLE_MODE:          stack.styleId?.toUpperCase().replace(/-/g, '_') ?? 'TAILWIND',
+    STYLE_MODE:          stack.styleId?.toUpperCase().replace(/-/g, '_') ?? 'NONE',
     STACK:               stack.key,
     PLATFORM:            stack.platform,
     ARCHITECTURE:        stack.architecture?.toUpperCase() ?? 'MEDIUM',

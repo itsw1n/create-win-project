@@ -1,23 +1,59 @@
 # React + Vite Structure
 
-## Feature Ownership
+## Canonical Reference Tree
+
+This complete tree is a placement reference. Create only directories containing real files.
 
 ```text
 frontend/src/
-├── app/                 providers and router composition
-├── pages/               route-level composition
-├── components/ui/       domain-free primitives
-├── components/shared/   cross-feature UI
+├── app/                         providers and router setup
+├── pages/                       route-level composition
+├── components/
+│   ├── layout/                  Header, Footer, Container, Section
+│   └── common/                  Button, Input, Modal
 ├── features/tasks/
-│   ├── components/
-│   ├── hooks/
-│   ├── api.ts           REST/external protocol
-│   ├── data.ts          Supabase queries when applicable
-│   ├── schema.ts
-│   └── types.ts
-└── lib/                 shared transport and SDK construction
+│   ├── components/              feature-owned UI
+│   ├── hooks/                   browser interaction and state adapters
+│   ├── api/                     outgoing backend HTTP calls
+│   ├── data/                    direct SDK access such as Supabase
+│   ├── services/                client workflow coordination
+│   ├── schemas/                 runtime boundary validation
+│   ├── types.ts
+│   └── index.ts                 Large public feature API
+├── lib/                         shared transport and SDK construction
+└── config/                      validated public runtime configuration
 ```
 
-Create a directory only with its first real file. URLs, wire DTOs, Supabase queries, and
-error normalization stay outside visual components. Cross-feature types become shared
-only after genuine reuse. Large modules expose `index.ts`; consumers do not deep import.
+## Profile Differences
+
+| Profile | Shape |
+|---|---|
+| Small | Thin Page → feature Component → API/data function |
+| Medium | Feature-owned UI, hooks, protocol functions, schemas, and types; Service only for a real client workflow |
+| Large | Medium plus public `index.ts`, enforced imports, contract tests, and explicit state ownership |
+
+Do not reproduce server Repository or trusted domain layers in a browser bundle.
+
+## File Placement
+
+| Responsibility | Location |
+|---|---|
+| Providers and router construction | `app/` |
+| Route composition | `pages/` |
+| Structural UI | `components/layout/` |
+| Reusable domain-free control | `components/common/` |
+| Feature UI and state integration | `features/<feature>/components` and `hooks` |
+| REST or remote protocol | `features/<feature>/api/` |
+| Direct backend SDK queries | `features/<feature>/data/` |
+| Reusable client workflow | `features/<feature>/services/` |
+| Shared HTTP or SDK construction | `lib/` |
+
+URLs, wire DTOs, SDK queries, validation, and error normalization stay outside visual components.
+Cross-feature types become shared only after genuine reuse. Large consumers import through the
+feature `index.ts` rather than deep-importing internals.
+
+## Architecture Cleanup
+
+Do not retain an empty folder merely because it appears above. Before removing or reorganizing a
+user-created architecture folder, explain the change, current and future ownership, and how to
+restore the documented pattern; then ask for approval.
