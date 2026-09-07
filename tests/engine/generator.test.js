@@ -410,6 +410,20 @@ describe('runnable project contract', () => {
     expect(await fs.pathExists(path.join(modules, 'frontend/src/components/common/Button/Button.test.tsx'))).toBe(true)
   })
 
+  it('generates the native styling ownership foundation for Expo', async () => {
+    const destination = await generate({
+      frontend: 'react-native', backend: 'none', applicationShape: 'mobile', architecture: 'small',
+      projectName: 'expo-native-foundation',
+    })
+    const home = await fs.readFile(path.join(destination, 'app/index.tsx'), 'utf8')
+    expect(home).toContain("import { Screen } from '@/components/layout/Screen'")
+    expect(home).toContain("import { Content } from '@/components/layout/Content'")
+    expect(home).not.toContain('data-ui')
+    expect(await fs.pathExists(path.join(destination, 'theme/tokens.ts'))).toBe(true)
+    expect(await fs.pathExists(path.join(destination, 'components/common/Button.tsx'))).toBe(true)
+    expect(await fs.pathExists(path.join(destination, 'components/common/Button.test.tsx'))).toBe(true)
+  })
+
   it('rejects unsupported production-ready without tests paths', async () => {
     await expect(generate({ testing: 'none', projectName: 'without-tests' })).rejects.toThrow('Unknown testing setup')
   })
