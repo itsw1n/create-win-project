@@ -38,3 +38,14 @@ web/API → application operation → domain policy → persistence/external ada
 - External side effects are not assumed successful merely because a transaction commits.
 
 Start at the selected project baseline and let each feature create only the files it uses.
+
+## Escalation Decisions
+
+| Add | When |
+|---|---|
+| Named subpackage | Several files make ownership clearer |
+| Application Service | Policy, coordination, transaction, reuse, or independent testing exists |
+| Modulith public/internal boundary | Large cross-feature dependencies need enforcement |
+
+Do not create interfaces with one implementation solely for ceremony. Before removing or
+reorganizing a user-created layer, explain the reason and recovery path and ask for approval.

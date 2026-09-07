@@ -256,8 +256,8 @@
     "sha256": "9fd82f2d1ed95139033b4ccf701c8a35c7d02d91d147abdbde40ca28831b01c6"
   },
   "playbooks/stack/laravel/architecture.md": {
-    "bytes": 1271,
-    "sha256": "e8507a523b310eba93f2672965543f0b978dee0824118917d6e3ed0e557a99f7"
+    "bytes": 1826,
+    "sha256": "d7c3d2c959c905c3a4f9ea69afcf03ee6bd4793ca4cc7f4607f984bb63dcbcf1"
   },
   "playbooks/stack/laravel/runtime.md": {
     "bytes": 1112,
@@ -268,8 +268,8 @@
     "sha256": "dcda7f4d271e0698f427bcddca576051a4cebf6b1e5583b861eb320ae93824d6"
   },
   "playbooks/stack/laravel/structure.md": {
-    "bytes": 1113,
-    "sha256": "0e7857257c13e81bd65bed288f4cc575e8b958e715b1e1202963e82b151f44f6"
+    "bytes": 2134,
+    "sha256": "16d4ce5438e8446c37625368a134f909108e37a7bb88f1c7ba8981bdb7b5bda4"
   },
   "playbooks/stack/laravel/testing.md": {
     "bytes": 979,
@@ -424,8 +424,8 @@
     "sha256": "ffe1d556b4253ed9befed2d9c4e43fe5e71d49935b037763280d45814ecdad51"
   },
   "RULES.md": {
-    "bytes": 5506,
-    "sha256": "c8a430131b72414c4a900667c50fe7d10535dab5f966e194c433ed9e897fcc44"
+    "bytes": 5823,
+    "sha256": "152403b3adf2595c6327577d9f1149021d34b6f2bfa982ab2b1e5f4b93b5fcfc"
   },
   "storage/framework/cache/.gitignore": {
     "bytes": 14,

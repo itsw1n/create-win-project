@@ -408,8 +408,8 @@
     "sha256": "c98624e161d4237c74ae085c439dd44c30c57bb060b00838e495501676467f28"
   },
   "playbooks/stack/springboot/architecture.md": {
-    "bytes": 1539,
-    "sha256": "d57cbb377c1b9f172673c1ec87fbcd04e66e06520edb93f8c5d27d5bdd6c20d1"
+    "bytes": 2022,
+    "sha256": "4fcf6bfb6a053e65a26f92c82f652f83ef984b5736a4767def50e5cefcd3fbd6"
   },
   "playbooks/stack/springboot/runtime.md": {
     "bytes": 1416,
@@ -420,8 +420,8 @@
     "sha256": "ad435eac2b862d9f86c025d8a3e57c719400ef0f3da9b60bd347f953eec70e0b"
   },
   "playbooks/stack/springboot/structure.md": {
-    "bytes": 1287,
-    "sha256": "5f8a92a7104eaa1b8d9c4b2e31c67989d38052bdf66ee8bd0ec641ead043bcbe"
+    "bytes": 2155,
+    "sha256": "6c32cb4e78e6a29bc36db2a997c646814790ad974e26169feb5917bbdd7fc0e4"
   },
   "playbooks/stack/springboot/testing.md": {
     "bytes": 1055,
@@ -504,7 +504,7 @@
     "sha256": "dd427a3fbf09b24f200093a8d60d7df1d30995743bedf70b86584cf0370f587b"
   },
   "RULES.md": {
-    "bytes": 5946,
-    "sha256": "429042916ad07ef59310bbf934460bef552291e3dd26601ec8902e6cf330b205"
+    "bytes": 6194,
+    "sha256": "0feb4a279bb73100d4c65e0304f8f3b6ae3a7f3de5500615acaac8c81761a73d"
   }
 }
