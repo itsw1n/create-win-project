@@ -80,8 +80,8 @@
     "sha256": "e87327e605c00b80ed691147211c7beec30cc910d86f7c2364d293bdd93aed8c"
   },
   "docs/architecture/overview.md": {
-    "bytes": 2027,
-    "sha256": "d9e356025124bb3f18ce4846b74e1f2655b05880b093460be09396c2ebf49ec9"
+    "bytes": 2345,
+    "sha256": "95cf72461afc5988a01340b3004ac5de917800597e43329368b4c2afda88dd8d"
   },
   "docs/guides/deployment.md": {
     "bytes": 997,
@@ -124,8 +124,8 @@
     "sha256": "3c4be25236c17f64c2916b766c6e287f1ba926792f254867455618f59a1e065e"
   },
   "package.json": {
-    "bytes": 1465,
-    "sha256": "78543bcb859f334ee81fe8b5fe911c2f35a78c70cfbade65ad8576eed6540254"
+    "bytes": 1558,
+    "sha256": "bf088c775847695aed2b8ae6e60fa2fe8182658e0d5a28198315eb039b399f1a"
   },
   "playbooks/capabilities/ci/github-actions.md": {
     "bytes": 3331,
@@ -320,8 +320,8 @@
     "sha256": "5c180665ae724815f26c7bfb22ecf3bf4e03bab908b99aff914e09262bf09fec"
   },
   "src/app/globals.css": {
-    "bytes": 252,
-    "sha256": "3404d3c547a3f764ed2813eceff19b510bb441abed5d1f9fa0a1beb4926fd5ea"
+    "bytes": 472,
+    "sha256": "f612b931401533fa7ef8008f8314aeaf411538d3139f15b30e8f87b992a7569d"
   },
   "src/app/layout.tsx": {
     "bytes": 359,
@@ -340,12 +340,28 @@
     "sha256": "d96d1d1cd494db74185e0fa4f157fe0f09b99034ecf98889b50324b40a3dd65a"
   },
   "src/app/page.tsx": {
-    "bytes": 424,
-    "sha256": "05c33b1ba9a1dfeb8585643b722a0f1d7340cf524a0de517547658e920406cf8"
+    "bytes": 805,
+    "sha256": "5610274d4512fa2984c38a763dad72f218f5b80aa28328b42f2556c1ab316c78"
+  },
+  "src/components/common/Button.test.tsx": {
+    "bytes": 297,
+    "sha256": "1268543d67bed2fea930a6e3599cf1c905c4a1cf5416eb8c8d73a2a3d74f1414"
+  },
+  "src/components/common/Button.tsx": {
+    "bytes": 1059,
+    "sha256": "bd3309f6806704fd27823491b28cb58ed3939f0506d9ce21f6a16f12827c202a"
+  },
+  "src/components/layout/Container.tsx": {
+    "bytes": 277,
+    "sha256": "e7f87c9808745f858eb5d2caee6e558f26a803f1776ee2a5e1d17d3cd8ac5c82"
+  },
+  "src/components/layout/Section.tsx": {
+    "bytes": 314,
+    "sha256": "715ba735a3dce80b70c2ba716d62c2e55ae69bd4c7f14bfd581770782853bcaa"
   },
   "src/features/status/components/StarterStatus.tsx": {
-    "bytes": 200,
-    "sha256": "5737083e586ff46dfdcd8c70b9bb592b785aa58df7a76a0b5f8e4453dfbe4feb"
+    "bytes": 356,
+    "sha256": "d58573b0ba489ee987eb2d08fff5f10b3300ec5649e452c0f276637d075a6717"
   },
   "src/features/status/services/getStarterStatus.ts": {
     "bytes": 168,
@@ -354,6 +370,10 @@
   "src/features/status/types.ts": {
     "bytes": 80,
     "sha256": "ac898305005741554b9b06d749136df0aa6c85b049775789cc294cea2e4543d1"
+  },
+  "src/lib/cn.ts": {
+    "bytes": 166,
+    "sha256": "e46429536f43f5910f5b2b0c50bb2769b510a4558bb4b5d20a3b0a9091dbf7c3"
   },
   "src/lib/supabase/client.ts": {
     "bytes": 220,

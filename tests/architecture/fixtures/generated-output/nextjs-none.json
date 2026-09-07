@@ -80,8 +80,8 @@
     "sha256": "e87327e605c00b80ed691147211c7beec30cc910d86f7c2364d293bdd93aed8c"
   },
   "docs/architecture/overview.md": {
-    "bytes": 1485,
-    "sha256": "cd3b150eb16b9019a1e51a2f78967f60cbbd47a89dfa7c079dd8475f0081e2f7"
+    "bytes": 1765,
+    "sha256": "3bb3012c54ebad7f64b22da84158e29c5fceb877c4ac262d5ec09495d2edae31"
   },
   "docs/guides/deployment.md": {
     "bytes": 997,
@@ -124,8 +124,8 @@
     "sha256": "3c4be25236c17f64c2916b766c6e287f1ba926792f254867455618f59a1e065e"
   },
   "package.json": {
-    "bytes": 1066,
-    "sha256": "d80f8485121f4e7e1a4c875c4d6ed1049caffefb79ec29500d089624cc896c38"
+    "bytes": 1159,
+    "sha256": "00d04cd67397b4490f891760b075253990359e8b8a645902c869e81d1ce557e3"
   },
   "playbooks/capabilities/ci/github-actions.md": {
     "bytes": 3331,
@@ -292,8 +292,8 @@
     "sha256": "37b5f6f54f407241d8391654eb5c426ef99c6eede6ad6faceabb26c7a4a9668f"
   },
   "src/app/globals.css": {
-    "bytes": 252,
-    "sha256": "3404d3c547a3f764ed2813eceff19b510bb441abed5d1f9fa0a1beb4926fd5ea"
+    "bytes": 472,
+    "sha256": "f612b931401533fa7ef8008f8314aeaf411538d3139f15b30e8f87b992a7569d"
   },
   "src/app/layout.tsx": {
     "bytes": 355,
@@ -304,12 +304,28 @@
     "sha256": "d96d1d1cd494db74185e0fa4f157fe0f09b99034ecf98889b50324b40a3dd65a"
   },
   "src/app/page.tsx": {
-    "bytes": 424,
-    "sha256": "05c33b1ba9a1dfeb8585643b722a0f1d7340cf524a0de517547658e920406cf8"
+    "bytes": 805,
+    "sha256": "5610274d4512fa2984c38a763dad72f218f5b80aa28328b42f2556c1ab316c78"
+  },
+  "src/components/common/Button.test.tsx": {
+    "bytes": 297,
+    "sha256": "1268543d67bed2fea930a6e3599cf1c905c4a1cf5416eb8c8d73a2a3d74f1414"
+  },
+  "src/components/common/Button.tsx": {
+    "bytes": 1059,
+    "sha256": "bd3309f6806704fd27823491b28cb58ed3939f0506d9ce21f6a16f12827c202a"
+  },
+  "src/components/layout/Container.tsx": {
+    "bytes": 277,
+    "sha256": "e7f87c9808745f858eb5d2caee6e558f26a803f1776ee2a5e1d17d3cd8ac5c82"
+  },
+  "src/components/layout/Section.tsx": {
+    "bytes": 314,
+    "sha256": "715ba735a3dce80b70c2ba716d62c2e55ae69bd4c7f14bfd581770782853bcaa"
   },
   "src/features/status/components/StarterStatus.tsx": {
-    "bytes": 200,
-    "sha256": "5737083e586ff46dfdcd8c70b9bb592b785aa58df7a76a0b5f8e4453dfbe4feb"
+    "bytes": 356,
+    "sha256": "d58573b0ba489ee987eb2d08fff5f10b3300ec5649e452c0f276637d075a6717"
   },
   "src/features/status/services/getStarterStatus.ts": {
     "bytes": 168,
@@ -318,6 +334,10 @@
   "src/features/status/types.ts": {
     "bytes": 80,
     "sha256": "ac898305005741554b9b06d749136df0aa6c85b049775789cc294cea2e4543d1"
+  },
+  "src/lib/cn.ts": {
+    "bytes": 166,
+    "sha256": "e46429536f43f5910f5b2b0c50bb2769b510a4558bb4b5d20a3b0a9091dbf7c3"
   },
   "src/test/setup.ts": {
     "bytes": 42,
