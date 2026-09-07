@@ -31,3 +31,18 @@ router/page → feature UI/hook → feature API/data function → shared transpo
 The backend or Supabase RLS authenticates and authorizes. Browser code renders decisions
 but cannot enforce them. Features may consume another feature only through its public API
 in Large projects.
+
+## Browser Boundary Decisions
+
+| Need | Preferred boundary |
+|---|---|
+| Route composition | Page |
+| Reusable feature interaction | Feature Component or hook |
+| Remote HTTP call | Feature `api/` module through shared transport |
+| Direct Supabase access | Feature `data/` module with server-enforced RLS |
+| Multi-step browser workflow | Client Service when reuse or coordination justifies it |
+
+Client Services coordinate browser workflows; they are not trusted business or authorization
+boundaries. Validate external responses and user-controlled URL or storage data before use. Before
+removing or reorganizing user-created folders, explain the reason and recovery path and ask for
+approval.
