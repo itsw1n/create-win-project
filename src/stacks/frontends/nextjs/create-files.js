@@ -25,18 +25,13 @@ export function buildNextjsFiles(answers, stack, shared) {
   files['postcss.config.mjs'] = stack.styleId === 'tailwind'
     ? "const config = { plugins: { '@tailwindcss/postcss': {} } }\nexport default config\n"
     : "const config = { plugins: {} }\nexport default config\n"
-  files['src/app/globals.css'] = `${stack.styleId === 'tailwind' ? '@import "tailwindcss";\n\n' : ''}:root { color-scheme: light dark; font-family: system-ui, sans-serif; }\n* { box-sizing: border-box; }\nbody { margin: 0; min-height: 100vh; }\nmain { max-width: 48rem; margin: 0 auto; padding: 4rem 1.5rem; }\na { color: inherit; }\n`
   files['src/app/layout.tsx'] = `import type { Metadata } from 'next'\nimport type { ReactNode } from 'react'\nimport './globals.css'\n\nexport const metadata: Metadata = { title: ${JSON.stringify(answers.projectName)}, description: ${JSON.stringify(answers.projectDescription)} }\n\nexport default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {\n  return <html lang="en"><body>{children}</body></html>\n}\n`
-  files['src/app/page.tsx'] = stack.architecture === 'small'
-    ? `export default function HomePage() {\n  return (\n    <main>\n      <p>create-win-project</p>\n      <h1>Your starter is running</h1>\n      <p>{${JSON.stringify(answers.projectDescription)}}</p>\n      <p>Read <code>AGENTS.md</code> before your first agent-assisted change.</p>\n    </main>\n  )\n}\n`
-    : `${stack.architecture === 'large'
-      ? "import { getStarterStatus, StarterStatus } from '@/features/status'"
-      : "import { StarterStatus } from '@/features/status/components/StarterStatus'\nimport { getStarterStatus } from '@/features/status/services/getStarterStatus'"}\n\nexport default function HomePage() {\n  const status = getStarterStatus()\n  return <main><p>create-win-project</p><StarterStatus status={status} /><p>{${JSON.stringify(answers.projectDescription)}}</p><p>Read <code>AGENTS.md</code> before your first agent-assisted change.</p></main>\n}\n`
   files['src/app/api/health/route.ts'] = "export function GET() {\n  return Response.json({ status: 'ok' })\n}\n"
   files['src/app/page.test.tsx'] = `import { expect, test } from 'vitest'\nimport { render, screen } from '@testing-library/react'\nimport HomePage from './page'\n\ntest('renders the starter heading', () => {\n  render(<HomePage />)\n  expect(screen.getByRole('heading', { name: 'Your starter is running' })).toBeInTheDocument()\n})\n`
   if ((answers.testing || 'basic') === 'none') delete files['src/app/page.test.tsx']
   addTestingFiles(files, '', stack, answers.testing || 'basic')
   Object.assign(files, shared.statusFeatureFiles('', stack))
+  addNextjsStylingFiles(files, answers, stack)
   if (stack.backendKey === 'supabase') Object.assign(files, shared.supabaseWebFiles(true, stack.authentication === 'supabase'))
   if (stack.backendKey === 'postgres') Object.assign(files, shared.prismaFiles())
   return files
@@ -44,3 +39,4 @@ export function buildNextjsFiles(answers, stack, shared) {
 import { json } from '../../shared/javascript-package.js'
 import { addTestingFiles } from '../../shared/testing-files.js'
 import { packageFile } from './dependencies.js'
+import { addNextjsStylingFiles } from './styling-files.js'

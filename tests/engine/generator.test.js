@@ -350,6 +350,39 @@ describe('runnable project contract', () => {
     }
   })
 
+  it('generates honest Next.js styling foundations for both web modes', async () => {
+    const tailwind = await generate({
+      frontend: 'nextjs', backend: 'none', styling: 'tailwind', architecture: 'small',
+      projectName: 'next-tailwind-foundation',
+    })
+    const tailwindPackage = await fs.readJson(path.join(tailwind, 'package.json'))
+    expect(tailwindPackage.dependencies).toMatchObject({
+      'class-variance-authority': '0.7.1', clsx: '2.1.1', 'tailwind-merge': '3.6.0',
+    })
+    expect(await fs.readFile(path.join(tailwind, 'src/app/globals.css'), 'utf8')).toContain('@theme')
+    expect(await fs.readFile(path.join(tailwind, 'src/app/page.tsx'), 'utf8')).toContain('ui="hero"')
+    expect(await fs.readFile(path.join(tailwind, 'src/components/layout/Container.tsx'), 'utf8')).toContain('data-ui="container"')
+    expect(await fs.readFile(path.join(tailwind, 'src/components/common/Button.tsx'), 'utf8')).toContain('cva(')
+    expect(await fs.pathExists(path.join(tailwind, 'src/components/common/Button.test.tsx'))).toBe(true)
+
+    const modules = await generate({
+      frontend: 'nextjs', backend: 'springboot', styling: 'css-modules', architecture: 'medium',
+      packageName: 'com.example', projectName: 'next-modules-foundation',
+    })
+    const modulesPackage = await fs.readJson(path.join(modules, 'package.json'))
+    expect(modulesPackage.dependencies).not.toHaveProperty('class-variance-authority')
+    expect(modulesPackage.dependencies).not.toHaveProperty('clsx')
+    expect(modulesPackage.dependencies).not.toHaveProperty('tailwind-merge')
+    const modulesPage = await fs.readFile(path.join(modules, 'src/app/page.tsx'), 'utf8')
+    expect(modulesPage).toContain("import styles from './page.module.css'")
+    expect(modulesPage).not.toContain('data-ui')
+    expect(await fs.pathExists(path.join(modules, 'src/styles/tokens.css'))).toBe(true)
+    expect(await fs.pathExists(path.join(modules, 'src/components/layout/Section/Section.module.css'))).toBe(true)
+    expect(await fs.pathExists(path.join(modules, 'src/components/common/Button/Button.test.tsx'))).toBe(true)
+    expect(await fs.pathExists(path.join(modules, 'src/features/status/components/StarterStatus.tsx'))).toBe(false)
+    expect(await fs.pathExists(path.join(modules, 'src/features/status/components/StarterStatus/StarterStatus.module.css'))).toBe(true)
+  })
+
   it('rejects unsupported production-ready without tests paths', async () => {
     await expect(generate({ testing: 'none', projectName: 'without-tests' })).rejects.toThrow('Unknown testing setup')
   })
