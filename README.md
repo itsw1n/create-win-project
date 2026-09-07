@@ -4,6 +4,8 @@
   <p>Generate a tested, production-oriented web or mobile project with stack-specific code, CI, deployment artifacts, documentation, and agent guidance.</p>
 </div>
 
+> **Just answer what tech stack you want.** create-win-project turns your answers into a runnable, tested, agent-ready foundation
+
 ## Start
 
 ```bash
@@ -16,7 +18,7 @@ For example, a Next.js + FastAPI project using the Medium architecture profile h
 feature-oriented shape:
 
 ```text
-my-project/
+sample-project/
 ├── src/
 │   ├── app/                         Next.js routes and entry points
 │   └── features/status/
@@ -47,13 +49,13 @@ profile. See [Understanding a generated project](./docs/generated-project.md).
 
 ## Supported stacks
 
-| Application | Backends and data |
-|---|---|
-| Next.js | None, Supabase, PostgreSQL, Spring Boot, Laravel, FastAPI |
-| React + Vite | None, Supabase, Spring Boot, Laravel, FastAPI |
-| Expo / React Native | None, Supabase, Spring Boot, Laravel, FastAPI |
-| Laravel UI | Blade, Livewire, or Inertia React with Laravel |
-| API only | Spring Boot, Laravel, or FastAPI |
+| Application         | Backends and data                                         |
+| ------------------- | --------------------------------------------------------- |
+| Next.js             | None, Supabase, PostgreSQL, Spring Boot, Laravel, FastAPI |
+| React + Vite        | None, Supabase, Spring Boot, Laravel, FastAPI             |
+| Expo / React Native | None, Supabase, Spring Boot, Laravel, FastAPI             |
+| Laravel UI          | Blade, Livewire, or Inertia React with Laravel            |
+| API only            | Spring Boot, Laravel, or FastAPI                          |
 
 Authentication follows the chosen stack and audience: Supabase Auth, server sessions, Sanctum SPA, or OIDC validation where supported.
 
