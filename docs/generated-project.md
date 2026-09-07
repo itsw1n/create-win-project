@@ -25,6 +25,13 @@ layers or placeholder directories.
 Folders are created only when they contain working code. A Medium project therefore shows the
 intended dependency direction without generating every folder that a future feature might need.
 
+The structure examples in the stack playbooks are reference maps, not instructions to create
+every listed directory. Start with the smallest valid feature and add a layer only when its
+responsibility exists. An agent may recommend removing an empty or obsolete architecture folder,
+but must first explain what changes, why the folder is unnecessary, where future code belongs,
+and how the documented folder can be restored. Removing or reorganizing user-created structure
+requires the user's approval.
+
 ## Representative source layouts
 
 ### Web application with a separate API

@@ -103,6 +103,21 @@ Client environment variables are semantic in definitions (`API_URL`) and receive
 
 Each `src/stacks/{frontends,backends}/<id>/create-files.js` is a pure function `(answers, stack, shared) -> FileMap` that owns its minimum executable vertical slice. `shared/` contains helpers only when at least two stacks genuinely share behavior—not forced sharing. Core composes stack adapters through their contribution hooks. This intentionally generates a small working example. Domain-specific features are added after product context is known; the generator does not invent business entities.
 
+### Progressive generated architecture
+
+Small, Medium, and Large are progressive forms of one framework-native architecture, not three
+unrelated layouts. A stack playbook may show a complete Large reference tree so users and agents
+can see the available destinations, but the generator creates only directories containing working
+code. Medium establishes feature ownership and dependency direction without demanding every
+possible layer; Large adds explicit public boundaries and automated enforcement rather than empty
+folders or synonymous abstractions.
+
+Generated `docs/architecture/overview.md` is derived from the files the user actually received.
+It must remain distinct from a playbook's reference tree. When an agent finds an empty, obsolete,
+or misleading architecture folder, it may recommend cleanup but must explain the change, the
+current and future ownership location, and the recreation path before asking the user for approval.
+It must not silently remove or reorganize user-created structure.
+
 ### Repository and operational files
 
 `src/engine/create-project.js` coordinates writes and refuses to merge into a non-empty destination. It adds documentation, selected playbooks, CI, Docker, Makefile, environment examples, and repository conventions around the runnable foundation.
