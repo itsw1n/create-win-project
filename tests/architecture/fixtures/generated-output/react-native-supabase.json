@@ -48,8 +48,8 @@
     "sha256": "e73c6c1c3fcd276e35ccd68a5ad5ea66dda510c122e53a4484474f3dab507ac0"
   },
   "app/index.tsx": {
-    "bytes": 681,
-    "sha256": "b2f51497a7eb88a46fee68a30694a997e889330c86da7ad20812fca10bcf3c72"
+    "bytes": 861,
+    "sha256": "1d7a2a98bda4126cbdab17d65e573f3ac490fb01edf63c3e0db1e69228fd53d1"
   },
   "app/login.tsx": {
     "bytes": 1319,
@@ -58,6 +58,22 @@
   "app.json": {
     "bytes": 529,
     "sha256": "1fd06521fd0df635253336337d6aa78e78a67062feb5a694a1c6827b99288cda"
+  },
+  "components/common/Button.test.tsx": {
+    "bytes": 361,
+    "sha256": "da300ac53afa44763a5a376ee4d44b25e45cd2ef727b02dc8f837d2631891345"
+  },
+  "components/common/Button.tsx": {
+    "bytes": 1296,
+    "sha256": "3b9b007d9e2a0d740a3804a2fb2d86845ab3f1a01a98312786e6e137a32f9802"
+  },
+  "components/layout/Content.tsx": {
+    "bytes": 358,
+    "sha256": "5d56005d54b7a4c0c6137893760b8852a64f205909ca491d8c1ea7bf6fe8f2d8"
+  },
+  "components/layout/Screen.tsx": {
+    "bytes": 529,
+    "sha256": "832502a88877e02c6cbeb38f8393def793c1a4195d83e5ea5266fda40544ff88"
   },
   "CONTEXT.md": {
     "bytes": 829,
@@ -128,8 +144,8 @@
     "sha256": "57d45be957186273b21383b09f6a6aa3ca599b28d1fb742fb3edfac464504b90"
   },
   "features/status/components/StarterStatus.tsx": {
-    "bytes": 273,
-    "sha256": "ecf390eb478782ab7318cc2170eaf0b379e1e7132d062df27997d06b92a9f77c"
+    "bytes": 620,
+    "sha256": "33818afd85c6ebd94c2f59a60d90af77309420842027e8f74b21716037af24aa"
   },
   "features/status/services/getStarterStatus.ts": {
     "bytes": 168,
@@ -322,6 +338,10 @@
   "supabase/tests/examples_rls.test.sql": {
     "bytes": 1462,
     "sha256": "b12c2a438738234e5c89aaa4a2c265adc59f419171b53a363d674cb1c16df4ea"
+  },
+  "theme/tokens.ts": {
+    "bytes": 308,
+    "sha256": "9e14d63a6b82b00f9422c3d68331688c24cfc9237b801ef2079519d74e7dfe77"
   },
   "tsconfig.json": {
     "bytes": 277,

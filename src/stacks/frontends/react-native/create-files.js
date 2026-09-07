@@ -1,6 +1,7 @@
 import { json } from '../../shared/javascript-package.js'
 import { addTestingFiles } from '../../shared/testing-files.js'
 import { packageFile } from './dependencies.js'
+import { addReactNativeStylingFiles } from './styling-files.js'
 
 export function buildReactNativeFiles(answers, stack, shared) {
   const files = {
@@ -16,13 +17,9 @@ export function buildReactNativeFiles(answers, stack, shared) {
     'app/_layout.tsx': stack.authentication === 'supabase'
       ? `import { Stack } from 'expo-router'\nimport { useEffect } from 'react'\nimport { bindSupabaseAuthLifecycle } from '@/lib/supabase-lifecycle'\n\nexport default function RootLayout() {\n  useEffect(() => bindSupabaseAuthLifecycle(), [])\n  return <Stack screenOptions={{ headerTitle: '${answers.projectName}' }} />\n}\n`
       : `import { Stack } from 'expo-router'\n\nexport default function RootLayout() { return <Stack screenOptions={{ headerTitle: '${answers.projectName}' }} /> }\n`,
-    'app/index.tsx': stack.architecture === 'small'
-      ? `import { StyleSheet, Text, View } from 'react-native'\nimport { SafeAreaView } from 'react-native-safe-area-context'\n\nexport default function HomeScreen() {\n  return <SafeAreaView style={styles.safe}><View style={styles.container}><Text>create-win-project</Text><Text accessibilityRole="header">Your starter is running</Text><Text>{${JSON.stringify(answers.projectDescription)}}</Text></View></SafeAreaView>\n}\nconst styles = StyleSheet.create({ safe: { flex: 1 }, container: { flex: 1, justifyContent: 'center', padding: 24, gap: 12 } })\n`
-      : `import { StyleSheet, Text, View } from 'react-native'\nimport { SafeAreaView } from 'react-native-safe-area-context'\n${stack.architecture === 'large'
-        ? "import { getStarterStatus, StarterStatus } from '@/features/status'"
-        : "import { StarterStatus } from '@/features/status/components/StarterStatus'\nimport { getStarterStatus } from '@/features/status/services/getStarterStatus'"}\n\nexport default function HomeScreen() {\n  const status = getStarterStatus()\n  return <SafeAreaView style={styles.safe}><View style={styles.container}><Text>create-win-project</Text><StarterStatus status={status} /><Text>{${JSON.stringify(answers.projectDescription)}}</Text></View></SafeAreaView>\n}\nconst styles = StyleSheet.create({ safe: { flex: 1 }, container: { flex: 1, justifyContent: 'center', padding: 24, gap: 12 } })\n`,
   }
   addTestingFiles(files, '', stack, answers.testing || 'basic')
   Object.assign(files, shared.nativeStatusFeatureFiles(stack))
+  addReactNativeStylingFiles(files, answers, stack)
   return files
 }
