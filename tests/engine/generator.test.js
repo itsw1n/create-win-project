@@ -383,6 +383,33 @@ describe('runnable project contract', () => {
     expect(await fs.pathExists(path.join(modules, 'src/features/status/components/StarterStatus/StarterStatus.module.css'))).toBe(true)
   })
 
+  it('generates honest React + Vite styling foundations for both web modes', async () => {
+    const tailwind = await generate({
+      frontend: 'react', backend: 'supabase', styling: 'tailwind', architecture: 'medium',
+      projectName: 'vite-tailwind-foundation',
+    })
+    const tailwindPackage = await fs.readJson(path.join(tailwind, 'frontend/package.json'))
+    expect(tailwindPackage.dependencies).toMatchObject({
+      'class-variance-authority': '0.7.1', clsx: '2.1.1', 'tailwind-merge': '3.6.0',
+    })
+    expect(await fs.readFile(path.join(tailwind, 'frontend/src/styles.css'), 'utf8')).toContain('@theme')
+    expect(await fs.readFile(path.join(tailwind, 'frontend/src/App.tsx'), 'utf8')).toContain('ui="hero"')
+    expect(await fs.readFile(path.join(tailwind, 'frontend/src/components/common/Button.tsx'), 'utf8')).toContain('cva(')
+
+    const modules = await generate({
+      frontend: 'react', backend: 'none', applicationShape: 'frontend', styling: 'css-modules', architecture: 'small',
+      projectName: 'vite-modules-foundation',
+    })
+    const modulesPackage = await fs.readJson(path.join(modules, 'frontend/package.json'))
+    expect(modulesPackage.dependencies).not.toHaveProperty('clsx')
+    const modulesApp = await fs.readFile(path.join(modules, 'frontend/src/App.tsx'), 'utf8')
+    expect(modulesApp).toContain("import styles from './App.module.css'")
+    expect(modulesApp).not.toContain('data-ui')
+    expect(await fs.pathExists(path.join(modules, 'frontend/src/styles/tokens.css'))).toBe(true)
+    expect(await fs.pathExists(path.join(modules, 'frontend/src/components/layout/Container/Container.module.css'))).toBe(true)
+    expect(await fs.pathExists(path.join(modules, 'frontend/src/components/common/Button/Button.test.tsx'))).toBe(true)
+  })
+
   it('rejects unsupported production-ready without tests paths', async () => {
     await expect(generate({ testing: 'none', projectName: 'without-tests' })).rejects.toThrow('Unknown testing setup')
   })
