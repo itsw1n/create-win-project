@@ -332,8 +332,8 @@
     "sha256": "3cccce1dd78170f7cf59bc0dbf203d18f1d497f82356e135a333c9d399a982d0"
   },
   "playbooks/stack/nextjs/architecture.md": {
-    "bytes": 2355,
-    "sha256": "5d7d5c4b3ff2223b3b6660a2dee18d8523a31cd4e1482b2db24b2541e961a369"
+    "bytes": 4299,
+    "sha256": "ce20ddbc62914e09b3b8e22291dd2d37668caa9dc179c37d76d06f241369e07a"
   },
   "playbooks/stack/nextjs/runtime.md": {
     "bytes": 1563,
@@ -344,8 +344,8 @@
     "sha256": "5b1f4c6cca1f78b0f981b064ba2fa868911adf8cc22db0853ff7674adac63bab"
   },
   "playbooks/stack/nextjs/structure.md": {
-    "bytes": 2132,
-    "sha256": "eed68ad2b8ad50e140cba5410631fde4982bd23f95aea3fc6444708fb91d4373"
+    "bytes": 4351,
+    "sha256": "c40a807e8e867d6165f370cfa1ca3669c6d9ef5356d1cbff458cce2134bb6d99"
   },
   "playbooks/stack/nextjs/testing.md": {
     "bytes": 894,

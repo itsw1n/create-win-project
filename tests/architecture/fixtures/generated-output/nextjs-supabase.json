@@ -208,8 +208,8 @@
     "sha256": "9fd82f2d1ed95139033b4ccf701c8a35c7d02d91d147abdbde40ca28831b01c6"
   },
   "playbooks/stack/nextjs/architecture.md": {
-    "bytes": 2355,
-    "sha256": "5d7d5c4b3ff2223b3b6660a2dee18d8523a31cd4e1482b2db24b2541e961a369"
+    "bytes": 4299,
+    "sha256": "ce20ddbc62914e09b3b8e22291dd2d37668caa9dc179c37d76d06f241369e07a"
   },
   "playbooks/stack/nextjs/runtime.md": {
     "bytes": 1563,
@@ -220,8 +220,8 @@
     "sha256": "5b1f4c6cca1f78b0f981b064ba2fa868911adf8cc22db0853ff7674adac63bab"
   },
   "playbooks/stack/nextjs/structure.md": {
-    "bytes": 2132,
-    "sha256": "eed68ad2b8ad50e140cba5410631fde4982bd23f95aea3fc6444708fb91d4373"
+    "bytes": 4351,
+    "sha256": "c40a807e8e867d6165f370cfa1ca3669c6d9ef5356d1cbff458cce2134bb6d99"
   },
   "playbooks/stack/nextjs/testing.md": {
     "bytes": 894,
@@ -308,8 +308,8 @@
     "sha256": "cfa0ce9a38ffcbcadf2b64829c54224d71a8c2a232fb9317ca40b9572f9acab2"
   },
   "RULES.md": {
-    "bytes": 6318,
-    "sha256": "3295bf9630d220b8daf011b317cb68063cf6a27c0435c6c85277ec873b95029d"
+    "bytes": 6550,
+    "sha256": "3d4d6abfc6c26f0627b6a6a3ec8af55e6b531d20cf7e4324c8399aed01e18971"
   },
   "src/app/api/health/route.ts": {
     "bytes": 67,
