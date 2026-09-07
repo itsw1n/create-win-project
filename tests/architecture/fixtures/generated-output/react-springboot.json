@@ -400,8 +400,8 @@
     "sha256": "9c2ee74549bd1c51697397a6f2ba02f367c9e859c0d02f92a490578e9e580f01"
   },
   "playbooks/stack/react-vite/structure.md": {
-    "bytes": 879,
-    "sha256": "bc87c418676875e5baa1c95ade0e8583ea128b2759982b54c6ac454f78ee7077"
+    "bytes": 911,
+    "sha256": "bdcdf20269493cecb3b119d6587c3d29f5b314f83213137600645884d92f3303"
   },
   "playbooks/stack/react-vite/testing.md": {
     "bytes": 586,

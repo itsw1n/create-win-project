@@ -244,8 +244,8 @@
     "sha256": "c335afa048aa340793a487d8acaeee8e2c9129947b215d72f128369828c5013e"
   },
   "playbooks/platform/laravel-ui/inertia-react/structure.md": {
-    "bytes": 326,
-    "sha256": "81dee3d4144d052e0cfeede0bace1d24f8ad41e54d553d01996317bb1fe725e8"
+    "bytes": 366,
+    "sha256": "130e2dad01975f042b62d23b959d52a077a1b817eb4f4daabd349cb2858fd519"
   },
   "playbooks/platform/laravel-ui/inertia-react/testing.md": {
     "bytes": 317,

@@ -256,8 +256,8 @@
     "sha256": "f3057eff1030a71fbfe18a860c9bc2803d2061ddf76a46d0a6969b38078e336b"
   },
   "playbooks/stack/expo/structure.md": {
-    "bytes": 920,
-    "sha256": "769e1212c0c8323cf840b84005afa5c6e9680a82cb7462069441464494200e82"
+    "bytes": 1001,
+    "sha256": "27ea7de76f9185feb0e938ce373347b6df31b6c21985848c5b9080218d0f2a72"
   },
   "playbooks/stack/expo/testing.md": {
     "bytes": 601,
