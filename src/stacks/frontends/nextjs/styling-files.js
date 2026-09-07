@@ -207,7 +207,9 @@ export function StarterStatus({ status }: { status: Status }) {
 .heading { font-size: clamp(2.25rem, 7vw, 3rem); line-height: 1.05; letter-spacing: -0.025em; }
 .profile { color: var(--color-primary); font-size: 0.875rem; font-weight: 600; }
 `
-    files['src/features/status/index.ts'] = "export { StarterStatus } from './components/StarterStatus/StarterStatus'\nexport { getStarterStatus } from './services/getStarterStatus'\nexport type { StarterStatus as StarterStatusModel } from './types'\n"
+    if (stack.architecture === 'large') {
+      files['src/features/status/index.ts'] = "export { StarterStatus } from './components/StarterStatus/StarterStatus'\nexport { getStarterStatus } from './services/getStarterStatus'\nexport type { StarterStatus as StarterStatusModel } from './types'\n"
+    }
   }
 
   if ((answers.testing || 'basic') !== 'none') {

@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import fs from 'fs-extra'
 import os from 'node:os'
 import path from 'node:path'
+import { spawnSync } from 'node:child_process'
 import { generateProject } from '../../src/engine/create-project.js'
 
 const root = path.resolve(import.meta.dirname, '..', '..')
@@ -33,6 +34,16 @@ async function generate(overrides) {
     process.chdir(previous)
   }
   return path.join(workingDirectory, overrides.projectName || 'example-app')
+}
+
+async function sourceText(directory) {
+  const contents = []
+  for (const entry of await fs.readdir(directory, { withFileTypes: true })) {
+    const target = path.join(directory, entry.name)
+    if (entry.isDirectory()) contents.push(await sourceText(target))
+    else if (/\.(?:css|jsx?|tsx?)$/.test(entry.name)) contents.push(await fs.readFile(target, 'utf8'))
+  }
+  return contents.flat().join('\n')
 }
 
 afterEach(async () => {
@@ -393,6 +404,7 @@ describe('runnable project contract', () => {
     const modulesPage = await fs.readFile(path.join(modules, 'src/app/page.tsx'), 'utf8')
     expect(modulesPage).toContain("import styles from './page.module.css'")
     expect(modulesPage).not.toContain('data-ui')
+    expect(await sourceText(path.join(modules, 'src'))).not.toContain('data-ui')
     expect(await fs.pathExists(path.join(modules, 'src/styles/tokens.css'))).toBe(true)
     expect(await fs.pathExists(path.join(modules, 'src/components/layout/Section/Section.module.css'))).toBe(true)
     expect(await fs.pathExists(path.join(modules, 'src/components/common/Button/Button.test.tsx'))).toBe(true)
@@ -422,6 +434,7 @@ describe('runnable project contract', () => {
     const modulesApp = await fs.readFile(path.join(modules, 'frontend/src/App.tsx'), 'utf8')
     expect(modulesApp).toContain("import styles from './App.module.css'")
     expect(modulesApp).not.toContain('data-ui')
+    expect(await sourceText(path.join(modules, 'frontend/src'))).not.toContain('data-ui')
     expect(await fs.pathExists(path.join(modules, 'frontend/src/styles/tokens.css'))).toBe(true)
     expect(await fs.pathExists(path.join(modules, 'frontend/src/components/layout/Container/Container.module.css'))).toBe(true)
     expect(await fs.pathExists(path.join(modules, 'frontend/src/components/common/Button/Button.test.tsx'))).toBe(true)
@@ -436,9 +449,60 @@ describe('runnable project contract', () => {
     expect(home).toContain("import { Screen } from '@/components/layout/Screen'")
     expect(home).toContain("import { Content } from '@/components/layout/Content'")
     expect(home).not.toContain('data-ui')
+    expect(await sourceText(destination)).not.toContain('data-ui')
     expect(await fs.pathExists(path.join(destination, 'theme/tokens.ts'))).toBe(true)
     expect(await fs.pathExists(path.join(destination, 'components/common/Button.tsx'))).toBe(true)
     expect(await fs.pathExists(path.join(destination, 'components/common/Button.test.tsx'))).toBe(true)
+  })
+
+  it('keeps styling ownership stable across architecture sizes', async () => {
+    for (const architecture of ['small', 'medium', 'large']) {
+      for (const [frontend, styling] of [['nextjs', 'tailwind'], ['nextjs', 'css-modules'], ['react', 'tailwind'], ['react', 'css-modules']]) {
+        const destination = await generate({
+          frontend, backend: 'none', applicationShape: frontend === 'react' ? 'frontend' : 'fullstack',
+          styling, architecture, authentication: 'none', githubActions: false,
+          projectName: `${frontend}-${styling}-${architecture}`,
+        })
+        const sourceRoot = frontend === 'react' ? path.join(destination, 'frontend/src') : path.join(destination, 'src')
+        const componentRoot = path.join(sourceRoot, 'components')
+        if (styling === 'tailwind') {
+          expect(await fs.pathExists(path.join(componentRoot, 'layout/Container.tsx'))).toBe(true)
+          expect(await fs.pathExists(path.join(componentRoot, 'layout/Section.tsx'))).toBe(true)
+          expect(await fs.pathExists(path.join(componentRoot, 'common/Button.tsx'))).toBe(true)
+        } else {
+          expect(await fs.pathExists(path.join(componentRoot, 'layout/Container/Container.module.css'))).toBe(true)
+          expect(await fs.pathExists(path.join(componentRoot, 'layout/Section/Section.module.css'))).toBe(true)
+          expect(await fs.pathExists(path.join(componentRoot, 'common/Button/Button.module.css'))).toBe(true)
+        }
+      }
+
+      const native = await generate({
+        frontend: 'react-native', backend: 'none', applicationShape: 'mobile', architecture,
+        authentication: 'none', githubActions: false, projectName: `expo-native-${architecture}`,
+      })
+      expect(await fs.pathExists(path.join(native, 'components/layout/Screen.tsx'))).toBe(true)
+      expect(await fs.pathExists(path.join(native, 'components/layout/Content.tsx'))).toBe(true)
+      expect(await fs.pathExists(path.join(native, 'components/common/Button.tsx'))).toBe(true)
+    }
+  })
+
+  it('enforces generated component ownership boundaries', async () => {
+    const destination = await generate({
+      frontend: 'nextjs', backend: 'supabase', styling: 'tailwind', architecture: 'large',
+      authentication: 'yes', projectName: 'ownership-boundaries',
+    })
+    const runBoundaryCheck = () => spawnSync(process.execPath, ['scripts/check-boundaries.mjs'], {
+      cwd: destination, encoding: 'utf8',
+    })
+    const clean = runBoundaryCheck()
+    expect(clean.status, clean.stderr).toBe(0)
+
+    const button = path.join(destination, 'src/components/common/Button.tsx')
+    const validButton = await fs.readFile(button, 'utf8')
+    await fs.writeFile(button, `import { Section } from '@/components/layout/Section'\n${validButton}`)
+    const violation = runBoundaryCheck()
+    expect(violation.status).toBe(1)
+    expect(violation.stderr).toContain('common cannot import layout')
   })
 
   it('rejects unsupported production-ready without tests paths', async () => {
