@@ -96,6 +96,7 @@ export function architectureOverview(stack, filePaths, projectName) {
 - Backend/data: ${stack.backendLabel}
 - Platform: ${stack.platform}
 - Architecture profile: ${stack.architecture}
+- Styling mode: ${stack.styleId || 'none'}
 - Authentication: ${stack.authentication}
 
 ## Generated source map

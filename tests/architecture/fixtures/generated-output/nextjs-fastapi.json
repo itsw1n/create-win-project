@@ -160,8 +160,8 @@
     "sha256": "29bf68bccb14b659fac40bd7c31e25750b66d0428701b986e056d022b8003e08"
   },
   "create-win-project.profile.json": {
-    "bytes": 908,
-    "sha256": "659221c77b946b2cb4d322480a1fb12997a4a81ef776295755918cbf9dfed5c3"
+    "bytes": 951,
+    "sha256": "c937654ef1d93ed51934ffe6a4dfcc55525c01f3ba487050cc10322c5924a5ab"
   },
   "docker-compose.prod.yml": {
     "bytes": 1422,
@@ -200,8 +200,8 @@
     "sha256": "e87327e605c00b80ed691147211c7beec30cc910d86f7c2364d293bdd93aed8c"
   },
   "docs/architecture/overview.md": {
-    "bytes": 2550,
-    "sha256": "b6470bf6248e767f0447628ccf31ad2e13f9a5781bc2351d60990a5137f56236"
+    "bytes": 2575,
+    "sha256": "81ea13421cac3e6d6ef94e1b5141b75374b82daa5effa84a318ac50ceb4aa491"
   },
   "docs/guides/deployment.md": {
     "bytes": 997,
