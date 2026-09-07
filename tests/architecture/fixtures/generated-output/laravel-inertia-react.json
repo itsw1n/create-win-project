@@ -452,8 +452,8 @@
     "sha256": "c14e0beeabd2425684848247db0b87f36035cc686721c46289ae756ade14406d"
   },
   "tests/Feature/UiComponentsTest.php": {
-    "bytes": 241,
-    "sha256": "4b06c7094f3e1fec97e4f14cb01015a026a4331d4dbdde047269dbdf7ea4cbba"
+    "bytes": 244,
+    "sha256": "c6d04586712ef5e487c7e2a949178b68bff051d91199e7b84ad6e0051b47ac5e"
   },
   "tests/Pest.php": {
     "bytes": 76,

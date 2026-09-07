@@ -83,7 +83,7 @@ export function buildBladeUiComponents() {
     'resources/views/components/common/button.blade.php': "@props(['type' => 'button', 'variant' => 'primary'])\n@php($classes = $variant === 'secondary' ? 'bg-muted text-foreground hover:bg-muted/70' : 'bg-primary text-primary-foreground hover:bg-primary/90')\n<button data-ui=\"button\" type=\"{{ $type }}\" {{ $attributes->class(['inline-flex min-h-10 items-center justify-center rounded-control px-4 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:pointer-events-none disabled:opacity-50', $classes]) }}>{{ $slot }}</button>\n",
     'tests/Feature/UiComponentsTest.php': `<?php
 
-use Illuminate\Support\Facades\Blade;
+use Illuminate\\Support\\Facades\\Blade;
 
 it('renders the shared button component', function () {
     expect(Blade::render('<x-common.button>Save</x-common.button>'))
