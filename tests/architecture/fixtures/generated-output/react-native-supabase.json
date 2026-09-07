@@ -244,8 +244,8 @@
     "sha256": "230d1eb6de679e59015152f9f74799341057ea49c3c71be459b294e14426fd7d"
   },
   "playbooks/stack/expo/architecture.md": {
-    "bytes": 880,
-    "sha256": "bfb8b1afae467db59eed23a70f76cf3d7a1bc41d9e8be9e1318dd4db00b2f762"
+    "bytes": 1529,
+    "sha256": "5889add2527a8216fb5388a303fd7af4fb65a32a1dd2c0a0652405434bb3c983"
   },
   "playbooks/stack/expo/runtime.md": {
     "bytes": 766,
@@ -256,8 +256,8 @@
     "sha256": "f3057eff1030a71fbfe18a860c9bc2803d2061ddf76a46d0a6969b38078e336b"
   },
   "playbooks/stack/expo/structure.md": {
-    "bytes": 1001,
-    "sha256": "27ea7de76f9185feb0e938ce373347b6df31b6c21985848c5b9080218d0f2a72"
+    "bytes": 2745,
+    "sha256": "53f20c5580c2c13d222bf77e4b98fe03c810c6e119cb548576487eb3c83ff97d"
   },
   "playbooks/stack/expo/testing.md": {
     "bytes": 601,
@@ -324,8 +324,8 @@
     "sha256": "803b6fae1759bdc6c80badf3c4e60cc7b4528f4eb77e544b04254a51404cc7d5"
   },
   "RULES.md": {
-    "bytes": 5307,
-    "sha256": "9620593e687f96e3bc2270241dc5e203059389afdae9c986e5bcd6a0eb58a214"
+    "bytes": 5472,
+    "sha256": "e5e0870aefafcd301f1d623769b518f3e9820f667f4da5c2b7d265dcaad9551d"
   },
   "supabase/config.toml": {
     "bytes": 232,

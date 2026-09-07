@@ -34,7 +34,7 @@
   ],
   "concerns": [
     { "id": "architecture", "required": true, "playbook": "stack/react-vite/architecture.md", "sections": ["Profiles", "Dependency Direction"] },
-    { "id": "structure", "required": true, "playbook": "stack/react-vite/structure.md", "sections": ["Feature Ownership"] },
+    { "id": "structure", "required": true, "playbook": "stack/react-vite/structure.md", "sections": ["Canonical Reference Tree", "Profile Differences", "File Placement", "Architecture Cleanup"] },
     { "id": "runtime", "required": true, "playbook": "stack/react-vite/runtime.md", "sections": ["Remote State"] },
     { "id": "stack-security", "required": true, "playbook": "stack/react-vite/security.md", "sections": ["Browser Trust Boundary"] },
     { "id": "stack-testing", "required": true, "playbook": "stack/react-vite/testing.md", "sections": ["Test Layers"] },

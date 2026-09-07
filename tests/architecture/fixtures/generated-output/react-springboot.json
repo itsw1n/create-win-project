@@ -388,8 +388,8 @@
     "sha256": "9fd82f2d1ed95139033b4ccf701c8a35c7d02d91d147abdbde40ca28831b01c6"
   },
   "playbooks/stack/react-vite/architecture.md": {
-    "bytes": 1049,
-    "sha256": "3923badebc4d9ef979be5a8c5c05836a03b3b89b2f928150864b9725a2ee530a"
+    "bytes": 1746,
+    "sha256": "844a0ba2903c0727d209ef615afc72b263a0ec5771cc5508aef950f61e1188bd"
   },
   "playbooks/stack/react-vite/runtime.md": {
     "bytes": 622,
@@ -400,8 +400,8 @@
     "sha256": "9c2ee74549bd1c51697397a6f2ba02f367c9e859c0d02f92a490578e9e580f01"
   },
   "playbooks/stack/react-vite/structure.md": {
-    "bytes": 911,
-    "sha256": "bdcdf20269493cecb3b119d6587c3d29f5b314f83213137600645884d92f3303"
+    "bytes": 2651,
+    "sha256": "7851c4105a40dd4a730151a28934c134f40a537fce0f58d99e0664a92240c6ec"
   },
   "playbooks/stack/react-vite/testing.md": {
     "bytes": 586,
