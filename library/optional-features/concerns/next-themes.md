@@ -41,7 +41,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 # 2. Toggle Component
 
 ```tsx
-// src/components/ui/ThemeToggle.tsx
+// src/components/common/ThemeToggle.tsx
 'use client'
 import { useTheme } from 'next-themes'
 
