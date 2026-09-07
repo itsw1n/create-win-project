@@ -106,17 +106,34 @@ describe('runnable project contract', () => {
   ])('generates the %s Laravel full-stack UI', async (laravelUi, expectedFile, composerPackage) => {
     const destination = await generate({
       frontend: 'laravel-ui', backend: 'laravel', applicationShape: 'fullstack', laravelUi,
-      architecture: 'medium', authentication: 'yes', styling: 'tailwind', githubActions: false,
+      architecture: 'medium', authentication: 'yes', styling: 'tailwind', githubActions: true,
       projectName: `laravel-${laravelUi}`,
     })
     expect(await fs.pathExists(path.join(destination, expectedFile))).toBe(true)
     const composer = await fs.readJson(path.join(destination, 'composer.json'))
+    const packageJson = await fs.readJson(path.join(destination, 'package.json'))
+    expect(packageJson.devDependencies.tailwindcss).toBe('4.3.3')
+    expect(packageJson.devDependencies['@tailwindcss/vite']).toBe('4.3.3')
+    expect(await fs.readFile(path.join(destination, 'resources/css/app.css'), 'utf8')).toContain('@theme')
+    expect(await fs.readFile(path.join(destination, 'vite.config.js'), 'utf8')).toContain('tailwindcss()')
+    expect(await fs.pathExists(path.join(destination, 'resources/views/components/layout/container.blade.php'))).toBe(true)
+    expect(await fs.pathExists(path.join(destination, 'resources/views/components/common/button.blade.php'))).toBe(true)
+    const dockerfile = await fs.readFile(path.join(destination, 'Dockerfile'), 'utf8')
+    expect(dockerfile).toContain('FROM node:24.20.0-alpine AS assets')
+    expect(dockerfile).toContain('COPY --from=assets /app/public/build ./public/build')
+    const workflow = await fs.readFile(path.join(destination, '.github/workflows/ci-backend.yml'), 'utf8')
+    expect(workflow).toContain('npm test --if-present')
+    expect(workflow).toContain('npm run build')
+    const security = await fs.readFile(path.join(destination, '.github/workflows/security.yml'), 'utf8')
+    expect(security).toContain('npm audit --audit-level=high')
     if (composerPackage) expect(composer.require[composerPackage]).toMatch(/^\d+\.\d+\.\d+$/)
     if (laravelUi === 'inertia-react') {
-      const packageJson = await fs.readJson(path.join(destination, 'package.json'))
       expect(packageJson.dependencies['@inertiajs/react']).toMatch(/^\d+\.\d+\.\d+$/)
+      expect(packageJson.dependencies['class-variance-authority']).toBe('0.7.1')
       expect(packageJson.packageManager).toBe('npm@11.19.0')
       expect(await fs.readFile(path.join(destination, '.node-version'), 'utf8')).toBe('24.20.0\n')
+      expect(await fs.pathExists(path.join(destination, 'resources/js/components/layout/Container.jsx'))).toBe(true)
+      expect(await fs.pathExists(path.join(destination, 'resources/js/components/common/Button.test.jsx'))).toBe(true)
     }
     const rules = await fs.readFile(path.join(destination, 'RULES.md'), 'utf8')
     expect(rules).toContain(`platform/laravel-ui/${laravelUi}/architecture.md`)

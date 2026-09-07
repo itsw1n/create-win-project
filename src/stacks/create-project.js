@@ -171,10 +171,11 @@ async function generateRootFiles(dest, answers, vars, stack, templatesDir) {
 
     if (stack.backendKey === 'laravel') {
       const laravelRoot = stack.frontendKey === 'laravel-ui' || stack.frontendKey === 'no-frontend' ? '' : 'backend/'
-      const dockerfileName = stack.frontendKey === 'laravel-ui' && stack.laravelUi === 'inertia-react' ? 'laravel-inertia.dev' : 'laravel.dev'
+      const dockerfileName = stack.frontendKey === 'laravel-ui' ? 'laravel-ui.dev' : 'laravel.dev'
       const laravelDev = await readTemplate(templatesDir, 'docker/dockerfile', dockerfileName, '.dockerfile')
       if (laravelDev) await writeTemplate(dest, `${laravelRoot}Dockerfile.dev`, laravelDev, vars)
-      const laravelProd = await readTemplate(templatesDir, 'docker/dockerfile', 'laravel.prod', '.dockerfile')
+      const productionDockerfile = stack.frontendKey === 'laravel-ui' ? 'laravel-ui.prod' : 'laravel.prod'
+      const laravelProd = await readTemplate(templatesDir, 'docker/dockerfile', productionDockerfile, '.dockerfile')
       if (laravelProd) await writeTemplate(dest, `${laravelRoot}Dockerfile`, laravelProd, vars)
     }
 
@@ -257,7 +258,8 @@ async function generateRootFiles(dest, answers, vars, stack, templatesDir) {
     }
     if (stack.backendKey === 'laravel') {
       const laravelRoot = ['laravel-ui', 'no-frontend'].includes(stack.frontendKey) ? '' : 'backend/'
-      const laravelProd = await readTemplate(templatesDir, 'docker/dockerfile', 'laravel.prod', '.dockerfile')
+      const productionDockerfile = stack.frontendKey === 'laravel-ui' ? 'laravel-ui.prod' : 'laravel.prod'
+      const laravelProd = await readTemplate(templatesDir, 'docker/dockerfile', productionDockerfile, '.dockerfile')
       if (laravelProd) await writeTemplate(dest, `${laravelRoot}Dockerfile`, laravelProd, vars)
     }
   }
@@ -272,8 +274,7 @@ async function generateRootFiles(dest, answers, vars, stack, templatesDir) {
 
 function toolchainGuide(answers, stack) {
   const javascriptRoot = stack.frontendKey === 'react' ? 'frontend/' : ''
-  const hasJavaScript = stack.frontendKey !== 'no-frontend' &&
-    !(stack.frontendKey === 'laravel-ui' && stack.laravelUi !== 'inertia-react')
+  const hasJavaScript = stack.frontendKey !== 'no-frontend'
   const rows = []
   if (hasJavaScript) {
     rows.push(`| Node.js | ${stack.profile.runtimes.nodeMinimum}+ (tested ${stack.profile.runtimes.node}) | JavaScript application | \`${javascriptRoot}.node-version\`, \`${javascriptRoot}package.json\` |`)
@@ -348,10 +349,10 @@ async function generateDocs(dest, answers, stack, runnableFilePaths) {
       ? '\nIn another terminal:\n\n```bash\ncd frontend\nnpm install\nnpm run dev\n```\n'
       : stack.frontendKey === 'nextjs'
         ? '\nIn another terminal from the repository root:\n\n```bash\nnpm install\nnpm run dev\n```\n'
-        : stack.frontendKey === 'laravel-ui' && stack.laravelUi === 'inertia-react'
+        : stack.frontendKey === 'laravel-ui'
           ? '\nIn another terminal from the repository root:\n\n```bash\nnpm install\nnpm run dev\n```\n'
           : ''
-    setupGuide = `# Local Setup Guide\n\n## Default local setup\n\nUse PHP ${stack.profile.runtimes.php}, Composer ${stack.profile.runtimes.composer}, and PostgreSQL ${stack.profile.runtimes.postgres}.\n\n\`\`\`bash\ncd ${laravelDir || '.'}\ncomposer install\ncp .env.example .env\nphp artisan key:generate\nphp artisan migrate\nphp artisan serve\n\`\`\`\n${frontendSetup}${answers.docker ? `\n## Optional Docker setup\n\nFrom the repository root:\n\n\`\`\`bash\ndocker compose build\ndocker compose up -d\ndocker compose exec backend php artisan key:generate\ndocker compose exec backend php artisan migrate\n\`\`\`\n\nLater runs use \`docker compose up -d\`; rebuilding remains explicit.\n` : ''}\n## Validate\n\n\`\`\`bash\n${laravelDir ? `cd ${laravelDir}\n` : ''}composer check\n\`\`\`\n\nCommit \`composer.lock\`${stack.frontendKey === 'laravel-ui' && stack.laravelUi === 'inertia-react' ? ' and `package-lock.json`' : ''}.\n`
+    setupGuide = `# Local Setup Guide\n\n## Default local setup\n\nUse PHP ${stack.profile.runtimes.php}, Composer ${stack.profile.runtimes.composer}, and PostgreSQL ${stack.profile.runtimes.postgres}.${stack.frontendKey === 'laravel-ui' ? ` Use Node.js ${stack.profile.runtimes.nodeMinimum}+ with npm ${stack.profile.runtimes.npmMinimum}+ for Tailwind assets.` : ''}\n\n\`\`\`bash\ncd ${laravelDir || '.'}\ncomposer install\ncp .env.example .env\nphp artisan key:generate\nphp artisan migrate\nphp artisan serve\n\`\`\`\n${frontendSetup}${answers.docker ? `\n## Optional Docker setup\n\nFrom the repository root:\n\n\`\`\`bash\ndocker compose build\ndocker compose up -d\ndocker compose exec backend php artisan key:generate\ndocker compose exec backend php artisan migrate\n\`\`\`\n\nLater runs use \`docker compose up -d\`; rebuilding remains explicit.\n` : ''}\n## Validate\n\n\`\`\`bash\n${laravelDir ? `cd ${laravelDir}\n` : ''}composer check${stack.frontendKey === 'laravel-ui' ? '\nnpm test --if-present\nnpm run build' : ''}\n\`\`\`\n\nCommit \`composer.lock\`${stack.frontendKey === 'laravel-ui' ? ' and `package-lock.json`' : ''}.\n`
   }
   if (stack.backendKey === 'fastapi') {
     const apiDir = stack.frontendKey === 'no-frontend' ? '' : 'backend/'
@@ -424,8 +425,7 @@ function authDocumentation(stack) {
 // ─── CI — template-driven ─────────────────────────────────────────────────────
 
 function generatedSecurityWorkflow(stack) {
-  const hasJavaScript = stack.frontendKey !== 'no-frontend' &&
-    !(stack.frontendKey === 'laravel-ui' && stack.laravelUi !== 'inertia-react')
+  const hasJavaScript = stack.frontendKey !== 'no-frontend'
   const npmDirectory = stack.frontendKey === 'react' ? 'frontend' : '.'
   const laravelDirectory = ['laravel-ui', 'no-frontend'].includes(stack.frontendKey) ? '.' : 'backend'
   const codeqlLanguages = [hasJavaScript && 'javascript-typescript', stack.backendKey === 'springboot' && 'java-kotlin'].filter(Boolean)
@@ -478,8 +478,9 @@ async function generateCI(dest, stack, ciDir, answers, vars) {
     if (await fs.pathExists(beTpl)) {
       let content = await fs.readFile(beTpl, 'utf-8')
       if (answers.testing === 'none') content = content.replace('      - run: composer check\n', '      - run: composer format:check\n      - run: composer analyse\n')
-      if (stack.frontendKey === 'laravel-ui' && stack.laravelUi === 'inertia-react') {
-        content += `      - uses: actions/setup-node@v4\n        with:\n          node-version: "${stack.profile.runtimes.node}"\n          cache: npm\n          cache-dependency-path: package-lock.json\n      - run: npm ci\n      - run: npm run build\n`
+      if (stack.frontendKey === 'laravel-ui') {
+        content += `      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4\n        with:\n          node-version: "${stack.profile.runtimes.node}"\n          cache: npm\n          cache-dependency-path: package-lock.json\n      - run: npm ci\n      - run: npm run build\n`
+        content = content.replace('      - run: npm run build\n', '      - run: npm test --if-present\n      - run: npm run build\n')
       }
       await write(dest, `.github/workflows/ci-backend.yml`, render(content, vars))
     }
