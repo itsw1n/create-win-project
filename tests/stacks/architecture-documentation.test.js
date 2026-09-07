@@ -47,5 +47,8 @@ describe('generated architecture documentation', () => {
     expect(overview).toContain('playbooks/stack/nextjs/structure.md')
     expect(overview).toContain('playbooks/stack/fastapi/structure.md')
     expect(overview).not.toContain('playbooks/universal/security.md')
+    expect(overview).toContain('exact generated source tree')
+    expect(overview).toContain('complete reference architecture')
+    expect(overview).toContain('ask for approval')
   })
 })

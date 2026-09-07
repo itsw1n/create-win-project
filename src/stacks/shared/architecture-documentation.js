@@ -108,13 +108,19 @@ specific stack and architecture profile. Tooling, deployment, and guidance files
 ${buildSourceTree(filePaths, projectName)}
 \`\`\`
 
-The generated application is intentionally a small vertical slice. Add domain features only after
-recording product goals and boundaries in \`CONTEXT.md\`. Keep entry points thin, validate at trust
-boundaries, and enforce authorization beside protected data or side effects.
+This is the exact generated source tree, not the complete reference architecture. The application
+is intentionally a small vertical slice; absent reference folders are not missing requirements.
+Add domain features only after recording product goals and boundaries in \`CONTEXT.md\`. Keep entry
+points thin, validate at trust boundaries, and enforce authorization beside protected data or side
+effects.
 
 ## Detailed structure rules
 
 ${structurePlaybooks || '- See the selected stack playbooks under `playbooks/stack/`.'}
+
+The structure playbooks show available destinations and profile growth rules. Create a folder only
+when its responsibility exists. Before an agent removes or reorganizes user-created architecture,
+it must explain the change, future placement, and recovery path and then ask for approval.
 
 ## Verification boundary
 
