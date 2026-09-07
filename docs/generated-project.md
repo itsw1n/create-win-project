@@ -25,6 +25,13 @@ layers or placeholder directories.
 Folders are created only when they contain working code. A Medium project therefore shows the
 intended dependency direction without generating every folder that a future feature might need.
 
+The structure examples in the stack playbooks are reference maps, not instructions to create
+every listed directory. Start with the smallest valid feature and add a layer only when its
+responsibility exists. An agent may recommend removing an empty or obsolete architecture folder,
+but must first explain what changes, why the folder is unnecessary, where future code belongs,
+and how the documented folder can be restored. Removing or reorganizing user-created structure
+requires the user's approval.
+
 ## Representative source layouts
 
 ### Web application with a separate API
@@ -62,8 +69,8 @@ src/                                  frontend/src/ for React + Vite
 ├── app/globals.css                  Next.js global styles
 ├── styles.css                       React + Vite global styles
 ├── components/
-│   ├── ui/                           domain-free UI primitives
-│   └── shared/                       components reused by multiple features
+│   ├── layout/                       structural composition and page landmarks
+│   └── common/                       reusable domain-free controls
 └── features/<feature>/components/   feature-owned UI
 ```
 
@@ -85,8 +92,9 @@ my-project/
 └── backend/                          present for a paired API
 ```
 
-Expo keeps `StyleSheet` definitions beside the route or component by default. Reusable native UI
-belongs in `components/ui/` once the project has a genuine shared primitive.
+Expo keeps `StyleSheet` definitions beside the route or component by default. Structural native
+UI belongs in `components/layout/`; reusable domain-free controls belong in
+`components/common/`.
 
 ### API-only application
 

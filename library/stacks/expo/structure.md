@@ -17,7 +17,8 @@ features/tasks/
 ├── data.ts                Supabase access, when used
 ├── schema.ts
 └── types.ts
-components/ui/             reusable native primitives
+components/layout/         Screen, Content, and structural composition
+components/common/         reusable domain-free native controls
 lib/                       transport, secure storage, platform adapters
 config/                    validated public runtime configuration
 ```

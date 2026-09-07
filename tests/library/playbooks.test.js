@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest'
+import fs from 'fs/promises'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { loadCatalog, resolveStack } from '../../src/engine/load-library.js'
@@ -92,4 +93,21 @@ describe('collectPlaybookFiles', () => {
     const unique  = new Set(files)
     expect(files.length).toBe(unique.size)
   })
+})
+
+describe('frontend component ownership vocabulary', () => {
+  it.each(['nextjs', 'react-vite', 'expo'])(
+    'documents layout/common ownership for %s',
+    async (stackId) => {
+      const structure = await fs.readFile(
+        path.join(root, 'library', 'stacks', stackId, 'structure.md'),
+        'utf8',
+      )
+
+      expect(structure).toContain('components/layout')
+      expect(structure).toContain('components/common')
+      expect(structure).not.toContain('components/ui')
+      expect(structure).not.toContain('components/shared')
+    },
+  )
 })

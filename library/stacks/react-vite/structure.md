@@ -6,8 +6,8 @@
 frontend/src/
 ├── app/                 providers and router composition
 ├── pages/               route-level composition
-├── components/ui/       domain-free primitives
-├── components/shared/   cross-feature UI
+├── components/layout/   structural composition and page landmarks
+├── components/common/   reusable domain-free controls
 ├── features/tasks/
 │   ├── components/
 │   ├── hooks/

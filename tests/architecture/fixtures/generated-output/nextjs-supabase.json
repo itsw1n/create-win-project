@@ -176,8 +176,8 @@
     "sha256": "2a22b3e8b05fb293f9ec23e1cb9dd0df43808225b6277b2882c54e56969c5dba"
   },
   "playbooks/concerns/next-themes.md": {
-    "bytes": 1921,
-    "sha256": "ae5af5cd430bb3f6c8f6f67c26d398db27036d2ca0b9f131dd240d63d83e0aa6"
+    "bytes": 1925,
+    "sha256": "7597670a0015e43c0779109716b3dc153adf7b995349c10b1c3283e025ed6578"
   },
   "playbooks/concerns/nuqs.md": {
     "bytes": 1670,
@@ -220,8 +220,8 @@
     "sha256": "5b1f4c6cca1f78b0f981b064ba2fa868911adf8cc22db0853ff7674adac63bab"
   },
   "playbooks/stack/nextjs/structure.md": {
-    "bytes": 2042,
-    "sha256": "bab1560d3893a6fe5ebd4cbedab05ebeb8fb8be8d68c6b256cb008c3f2f1c18c"
+    "bytes": 2132,
+    "sha256": "eed68ad2b8ad50e140cba5410631fde4982bd23f95aea3fc6444708fb91d4373"
   },
   "playbooks/stack/nextjs/testing.md": {
     "bytes": 894,

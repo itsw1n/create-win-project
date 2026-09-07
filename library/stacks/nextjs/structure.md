@@ -7,8 +7,8 @@
 ```text
 src/
 ├── app/                    routes and route-level composition
-├── components/ui/          domain-free primitives
-├── components/shared/      UI reused by multiple features
+├── components/layout/      structural composition and page landmarks
+├── components/common/      reusable domain-free controls
 ├── features/
 │   └── users/
 │       ├── components/
@@ -38,7 +38,8 @@ is the only supported cross-feature import surface in Large projects.
 | Spring/external API | `api/` | `usersApi.ts` |
 | Browser-only SDK | feature `api/` or `data/` | never server secrets |
 
-Do not put feature code in `lib/users.ts`, and do not call a Next Route Handler from a
+`layout` may use `common`, but neither directory owns feature behavior. Do not put feature code in
+`lib/users.ts`, and do not call a Next Route Handler from a
 Server Component merely to reach code in the same process.
 
 ## Naming
