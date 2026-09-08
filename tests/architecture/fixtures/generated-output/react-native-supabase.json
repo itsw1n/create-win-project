@@ -8,8 +8,8 @@
     "sha256": "aac4a76b1ad6605d9f5279bb068bb94137166886d6950bbeffc600df078be201"
   },
   ".github/PULL_REQUEST_TEMPLATE.md": {
-    "bytes": 855,
-    "sha256": "e6c9ebd10795622b8e71ba32ffb9a2670fa3f7666726522736f4207cabc70bee"
+    "bytes": 360,
+    "sha256": "b64c63468d3d10cc9a30dff0c3950dd56c44bc904a01e0b668859a9f2565e437"
   },
   ".github/workflows/ci-frontend.yml": {
     "bytes": 585,
@@ -36,8 +36,8 @@
     "sha256": "80a265752b65a489bca52d72780a015416322cdaadff944627d8f0fa8828c7aa"
   },
   "AGENTS.md": {
-    "bytes": 2611,
-    "sha256": "c63dc4efbc89b744b01045aff82042be0c0820cbcb83960673562c5e76a3381d"
+    "bytes": 3010,
+    "sha256": "43161190ae806e4293833678754fcba97caae64fd80185311f9e4b2125ec6106"
   },
   "app/_layout.tsx": {
     "bytes": 315,
@@ -76,12 +76,12 @@
     "sha256": "832502a88877e02c6cbeb38f8393def793c1a4195d83e5ea5266fda40544ff88"
   },
   "CONTEXT.md": {
-    "bytes": 829,
-    "sha256": "dcf61b3dff9f18128c140a91dd01fccb64338c8f66cf30dd1273a7110dfa44ec"
+    "bytes": 1289,
+    "sha256": "abe0ca58d4d4fbf61e291528fd10656b0fb7fa06900f73c8cb5dedd23e14d2fa"
   },
   "create-win-project.profile.json": {
-    "bytes": 954,
-    "sha256": "cbdde51c79a4f04654c84ef3c7a96fbf1e2ceb680cc50c6de8e041f5f3aa792c"
+    "bytes": 955,
+    "sha256": "1a60513c6a0dad25d2dfee84e0c6309d081fbb739cfe5c9a8640f049ecd8e4a7"
   },
   "docs/api/endpoints.md": {
     "bytes": 84,
@@ -177,7 +177,7 @@
   },
   "package.json": {
     "bytes": 1453,
-    "sha256": "d824b280b1d0569c03640b42dc52fe8460a7302f83187e4f58b5ad777457a6ed"
+    "sha256": "81cbfd509cb566a834e7f268ebc75e9333871d229526dc2df37cd5ffbfed0baf"
   },
   "playbooks/capabilities/ci/github-actions.md": {
     "bytes": 3331,
@@ -236,8 +236,8 @@
     "sha256": "4f06b463191614f0733207a9762a58b2cecd64bff2415e55802733e37bae933b"
   },
   "playbooks/devops/pr-template.md": {
-    "bytes": 2393,
-    "sha256": "bc26649a67b314181ac86e82dd602635d5c22e6f53eacaf80ebb6309355c0036"
+    "bytes": 537,
+    "sha256": "818eb175b3d94df78d52291bc54c30032f39f061dbf5e61f195ebae0beadd4de"
   },
   "playbooks/platform/mobile.md": {
     "bytes": 1016,
@@ -299,6 +299,10 @@
     "bytes": 1505,
     "sha256": "8cc942653249a39b99790b84149602a7de2ed069816156c6c5fc09bb2d27d66f"
   },
+  "playbooks/universal/product-planning.md": {
+    "bytes": 2655,
+    "sha256": "437993b695feebb3b05b962e04e6a6dfaab7b6b697693bd047c013713c7e1f96"
+  },
   "playbooks/universal/security.md": {
     "bytes": 2362,
     "sha256": "75e151f515874bc6445432a26f3aa095f843288bbde1655ea8cb12d75cae2f2e"
@@ -324,8 +328,8 @@
     "sha256": "803b6fae1759bdc6c80badf3c4e60cc7b4528f4eb77e544b04254a51404cc7d5"
   },
   "RULES.md": {
-    "bytes": 5472,
-    "sha256": "e5e0870aefafcd301f1d623769b518f3e9820f667f4da5c2b7d265dcaad9551d"
+    "bytes": 6025,
+    "sha256": "343552e4c9203e009d9dadb3afc30f65c451a693aa7e60cbff995484beaefcfe"
   },
   "supabase/config.toml": {
     "bytes": 232,

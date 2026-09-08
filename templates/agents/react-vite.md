@@ -22,10 +22,17 @@ Run frontend commands from `frontend/`.
 ## Required workflow
 
 1. Read `CONTEXT.md` and inspect neighboring implementation and tests.
-2. Find the concern in `RULES.md`; open only its linked playbook section.
-3. State assumptions when behavior is ambiguous.
-4. Make the smallest coherent change and add risk-appropriate tests.
-5. Run lint, typecheck, relevant tests, and a production build.
+2. Resolve conditional product-planning guidance when it applies.
+3. Find the task concern in `RULES.md`; open only its linked playbook section.
+4. State assumptions when behavior is ambiguous.
+5. Make the smallest coherent change and add risk-appropriate tests.
+6. Run lint, typecheck, relevant tests, and a production build.
+
+## Product context
+
+- If `CONTEXT.md` reports `Product status: incomplete`, use `RULES.md` to locate and follow product-onboarding guidance.
+- If the user supplies or substantially changes a specification or plan, use `RULES.md` to locate and follow plan-reconciliation guidance.
+- Otherwise, do not repeat product onboarding.
 
 ## Always-on constraints
 

@@ -219,7 +219,7 @@ describe('runnable project contract', () => {
     expect(await fs.pathExists(path.join(apiRoot, 'app/main.py'))).toBe(true)
     expect(await fs.pathExists(path.join(apiRoot, 'alembic/env.py'))).toBe(true)
     expect(await fs.pathExists(path.join(apiRoot, 'tests/test_health.py'))).toBe(true)
-    expect(await fs.readFile(path.join(apiRoot, '.python-version'), 'utf8')).toBe('3.14.7\n')
+    expect(await fs.readFile(path.join(apiRoot, '.python-version'), 'utf8')).toBe('3.13.15\n')
     expect(await fs.readFile(path.join(destination, 'docs/guides/toolchain.md'), 'utf8')).toContain('uv')
     const architectureGuide = await fs.readFile(path.join(destination, 'docs/architecture/overview.md'), 'utf8')
     expect(architectureGuide).toContain(`\`\`\`text\n${projectName}/`)
@@ -275,7 +275,7 @@ describe('runnable project contract', () => {
     })
     const workflow = await fs.readFile(path.join(destination, '.github/workflows/ci-backend.yml'), 'utf8')
     expect(workflow).toContain('working-directory: backend')
-    expect(workflow).toContain('python-version: "3.14.7"')
+    expect(workflow).toContain('python-version: "3.13.15"')
     expect(workflow).toContain('uv sync --frozen')
     expect(workflow).toContain('postgresql+asyncpg://postgres:postgres@127.0.0.1:5432/app_test')
     expect(workflow).toContain('uv run alembic upgrade head')
@@ -351,6 +351,23 @@ describe('runnable project contract', () => {
       expect(setupGuide).toContain('tested on Node.js 24.20.0')
     }
     expect(await fs.pathExists(path.join(destination, 'AGENTS.md'))).toBe(true)
+    const context = await fs.readFile(path.join(destination, 'CONTEXT.md'), 'utf8')
+    expect(context).toContain('**Product status:** incomplete')
+    expect(context).toContain('## Product Goals')
+    expect(context).toContain('## Core Workflows')
+    expect(context).toContain('## Acceptance Criteria')
+    expect(context).toContain('## Generated Baseline')
+    expect(context).toContain('- Architecture profile: medium')
+    expect(context).toContain('- Authentication: not-yet')
+    expect(context).toContain('## Product Decisions')
+    expect(context).toContain('## Approved Deviations')
+    expect(context).not.toContain('## Key Decisions')
+    const agents = await fs.readFile(path.join(destination, 'AGENTS.md'), 'utf8')
+    expect(agents).toContain('## Product context')
+    expect(agents).toContain('Product status: incomplete')
+    expect(agents).toContain('plan-reconciliation guidance')
+    expect(agents).not.toContain('What does this product do')
+    expect(await fs.pathExists(path.join(destination, 'playbooks/universal/product-planning.md'))).toBe(true)
     const profile = await fs.readJson(path.join(destination, 'create-win-project.profile.json'))
     expect(profile.schemaVersion).toBe(2)
     expect(profile.compatibilityProfile.id).toBe('2026.09')
@@ -390,6 +407,9 @@ describe('runnable project contract', () => {
     expect(await fs.readFile(path.join(tailwind, 'src/app/globals.css'), 'utf8')).toContain('@theme')
     expect(await fs.readFile(path.join(tailwind, 'src/app/page.tsx'), 'utf8')).toContain('ui="hero"')
     expect(await fs.readFile(path.join(tailwind, 'src/components/layout/Container.tsx'), 'utf8')).toContain('data-ui="container"')
+    expect(await fs.pathExists(path.join(tailwind, 'src/components/layout/Section.tsx'))).toBe(true)
+    expect(await fs.pathExists(path.join(tailwind, 'src/components/container'))).toBe(false)
+    expect(await fs.pathExists(path.join(tailwind, 'src/components/section'))).toBe(false)
     expect(await fs.readFile(path.join(tailwind, 'src/components/common/Button.tsx'), 'utf8')).toContain('cva(')
     expect(await fs.pathExists(path.join(tailwind, 'src/components/common/Button.test.tsx'))).toBe(true)
 
@@ -410,6 +430,26 @@ describe('runnable project contract', () => {
     expect(await fs.pathExists(path.join(modules, 'src/components/common/Button/Button.test.tsx'))).toBe(true)
     expect(await fs.pathExists(path.join(modules, 'src/features/status/components/StarterStatus.tsx'))).toBe(false)
     expect(await fs.pathExists(path.join(modules, 'src/features/status/components/StarterStatus/StarterStatus.module.css'))).toBe(true)
+  })
+
+  it('generates one concise stack-neutral pull request template', async () => {
+    const destination = await generate({
+      frontend: 'nextjs', backend: 'none', styling: 'tailwind', githubActions: true,
+      projectName: 'standard-pr-template',
+    })
+    const template = await fs.readFile(
+      path.join(destination, '.github/PULL_REQUEST_TEMPLATE.md'),
+      'utf8',
+    )
+
+    expect(template).toContain('## Summary')
+    expect(template).toContain('## Validation')
+    expect(template).toContain('## Notes')
+    expect(template).toContain('## Checklist')
+    expect(template).toContain('Tests and relevant validation pass')
+    expect(template).not.toContain('## Type of change')
+    expect(template).not.toContain('Flyway')
+    expect(template).not.toContain('make lint')
   })
 
   it('generates honest React + Vite styling foundations for both web modes', async () => {

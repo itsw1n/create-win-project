@@ -139,7 +139,8 @@ export async function buildRulesIndex(stack, catalog, playbooksDir) {
   }
   const concerns = [...seen.values()]
 
-  const required = concerns.filter((c) =>  c.required)
+  const conditional = concerns.filter((c) => c.required && c.when)
+  const required = concerns.filter((c) => c.required && !c.when)
   const optional = concerns.filter((c) => !c.required)
 
   // ── Always-on Invariants ───────────────────────────────────────────────
@@ -149,6 +150,21 @@ export async function buildRulesIndex(stack, catalog, playbooksDir) {
   lines.push('|---------|----------|---------|')
   for (const c of required) {
     for (const row of await concernRows(c, playbooksDir)) lines.push(row)
+  }
+  lines.push('')
+  lines.push('---')
+  lines.push('')
+
+  // ── Conditional workflows ──────────────────────────────────────────────
+  lines.push('## Conditional Workflows')
+  lines.push('')
+  lines.push('| Concern | Playbook | Section | When |')
+  lines.push('|---------|----------|---------|------|')
+  for (const c of conditional) {
+    const rows = await concernRows(c, playbooksDir)
+    for (const row of rows) {
+      lines.push(row.replace(/ \|$/, ` | ${c.when} |`))
+    }
   }
   lines.push('')
   lines.push('---')

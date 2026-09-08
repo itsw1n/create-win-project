@@ -8,8 +8,8 @@
     "sha256": "4cae4ad979d3cf328e6d0a784b061ba41f27ce3154bba636b22ebc82c04794ea"
   },
   ".github/PULL_REQUEST_TEMPLATE.md": {
-    "bytes": 855,
-    "sha256": "e6c9ebd10795622b8e71ba32ffb9a2670fa3f7666726522736f4207cabc70bee"
+    "bytes": 360,
+    "sha256": "b64c63468d3d10cc9a30dff0c3950dd56c44bc904a01e0b668859a9f2565e437"
   },
   ".github/workflows/ci-frontend.yml": {
     "bytes": 670,
@@ -36,16 +36,16 @@
     "sha256": "80a265752b65a489bca52d72780a015416322cdaadff944627d8f0fa8828c7aa"
   },
   "AGENTS.md": {
-    "bytes": 2387,
-    "sha256": "d23d7016391e0dbc3f3f0e77bca699446cc4c405506197233bb52aa2cc404cdb"
+    "bytes": 2786,
+    "sha256": "a015be79504e9fef508a1f0279fb38571c37c685d4ce9cb727f24a047f3fdf54"
   },
   "CONTEXT.md": {
-    "bytes": 812,
-    "sha256": "17f745a2b4c328fea72983be3fba7892749daa0eff95e660c9c6d919275a4f38"
+    "bytes": 1272,
+    "sha256": "7e2938277bdb4648ce6db20b5f482f7bc93fe90115aae1823fd086d7dca994a2"
   },
   "create-win-project.profile.json": {
-    "bytes": 957,
-    "sha256": "2a89ff9b9aa8fb392105c3ed0adf02f1c9a4c789b76a09a39b43ce3068e8baf5"
+    "bytes": 958,
+    "sha256": "c998ddd7ce703a85c1c2dbb7e48a88f523d152e7ad22e47b15c3cef0d1e12dc0"
   },
   "docker-compose.yml": {
     "bytes": 663,
@@ -200,8 +200,8 @@
     "sha256": "4f06b463191614f0733207a9762a58b2cecd64bff2415e55802733e37bae933b"
   },
   "playbooks/devops/pr-template.md": {
-    "bytes": 2393,
-    "sha256": "bc26649a67b314181ac86e82dd602635d5c22e6f53eacaf80ebb6309355c0036"
+    "bytes": 537,
+    "sha256": "818eb175b3d94df78d52291bc54c30032f39f061dbf5e61f195ebae0beadd4de"
   },
   "playbooks/platform/web.md": {
     "bytes": 1156,
@@ -279,6 +279,10 @@
     "bytes": 1505,
     "sha256": "8cc942653249a39b99790b84149602a7de2ed069816156c6c5fc09bb2d27d66f"
   },
+  "playbooks/universal/product-planning.md": {
+    "bytes": 2655,
+    "sha256": "437993b695feebb3b05b962e04e6a6dfaab7b6b697693bd047c013713c7e1f96"
+  },
   "playbooks/universal/security.md": {
     "bytes": 2362,
     "sha256": "75e151f515874bc6445432a26f3aa095f843288bbde1655ea8cb12d75cae2f2e"
@@ -308,8 +312,8 @@
     "sha256": "cfa0ce9a38ffcbcadf2b64829c54224d71a8c2a232fb9317ca40b9572f9acab2"
   },
   "RULES.md": {
-    "bytes": 6550,
-    "sha256": "3d4d6abfc6c26f0627b6a6a3ec8af55e6b531d20cf7e4324c8399aed01e18971"
+    "bytes": 7103,
+    "sha256": "5de09fad4b7e99e8013b3ce4b1ae8e12d7c04ea6e59bedf8e3ca25f7cdf8efb8"
   },
   "src/app/api/health/route.ts": {
     "bytes": 67,

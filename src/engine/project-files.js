@@ -16,24 +16,40 @@ export function contextMd(vars, expectedConcerns, capabilities = {}) {
 **Styling:** {{STYLE_MODE}}
 **Compatibility profile:** {{COMPATIBILITY_PROFILE}}
 **Year:** {{YEAR}}
+**Product status:** incomplete
 
-## Goals
-<!-- What this project does and who it's for -->
+## Product Goals
+<!-- What does this product do, and who is it for? -->
 
-## Key Decisions
-<!-- Architecture and tech decisions made during the project -->
+## Users
+<!-- Who will use the product? -->
 
+## Core Workflows
+<!-- What must users be able to accomplish? -->
+
+## Acceptance Criteria
+<!-- What observable behavior defines a successful first version? -->
+
+## Out of Scope
+<!-- What is intentionally excluded from the first version? -->
+
+## Generated Baseline
+<!-- These values were selected during generation. Deviations require explicit approval. -->
+
+- Architecture profile: ${capabilities.architecture || 'medium'}
 - Production baseline: generated default; deviations require approval.
+- Authentication: ${capabilities.authentication || 'not-yet'}
 - Uploads: ${capabilities.uploads || 'none'}
 - Background jobs: ${capabilities.backgroundJobs || 'none'}
-- Offline: ${capabilities.offline || 'none'}
+- Offline behavior: ${capabilities.offline || 'none'}
+
+## Product Decisions
+<!-- Record confirmed product and implementation decisions here. -->
+- (none)
 
 ## Approved Deviations
 <!-- Record date, approver, rationale, affected files, and recovery path. -->
 - (none)
-
-## Out of Scope
-<!-- What this project explicitly does NOT do -->
 
 ## Notes
 <!-- Anything else agents or contributors should know -->
@@ -114,54 +130,5 @@ export function prettierrc() {
   "arrowParens": "always",
   "endOfLine": "lf"
 }
-`
-}
-
-// ─── PR Template ─────────────────────────────────────────────────────────────
-
-export function prTemplate() {
-  return `## What does this PR do?
-
-<!-- Describe the change clearly. What problem does it solve? -->
-
----
-
-## Type of change
-- [ ] \`feat\` — new feature
-- [ ] \`fix\` — bug fix
-- [ ] \`refactor\` — restructure without behavior change
-- [ ] \`chore\` — deps, config, tooling
-- [ ] \`docs\` — documentation only
-- [ ] \`test\` — adding or updating tests
-
-## Scope
-- [ ] \`frontend\`
-- [ ] \`backend\`
-- [ ] \`mobile\`
-- [ ] \`ci\`
-- [ ] \`docs\`
-- [ ] \`deps\`
-
----
-
-## How to test?
-1.
-2.
-3.
-
----
-
-## Checklist
-- [ ] Branched off \`dev\`
-- [ ] Commits follow \`type(scope): description\`
-- [ ] No \`console.log\` or debug code
-- [ ] No hardcoded secrets
-- [ ] Lint passes
-- [ ] Tests pass
-- [ ] Docs updated if endpoints or rules changed
-- [ ] Compatibility matrix passes if a profile, dependency, runtime, or container changed
-- [ ] Major upgrades include migration notes
-
-Closes #
 `
 }
