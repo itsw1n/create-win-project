@@ -36,8 +36,8 @@
     "sha256": "80a265752b65a489bca52d72780a015416322cdaadff944627d8f0fa8828c7aa"
   },
   "AGENTS.md": {
-    "bytes": 2611,
-    "sha256": "c63dc4efbc89b744b01045aff82042be0c0820cbcb83960673562c5e76a3381d"
+    "bytes": 3010,
+    "sha256": "43161190ae806e4293833678754fcba97caae64fd80185311f9e4b2125ec6106"
   },
   "app/_layout.tsx": {
     "bytes": 315,
@@ -76,8 +76,8 @@
     "sha256": "832502a88877e02c6cbeb38f8393def793c1a4195d83e5ea5266fda40544ff88"
   },
   "CONTEXT.md": {
-    "bytes": 829,
-    "sha256": "dcf61b3dff9f18128c140a91dd01fccb64338c8f66cf30dd1273a7110dfa44ec"
+    "bytes": 1289,
+    "sha256": "abe0ca58d4d4fbf61e291528fd10656b0fb7fa06900f73c8cb5dedd23e14d2fa"
   },
   "create-win-project.profile.json": {
     "bytes": 954,
@@ -299,6 +299,10 @@
     "bytes": 1505,
     "sha256": "8cc942653249a39b99790b84149602a7de2ed069816156c6c5fc09bb2d27d66f"
   },
+  "playbooks/universal/product-planning.md": {
+    "bytes": 2656,
+    "sha256": "3d3070b65d5d33f890d6938ce220a0a1197ccf69957a77f1d7ae0116d1d5cc1d"
+  },
   "playbooks/universal/security.md": {
     "bytes": 2362,
     "sha256": "75e151f515874bc6445432a26f3aa095f843288bbde1655ea8cb12d75cae2f2e"
@@ -324,8 +328,8 @@
     "sha256": "803b6fae1759bdc6c80badf3c4e60cc7b4528f4eb77e544b04254a51404cc7d5"
   },
   "RULES.md": {
-    "bytes": 5472,
-    "sha256": "e5e0870aefafcd301f1d623769b518f3e9820f667f4da5c2b7d265dcaad9551d"
+    "bytes": 6025,
+    "sha256": "343552e4c9203e009d9dadb3afc30f65c451a693aa7e60cbff995484beaefcfe"
   },
   "supabase/config.toml": {
     "bytes": 232,

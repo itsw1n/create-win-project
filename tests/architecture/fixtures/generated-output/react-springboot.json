@@ -32,8 +32,8 @@
     "sha256": "80a265752b65a489bca52d72780a015416322cdaadff944627d8f0fa8828c7aa"
   },
   "AGENTS.md": {
-    "bytes": 2500,
-    "sha256": "45833f7bb6e48179676b18dc8deb7a211d307f74982669b86c15dff6e58e3b4a"
+    "bytes": 2899,
+    "sha256": "cdf62e6c54fc750c9d6744e4f19f33d1970c8fc9d2c4c21dae3ddca6483821bc"
   },
   "backend/.java-version": {
     "bytes": 3,
@@ -108,8 +108,8 @@
     "sha256": "a05c37c323b466d18ecac474cff71bd873fc6ada71e6c7349deae64e7153a8d6"
   },
   "CONTEXT.md": {
-    "bytes": 817,
-    "sha256": "a7ab19d01cb3362a6a03ad0405af197e3c562512a3b47aa35d3fd4fd1ee891e5"
+    "bytes": 1281,
+    "sha256": "a146a591317dab3566ae2af6deed3b5db015e993798830c593e6493c462e7d90"
   },
   "create-win-project.profile.json": {
     "bytes": 965,
@@ -479,6 +479,10 @@
     "bytes": 1505,
     "sha256": "8cc942653249a39b99790b84149602a7de2ed069816156c6c5fc09bb2d27d66f"
   },
+  "playbooks/universal/product-planning.md": {
+    "bytes": 2656,
+    "sha256": "3d3070b65d5d33f890d6938ce220a0a1197ccf69957a77f1d7ae0116d1d5cc1d"
+  },
   "playbooks/universal/security.md": {
     "bytes": 2362,
     "sha256": "75e151f515874bc6445432a26f3aa095f843288bbde1655ea8cb12d75cae2f2e"
@@ -504,7 +508,7 @@
     "sha256": "dd427a3fbf09b24f200093a8d60d7df1d30995743bedf70b86584cf0370f587b"
   },
   "RULES.md": {
-    "bytes": 6194,
-    "sha256": "0feb4a279bb73100d4c65e0304f8f3b6ae3a7f3de5500615acaac8c81761a73d"
+    "bytes": 6747,
+    "sha256": "70108bc10b090a685b849464aa997b74b832b47bb0c3731695d3ef55686267a9"
   }
 }

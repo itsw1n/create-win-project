@@ -40,8 +40,8 @@
     "sha256": "80a265752b65a489bca52d72780a015416322cdaadff944627d8f0fa8828c7aa"
   },
   "AGENTS.md": {
-    "bytes": 2653,
-    "sha256": "32e79186fb9589e18737cdd4a3e1d1cbafccfe3c85f302b994e5b2b779fe9aff"
+    "bytes": 3052,
+    "sha256": "efaef24970f754533275aed9e54aac51ae9d797f656f5799c3e2cafeddd4065d"
   },
   "backend/.python-version": {
     "bytes": 7,
@@ -156,8 +156,8 @@
     "sha256": "d1e86f33a0ff2966f15212d3c11a11f4304aa5e0e2e96c5c4695dfa158e472c8"
   },
   "CONTEXT.md": {
-    "bytes": 810,
-    "sha256": "29bf68bccb14b659fac40bd7c31e25750b66d0428701b986e056d022b8003e08"
+    "bytes": 1270,
+    "sha256": "75b9ec6c2191bc347758de545cc823627eabd71bef4397eda72639d0a9578490"
   },
   "create-win-project.profile.json": {
     "bytes": 951,
@@ -403,6 +403,10 @@
     "bytes": 1505,
     "sha256": "8cc942653249a39b99790b84149602a7de2ed069816156c6c5fc09bb2d27d66f"
   },
+  "playbooks/universal/product-planning.md": {
+    "bytes": 2656,
+    "sha256": "3d3070b65d5d33f890d6938ce220a0a1197ccf69957a77f1d7ae0116d1d5cc1d"
+  },
   "playbooks/universal/security.md": {
     "bytes": 2362,
     "sha256": "75e151f515874bc6445432a26f3aa095f843288bbde1655ea8cb12d75cae2f2e"
@@ -432,8 +436,8 @@
     "sha256": "a7f679b448b57b348ecd6dc6313f4046664a444836bee9414e25e24ba452c899"
   },
   "RULES.md": {
-    "bytes": 6611,
-    "sha256": "aaead767f2c28b781cde2d7147893da16201b07ac037d09a83358ae71ca0f568"
+    "bytes": 7164,
+    "sha256": "dfd9f4874ee2532b3664ef1347d2692ee5c54b40da99f87df5648ae4cd2129ce"
   },
   "src/app/api/health/route.ts": {
     "bytes": 67,
