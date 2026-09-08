@@ -14,10 +14,15 @@ describe('buildRulesIndex — nextjs', () => {
     const stack   = resolveStack({ frontend: 'nextjs', backend: 'supabase', styling: 'tailwind', githubActions: true }, catalog)
     const out     = await buildRulesIndex(stack, catalog, path.join(root, 'library'))
     expect(out).toContain('## Always-on Invariants')
+    expect(out).toContain('## Conditional Workflows')
     expect(out).toContain('## Optional Concerns')
     expect(out).toContain('§')
     expect(out).toContain('validation')
     expect(out).toContain('Never load all playbooks eagerly')
+    expect(out).toContain('product-onboarding')
+    expect(out).toContain('plan-reconciliation')
+    expect(out).toContain('CONTEXT.md reports Product status as incomplete')
+    expect(out).toContain('universal/product-planning.md')
   })
 })
 
@@ -66,6 +71,7 @@ describe('collectPlaybookFiles', () => {
     const files   = collectPlaybookFiles(stack)
     expect(files).toContain('stack/nextjs/architecture.md')
     expect(files).toContain('stack/nextjs/security.md')
+    expect(files).toContain('universal/product-planning.md')
     expect(files.some((f) => f.startsWith('concerns/'))).toBe(true)
   })
 

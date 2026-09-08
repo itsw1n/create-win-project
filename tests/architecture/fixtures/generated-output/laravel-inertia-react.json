@@ -104,12 +104,12 @@
     "sha256": "4389d5b9b4a73615fac55972e9fb271d9501560fe7ceb79b198a3ffd685ee145"
   },
   "CONTEXT.md": {
-    "bytes": 821,
-    "sha256": "dcb4760e0456d61c332de5b33cef57dc2517a52c77f162e7e8218ea9c1a8883a"
+    "bytes": 1281,
+    "sha256": "723a6ccf7bcd827adff022a5ef0b04d34cbfcb006cad1a1c88a25dab4f6904a4"
   },
   "create-win-project.profile.json": {
-    "bytes": 967,
-    "sha256": "877479c0f58de98f6ccd7b2b50df1882d145d8f10281cdb5de5cbcee256aa47c"
+    "bytes": 968,
+    "sha256": "ebfed45c08dcd0a804138a21eafa78c637d3ec0e231297d135c45afbd7f6c982"
   },
   "database/factories/UserFactory.php": {
     "bytes": 456,
@@ -327,6 +327,10 @@
     "bytes": 1505,
     "sha256": "8cc942653249a39b99790b84149602a7de2ed069816156c6c5fc09bb2d27d66f"
   },
+  "playbooks/universal/product-planning.md": {
+    "bytes": 2655,
+    "sha256": "437993b695feebb3b05b962e04e6a6dfaab7b6b697693bd047c013713c7e1f96"
+  },
   "playbooks/universal/security.md": {
     "bytes": 2362,
     "sha256": "75e151f515874bc6445432a26f3aa095f843288bbde1655ea8cb12d75cae2f2e"
@@ -424,8 +428,8 @@
     "sha256": "ffe1d556b4253ed9befed2d9c4e43fe5e71d49935b037763280d45814ecdad51"
   },
   "RULES.md": {
-    "bytes": 5823,
-    "sha256": "152403b3adf2595c6327577d9f1149021d34b6f2bfa982ab2b1e5f4b93b5fcfc"
+    "bytes": 6376,
+    "sha256": "746a8b470028a4e8cc574190368e6831d49ac1dc08e53537ad817470ef6e250d"
   },
   "storage/framework/cache/.gitignore": {
     "bytes": 14,

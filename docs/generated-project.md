@@ -4,12 +4,33 @@ Every project contains runnable source, tests, stack-specific CI and security wo
 
 `create-win-project.profile.json` records schema version 2, stack, dated profile, architecture, styling mode, authentication, production guarantees, capabilities, and runtimes. It enables read-only comparisons without controlling future project changes.
 
-- `AGENTS.md` is the small always-on operating and authority contract.
-- `RULES.md` maps tasks to exact selected playbook sections.
+- `AGENTS.md` is the small always-on operating and authority contract. It contains only the trigger
+  for product onboarding; detailed workflow guidance remains lazily routed.
+- `RULES.md` maps always-on, conditional, and optional concerns to exact selected playbook sections.
 - `playbooks/` contains only knowledge applicable to the stack.
-- `CONTEXT.md` records product goals, decisions, capabilities, and approved deviations.
+- `CONTEXT.md` records product status, confirmed goals, the generated baseline, product decisions,
+  and approved deviations.
+- `PROGRESS.md` records current phases, work, and blockers; generated projects do not add a second
+  planning document.
 
 Application behavior, tests, and framework configuration remain the source of truth when prose drifts.
+
+## Product onboarding
+
+A new project begins with `Product status: incomplete` in `CONTEXT.md`. Before product feature work,
+an agent uses the conditional entry in `RULES.md` to load only the product-onboarding playbook
+sections, gathers missing requirements, and asks the user to confirm the product direction. It then
+records confirmed product truth in `CONTEXT.md`, changes the status to `active`, and records current
+execution work in `PROGRESS.md`.
+
+An active project does not repeat onboarding for an ordinary task. If the user supplies or
+substantially changes a specification, the agent uses the separately routed plan-reconciliation
+section to compare the proposal with the profile, context, implementation, tests, capabilities, and
+approved deviations.
+
+The generator does not infer special product types such as portfolio, blog, or dashboard. Agents
+may recommend simplifying the starter based on confirmed requirements, but changing the selected
+architecture or another generated baseline decision requires explanation and approval.
 
 ## Architecture profiles
 

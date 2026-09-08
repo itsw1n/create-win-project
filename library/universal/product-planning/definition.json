@@ -1,0 +1,22 @@
+{
+  "id": "product-planning-workflow",
+  "kind": "universal",
+  "label": "Product Planning Workflow",
+  "file": "universal/product-planning.md",
+  "required": true,
+  "folders": [],
+  "concerns": [
+    {
+      "id": "product-onboarding",
+      "required": true,
+      "when": "CONTEXT.md reports Product status as incomplete",
+      "sections": ["Product Onboarding", "Starter Transition"]
+    },
+    {
+      "id": "plan-reconciliation",
+      "required": true,
+      "when": "The user supplies or substantially changes a specification or plan",
+      "sections": ["Plan Reconciliation"]
+    }
+  ]
+}

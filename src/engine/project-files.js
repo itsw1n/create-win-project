@@ -16,24 +16,40 @@ export function contextMd(vars, expectedConcerns, capabilities = {}) {
 **Styling:** {{STYLE_MODE}}
 **Compatibility profile:** {{COMPATIBILITY_PROFILE}}
 **Year:** {{YEAR}}
+**Product status:** incomplete
 
-## Goals
-<!-- What this project does and who it's for -->
+## Product Goals
+<!-- What does this product do, and who is it for? -->
 
-## Key Decisions
-<!-- Architecture and tech decisions made during the project -->
+## Users
+<!-- Who will use the product? -->
 
+## Core Workflows
+<!-- What must users be able to accomplish? -->
+
+## Acceptance Criteria
+<!-- What observable behavior defines a successful first version? -->
+
+## Out of Scope
+<!-- What is intentionally excluded from the first version? -->
+
+## Generated Baseline
+<!-- These values were selected during generation. Deviations require explicit approval. -->
+
+- Architecture profile: ${capabilities.architecture || 'medium'}
 - Production baseline: generated default; deviations require approval.
+- Authentication: ${capabilities.authentication || 'not-yet'}
 - Uploads: ${capabilities.uploads || 'none'}
 - Background jobs: ${capabilities.backgroundJobs || 'none'}
-- Offline: ${capabilities.offline || 'none'}
+- Offline behavior: ${capabilities.offline || 'none'}
+
+## Product Decisions
+<!-- Record confirmed product and implementation decisions here. -->
+- (none)
 
 ## Approved Deviations
 <!-- Record date, approver, rationale, affected files, and recovery path. -->
 - (none)
-
-## Out of Scope
-<!-- What this project explicitly does NOT do -->
 
 ## Notes
 <!-- Anything else agents or contributors should know -->
