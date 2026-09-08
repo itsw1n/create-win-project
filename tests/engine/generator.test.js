@@ -432,6 +432,26 @@ describe('runnable project contract', () => {
     expect(await fs.pathExists(path.join(modules, 'src/features/status/components/StarterStatus/StarterStatus.module.css'))).toBe(true)
   })
 
+  it('generates one concise stack-neutral pull request template', async () => {
+    const destination = await generate({
+      frontend: 'nextjs', backend: 'none', styling: 'tailwind', githubActions: true,
+      projectName: 'standard-pr-template',
+    })
+    const template = await fs.readFile(
+      path.join(destination, '.github/PULL_REQUEST_TEMPLATE.md'),
+      'utf8',
+    )
+
+    expect(template).toContain('## Summary')
+    expect(template).toContain('## Validation')
+    expect(template).toContain('## Notes')
+    expect(template).toContain('## Checklist')
+    expect(template).toContain('Tests and relevant validation pass')
+    expect(template).not.toContain('## Type of change')
+    expect(template).not.toContain('Flyway')
+    expect(template).not.toContain('make lint')
+  })
+
   it('generates honest React + Vite styling foundations for both web modes', async () => {
     const tailwind = await generate({
       frontend: 'react', backend: 'supabase', styling: 'tailwind', architecture: 'medium',
