@@ -328,8 +328,8 @@
     "sha256": "8cc942653249a39b99790b84149602a7de2ed069816156c6c5fc09bb2d27d66f"
   },
   "playbooks/universal/product-planning.md": {
-    "bytes": 2656,
-    "sha256": "3d3070b65d5d33f890d6938ce220a0a1197ccf69957a77f1d7ae0116d1d5cc1d"
+    "bytes": 2655,
+    "sha256": "437993b695feebb3b05b962e04e6a6dfaab7b6b697693bd047c013713c7e1f96"
   },
   "playbooks/universal/security.md": {
     "bytes": 2362,
