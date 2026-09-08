@@ -7,7 +7,7 @@ import { buildVars, render, readTemplate } from '../engine/render-templates.js'
 import { buildRunnableFiles } from './compose-files.js'
 import {
   contextMd, progressMd, docPlaceholder,
-  editorconfig, prettierrc, prTemplate,
+  editorconfig, prettierrc,
 } from '../engine/project-files.js'
 import {
   projectDestinations,
@@ -266,7 +266,10 @@ async function generateRootFiles(dest, answers, vars, stack, templatesDir) {
 
   // PR template
   if (answers.githubActions) {
-    await write(dest, '.github/PULL_REQUEST_TEMPLATE.md', prTemplate())
+    const pullRequestTemplate = await readTemplate(templatesDir, 'github', 'PULL_REQUEST_TEMPLATE', '.md')
+    if (pullRequestTemplate) {
+      await writeTemplate(dest, '.github/PULL_REQUEST_TEMPLATE.md', pullRequestTemplate, vars)
+    }
   }
 }
 
