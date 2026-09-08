@@ -8,8 +8,8 @@
     "sha256": "4cae4ad979d3cf328e6d0a784b061ba41f27ce3154bba636b22ebc82c04794ea"
   },
   ".github/PULL_REQUEST_TEMPLATE.md": {
-    "bytes": 855,
-    "sha256": "e6c9ebd10795622b8e71ba32ffb9a2670fa3f7666726522736f4207cabc70bee"
+    "bytes": 360,
+    "sha256": "b64c63468d3d10cc9a30dff0c3950dd56c44bc904a01e0b668859a9f2565e437"
   },
   ".github/workflows/ci-frontend.yml": {
     "bytes": 670,
@@ -200,8 +200,8 @@
     "sha256": "4f06b463191614f0733207a9762a58b2cecd64bff2415e55802733e37bae933b"
   },
   "playbooks/devops/pr-template.md": {
-    "bytes": 2393,
-    "sha256": "bc26649a67b314181ac86e82dd602635d5c22e6f53eacaf80ebb6309355c0036"
+    "bytes": 537,
+    "sha256": "818eb175b3d94df78d52291bc54c30032f39f061dbf5e61f195ebae0beadd4de"
   },
   "playbooks/platform/web.md": {
     "bytes": 1156,

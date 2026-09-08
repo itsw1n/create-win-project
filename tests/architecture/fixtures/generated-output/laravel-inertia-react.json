@@ -8,8 +8,8 @@
     "sha256": "e0e34a17f165f06ec0afd3f3936f698880d74e85f31ebaa8fb922ed063c7f5af"
   },
   ".github/PULL_REQUEST_TEMPLATE.md": {
-    "bytes": 855,
-    "sha256": "e6c9ebd10795622b8e71ba32ffb9a2670fa3f7666726522736f4207cabc70bee"
+    "bytes": 360,
+    "sha256": "b64c63468d3d10cc9a30dff0c3950dd56c44bc904a01e0b668859a9f2565e437"
   },
   ".github/workflows/ci-backend.yml": {
     "bytes": 1434,
@@ -228,8 +228,8 @@
     "sha256": "f6de2915e82d8b84e24255af3def21dba9267cd501aa9454e6d4d3651e199d73"
   },
   "playbooks/devops/pr-template.md": {
-    "bytes": 2393,
-    "sha256": "bc26649a67b314181ac86e82dd602635d5c22e6f53eacaf80ebb6309355c0036"
+    "bytes": 537,
+    "sha256": "818eb175b3d94df78d52291bc54c30032f39f061dbf5e61f195ebae0beadd4de"
   },
   "playbooks/platform/laravel-ui/inertia-react/architecture.md": {
     "bytes": 321,
