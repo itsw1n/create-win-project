@@ -80,8 +80,8 @@
     "sha256": "abe0ca58d4d4fbf61e291528fd10656b0fb7fa06900f73c8cb5dedd23e14d2fa"
   },
   "create-win-project.profile.json": {
-    "bytes": 954,
-    "sha256": "cbdde51c79a4f04654c84ef3c7a96fbf1e2ceb680cc50c6de8e041f5f3aa792c"
+    "bytes": 955,
+    "sha256": "1a60513c6a0dad25d2dfee84e0c6309d081fbb739cfe5c9a8640f049ecd8e4a7"
   },
   "docs/api/endpoints.md": {
     "bytes": 84,
@@ -177,7 +177,7 @@
   },
   "package.json": {
     "bytes": 1453,
-    "sha256": "d824b280b1d0569c03640b42dc52fe8460a7302f83187e4f58b5ad777457a6ed"
+    "sha256": "81cbfd509cb566a834e7f268ebc75e9333871d229526dc2df37cd5ffbfed0baf"
   },
   "playbooks/capabilities/ci/github-actions.md": {
     "bytes": 3331,

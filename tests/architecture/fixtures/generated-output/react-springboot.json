@@ -112,8 +112,8 @@
     "sha256": "a146a591317dab3566ae2af6deed3b5db015e993798830c593e6493c462e7d90"
   },
   "create-win-project.profile.json": {
-    "bytes": 965,
-    "sha256": "36bbee01f6cf4d394349420f4af87b3b41551c158d505c94408b91bbd74133a9"
+    "bytes": 966,
+    "sha256": "7cf260a8cae3b37ccb372117f39d7bbb359a0395bec658951a0f4b0b44715fea"
   },
   "docker-compose.prod.yml": {
     "bytes": 2067,

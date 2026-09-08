@@ -12,8 +12,8 @@
     "sha256": "e6c9ebd10795622b8e71ba32ffb9a2670fa3f7666726522736f4207cabc70bee"
   },
   ".github/workflows/ci-backend.yml": {
-    "bytes": 1656,
-    "sha256": "26456d8076b0ea8d38250a2b9dbfe51569411c6593e4e885736406a307e83c49"
+    "bytes": 1657,
+    "sha256": "b80f4cc84fd8792e18f5885d2d3df42d996533b60e79430cd489ae4836848505"
   },
   ".github/workflows/ci-frontend.yml": {
     "bytes": 481,
@@ -44,8 +44,8 @@
     "sha256": "efaef24970f754533275aed9e54aac51ae9d797f656f5799c3e2cafeddd4065d"
   },
   "backend/.python-version": {
-    "bytes": 7,
-    "sha256": "922fe0c3de073b01988e23348ea184456161678c5e329e6f34be89be24383f93"
+    "bytes": 8,
+    "sha256": "861b3dd8083d28f336ef70f6755bc399538ddad627b1d095820ca34cb953cf14"
   },
   "backend/alembic/env.py": {
     "bytes": 1561,
@@ -124,12 +124,12 @@
     "sha256": "289de281a932f56bcda0a5de53a2dc7088aa2a187c7fe95d3dca14b0af0a910b"
   },
   "backend/Dockerfile": {
-    "bytes": 421,
-    "sha256": "991044c47e17e5da4cc61e66801d07293a049596d2ab1902a9a8e4b50b98e8e6"
+    "bytes": 422,
+    "sha256": "56bcc03ecab07a07f78626e0b2509dd854f32950573e19195919332ebc9ef3f1"
   },
   "backend/Dockerfile.dev": {
-    "bytes": 337,
-    "sha256": "4e0cf2da3ee856e88499c643c55d8265e10d26d810737eb4e51ce44c9c19871b"
+    "bytes": 338,
+    "sha256": "f04ec64a5a8a0f99bc43d58bd993e066b48d113bb185fb5e1c08773c78acf767"
   },
   "backend/pyproject.toml": {
     "bytes": 869,
@@ -160,8 +160,8 @@
     "sha256": "75b9ec6c2191bc347758de545cc823627eabd71bef4397eda72639d0a9578490"
   },
   "create-win-project.profile.json": {
-    "bytes": 951,
-    "sha256": "c937654ef1d93ed51934ffe6a4dfcc55525c01f3ba487050cc10322c5924a5ab"
+    "bytes": 952,
+    "sha256": "fa389bd2c1888a61b88f2f93d4fe947f3e7f99b98a81c9a45e01368bcba2c57d"
   },
   "docker-compose.prod.yml": {
     "bytes": 1422,
@@ -220,12 +220,12 @@
     "sha256": "1edcf2b3e0124bb0247dd8579602a952a64e380d7b5f8213949a64f9dee505ff"
   },
   "docs/guides/setup.md": {
-    "bytes": 716,
-    "sha256": "ab10d5ca404a16ada088f6e8bd4c3485f2d56767f6a98fe371dfacc2a7ebdb09"
+    "bytes": 717,
+    "sha256": "36a7f4fe2d5e2bf296c9775b8851d1c73088ea62fa5259aab93fac4a58ed3f86"
   },
   "docs/guides/toolchain.md": {
-    "bytes": 1329,
-    "sha256": "57fa33358e91e3984cac91a7ea7bfee69f7e4f6830ed6ae941c606a108b5a568"
+    "bytes": 1330,
+    "sha256": "5dd7affc00c3d636e7f8e668db8dba389065fa53ec4f0b5f427ad625fe375b65"
   },
   "eslint.config.mjs": {
     "bytes": 293,
