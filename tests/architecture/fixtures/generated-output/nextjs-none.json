@@ -196,20 +196,20 @@
     "sha256": "5b1f4c6cca1f78b0f981b064ba2fa868911adf8cc22db0853ff7674adac63bab"
   },
   "playbooks/stack/nextjs/structure.md": {
-    "bytes": 4351,
-    "sha256": "c40a807e8e867d6165f370cfa1ca3669c6d9ef5356d1cbff458cce2134bb6d99"
+    "bytes": 4892,
+    "sha256": "6fcae6f9c1a8c4cb22507b647955ca5840ce118269e520f6f542d3254b5b7876"
   },
   "playbooks/stack/nextjs/testing.md": {
     "bytes": 894,
     "sha256": "b4f1b988ac7ce7a7a8637cf58d1d2b14ac0904c37f618a804d0841db01f2e05d"
   },
   "playbooks/styling/ownership.md": {
-    "bytes": 1289,
-    "sha256": "cde8ce895df5a6aca76b2a6aae6c927e0a5a64e17bf840954c759a9174cf898e"
+    "bytes": 2452,
+    "sha256": "282a9ab98f0fec4090526f2754a07e54fcc02bd7fd3db65143e9c808a3c868f9"
   },
   "playbooks/styling/tailwind/architecture.md": {
-    "bytes": 1253,
-    "sha256": "1bdb3b77fd31a7e66755de8dddfe8b8c3bc1d32589441bef9cd4a2dc7de86a70"
+    "bytes": 1645,
+    "sha256": "ec936e7a0b2289a53367cae1ead7961e5c5f8bc36352d927f62c7054ed5f8cf3"
   },
   "playbooks/styling/tailwind/components.md": {
     "bytes": 1030,
@@ -288,8 +288,8 @@
     "sha256": "8721254f959d68cd5a739d19d84a6855574eeec0ac2f2f59b4f89ff591c45bb8"
   },
   "RULES.md": {
-    "bytes": 6857,
-    "sha256": "08b040b0bbd8b9b7bbe42ec6e17b828372e6842481dc883883ee1e1e22049736"
+    "bytes": 7099,
+    "sha256": "ae0d1f89808225f974fbb6047dbe4de8099d706cb8d7bc92b2639765c735b0ef"
   },
   "src/app/api/health/route.ts": {
     "bytes": 67,

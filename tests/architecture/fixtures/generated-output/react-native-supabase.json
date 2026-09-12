@@ -256,16 +256,16 @@
     "sha256": "f3057eff1030a71fbfe18a860c9bc2803d2061ddf76a46d0a6969b38078e336b"
   },
   "playbooks/stack/expo/structure.md": {
-    "bytes": 2745,
-    "sha256": "53f20c5580c2c13d222bf77e4b98fe03c810c6e119cb548576487eb3c83ff97d"
+    "bytes": 3115,
+    "sha256": "38800b9db04cf8611c71d8ac62303d78b947c41974d152796abf2137cf892c69"
   },
   "playbooks/stack/expo/testing.md": {
     "bytes": 601,
     "sha256": "d3f34aa79d07a24b47c2ab41c7cf2ca23515f791a8eb517d7ab894da392a5f46"
   },
   "playbooks/styling/native-styles.md": {
-    "bytes": 1034,
-    "sha256": "746b1e2f528a3f0148e2da6d1752b708d9b62e31fe57c9b1a097de384a2dbbff"
+    "bytes": 1355,
+    "sha256": "1d7185f697c638e6270f73b0f2fab3d24f5961931956f8046cf223b97e8669df"
   },
   "playbooks/universal/accessibility.md": {
     "bytes": 2401,
@@ -328,8 +328,8 @@
     "sha256": "803b6fae1759bdc6c80badf3c4e60cc7b4528f4eb77e544b04254a51404cc7d5"
   },
   "RULES.md": {
-    "bytes": 6025,
-    "sha256": "343552e4c9203e009d9dadb3afc30f65c451a693aa7e60cbff995484beaefcfe"
+    "bytes": 6175,
+    "sha256": "7f6bbd6ae7762fc2ea5e2f7112e81fc4b90655e52b0c3742402befb1b0f736cf"
   },
   "supabase/config.toml": {
     "bytes": 232,
