@@ -177,7 +177,7 @@
   },
   "package.json": {
     "bytes": 1453,
-    "sha256": "81cbfd509cb566a834e7f268ebc75e9333871d229526dc2df37cd5ffbfed0baf"
+    "sha256": "53b1a2697016c71eae06895ff133da08bc5ef152874f1928e6c4482959e32b0d"
   },
   "playbooks/capabilities/ci/github-actions.md": {
     "bytes": 3331,
