@@ -48,6 +48,16 @@ Do not reproduce server Repository or trusted domain layers in a browser bundle.
 | Reusable client workflow | `features/<feature>/services/` |
 | Shared HTTP or SDK construction | `lib/` |
 
+## Layout Composition
+
+Pages compose `main → Section → Container → feature content`. Section owns the semantic region,
+vertical spacing, and optional tone. Container owns centered maximum width and horizontal gutters.
+A page may use several Sections; nested components do not add these wrappers automatically.
+
+Header, Footer, Sidebar, and Topbar belong in `components/layout` only when the selected product
+shape requires that application chrome. Input and Modal belong in `components/common` only when a
+real interaction uses them.
+
 URLs, wire DTOs, SDK queries, validation, and error normalization stay outside visual components.
 Cross-feature types become shared only after genuine reuse. Large consumers import through the
 feature `index.ts` rather than deep-importing internals.

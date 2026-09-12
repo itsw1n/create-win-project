@@ -12,8 +12,8 @@
   "required": false,
   "folders": [],
   "concerns": [
-    { "id": "styling-ownership", "required": true, "playbook": "styling/ownership.md", "sections": ["Component Ownership", "Dependency Direction"] },
-    { "id": "styling-mode", "required": true, "playbook": "styling/css-modules/architecture.md", "sections": ["Primary Mode", "File Structure", "Browser Inspection"] },
+    { "id": "styling-ownership", "required": true, "playbook": "styling/ownership.md", "sections": ["Component Ownership", "Page Composition", "Dependency Direction"] },
+    { "id": "styling-mode", "required": true, "playbook": "styling/css-modules/architecture.md", "sections": ["Primary Mode", "File Structure", "Layout Composition", "Browser Inspection"] },
     { "id": "styling-tokens", "required": true, "playbook": "styling/css-modules/tokens.md", "sections": ["Global Foundation", "Theme Boundary"] },
     { "id": "styling-components", "required": true, "playbook": "styling/css-modules/components.md", "sections": ["Component Ownership", "Common Button"] },
     { "id": "styling-responsive", "required": true, "playbook": "styling/css-modules/responsive.md", "sections": ["Responsive in Module File"] }

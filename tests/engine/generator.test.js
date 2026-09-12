@@ -129,6 +129,18 @@ describe('runnable project contract', () => {
     expect(await fs.readFile(path.join(destination, 'vite.config.js'), 'utf8')).toContain('tailwindcss()')
     expect(await fs.pathExists(path.join(destination, 'resources/views/components/layout/container.blade.php'))).toBe(true)
     expect(await fs.pathExists(path.join(destination, 'resources/views/components/common/button.blade.php'))).toBe(true)
+    const renderedPage = await fs.readFile(path.join(destination, expectedFile), 'utf8')
+    if (laravelUi === 'inertia-react') {
+      expect(renderedPage).toMatch(/<Section[\s\S]*<Container/)
+    } else if (laravelUi === 'blade') {
+      expect(renderedPage).toMatch(/<x-layout\.section[\s\S]*<x-layout\.container/)
+    } else {
+      const livewireView = await fs.readFile(
+        path.join(destination, 'resources/views/livewire/home-page.blade.php'),
+        'utf8',
+      )
+      expect(livewireView).toMatch(/<x-layout\.section[\s\S]*<x-layout\.container/)
+    }
     const dockerfile = await fs.readFile(path.join(destination, 'Dockerfile'), 'utf8')
     expect(dockerfile).toContain('FROM node:24.20.0-alpine AS assets')
     expect(dockerfile).toContain('COPY --from=assets /app/public/build ./public/build')
@@ -505,6 +517,19 @@ describe('runnable project contract', () => {
         })
         const sourceRoot = frontend === 'react' ? path.join(destination, 'frontend/src') : path.join(destination, 'src')
         const componentRoot = path.join(sourceRoot, 'components')
+        const page = await fs.readFile(
+          path.join(sourceRoot, frontend === 'react' ? 'App.tsx' : 'app/page.tsx'),
+          'utf8',
+        )
+        expect(page).toMatch(/<Section[\s\S]*<Container/)
+        for (const optionalLayout of ['Header', 'Footer', 'Sidebar', 'Topbar']) {
+          expect(await fs.pathExists(path.join(componentRoot, 'layout', optionalLayout))).toBe(false)
+          expect(await fs.pathExists(path.join(componentRoot, 'layout', `${optionalLayout}.tsx`))).toBe(false)
+        }
+        for (const optionalCommon of ['Input', 'Modal']) {
+          expect(await fs.pathExists(path.join(componentRoot, 'common', optionalCommon))).toBe(false)
+          expect(await fs.pathExists(path.join(componentRoot, 'common', `${optionalCommon}.tsx`))).toBe(false)
+        }
         if (styling === 'tailwind') {
           expect(await fs.pathExists(path.join(componentRoot, 'layout/Container.tsx'))).toBe(true)
           expect(await fs.pathExists(path.join(componentRoot, 'layout/Section.tsx'))).toBe(true)
@@ -523,6 +548,58 @@ describe('runnable project contract', () => {
       expect(await fs.pathExists(path.join(native, 'components/layout/Screen.tsx'))).toBe(true)
       expect(await fs.pathExists(path.join(native, 'components/layout/Content.tsx'))).toBe(true)
       expect(await fs.pathExists(path.join(native, 'components/common/Button.tsx'))).toBe(true)
+      const nativePage = await fs.readFile(path.join(native, 'app/index.tsx'), 'utf8')
+      expect(nativePage).toMatch(/<Screen[\s\S]*<Content/)
+      for (const optionalLayout of ['Header', 'Footer', 'Sidebar', 'Topbar']) {
+        expect(await fs.pathExists(path.join(native, 'components/layout', `${optionalLayout}.tsx`))).toBe(false)
+      }
+      for (const optionalCommon of ['Input', 'Modal']) {
+        expect(await fs.pathExists(path.join(native, 'components/common', `${optionalCommon}.tsx`))).toBe(false)
+      }
+    }
+  })
+
+  it.each([
+    ['blade', 'small'], ['blade', 'medium'], ['blade', 'large'],
+    ['livewire', 'small'], ['livewire', 'medium'], ['livewire', 'large'],
+    ['inertia-react', 'small'], ['inertia-react', 'medium'], ['inertia-react', 'large'],
+  ])('keeps %s layout composition stable in %s projects', async (laravelUi, architecture) => {
+    const destination = await generate({
+      frontend: 'laravel-ui', backend: 'laravel', applicationShape: 'fullstack', laravelUi,
+      architecture, authentication: 'none', styling: 'tailwind', githubActions: false,
+      projectName: `laravel-${laravelUi}-${architecture}`,
+    })
+    const pagePath = laravelUi === 'inertia-react'
+      ? 'resources/js/Pages/Home.jsx'
+      : laravelUi === 'livewire'
+        ? 'resources/views/livewire/home-page.blade.php'
+        : 'resources/views/home.blade.php'
+    const page = await fs.readFile(path.join(destination, pagePath), 'utf8')
+    const pattern = laravelUi === 'inertia-react'
+      ? /<Section[\s\S]*<Container/
+      : /<x-layout\.section[\s\S]*<x-layout\.container/
+    expect(page).toMatch(pattern)
+    for (const optionalLayout of ['header', 'footer', 'sidebar', 'topbar']) {
+      expect(await fs.pathExists(
+        path.join(destination, 'resources/views/components/layout', `${optionalLayout}.blade.php`),
+      )).toBe(false)
+    }
+    for (const optionalCommon of ['input', 'modal']) {
+      expect(await fs.pathExists(
+        path.join(destination, 'resources/views/components/common', `${optionalCommon}.blade.php`),
+      )).toBe(false)
+    }
+    if (laravelUi === 'inertia-react') {
+      for (const optionalLayout of ['Header', 'Footer', 'Sidebar', 'Topbar']) {
+        expect(await fs.pathExists(
+          path.join(destination, 'resources/js/components/layout', `${optionalLayout}.jsx`),
+        )).toBe(false)
+      }
+      for (const optionalCommon of ['Input', 'Modal']) {
+        expect(await fs.pathExists(
+          path.join(destination, 'resources/js/components/common', `${optionalCommon}.jsx`),
+        )).toBe(false)
+      }
     }
   })
 

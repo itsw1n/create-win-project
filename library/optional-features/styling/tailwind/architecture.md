@@ -20,6 +20,13 @@ Keep route-only UI beside its route. Do not create global `variants`, `helpers`,
 folders. shadcn is optional; if deliberately installed, configure its `ui` alias to
 `components/common` and reconcile existing primitives instead of duplicating them.
 
+## Layout Composition
+
+Compose page regions as `main → Section → Container → feature content`. Section utilities own
+vertical spacing and tone; Container utilities own maximum width, centering, and horizontal
+gutters. Keep this responsibility in the generated layout components instead of repeating the
+same width and gutter utilities across pages. Do not wrap every nested component.
+
 ## Browser Inspection
 
 Tailwind utilities explain appearance, so meaningful web landmarks use `data-ui` to explain

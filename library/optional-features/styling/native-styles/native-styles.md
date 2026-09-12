@@ -27,3 +27,9 @@ const styles = StyleSheet.create({
 - Use theme tokens for repeated colors, spacing, radius, and typography; do not create a global stylesheet of screen-specific rules.
 - Test layout on Android, iOS, and web before assuming platform behavior is identical.
 - Add NativeWind or another styling system only as an explicit project decision, including its complete Expo configuration and build verification.
+
+## Layout Composition
+
+Compose route screens as `Screen → Content → feature content`. `Screen` owns the screen-safe outer
+surface; `Content` owns readable width, gutters, and normal screen spacing. Do not reproduce these
+outer responsibilities in every feature component or wrap every nested View in Screen/Content.
