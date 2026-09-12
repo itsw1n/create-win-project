@@ -522,6 +522,14 @@ describe('runnable project contract', () => {
           'utf8',
         )
         expect(page).toMatch(/<Section[\s\S]*<Container/)
+        for (const optionalLayout of ['Header', 'Footer', 'Sidebar', 'Topbar']) {
+          expect(await fs.pathExists(path.join(componentRoot, 'layout', optionalLayout))).toBe(false)
+          expect(await fs.pathExists(path.join(componentRoot, 'layout', `${optionalLayout}.tsx`))).toBe(false)
+        }
+        for (const optionalCommon of ['Input', 'Modal']) {
+          expect(await fs.pathExists(path.join(componentRoot, 'common', optionalCommon))).toBe(false)
+          expect(await fs.pathExists(path.join(componentRoot, 'common', `${optionalCommon}.tsx`))).toBe(false)
+        }
         if (styling === 'tailwind') {
           expect(await fs.pathExists(path.join(componentRoot, 'layout/Container.tsx'))).toBe(true)
           expect(await fs.pathExists(path.join(componentRoot, 'layout/Section.tsx'))).toBe(true)
@@ -542,6 +550,12 @@ describe('runnable project contract', () => {
       expect(await fs.pathExists(path.join(native, 'components/common/Button.tsx'))).toBe(true)
       const nativePage = await fs.readFile(path.join(native, 'app/index.tsx'), 'utf8')
       expect(nativePage).toMatch(/<Screen[\s\S]*<Content/)
+      for (const optionalLayout of ['Header', 'Footer', 'Sidebar', 'Topbar']) {
+        expect(await fs.pathExists(path.join(native, 'components/layout', `${optionalLayout}.tsx`))).toBe(false)
+      }
+      for (const optionalCommon of ['Input', 'Modal']) {
+        expect(await fs.pathExists(path.join(native, 'components/common', `${optionalCommon}.tsx`))).toBe(false)
+      }
     }
   })
 
@@ -565,6 +579,28 @@ describe('runnable project contract', () => {
       ? /<Section[\s\S]*<Container/
       : /<x-layout\.section[\s\S]*<x-layout\.container/
     expect(page).toMatch(pattern)
+    for (const optionalLayout of ['header', 'footer', 'sidebar', 'topbar']) {
+      expect(await fs.pathExists(
+        path.join(destination, 'resources/views/components/layout', `${optionalLayout}.blade.php`),
+      )).toBe(false)
+    }
+    for (const optionalCommon of ['input', 'modal']) {
+      expect(await fs.pathExists(
+        path.join(destination, 'resources/views/components/common', `${optionalCommon}.blade.php`),
+      )).toBe(false)
+    }
+    if (laravelUi === 'inertia-react') {
+      for (const optionalLayout of ['Header', 'Footer', 'Sidebar', 'Topbar']) {
+        expect(await fs.pathExists(
+          path.join(destination, 'resources/js/components/layout', `${optionalLayout}.jsx`),
+        )).toBe(false)
+      }
+      for (const optionalCommon of ['Input', 'Modal']) {
+        expect(await fs.pathExists(
+          path.join(destination, 'resources/js/components/common', `${optionalCommon}.jsx`),
+        )).toBe(false)
+      }
+    }
   })
 
   it('enforces generated component ownership boundaries', async () => {
