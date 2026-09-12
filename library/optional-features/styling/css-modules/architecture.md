@@ -17,6 +17,13 @@ features/<feature>/components/<Component>/{Component.tsx,Component.module.css}
 
 Global files own only shared foundations. Component styles stay beside their owning component.
 
+## Layout Composition
+
+Compose page regions as `main → Section → Container → feature content`. `Section.module.css` owns
+vertical spacing and optional tone; `Container.module.css` owns maximum width, centering, and
+horizontal gutters. Page modules may describe a specific region such as `hero`, but must not
+duplicate the shared container contract. Do not wrap every nested component.
+
 ## Browser Inspection
 
 Use semantic local class names such as `section`, `container`, `content`, `media`, and `actions`.

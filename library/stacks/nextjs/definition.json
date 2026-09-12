@@ -34,7 +34,7 @@
   ],
   "concerns": [
     { "id": "architecture", "required": true, "playbook": "stack/nextjs/architecture.md", "sections": ["Profiles", "Dependency Direction"] },
-    { "id": "structure", "required": true, "playbook": "stack/nextjs/structure.md", "sections": ["Canonical Reference Tree", "Profile Differences", "File Placement", "API and Data Ownership", "Architecture Cleanup"] },
+    { "id": "structure", "required": true, "playbook": "stack/nextjs/structure.md", "sections": ["Canonical Reference Tree", "Profile Differences", "File Placement", "Layout Composition", "API and Data Ownership", "Architecture Cleanup"] },
     { "id": "runtime", "required": true, "playbook": "stack/nextjs/runtime.md", "sections": ["Server and Client", "Caching and Mutations"] },
     { "id": "stack-security", "required": true, "playbook": "stack/nextjs/security.md", "sections": ["Authorization", "Sessions"] },
     { "id": "stack-testing", "required": true, "playbook": "stack/nextjs/testing.md", "sections": ["Test Layers"] },

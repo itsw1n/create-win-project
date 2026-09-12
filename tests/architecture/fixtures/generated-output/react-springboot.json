@@ -400,8 +400,8 @@
     "sha256": "9c2ee74549bd1c51697397a6f2ba02f367c9e859c0d02f92a490578e9e580f01"
   },
   "playbooks/stack/react-vite/structure.md": {
-    "bytes": 2651,
-    "sha256": "7851c4105a40dd4a730151a28934c134f40a537fce0f58d99e0664a92240c6ec"
+    "bytes": 3192,
+    "sha256": "9ee6923aca11f86f45e9af032d95a7ba35c36920ba0847b14367bc429638f742"
   },
   "playbooks/stack/react-vite/testing.md": {
     "bytes": 586,
@@ -428,8 +428,8 @@
     "sha256": "1fe41170c6adf55cb29aaf1c62112ce68949f89cf9738e59fa7b1a983f6f9bb2"
   },
   "playbooks/styling/css-modules/architecture.md": {
-    "bytes": 972,
-    "sha256": "be9c8f2bbccc378d5c97f2f688c527f037d8ee971dffa7d98bdb61c7929c1bf4"
+    "bytes": 1364,
+    "sha256": "3d17337cfab010f88cd7765339c8d2dbd51bc92361f6cafbfeb13e15a7704d67"
   },
   "playbooks/styling/css-modules/components.md": {
     "bytes": 837,
@@ -444,8 +444,8 @@
     "sha256": "3e67994d1232f8c9f67c3a4fd29ca26d5fcebab115f55f414377afa65628a733"
   },
   "playbooks/styling/ownership.md": {
-    "bytes": 1289,
-    "sha256": "cde8ce895df5a6aca76b2a6aae6c927e0a5a64e17bf840954c759a9174cf898e"
+    "bytes": 2452,
+    "sha256": "282a9ab98f0fec4090526f2754a07e54fcc02bd7fd3db65143e9c808a3c868f9"
   },
   "playbooks/universal/accessibility.md": {
     "bytes": 2401,
@@ -508,7 +508,7 @@
     "sha256": "dd427a3fbf09b24f200093a8d60d7df1d30995743bedf70b86584cf0370f587b"
   },
   "RULES.md": {
-    "bytes": 6747,
-    "sha256": "70108bc10b090a685b849464aa997b74b832b47bb0c3731695d3ef55686267a9"
+    "bytes": 6915,
+    "sha256": "fd344620ef27f9c7b642c10ca33e34d1528cfd54a19b93312c3a00ea03ba3394"
   }
 }

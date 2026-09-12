@@ -48,6 +48,13 @@ separate demonstrated need and explicit approval.
 | Device or multi-step UI workflow | `features/<feature>/services/` |
 | Secure storage or platform adapter | `lib/` |
 
+## Layout Composition
+
+Route screens compose `Screen → Content → feature content`. Screen owns the screen-safe outer
+surface. Content owns readable width, gutters, and normal screen spacing. Nested Views do not add
+Screen/Content automatically. Expo Router owns navigation chrome; do not generate web-style
+Header, Footer, Sidebar, or Topbar components by default.
+
 Validate route and deep-link parameters before use. Navigation belongs in routes, screens, or
 explicit user-action handlers, never deep inside data utilities. Client code does not replace
 backend authorization or Supabase RLS.

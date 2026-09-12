@@ -54,6 +54,16 @@ and dependency direction; it does not demand every directory.
 | Outgoing remote HTTP client | `features/<feature>/api/` |
 | Runtime input or response validation | `features/<feature>/schemas/` |
 
+## Layout Composition
+
+Pages compose `main → Section → Container → feature content`. Section owns the semantic region,
+vertical spacing, and optional tone. Container owns centered maximum width and horizontal gutters.
+A page may use several Sections; nested components do not add these wrappers automatically.
+
+Header, Footer, Sidebar, and Topbar belong in `components/layout` only when the selected product
+shape requires that application chrome. Input and Modal belong in `components/common` only when a
+real interaction uses them.
+
 Route-only UI may remain beside its route in `_components/`. `layout` may import `common`; neither
 directory owns feature rules. Do not put feature code in `lib/users.ts`.
 

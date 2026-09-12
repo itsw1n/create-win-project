@@ -89,6 +89,8 @@ describe('collectPlaybookFiles', () => {
     expect(files).toContain(components)
     expect(rules).toContain('styling-ownership')
     expect(rules).toContain('styling-components')
+    expect(rules).toContain('Page Composition')
+    expect(rules).toContain('Layout Composition')
     expect(files).not.toContain('styling/tailwind-extensions.md')
   })
 

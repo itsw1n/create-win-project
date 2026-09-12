@@ -244,8 +244,8 @@
     "sha256": "c335afa048aa340793a487d8acaeee8e2c9129947b215d72f128369828c5013e"
   },
   "playbooks/platform/laravel-ui/inertia-react/structure.md": {
-    "bytes": 366,
-    "sha256": "130e2dad01975f042b62d23b959d52a077a1b817eb4f4daabd349cb2858fd519"
+    "bytes": 668,
+    "sha256": "770c5cd9591594378e43b14bf3e3c0239a6c10e95dc030863bf8fe8dea6867df"
   },
   "playbooks/platform/laravel-ui/inertia-react/testing.md": {
     "bytes": 317,
@@ -276,12 +276,12 @@
     "sha256": "a048ca7e6247af33afacdc1df9c8504dad79c2552be6a713f04bdd35de6d99e6"
   },
   "playbooks/styling/ownership.md": {
-    "bytes": 1289,
-    "sha256": "cde8ce895df5a6aca76b2a6aae6c927e0a5a64e17bf840954c759a9174cf898e"
+    "bytes": 2452,
+    "sha256": "282a9ab98f0fec4090526f2754a07e54fcc02bd7fd3db65143e9c808a3c868f9"
   },
   "playbooks/styling/tailwind/architecture.md": {
-    "bytes": 1253,
-    "sha256": "1bdb3b77fd31a7e66755de8dddfe8b8c3bc1d32589441bef9cd4a2dc7de86a70"
+    "bytes": 1645,
+    "sha256": "ec936e7a0b2289a53367cae1ead7961e5c5f8bc36352d927f62c7054ed5f8cf3"
   },
   "playbooks/styling/tailwind/components.md": {
     "bytes": 1030,
@@ -428,8 +428,8 @@
     "sha256": "ffe1d556b4253ed9befed2d9c4e43fe5e71d49935b037763280d45814ecdad51"
   },
   "RULES.md": {
-    "bytes": 6376,
-    "sha256": "746a8b470028a4e8cc574190368e6831d49ac1dc08e53537ad817470ef6e250d"
+    "bytes": 6541,
+    "sha256": "e429253c44b19d0998560303f4442c07b94e9b49df19ad3284e9ca5778ed8c8f"
   },
   "storage/framework/cache/.gitignore": {
     "bytes": 14,
