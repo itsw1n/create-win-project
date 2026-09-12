@@ -40,7 +40,7 @@
     { "id": "runtime", "required": true, "playbook": "stack/expo/runtime.md", "sections": ["Lifecycle and Remote State"] },
     { "id": "stack-security", "required": true, "playbook": "stack/expo/security.md", "sections": ["Mobile Trust Boundary", "Session Storage"] },
     { "id": "stack-testing", "required": true, "playbook": "stack/expo/testing.md", "sections": ["Test Layers"] },
-    { "id": "styling", "required": true, "playbook": "styling/native-styles.md", "sections": ["Default", "Rules"] },
+    { "id": "styling", "required": true, "playbook": "styling/native-styles.md", "sections": ["Default", "Rules", "Layout Composition"] },
     { "id": "http-client", "required": false, "when": "The app adopts Axios for a REST API", "playbook": "concerns/axios.md", "sections": ["One Shared Client", "Service Calls apiClient, Hook Calls Service"] },
     { "id": "query", "required": false, "when": "The app needs cached remote server state", "playbook": "concerns/tanstack-query.md", "sections": ["Read Hook", "Mutation Hook", "QueryClient Setup"] },
     { "id": "state", "required": false, "when": "Shared state across multiple screens", "playbook": "concerns/zustand.md", "sections": ["Store Setup", "Auth Store Pattern"] },
