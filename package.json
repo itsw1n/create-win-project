@@ -1,6 +1,6 @@
 {
   "name": "create-win-project",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "Project scaffolding CLI by Win",
   "main": "index.js",
   "type": "module",
