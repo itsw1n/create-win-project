@@ -8,6 +8,8 @@ function option(args, name) {
 export function parseArguments(args) {
   const upgradeReportIndex = args.indexOf('upgrade-report')
   const profile = option(args, 'profile')
+  const mode = option(args, 'mode')
+  const guidance = option(args, 'guidance')
   const shape = option(args, 'shape')
   const frontendValue = option(args, 'frontend')
   const frontendAliases = { vite: 'react', expo: 'react-native', none: 'no-frontend' }
@@ -23,6 +25,12 @@ export function parseArguments(args) {
   const install = args.includes('--install')
   const noInstall = args.includes('--no-install')
 
+  if (guidance && !['none', 'compact', 'full'].includes(guidance)) {
+    throw new Error('--guidance must be none, compact, or full')
+  }
+  if (mode && !['architecture', 'full'].includes(mode)) {
+    throw new Error('--mode must be architecture or full')
+  }
   if (shape && !APPLICATION_SHAPES[shape]) {
     throw new Error('--shape must be fullstack, separate, api, mobile, or frontend')
   }
@@ -45,6 +53,8 @@ export function parseArguments(args) {
 
   return Object.freeze({
     profile,
+    mode,
+    guidance,
     shape,
     frontend,
     backend,
