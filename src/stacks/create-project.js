@@ -18,6 +18,8 @@ import { writeRenderedFile as writeTemplate } from '../engine/render-templates.j
 import { laravelCompose } from './backends/laravel/docker.js'
 import { fastapiCompose } from './backends/fastapi/docker.js'
 import { architectureOverview } from './shared/architecture-documentation.js'
+import { architectureScaffoldPaths, emptyScaffoldPaths, architectureScaffoldReadme, architectureScaffoldDocument, architectureScaffoldMetadata } from './architecture-scaffold.js'
+import { wantsBuildCi, wantsSecurityChecks, wantsGitHubAutomation, wantsPullRequestTemplate } from '../shared/ci-options.js'
 
 /**
  * Main entry point — generates the full project
@@ -49,6 +51,14 @@ export async function scaffoldProject(answers, cliRoot) {
     finalDestination,
     stagingDestination,
     generate: async (dest) => {
+    if ((resolvedAnswers.mode || 'full') === 'architecture') {
+      const paths = architectureScaffoldPaths(stack, resolvedAnswers)
+      for (const directory of emptyScaffoldPaths(paths)) await write(dest, `${directory}/.gitkeep`, '')
+      await write(dest, 'README.md', architectureScaffoldReadme(resolvedAnswers, stack))
+      await write(dest, 'ARCHITECTURE.md', architectureScaffoldDocument(resolvedAnswers, stack, paths))
+      await write(dest, 'create-win-project.profile.json', architectureScaffoldMetadata(resolvedAnswers, stack))
+      return
+    }
     // 2. Staging folder. It is moved into place only after every generation
     // step succeeds, so failures never leave a half-written project.
     // 3. Root documentation and repository files. Directories are created only
@@ -64,16 +74,16 @@ export async function scaffoldProject(answers, cliRoot) {
     await generateDocs(dest, resolvedAnswers, stack, runnableFilePaths)
 
     // 6. GitHub Actions CI (template-driven)
-    if (resolvedAnswers.githubActions) {
+    if (wantsGitHubAutomation(resolvedAnswers)) {
       await generateCI(dest, stack, ciDir, resolvedAnswers, vars)
     }
 
     // 7. Copy selected playbooks (including concern files)
-    await copySelectedPlaybooks(playbooksDir, dest, stack)
-
-    // 8. RULES.md
-    const rulesContent = await buildRulesIndex(stack, catalog, playbooksDir)
-    await write(dest, 'RULES.md', rulesContent)
+    if ((resolvedAnswers.guidance || 'full') === 'full') {
+      await copySelectedPlaybooks(playbooksDir, dest, stack)
+      const rulesContent = await buildRulesIndex(stack, catalog, playbooksDir)
+      await write(dest, 'RULES.md', rulesContent)
+    }
     },
   })
 }
@@ -86,7 +96,16 @@ function validateAnswers(answers) {
   if (typeof answers.projectDescription !== 'string' || !answers.projectDescription.trim()) {
     throw new Error('Project description is required')
   }
-  if (answers.testing && !['basic', 'full'].includes(answers.testing)) {
+  if (answers.mode && !['architecture', 'full'].includes(answers.mode)) {
+    throw new Error(`Unknown generation mode: ${answers.mode}`)
+  }
+  if (answers.guidance && !['none', 'compact', 'full'].includes(answers.guidance)) {
+    throw new Error(`Unknown guidance level: ${answers.guidance}`)
+  }
+  if (answers.mode === 'architecture' && answers.architecture && answers.architecture !== 'medium') {
+    throw new Error('Architecture scaffold always uses the medium profile')
+  }
+  if (answers.testing && !['none', 'basic', 'full'].includes(answers.testing)) {
     throw new Error(`Unknown testing setup: ${answers.testing}`)
   }
   const uploads = answers.uploads || 'none'
@@ -112,14 +131,20 @@ function validateAnswers(answers) {
 // ─── Root files ───────────────────────────────────────────────────────────────
 
 async function generateRootFiles(dest, answers, vars, stack, templatesDir) {
-  await writeTemplate(dest, 'CONTEXT.md', contextMd(vars, answers.expectedConcerns, answers), vars)
-  // AGENTS.md — template-driven
-  {
-    const tpl = await readTemplate(templatesDir, 'agents', stack.agentsTemplate, '.md')
-    if (tpl) await writeTemplate(dest, 'AGENTS.md', `${tpl}\n## Deviation policy\n\nAgents may recommend alternatives, but must propose the change and receive explicit approval before changing the selected architecture, provider, authentication model, data boundary, production baseline, or major dependency. Record approved deviations and their rationale in \`CONTEXT.md\`.\n`, vars)
-    else await write(dest, 'AGENTS.md', `# AGENTS.md\nStack: ${stack.label}\n`)
+  if ((answers.guidance || 'full') !== 'none') {
+    await writeTemplate(dest, 'CONTEXT.md', contextMd(vars, answers.expectedConcerns, answers), vars)
   }
-  await write(dest,         'PROGRESS.md',   progressMd())
+  // AGENTS.md — template-driven
+  if ((answers.guidance || 'full') !== 'none') {
+    if (answers.guidance === 'compact') {
+      await write(dest, 'AGENTS.md', `# AGENTS.md\n\nStack: ${stack.label}\n\nRead \`README.md\` for commands and \`CONTEXT.md\` for product decisions. Keep changes within the selected architecture and record approved deviations in \`CONTEXT.md\`. Never commit secrets or run production migrations during application startup. Validate affected behavior with the project's lint, typecheck, test, and build commands before handoff.\n`)
+    } else {
+      const tpl = await readTemplate(templatesDir, 'agents', stack.agentsTemplate, '.md')
+      if (tpl) await writeTemplate(dest, 'AGENTS.md', `${tpl}\n## Deviation policy\n\nAgents may recommend alternatives, but must propose the change and receive explicit approval before changing the selected architecture, provider, authentication model, data boundary, production baseline, or major dependency. Record approved deviations and their rationale in \`CONTEXT.md\`.\n`, vars)
+      else await write(dest, 'AGENTS.md', `# AGENTS.md\nStack: ${stack.label}\n`)
+    }
+  }
+  if ((answers.guidance || 'full') === 'full') await write(dest, 'PROGRESS.md', progressMd())
   // README.md is generated with the runnable framework files. Keeping one
   // owner prevents a generic template from drifting away from real commands.
   // .gitignore — template-driven
@@ -224,48 +249,8 @@ async function generateRootFiles(dest, answers, vars, stack, templatesDir) {
     }
   }
 
-  // Production artifacts are part of the deployable web contract even when
-  // the optional development Docker workflow was not selected.
-  if (!answers.docker && !stack.isMobile) {
-    if (stack.frontendKey === 'nextjs') {
-      const nextProd = await readTemplate(templatesDir, 'docker/dockerfile', 'nextjs.prod', '.dockerfile')
-      if (nextProd) await writeTemplate(dest, 'Dockerfile', nextProd, vars)
-    }
-    if (stack.frontendKey === 'react') {
-      const viteProd = await readTemplate(templatesDir, 'docker/dockerfile', 'vite.prod', '.dockerfile')
-      if (viteProd) {
-        await writeTemplate(dest, 'frontend/Dockerfile', viteProd, vars)
-        await write(dest, 'frontend/nginx.conf', `server {\n  listen 8080;\n  server_tokens off;\n  root /usr/share/nginx/html;\n  add_header X-Content-Type-Options nosniff always;\n  add_header Referrer-Policy strict-origin-when-cross-origin always;\n  add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;\n  add_header Content-Security-Policy "default-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'" always;\n  location /assets/ { try_files $uri =404; add_header Cache-Control "public, max-age=31536000, immutable"; }\n  location /api/ { add_header Cache-Control "no-store" always; try_files $uri =404; }\n  location / { index index.html; try_files $uri $uri/ /index.html; add_header Cache-Control "no-cache"; }\n}\n`)
-      }
-    }
-    if (stack.backendKey === 'springboot') {
-      const backendProd = await readTemplate(templatesDir, 'docker/dockerfile', 'springboot.prod', '.dockerfile')
-      if (backendProd) await writeTemplate(dest, 'backend/Dockerfile', backendProd, vars)
-      const composeProd = await readTemplate(templatesDir, 'docker/compose-prod', 'springboot', '.yml')
-      if (composeProd) await writeTemplate(dest, 'docker-compose.prod.yml', composeProd, vars)
-    }
-    if (stack.backendKey === 'fastapi') {
-      const apiRoot = stack.frontendKey === 'no-frontend' ? '' : 'backend/'
-      const backendProd = await readTemplate(templatesDir, 'docker/dockerfile', 'fastapi.prod', '.dockerfile')
-      if (backendProd) await writeTemplate(dest, `${apiRoot}Dockerfile`, backendProd, vars)
-      const composeProd = await readTemplate(templatesDir, 'docker/compose-prod', 'fastapi', '.yml')
-      if (composeProd) {
-        const rendered = stack.frontendKey === 'no-frontend'
-          ? composeProd.replaceAll('context: ./backend', 'context: .')
-          : composeProd
-        await writeTemplate(dest, 'docker-compose.prod.yml', rendered, vars)
-      }
-    }
-    if (stack.backendKey === 'laravel') {
-      const laravelRoot = ['laravel-ui', 'no-frontend'].includes(stack.frontendKey) ? '' : 'backend/'
-      const productionDockerfile = stack.frontendKey === 'laravel-ui' ? 'laravel-ui.prod' : 'laravel.prod'
-      const laravelProd = await readTemplate(templatesDir, 'docker/dockerfile', productionDockerfile, '.dockerfile')
-      if (laravelProd) await writeTemplate(dest, `${laravelRoot}Dockerfile`, laravelProd, vars)
-    }
-  }
-
   // PR template
-  if (answers.githubActions) {
+  if (wantsPullRequestTemplate(answers)) {
     const pullRequestTemplate = await readTemplate(templatesDir, 'github', 'PULL_REQUEST_TEMPLATE', '.md')
     if (pullRequestTemplate) {
       await writeTemplate(dest, '.github/PULL_REQUEST_TEMPLATE.md', pullRequestTemplate, vars)
@@ -328,7 +313,10 @@ async function generateDocs(dest, answers, stack, runnableFilePaths) {
   for (const [filePath, title, description] of docs) {
     await write(dest, filePath, docPlaceholder(title, description))
   }
-  await write(dest, 'docs/guides/deployment.md', `# Production deployment and rollback\n\nBuild immutable images from the committed lockfiles and deploy \`docker-compose.prod.yml\` where generated. Validate required environment variables before starting; secrets belong in the deployment platform, never images or client bundles. Run readiness checks before routing traffic and allow the documented graceful-shutdown window during replacement.\n\n## Database preflight\n\nBack up PostgreSQL with encryption before migrations, check available connections and migration compatibility, then run migrations as a single release task. Application instances use a bounded connection pool; size the total across replicas below the database limit.\n\n## Rollback\n\nRetain the previous image digest and a compatible database restore point. Stop routing to the failed release, restore the prior image, and restore data only when the migration is not backward compatible. Test restores automatically on a separate database and document retention and recovery ownership.\n`)
+  const deploymentTarget = answers.docker
+    ? 'Build immutable images from the committed lockfiles and deploy `docker-compose.prod.yml` where generated.'
+    : 'Build from committed lockfiles using your deployment platform; this project has no generated Docker configuration.'
+  await write(dest, 'docs/guides/deployment.md', `# Production deployment and rollback\n\n${deploymentTarget} Validate required environment variables before starting; secrets belong in the deployment platform, never images or client bundles. Run readiness checks before routing traffic and allow the documented graceful-shutdown window during replacement.\n\n## Database preflight\n\nBack up PostgreSQL with encryption before migrations, check available connections and migration compatibility, then run migrations as a single release task. Application instances use a bounded connection pool; size the total across replicas below the database limit.\n\n## Rollback\n\nRetain the previous release and a compatible database restore point. Stop routing to the failed release, restore the prior release, and restore data only when the migration is not backward compatible. Test restores automatically on a separate database and document retention and recovery ownership.\n`)
   await write(dest, 'docs/guides/operations.md', `# Operations\n\nEvery request crossing an HTTP boundary receives or creates an \`X-Request-ID\` and returns it in responses. Errors use a stable JSON shape: \`{ "error": { "code": "stable_code", "message": "safe message", "requestId": "..." } }\`. Never expose stack traces.\n\nList endpoints use cursor pagination with explicit maximum page sizes. Outbound calls have connection and response timeouts; retry only bounded idempotent operations with jitter. Readiness checks include required downstream dependencies while liveness checks remain process-local.\n\nCORS uses an explicit origin allowlist. Cookie-authenticated browser writes require SameSite cookies plus CSRF validation; bearer-token APIs do not use wildcard origins with credentials. Static fingerprinted assets are immutable, HTML revalidates, and API/auth responses default to \`no-store\`.\n`)
 
   const frontendRoot = stack.frontendKey === 'react' ? 'frontend/' : ''
@@ -439,8 +427,9 @@ function generatedSecurityWorkflow(stack) {
 }
 
 async function generateCI(dest, stack, ciDir, answers, vars) {
-  // Frontend CI — read from ci/{ciTemplate}.yml
-  const feTpl = path.join(ciDir, `${stack.ciTemplate}.yml`)
+  if (wantsBuildCi(answers)) {
+    // Frontend CI — read from ci/{ciTemplate}.yml
+    const feTpl = path.join(ciDir, `${stack.ciTemplate}.yml`)
   if (await fs.pathExists(feTpl)) {
     let content = await fs.readFile(feTpl, 'utf-8')
     if (answers.testing === 'none') {
@@ -502,7 +491,10 @@ async function generateCI(dest, stack, ciDir, answers, vars) {
       await write(dest, `.github/workflows/ci-backend.yml`, render(content, vars))
     }
   }
-  await write(dest, '.github/workflows/security.yml', generatedSecurityWorkflow(stack))
+  }
+  if (wantsSecurityChecks(answers)) {
+    await write(dest, '.github/workflows/security.yml', generatedSecurityWorkflow(stack))
+  }
 }
 
 // ─── Runnable application files ─────────────────────────────────────────────────
