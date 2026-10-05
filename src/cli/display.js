@@ -1,6 +1,7 @@
 import chalk from 'chalk'
 import ora from 'ora'
 import { APPLICATION_SHAPES } from '../engine/project-shapes.js'
+import { wantsBuildCi, wantsSecurityChecks } from '../shared/ci-options.js'
 import path from 'node:path'
 
 // ─── Banner (from lib/banner.js) ────────────────────────────────────────────
@@ -100,6 +101,7 @@ export function printSummary({ answers, stack, catalog }, output = console.log) 
   output(chalk.cyan.bold('  Review before creating files'))
   output(chalk.gray('  ───────────────────────────'))
   output(`  ${chalk.cyan('Name:')}         ${answers.projectName}`)
+  output(`  ${chalk.cyan('Output:')}       ${answers.mode === 'architecture' ? 'Architecture scaffold' : 'Full project'}`)
   output(`  ${chalk.cyan('Stack:')}        ${stack.label}`)
   output(`  ${chalk.cyan('Shape:')}        ${APPLICATION_SHAPES[stack.applicationShape].label}`)
   output(`  ${chalk.cyan('Platform:')}     ${stack.platform}`)
@@ -107,13 +109,17 @@ export function printSummary({ answers, stack, catalog }, output = console.log) 
   if (answers.laravelUi) output(`  ${chalk.cyan('Laravel UI:')}   ${answers.laravelUi}`)
   output(`  ${chalk.cyan('Architecture:')} ${stack.architecture[0].toUpperCase()}${stack.architecture.slice(1)}`)
   output(`  ${chalk.cyan('Authentication:')} ${stack.authentication}`)
-  output(`  ${chalk.cyan('Testing:')}      ${answers.testing}`)
-  if (stack.platform !== 'mobile') {
+  if (answers.mode !== 'architecture') output(`  ${chalk.cyan('Testing:')}      ${answers.testing}`)
+  if (answers.mode !== 'architecture' && stack.platform !== 'mobile') {
     output(`  ${chalk.cyan('Docker:')}       ${answers.docker ? 'yes' : 'no'}`)
     output(`  ${chalk.cyan('Makefile:')}     ${answers.makefile ? 'yes' : 'no'}`)
   }
-  output(`  ${chalk.cyan('CI/CD:')}        ${answers.githubActions ? 'yes' : 'no'}`)
-  output(`  ${chalk.cyan('Install deps:')} ${answers.installDependencies ? 'yes' : 'no'}`)
+  if (answers.mode !== 'architecture') {
+    output(`  ${chalk.cyan('Build/test CI:')} ${wantsBuildCi(answers) ? 'yes' : 'no'}`)
+    output(`  ${chalk.cyan('Security:')}      ${wantsSecurityChecks(answers) ? 'yes' : 'no'}`)
+    output(`  ${chalk.cyan('Guidance:')}     ${answers.guidance || 'full'}`)
+    output(`  ${chalk.cyan('Install deps:')} ${answers.installDependencies ? 'yes' : 'no'}`)
+  }
   if (answers.packageName) output(`  ${chalk.cyan('Package:')}      ${answers.packageName}`)
   if (stack.constraints.length) {
     output('')
