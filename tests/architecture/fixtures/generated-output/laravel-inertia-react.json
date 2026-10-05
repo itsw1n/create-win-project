@@ -108,8 +108,8 @@
     "sha256": "723a6ccf7bcd827adff022a5ef0b04d34cbfcb006cad1a1c88a25dab4f6904a4"
   },
   "create-win-project.profile.json": {
-    "bytes": 968,
-    "sha256": "ebfed45c08dcd0a804138a21eafa78c637d3ec0e231297d135c45afbd7f6c982"
+    "bytes": 1014,
+    "sha256": "b00377edcd994211706811d270d0a12a7b11aa70f813962e75ba54bebb02561b"
   },
   "database/factories/UserFactory.php": {
     "bytes": 456,
@@ -156,8 +156,8 @@
     "sha256": "90cace623f9060da64820e7c3f30209513b06f13f12065a847cbeb0815d0de07"
   },
   "docs/guides/deployment.md": {
-    "bytes": 997,
-    "sha256": "1be746fd1cab6ac2b40e392cd409a1cf17182def17cf68a12a0a3e7b187d482f"
+    "bytes": 994,
+    "sha256": "188a1698fc6b76af2d7eb227bc705699d8b6d058628638a75ce6bfb9940d03a7"
   },
   "docs/guides/development-environments.md": {
     "bytes": 1168,

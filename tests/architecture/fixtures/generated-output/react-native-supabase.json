@@ -80,8 +80,8 @@
     "sha256": "abe0ca58d4d4fbf61e291528fd10656b0fb7fa06900f73c8cb5dedd23e14d2fa"
   },
   "create-win-project.profile.json": {
-    "bytes": 955,
-    "sha256": "1a60513c6a0dad25d2dfee84e0c6309d081fbb739cfe5c9a8640f049ecd8e4a7"
+    "bytes": 1001,
+    "sha256": "137cd3f0dd5206cc1de2c40a93853ad205229c1620510b2cc1860f377e582528"
   },
   "docs/api/endpoints.md": {
     "bytes": 84,
@@ -108,8 +108,8 @@
     "sha256": "89e512e2fc4f0073120e75f5905bf34bcb4889c49bcfb3eac5aa7556d71f3132"
   },
   "docs/guides/deployment.md": {
-    "bytes": 997,
-    "sha256": "1be746fd1cab6ac2b40e392cd409a1cf17182def17cf68a12a0a3e7b187d482f"
+    "bytes": 1003,
+    "sha256": "3e41230d0e9ff3a502a78cabc9c4d7cdc19007e602a48c37e010460936a7bd71"
   },
   "docs/guides/development-environments.md": {
     "bytes": 1052,
@@ -324,8 +324,8 @@
     "sha256": "8858edf836eca2f87e862d208cb64cc21c73c19bb0bf85bb349330c42b8d8afa"
   },
   "README.md": {
-    "bytes": 1010,
-    "sha256": "803b6fae1759bdc6c80badf3c4e60cc7b4528f4eb77e544b04254a51404cc7d5"
+    "bytes": 796,
+    "sha256": "41aaf503d6ffb15062f68ca99f670f7e5e927c0573ab4c4791c4e8f10c31ec23"
   },
   "RULES.md": {
     "bytes": 6175,

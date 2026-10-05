@@ -112,8 +112,8 @@
     "sha256": "a146a591317dab3566ae2af6deed3b5db015e993798830c593e6493c462e7d90"
   },
   "create-win-project.profile.json": {
-    "bytes": 966,
-    "sha256": "7cf260a8cae3b37ccb372117f39d7bbb359a0395bec658951a0f4b0b44715fea"
+    "bytes": 1012,
+    "sha256": "3159aed4bf77217916d11fa7b65b12a6577f98636bdac13b970dd382cf88249d"
   },
   "docker-compose.prod.yml": {
     "bytes": 2067,
@@ -148,8 +148,8 @@
     "sha256": "5d81299a22f0968fe4bcc9199ba031970ef6c5075665bc9ef763e16263058bce"
   },
   "docs/guides/deployment.md": {
-    "bytes": 997,
-    "sha256": "1be746fd1cab6ac2b40e392cd409a1cf17182def17cf68a12a0a3e7b187d482f"
+    "bytes": 994,
+    "sha256": "188a1698fc6b76af2d7eb227bc705699d8b6d058628638a75ce6bfb9940d03a7"
   },
   "docs/guides/development-environments.md": {
     "bytes": 1168,
@@ -216,8 +216,8 @@
     "sha256": "bcd03620e4925d3a6418a156d9bb9f634a76b571f7911fc657e27a401ecde66e"
   },
   "frontend/src/App.tsx": {
-    "bytes": 744,
-    "sha256": "31fe4c3656499011eec28e0b82e2d47052296656e1130e5fc10e90cca8840e95"
+    "bytes": 729,
+    "sha256": "ca906ddfd937368b8d334f8e686f4d7d7c12c9318dc308c07f1c6ca9003f17fd"
   },
   "frontend/src/components/common/Button/Button.module.css": {
     "bytes": 661,
@@ -504,8 +504,8 @@
     "sha256": "8858edf836eca2f87e862d208cb64cc21c73c19bb0bf85bb349330c42b8d8afa"
   },
   "README.md": {
-    "bytes": 1184,
-    "sha256": "dd427a3fbf09b24f200093a8d60d7df1d30995743bedf70b86584cf0370f587b"
+    "bytes": 970,
+    "sha256": "35f6fbc510ecfcaf553e11784d75fe53e3933e5391a697842cf6ccb24e005fff"
   },
   "RULES.md": {
     "bytes": 6915,
