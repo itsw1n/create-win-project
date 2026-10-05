@@ -1,9 +1,11 @@
 # Architecture
 
-`create-win-project` composes a validated project specification into two coordinated outputs:
+`create-win-project` offers an Architecture Scaffold or a Full Project. Full projects compose a validated specification into two coordinated outputs:
 
 1. a small executable application that establishes the stack's real conventions;
-2. a task-routed documentation layer for humans and coding agents.
+2. a documentation layer for humans and, when selected, coding agents.
+
+Architecture Scaffold uses the selected stack's Medium planning anchors and writes `.gitkeep`, `README.md`, `ARCHITECTURE.md`, and profile metadata without runtime code. Frontend and backend adapters contribute the stack-specific paths through `architecture`; shared composition adds selected capability anchors.
 
 Executable behavior, tests, and framework configuration are the source of truth. Playbooks explain and extend that behavior; they must not contradict it.
 
