@@ -44,6 +44,8 @@ const projectRoot = path.resolve(cliDirectory, '../..')
 export async function runCli() {
 const args = parseArguments(process.argv.slice(2))
 const profileArg = args.profile
+const modeArg = args.mode
+const guidanceArg = args.guidance
 const shapeArg = args.shape
 const frontendArg = args.frontend
 const backendArg = args.backend
@@ -79,6 +81,8 @@ printBanner(profile)
 
 const questions = buildQuestions({ args, catalog })
 let answers = {
+  mode: modeArg,
+  guidance: guidanceArg,
   applicationShape: shapeArg,
   frontend: frontendArg,
   backend: backendArg,
@@ -89,18 +93,34 @@ while (true) {
 answers = await promptWithBack(inquirer, questions, answers, resumeAt)
 resumeAt = 0
 answers.compatibilityProfile = profile.id
+answers.mode = modeArg || answers.mode || 'full'
+answers.guidance = answers.mode === 'architecture' ? 'none' : (guidanceArg || answers.guidance || 'full')
 answers.applicationShape = shapeArg || answers.applicationShape
-answers.architecture = architectureArg || answers.architecture || 'medium'
+answers.architecture = answers.mode === 'architecture' ? 'medium' : (architectureArg || answers.architecture || 'medium')
 answers.authentication = authenticationArg || answers.authentication || 'not-yet'
 answers.authAudience = authAudienceArg || answers.authAudience || (catalog.byId[answers.frontend]?.platform === 'mobile' ? 'multi-client' : 'website')
 answers.laravelUi = laravelUiArg || answers.laravelUi || (answers.frontend === 'laravel-ui' ? 'blade' : undefined)
 answers.uploads = uploadsArg || answers.uploads || 'none'
 answers.backgroundJobs = backgroundJobsArg || answers.backgroundJobs || 'none'
 answers.offline = offlineArg || answers.offline || 'none'
-answers.testing = answers.frontend === 'react-native' ? 'basic' : 'full'
-answers.githubActions = true
-if (wantsInstall) answers.installDependencies = true
-if (skipsInstall) answers.installDependencies = false
+if (answers.mode === 'architecture') {
+  answers.architecture = 'medium'
+  answers.testing = 'none'
+  answers.docker = false
+  answers.makefile = false
+  answers.buildCi = false
+  answers.securityChecks = false
+  answers.githubActions = false
+  answers.installDependencies = false
+} else {
+  answers.testing = answers.testing || (answers.frontend === 'react-native' ? 'basic' : 'full')
+  answers.buildCi = answers.buildCi ?? answers.githubActions ?? true
+  answers.securityChecks = answers.securityChecks ?? answers.githubActions ?? true
+}
+if (answers.mode === 'full') {
+  if (wantsInstall) answers.installDependencies = true
+  if (skipsInstall) answers.installDependencies = false
+}
 
 stack = resolveStack({ ...answers, styling: answers.styling || catalog.byId[answers.frontend]?.stylingOptions?.[0] || 'tailwind' }, catalog)
 
@@ -121,6 +141,21 @@ if (decision === 'cancel') {
   process.exit(0)
 }
 break
+}
+
+if (answers.mode === 'architecture') {
+  const spinner = startProjectSpinner()
+  try {
+    await generateProject(answers, projectRoot)
+    projectSucceeded(spinner)
+    printLocationNotice(projectLocationNotice({ cwd: process.cwd(), cliRoot: projectRoot, projectName: answers.projectName }))
+    console.log(`  cd ${answers.projectName}`)
+    console.log('  Read ARCHITECTURE.md to plan implementation.')
+  } catch (error) {
+    generationFailed(spinner, error)
+    process.exitCode = 1
+  }
+  return
 }
 
 const detectedVersions = detectSystemVersions()
