@@ -159,7 +159,8 @@ function tailwindApp(answers, stack) {
   const heading = stack.architecture === 'small'
     ? '<h1 className="text-4xl font-bold tracking-tight sm:text-5xl">Your starter is running</h1>'
     : '<StarterStatus status={status} />'
-  return `import { Container } from '@/components/layout/Container'\nimport { Section } from '@/components/layout/Section'${featureImports(stack, 'tailwind')}\n\nexport function App() {\n${statusSetup}  return <main><Section ui="hero" className="min-h-screen"><Container className="space-y-4"><p className="text-sm font-semibold text-primary">create-win-project</p>${heading}<p className="max-w-2xl leading-7">{${JSON.stringify(answers.projectDescription)}}</p><p>Read <code>AGENTS.md</code> before your first agent-assisted change.</p></Container></Section></main>\n}\n`
+  const guide = answers.guidance === 'none' ? 'README.md' : 'AGENTS.md'
+  return `import { Container } from '@/components/layout/Container'\nimport { Section } from '@/components/layout/Section'${featureImports(stack, 'tailwind')}\n\nexport function App() {\n${statusSetup}  return <main><Section ui="hero" className="min-h-screen"><Container className="space-y-4"><p className="text-sm font-semibold text-primary">create-win-project</p>${heading}<p className="max-w-2xl leading-7">{${JSON.stringify(answers.projectDescription)}}</p><p>Read <code>${guide}</code> before your first change.</p></Container></Section></main>\n}\n`
 }
 
 function moduleApp(answers, stack) {
@@ -167,7 +168,8 @@ function moduleApp(answers, stack) {
   const heading = stack.architecture === 'small'
     ? '<h1 className={styles.heading}>Your starter is running</h1>'
     : '<StarterStatus status={status} />'
-  return `import { Container } from '@/components/layout/Container/Container'\nimport { Section } from '@/components/layout/Section/Section'${featureImports(stack, 'css-modules')}\nimport styles from './App.module.css'\n\nexport function App() {\n${statusSetup}  return <main><Section className={styles.hero}><Container className={styles.content}><p className={styles.eyebrow}>create-win-project</p>${heading}<p className={styles.description}>{${JSON.stringify(answers.projectDescription)}}</p><p>Read <code>AGENTS.md</code> before your first agent-assisted change.</p></Container></Section></main>\n}\n`
+  const guide = answers.guidance === 'none' ? 'README.md' : 'AGENTS.md'
+  return `import { Container } from '@/components/layout/Container/Container'\nimport { Section } from '@/components/layout/Section/Section'${featureImports(stack, 'css-modules')}\nimport styles from './App.module.css'\n\nexport function App() {\n${statusSetup}  return <main><Section className={styles.hero}><Container className={styles.content}><p className={styles.eyebrow}>create-win-project</p>${heading}<p className={styles.description}>{${JSON.stringify(answers.projectDescription)}}</p><p>Read <code>${guide}</code> before your first change.</p></Container></Section></main>\n}\n`
 }
 
 function addStatusFiles(files, stack, mode) {

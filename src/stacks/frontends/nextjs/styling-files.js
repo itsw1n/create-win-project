@@ -256,7 +256,8 @@ function pageFile(answers, stack, mode) {
     ? `<p className="max-w-2xl leading-7">{${JSON.stringify(answers.projectDescription)}}</p>`
     : `<p className={styles.description}>{${JSON.stringify(answers.projectDescription)}}</p>`
 
-  return `${layoutImports}${statusImports}\n\nexport default function HomePage() {\n${statusSetup}  return (\n    <main>\n      <Section ${sectionProps}>\n        <Container ${contentProps}>\n          ${eyebrow}\n          ${heading}\n          ${description}\n          <p>Read <code>AGENTS.md</code> before your first agent-assisted change.</p>\n        </Container>\n      </Section>\n    </main>\n  )\n}\n`
+  const guide = answers.guidance === 'none' ? 'README.md' : 'AGENTS.md'
+  return `${layoutImports}${statusImports}\n\nexport default function HomePage() {\n${statusSetup}  return (\n    <main>\n      <Section ${sectionProps}>\n        <Container ${contentProps}>\n          ${eyebrow}\n          ${heading}\n          ${description}\n          <p>Read <code>${guide}</code> before your first change.</p>\n        </Container>\n      </Section>\n    </main>\n  )\n}\n`
 }
 
 export function addNextjsStylingFiles(files, answers, stack) {
