@@ -59,7 +59,7 @@ describe('navigable interview', () => {
 
   it('renders compact single-line rows with a shared footer and Back last', async () => {
     const seen = []
-    const [shapeQuestion] = buildQuestions({ args: {}, catalog: { byId: {} } })
+    const shapeQuestion = buildQuestions({ args: {}, catalog: { byId: {} } })[1]
     await promptWithBack(recordingInquirer(['fullstack', 'x'], seen), [
       shapeQuestion,
       { type: 'list', name: 'next', message: 'Next?', choices: [{ name: 'X', value: 'x' }] },
