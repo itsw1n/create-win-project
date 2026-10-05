@@ -117,7 +117,7 @@ describe('runnable project contract', () => {
   ])('generates the %s Laravel full-stack UI', async (laravelUi, expectedFile, composerPackage) => {
     const destination = await generate({
       frontend: 'laravel-ui', backend: 'laravel', applicationShape: 'fullstack', laravelUi,
-      architecture: 'medium', authentication: 'yes', styling: 'tailwind', githubActions: true,
+      architecture: 'medium', authentication: 'yes', styling: 'tailwind', githubActions: true, docker: true,
       projectName: `laravel-${laravelUi}`,
     })
     expect(await fs.pathExists(path.join(destination, expectedFile))).toBe(true)
@@ -444,6 +444,22 @@ describe('runnable project contract', () => {
     expect(await fs.pathExists(path.join(modules, 'src/features/status/components/StarterStatus/StarterStatus.module.css'))).toBe(true)
   })
 
+  it.each([
+    [false, false, false, false, false],
+    [true, false, true, false, false],
+    [false, true, false, true, false],
+    [true, true, true, true, true],
+  ])('generates the selected CI and security workflows (build=%s, security=%s)', async (buildCi, securityChecks, hasBuildWorkflow, hasSecurityWorkflow, hasPullRequestTemplate) => {
+    const destination = await generate({
+      frontend: 'nextjs', backend: 'none', styling: 'tailwind',
+      buildCi, securityChecks, githubActions: undefined,
+      projectName: `ci-options-${buildCi}-${securityChecks}`,
+    })
+    expect(await fs.pathExists(path.join(destination, '.github/workflows/ci-frontend.yml'))).toBe(hasBuildWorkflow)
+    expect(await fs.pathExists(path.join(destination, '.github/workflows/security.yml'))).toBe(hasSecurityWorkflow)
+    expect(await fs.pathExists(path.join(destination, '.github/PULL_REQUEST_TEMPLATE.md'))).toBe(hasPullRequestTemplate)
+  })
+
   it('generates one concise stack-neutral pull request template', async () => {
     const destination = await generate({
       frontend: 'nextjs', backend: 'none', styling: 'tailwind', githubActions: true,
@@ -622,8 +638,11 @@ describe('runnable project contract', () => {
     expect(violation.stderr).toContain('common cannot import layout')
   })
 
-  it('rejects unsupported production-ready without tests paths', async () => {
-    await expect(generate({ testing: 'none', projectName: 'without-tests' })).rejects.toThrow('Unknown testing setup')
+  it('allows a production project without generated tests when explicitly selected', async () => {
+    const destination = await generate({ testing: 'none', projectName: 'without-tests' })
+    const packageJson = await fs.readJson(path.join(destination, 'package.json'))
+    expect(packageJson.scripts.test).toBeUndefined()
+    expect(await fs.pathExists(path.join(destination, 'src/app/page.test.tsx'))).toBe(false)
   })
 
   it('rejects unsupported capabilities before creating a destination', async () => {
@@ -663,14 +682,14 @@ describe('runnable project contract', () => {
     expect(makefile).toContain('npm --prefix $(NPM_DIR) run check')
   })
 
-  it('generates production artifacts when development Docker is disabled', async () => {
+  it('omits container artifacts when Docker is disabled', async () => {
     const next = await generate({ backend: 'none', docker: false, projectName: 'next-production' })
-    expect(await fs.pathExists(path.join(next, 'Dockerfile'))).toBe(true)
+    expect(await fs.pathExists(path.join(next, 'Dockerfile'))).toBe(false)
     expect(await fs.pathExists(path.join(next, 'Dockerfile.dev'))).toBe(false)
     const spring = await generate({ frontend: 'react', backend: 'springboot', packageName: 'com.example', docker: false, projectName: 'spring-production' })
-    expect(await fs.pathExists(path.join(spring, 'frontend/Dockerfile'))).toBe(true)
-    expect(await fs.pathExists(path.join(spring, 'backend/Dockerfile'))).toBe(true)
-    expect(await fs.pathExists(path.join(spring, 'docker-compose.prod.yml'))).toBe(true)
+    expect(await fs.pathExists(path.join(spring, 'frontend/Dockerfile'))).toBe(false)
+    expect(await fs.pathExists(path.join(spring, 'backend/Dockerfile'))).toBe(false)
+    expect(await fs.pathExists(path.join(spring, 'docker-compose.prod.yml'))).toBe(false)
     expect(await fs.pathExists(path.join(spring, 'docker-compose.yml'))).toBe(false)
   })
 
@@ -796,5 +815,52 @@ describe('runnable project contract', () => {
     const destination = await generate({ projectName: 'escaped-description', projectDescription: `It's <useful>\nand safe` })
     const page = await fs.readFile(path.join(destination, 'src/app/page.tsx'), 'utf8')
     expect(page).toContain(`{"It's <useful>\\nand safe"}`)
+  })
+})
+
+describe('architecture scaffold', () => {
+  it.each([
+    ['nextjs', 'fastapi', 'backend/app/features/.gitkeep'],
+    ['react', 'none', 'frontend/src/features/.gitkeep'],
+    ['react-native', 'supabase', 'features/.gitkeep'],
+    ['no-frontend', 'fastapi', 'app/features/.gitkeep'],
+    ['laravel-ui', 'laravel', 'resources/views/.gitkeep'],
+  ])('creates medium anchors for %s + %s without runtime files', async (frontend, backend, anchor) => {
+    const destination = await generate({
+      mode: 'architecture', frontend, backend, architecture: 'medium',
+      applicationShape: undefined, projectName: `scaffold-${frontend}-${backend}`,
+      githubActions: false, testing: 'none',
+    })
+    expect(await fs.pathExists(path.join(destination, anchor))).toBe(true)
+    expect(await fs.pathExists(path.join(destination, 'package.json'))).toBe(false)
+    expect(await fs.pathExists(path.join(destination, 'AGENTS.md'))).toBe(false)
+    expect(await fs.pathExists(path.join(destination, 'playbooks'))).toBe(false)
+    const guide = await fs.readFile(path.join(destination, 'ARCHITECTURE.md'), 'utf8')
+    expect(guide).toContain('Architecture baseline: Medium')
+    expect(guide).toContain('**Do not:**')
+  })
+
+  it('respects full project guidance choices', async () => {
+    const none = await generate({ mode: 'full', guidance: 'none', projectName: 'no-guidance' })
+    expect(await fs.pathExists(path.join(none, 'AGENTS.md'))).toBe(false)
+    expect(await fs.pathExists(path.join(none, 'RULES.md'))).toBe(false)
+    expect(await fs.pathExists(path.join(none, 'playbooks'))).toBe(false)
+    expect(await fs.readFile(path.join(none, 'README.md'), 'utf8')).not.toContain('RULES.md')
+
+    const compact = await generate({ mode: 'full', guidance: 'compact', projectName: 'compact-guidance' })
+    expect(await fs.pathExists(path.join(compact, 'AGENTS.md'))).toBe(true)
+    expect(await fs.pathExists(path.join(compact, 'CONTEXT.md'))).toBe(true)
+    expect(await fs.pathExists(path.join(compact, 'RULES.md'))).toBe(false)
+    expect(await fs.pathExists(path.join(compact, 'playbooks'))).toBe(false)
+  })
+
+  it('preserves only empty scaffold directories', async () => {
+    const destination = await generate({
+      mode: 'architecture', frontend: 'nextjs', backend: 'supabase', architecture: 'medium',
+      projectName: 'leaf-anchors', authentication: 'none',
+    })
+    expect(await fs.pathExists(path.join(destination, 'src/app/.gitkeep'))).toBe(false)
+    expect(await fs.pathExists(path.join(destination, 'src/app/api/.gitkeep'))).toBe(true)
+    expect(await fs.pathExists(path.join(destination, 'supabase/migrations/.gitkeep'))).toBe(true)
   })
 })
