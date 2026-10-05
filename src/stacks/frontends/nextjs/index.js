@@ -28,6 +28,7 @@ export const nextjsAdapter = defineStackAdapter({
     files: ({ answers, stack, shared }) => Object.entries(buildNextjsFiles(answers, stack, shared)),
     environment: ({ backend }) => backend.id === 'none' ? [] : ['API_URL'],
     install: () => [{ cwd: '.', command: 'npm', args: ['install'] }],
+    architecture: () => ['src/app', 'src/app/api', 'src/components/common', 'src/components/layout', 'src/features', 'src/lib', 'src/config'],
     docker: dockerContributions,
     ci: ciContributions,
     verification: () => verificationCases,
