@@ -1,7 +1,7 @@
 <div align="center">
   <img src="./public/logo.svg" alt="W1N Project logo" width="160">
   <h1>W1N PROJECT</h1>
-  <p>Generate a tested, production-oriented web or mobile project with stack-specific code, CI, deployment artifacts, documentation, and agent guidance.</p>
+  <p>Generate a stack-specific architecture scaffold or a runnable web, mobile, or backend project.</p>
 </div>
 
 > **Just answer what tech stack you want.** create-win-project turns your answers into a runnable, tested, agent-ready foundation
@@ -12,9 +12,9 @@
 npx create-win-project@latest
 ```
 
-Answer product questions, choose whether dependencies should be installed, then follow the generated project README. Existing non-empty destinations are never overwritten.
+Choose an Architecture Scaffold or Full Project, answer the stack questions, then follow the generated README. Architecture Scaffold creates Medium planning folders and a concise `ARCHITECTURE.md` without runnable code. Full Project asks about testing, CI, Docker, Makefile, agent guidance, and optional dependency installation. Existing non-empty destinations are never overwritten.
 
-For example, a Next.js + FastAPI project using the Medium architecture profile has this
+For example, a Full Next.js + FastAPI project using the Medium architecture profile with Docker, CI, and full guidance selected has this
 feature-oriented shape:
 
 ```text
@@ -61,14 +61,14 @@ Authentication follows the chosen stack and audience: Supabase Auth, server sess
 
 ## Production-oriented by default
 
-Version 2 generates stack-appropriate tests, CI and security checks, production builds, environment guidance, operations documentation, and cloud-neutral deployment artifacts. Web tests include Playwright; Expo uses Jest and React Native Testing Library.
+Full projects generate stack-appropriate tests, production builds, environment guidance, and operations documentation. CI, browser tests, Docker artifacts, and agent guidance follow the interview choices. Expo uses Jest and React Native Testing Library when tests are selected.
 
 Optional complexity remains requirement-driven:
 
 - Private object-storage uploads appear only when uploads are required.
 - Durable queue conventions appear only when background jobs are required.
 - Offline cache or synchronization appears only for mobile when selected.
-- Development Docker and Make remain optional.
+- Docker and Make remain optional; declining Docker omits both development and production container files.
 
 The baseline is not a substitute for product authorization, infrastructure sizing, compliance, secrets, monitoring, deployment approval, backups, or restore drills. See the [production contract](./docs/production-contract.md).
 
