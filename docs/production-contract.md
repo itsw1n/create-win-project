@@ -1,6 +1,6 @@
 # Version 2 production contract
 
-Version 2 generates a tested, stack-appropriate production baseline. It guarantees deterministic files for the recorded schema-v2 profile, exact tested direct dependency requests, standard tests and CI, production builds, security rules, operations guidance, and cloud-neutral Docker artifacts for deployable web stacks. Expo projects receive an EAS-ready baseline, not automatic store submission.
+Full projects generate a stack-appropriate production starting point. The recorded schema-v2 profile and exact tested direct dependency requests are deterministic. Tests, CI, browser tests, and Docker artifacts follow the user's choices; production builds, security rules, and operations guidance remain part of Full output. Architecture scaffolds contain planning folders and guidance only. Expo Full projects receive an EAS-ready baseline, not automatic store submission.
 
 The guarantee is a starting contract, not a claim that an unfinished product is safe to launch. Teams still own domain authorization, infrastructure sizing, secrets, observability targets, data classification, compliance, external-provider configuration, device verification, deployment, backups, and restore drills.
 
@@ -10,10 +10,10 @@ The guarantee is a starting contract, not a claim that an unfinished product is 
 
 ## Standard baseline
 
-- Tests, lint/type checks, production builds, CI, security rules, environment validation, and operations documentation are standard.
+- Lint/type checks, production builds, security rules, environment validation, and operations documentation are standard in Full projects. Tests and CI are selected during the interview.
 - Vite production uses non-root nginx with SPA fallback, security headers, safe cache policy, and API `no-store`; Next.js retains framework-native caching.
 - Server/database stacks document readiness, graceful shutdown, pooling, migration preflight, encrypted backups, restore verification, retention, deployment, and rollback.
-- Development Docker remains optional. Shared Redis caching, queues, object storage, offline synchronization, and malware scanning appear only for a supported explicit requirement.
+- Docker files are generated only when Docker is selected. Shared Redis caching, queues, object storage, offline synchronization, and malware scanning appear only for a supported explicit requirement.
 
 ## Conditional capabilities
 
