@@ -19,6 +19,7 @@ export const postgresAdapter = defineStackAdapter({
     files: () => Object.entries(buildPostgresFiles()),
     environment: environmentContributions,
     install: () => [{ cwd: '.', command: 'npm', args: ['run', 'prisma:generate'] }],
+    architecture: () => ['prisma'],
     docker: dockerContributions,
     ci: ciContributions,
     verification: () => [

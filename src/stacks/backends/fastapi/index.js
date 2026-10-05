@@ -19,6 +19,7 @@ export const fastapiAdapter = defineStackAdapter({
     files: ({ answers, stack, vars }) => Object.entries(buildFastApiFiles(answers, vars, stack)),
     environment: environmentContributions,
     install: (context = {}) => [{ cwd: context.stack?.frontendKey === 'no-frontend' ? '.' : 'backend', command: 'uv', args: ['sync'] }],
+    architecture: ({ stack }) => { const root = stack.frontendKey === 'no-frontend' ? '' : 'backend/'; return [`${root}app`, `${root}app/core`, `${root}app/features`, `${root}alembic`, `${root}tests`] },
     docker: dockerContributions,
     ci: ciContributions,
     verification: () => [
