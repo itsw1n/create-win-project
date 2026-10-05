@@ -2,6 +2,7 @@ import fs from 'fs-extra'
 import path from 'path'
 import { loadCompatibility, resolvePackages } from './tested-versions.js'
 import { inferApplicationShape, validateApplicationShape } from './project-shapes.js'
+import { wantsGitHubAutomation, wantsPullRequestTemplate } from '../shared/ci-options.js'
 
 // ─── Loader ───────────────────────────────────────────────────────────────────
 
@@ -220,9 +221,9 @@ export function resolveStack(answers, catalog) {
   // devops extras
   if (answers.docker)        include(catalog.byId['docker'])
   if (answers.makefile)      include(catalog.byId['makefile'])
-  if (answers.githubActions) {
+  if (wantsGitHubAutomation(answers)) {
     include(catalog.byId['github-actions'])
-    include(catalog.byId['pr-template'])
+    if (wantsPullRequestTemplate(answers)) include(catalog.byId['pr-template'])
   }
 
   // ── Merge manifest fields ────────────────────────────────────────────────
