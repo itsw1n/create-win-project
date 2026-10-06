@@ -44,5 +44,8 @@
   },
   "devDependencies": {
     "vitest": "5.0.0"
+  },
+  "overrides": {
+    "source-map-js": "1.2.2"
   }
 }
