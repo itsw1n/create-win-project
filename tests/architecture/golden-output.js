@@ -6,7 +6,7 @@ import { generateProject } from '../../src/engine/create-project.js'
 
 const common = {
   projectDescription: 'Architecture golden fixture',
-  compatibilityProfile: '2026.09',
+  compatibilityProfile: '2026.10',
   architecture: 'medium',
   authentication: 'not-yet',
   authAudience: 'website',

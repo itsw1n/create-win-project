@@ -7,7 +7,7 @@ import {
 
 const profile = {
   runtimes: {
-    nodeMinimum: '22.14.0', npmMinimum: '11.19.0', php: '8.5.10', composer: '2.10.3',
+    nodeMinimum: '22.14.0', npmMinimum: '11.19.0', php: '8.5.11', composer: '2.10.3',
   },
 }
 const nextStack = { frontendKey: 'nextjs', backendKey: 'none' }

@@ -71,7 +71,7 @@ describe('runnable project contract', () => {
     expect(await fs.pathExists(path.join(laravelRoot, 'artisan'))).toBe(true)
     expect(await fs.pathExists(path.join(laravelRoot, 'routes/api.php'))).toBe(true)
     expect(await fs.pathExists(path.join(laravelRoot, 'tests/Feature/HealthTest.php'))).toBe(true)
-    expect(await fs.readFile(path.join(laravelRoot, '.php-version'), 'utf8')).toBe('8.5.10\n')
+    expect(await fs.readFile(path.join(laravelRoot, '.php-version'), 'utf8')).toBe('8.5.11\n')
     expect(await fs.readFile(path.join(destination, 'docs/guides/toolchain.md'), 'utf8')).toContain('Composer')
     const profile = await fs.readJson(path.join(destination, 'create-win-project.profile.json'))
     expect(profile.applicationShape).toBe(applicationShape)
@@ -204,7 +204,7 @@ describe('runnable project contract', () => {
     })
     const workflow = await fs.readFile(path.join(destination, '.github/workflows/ci-backend.yml'), 'utf8')
     expect(workflow).toContain('working-directory: backend')
-    expect(workflow).toContain('php-version: "8.5.10"')
+    expect(workflow).toContain('php-version: "8.5.11"')
     expect(workflow).toContain('postgres:16-alpine')
     expect(workflow).toContain('composer check')
   })
@@ -382,7 +382,7 @@ describe('runnable project contract', () => {
     expect(await fs.pathExists(path.join(destination, 'playbooks/universal/product-planning.md'))).toBe(true)
     const profile = await fs.readJson(path.join(destination, 'create-win-project.profile.json'))
     expect(profile.schemaVersion).toBe(2)
-    expect(profile.compatibilityProfile.id).toBe('2026.09')
+    expect(profile.compatibilityProfile.id).toBe('2026.10')
     expect(profile.architectureProfile).toBe('medium')
     expect(profile.styling).toEqual({
       mode: frontend === 'react-native' ? 'native-styles' : styling,
@@ -724,11 +724,11 @@ describe('runnable project contract', () => {
   })
 
   it('can reproduce the previous compatibility profile', async () => {
-    const destination = await generate({ projectName: 'previous-profile', compatibilityProfile: '2026.08' })
+    const destination = await generate({ projectName: 'previous-profile', compatibilityProfile: '2026.09' })
     const metadata = await fs.readJson(path.join(destination, 'create-win-project.profile.json'))
     const packageJson = await fs.readJson(path.join(destination, 'package.json'))
     expect(metadata.compatibilityProfile.status).toBe('previous')
-    expect(metadata.compatibilityProfile.id).toBe('2026.08')
+    expect(metadata.compatibilityProfile.id).toBe('2026.09')
     expect(packageJson.dependencies.next).toBe('16.3.4')
     expect(Object.values(packageJson.dependencies).every((version) => !/^[~^]/.test(version))).toBe(true)
   })

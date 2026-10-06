@@ -41,11 +41,11 @@
   },
   "CONTEXT.md": {
     "bytes": 1272,
-    "sha256": "7e2938277bdb4648ce6db20b5f482f7bc93fe90115aae1823fd086d7dca994a2"
+    "sha256": "0fc82ddfe1bac7d9103e47fc71c85f1f2a499974f2cbd99249c10967074caf12"
   },
   "create-win-project.profile.json": {
     "bytes": 1004,
-    "sha256": "712727a18b35c6e3dc6c495d366acc9ddf89b63f501d446bef04713f5f7d3ac5"
+    "sha256": "74f15766cee1094042e701fdcdc90ecaecc91a7670d55d346d8a5e4cc14b902e"
   },
   "docker-compose.yml": {
     "bytes": 663,
