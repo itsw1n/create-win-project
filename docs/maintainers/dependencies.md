@@ -8,7 +8,7 @@
 - Use a dated, immutable profile ID (`YYYY.MM`). Do not silently rewrite a released profile used by generated projects.
 - Build a new candidate from the current profile. Promote it only when the complete generated-project workflow passes.
 - Keep a support date and successor link on the previous profile.
-- Require explicit review and migration notes for every major runtime, framework, or package upgrade.
+- Require explicit review and release notes for every major runtime, framework, or package upgrade; document project migration actions in `docs/compatibility.md` when generated projects are affected.
 - Treat Expo, React Native, its React override, and related Expo packages as one atomic set. `CI=1 npx expo install --check` is a release gate.
 
 The two initial profiles intentionally bootstrap from the same known-good set. Future promotions preserve the old current profile unchanged as the meaningful previous fallback.

@@ -35,7 +35,7 @@ Three explicit source boundaries. No `lib/` directory exists — `src/` is canon
 - `src/engine` owns validated project orchestration, tested-version and library loading, safe writes, dependency installation, and template rendering. It must not import terminal code or concrete stack folders. It contains zero `stack.frontendKey` branches — it is stack-agnostic.
 - `src/stacks` owns stack rules, the explicit available-stack list, and stack-specific generated behavior. Stack modules must not import CLI or engine implementation modules. Each `src/stacks/<frontends|backends>/<id>/` owns its files, dependencies (names only), environment names, Docker and CI contributions.
 
-During the migration `lib/` provided compatibility shims (`export * from '../src/...'`). After v1.4.0 those shims are deleted. `tests/architecture-boundaries.test.js` enforces dependency direction, and `tests/architecture/no-lib-legacy.test.js` bans `src -> lib` imports and one-line wrapper regressions.
+`tests/architecture-boundaries.test.js` enforces dependency direction, and `tests/architecture/no-lib-legacy.test.js` verifies that the canonical `src/` implementation has no legacy `lib/` imports or wrappers.
 
 Root `index.js` remains the stable executable entry point. Generated-project paths such as `playbooks/`, `RULES.md`, and application folders are user-facing and do not change merely because generator source files move.
 
@@ -124,13 +124,13 @@ It must not silently remove or reorganize user-created structure.
 
 `src/engine/create-project.js` coordinates writes and refuses to merge into a non-empty destination. It adds documentation, selected playbooks, CI, Docker, Makefile, environment examples, and repository conventions around the runnable foundation.
 
-Engine infrastructure is separated from generated-file decisions. `src/engine/write-files.js` validates destinations, stages writes, removes failed staging trees, and publishes completed trees atomically. `src/engine/render-templates.js` combines rendering with that safe write boundary (`writeRenderedFile` + `render`/`readTemplate`/`buildVars`). `src/engine/install-dependencies.js` is the only engine process runner and stops at the first failed package-manager step. `src/engine/tested-versions.js` and `src/engine/load-library.js` expose version resolution and library loading separately. After the migration `lib/` shims are deleted; `src/` is the sole implementation.
+Engine infrastructure is separated from generated-file decisions. `src/engine/write-files.js` validates destinations, stages writes, removes failed staging trees, and publishes completed trees atomically. `src/engine/render-templates.js` combines rendering with that safe write boundary (`writeRenderedFile` + `render`/`readTemplate`/`buildVars`). `src/engine/install-dependencies.js` is the only engine process runner and stops at the first failed package-manager step. `src/engine/tested-versions.js` and `src/engine/load-library.js` expose version resolution and library loading separately. `src/` is the sole implementation and compatibility shims are not part of the package.
 
 The first `npm install` creates the lockfile. Generated CI uses `npm ci`, so the lockfile must be committed before CI is enabled. `create-win-project.profile.json` separately records the compatibility profile, architecture profile, styling mode, and authentication intent/model/audience; after generation, that project owns its own upgrade lifecycle.
 
 ### Compatibility profile lifecycle
 
-Exactly one profile is `current` and one is `previous`. The current profile is the default. A profile owns exact npm, Spring Boot, runtime, and container versions; definitions and scaffold code may only request names or capabilities. Promotion copies the candidate into a new dated profile, marks the former current profile previous, and happens only after the generated-project matrix passes. Major changes also require migration notes. See `DEPENDENCY_MAINTENANCE.md`.
+Exactly one profile is `current` and one is `previous`. The current profile is the default. A profile owns exact npm, Spring Boot, runtime, and container versions; definitions and scaffold code may only request names or capabilities. Promotion copies the candidate into a new dated profile, marks the former current profile previous, and happens only after the generated-project matrix passes. Major changes also require migration notes. See [Dependency maintenance](dependencies.md).
 
 ## Documentation model
 
@@ -156,7 +156,7 @@ The generator itself has three verification levels:
 Additional architecture guards:
 
 - `tests/architecture-boundaries.test.js` enforces `src/engine` not importing `cli`/`stacks/frontends|backends` and `src/stacks` not importing `cli`/`engine`.
-- `tests/architecture/no-lib-legacy.test.js` bans `src/**` importing `lib/` and one-line wrapper regressions (`export * from '../../lib/...'`) and bans `lib/` existence after the migration.
+- `tests/architecture/no-lib-legacy.test.js` bans `src/**` importing `lib/`, legacy wrapper regressions, and a `lib/` directory.
 
 Tests mirror the production folders: `tests/cli`, `tests/engine`, `tests/stacks/frontends`, `tests/stacks/backends`.
 

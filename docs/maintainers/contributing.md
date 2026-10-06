@@ -18,7 +18,7 @@ Answer these 5 questions and write them down (a short RFC or issue is enough). I
 
 **a. Identity & compatibility:** What `id` (`django`, `nuxt`), `kind` (`frontend`|`backend`|`data`), `label` (`Django (Python)`), and which existing stacks can it pair with? Example: `nextjs` pairs with `none,postgres,supabase,springboot,laravel`; `react-native` pairs with `none,supabase,springboot,laravel`; `laravel` pairs with `nextjs,react,react-native,no-frontend,laravel-ui`.
 
-**b. Shapes:** Which **applicationShapes** does it enable? Shapes are the *deployment layout*, not the framework. They determine valid `frontend + backend` combos via `lib/application-shapes.js` → `src/engine/project-shapes.js`:
+**b. Shapes:** Which **applicationShapes** does it enable? Shapes are the *deployment layout*, not the framework. They determine valid `frontend + backend` combos via `src/engine/project-shapes.js`:
 
 | Shape | Meaning | Example combos |
 |-------|---------|---------------|
@@ -122,7 +122,7 @@ node checks/check-compatibility.js --scope=stack --stack=<id> | head
 npm run verify:generated -- --profile=$(jq -r .defaultProfile library/tested-versions.json) --case=<frontend>-<backend> --architecture=medium --authentication=yes
 ```
 
-- `verify:generated` compares byte-identical output via `generateProject` vs legacy shim for your new stack.
+- `verify:generated` compares the generated output against the repository's compatibility contract for your new stack.
 - Run `npm run matrix:smoke` (10 smoke projects) before any `feature -> dev` PR.
 - Full matrix `npm run matrix:full` (every profile x stack x arch x auth, with install/build/Maven/Expo/Compose checks) is only required on `dev -> main` promotion per `docs/maintainers/ci-strategy.md`.
 
@@ -138,7 +138,7 @@ Update `docs/maintainers/architecture.md` only if source ownership or the genera
 
 - Contribution history: use merge commits for feature branches so history remains visible. Do not require individual matrix job names; require the stable `compatibility-gate` aggregator.
 
-- `tests/architecture-boundaries.test.js` enforces `src/engine` not importing `cli`/`stacks/frontends|backends` and `src/stacks` not importing `cli`/`engine` (except `shared/scaffold` allowlist). `tests/architecture/no-lib-legacy.test.js` bans `src/** -> lib/**` imports and one-line wrapper regressions (no `lib/` exists).
+- `tests/architecture-boundaries.test.js` enforces `src/engine` not importing `cli`/`stacks/frontends|backends` and `src/stacks` not importing `cli`/`engine`. `tests/architecture/no-lib-legacy.test.js` confirms that no legacy `lib/` implementation remains.
 
 ## Version ownership
 
