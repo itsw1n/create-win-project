@@ -4,6 +4,19 @@ Full projects contain runnable source, tests, environment examples, and stack-sp
 
 `create-win-project.profile.json` records schema version 2, generation mode, stack, dated profile, architecture, styling mode, authentication, production guarantees when applicable, capabilities, and runtimes. It enables read-only comparisons without controlling future project changes.
 
+## Optional project files
+
+Full Project asks separately about build/test CI and security checks:
+
+| Build/test CI | Security checks | Generated GitHub files |
+|---|---|---|
+| No | No | None |
+| Yes | No | Frontend/backend CI workflows where supported |
+| No | Yes | `.github/workflows/security.yml` |
+| Yes | Yes | CI workflows, `security.yml`, and `.github/PULL_REQUEST_TEMPLATE.md` |
+
+Docker, Makefile, agent guidance, and dependency installation are separate interview choices. Architecture Scaffolds do not include these Full Project files.
+
 ## Architecture scaffolds
 
 An Architecture Scaffold always uses the Medium planning baseline. It creates meaningful ownership anchors for the selected stack, such as routes, components, features, backend core, migrations, and tests. It does not create fake feature implementations or every possible folder such as queries, actions, repositories, jobs, or policies.
