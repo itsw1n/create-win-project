@@ -37,8 +37,10 @@ describe('compatibility matrix cost model', () => {
 
 
     const fullShards = shards('full')
-    expect(fullShards.map((shard) => shard.cases.filter((entry) => entry.native).length)).toEqual([7, 7, 7, 7])
+    expect(fullShards.map((shard) => shard.cases.filter((entry) => entry.native).length)).toEqual([4, 4, 3, 3])
     expect(fullShards.map((shard) => shard.cases.filter((entry) => entry.containers).length)).toEqual([1, 1, 1, 1])
+    expect(new Set(native.map((entry) => entry.profile)).size).toBe(1)
+    expect(new Set(cases.map((entry) => entry.profile)).size).toBeGreaterThan(1)
   })
 
   it('runs every smoke entry through native verification', () => {
