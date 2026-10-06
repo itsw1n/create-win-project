@@ -9,7 +9,7 @@ const profilesFile = path.join(root, 'library/tested-versions.json')
 describe('compatibility profiles', () => {
   it('loads current by default and previous explicitly', async () => {
     const current = await loadCompatibility(profilesFile)
-    const previous = await loadCompatibility(profilesFile, '2026.08')
+    const previous = await loadCompatibility(profilesFile, '2026.09')
     expect(current.profile.id).toBe(current.catalog.defaultProfile)
     expect(current.profile.status).toBe('current')
     expect(previous.profile.status).toBe('previous')

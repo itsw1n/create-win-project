@@ -18,6 +18,7 @@ export const reactNativeAdapter = defineStackAdapter({
     files: ({ answers, stack, shared }) => Object.entries(buildReactNativeFiles(answers, stack, shared)),
     environment: ({ backend }) => backend.id === 'none' ? [] : ['API_URL'],
     install: () => [{ cwd: '.', command: 'npm', args: ['install'] }],
+    architecture: () => ['app', 'components/common', 'components/layout', 'features', 'lib', 'config', 'theme'],
     docker: dockerContributions,
     ci: ciContributions,
     verification: () => [

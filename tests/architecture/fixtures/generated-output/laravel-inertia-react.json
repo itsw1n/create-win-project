@@ -13,11 +13,11 @@
   },
   ".github/workflows/ci-backend.yml": {
     "bytes": 1434,
-    "sha256": "b0a8b2bd776e885d4f318cbf7753e99634d170072ee90073e2f55ca84bfb6a7c"
+    "sha256": "a7eb37ce194dcfb6a71b8c9153a2be151b0043440a017bcfde88d6b3a99642c1"
   },
   ".github/workflows/security.yml": {
     "bytes": 2129,
-    "sha256": "94c0f1a8305adbbe034adce4906b8693cb2fe819f67293edc8378a4081f6affe"
+    "sha256": "587f41a7d9611cb48db883ff41c37662ed9803248402e925080f48b4a707ba06"
   },
   ".gitignore": {
     "bytes": 81,
@@ -33,7 +33,7 @@
   },
   ".php-version": {
     "bytes": 7,
-    "sha256": "b4680cd6c823e25f1aaa614448914fae752c2a3409c96147dc771d0f4f2c75c0"
+    "sha256": "b5327018c5a535ddfd76fd6e0e83d6a15de58762ccf4ba20ff302c22ee207561"
   },
   ".prettierrc": {
     "bytes": 312,
@@ -85,7 +85,7 @@
   },
   "composer.json": {
     "bytes": 1319,
-    "sha256": "59e3b18911896ffe3022545e18f55696ce8c3718d4d20d2cec7b0a59d9e4def9"
+    "sha256": "1cbe53fa056315a030e49f53379b191592db39992e9732c65466f78293819374"
   },
   "config/app.php": {
     "bytes": 259,
@@ -105,11 +105,11 @@
   },
   "CONTEXT.md": {
     "bytes": 1281,
-    "sha256": "723a6ccf7bcd827adff022a5ef0b04d34cbfcb006cad1a1c88a25dab4f6904a4"
+    "sha256": "023e117df1de50ec83f700226ab374da197eee29eab17e72e953596c97033ec2"
   },
   "create-win-project.profile.json": {
-    "bytes": 968,
-    "sha256": "ebfed45c08dcd0a804138a21eafa78c637d3ec0e231297d135c45afbd7f6c982"
+    "bytes": 1014,
+    "sha256": "b30907eff1d61204a9d358979592f3c510fbba1c14aeea9d5470f822437201d9"
   },
   "database/factories/UserFactory.php": {
     "bytes": 456,
@@ -125,11 +125,11 @@
   },
   "Dockerfile": {
     "bytes": 696,
-    "sha256": "011a4c7aeae6ec099b49004283a0a9ae9923ebccc39086de9149884ae7651eda"
+    "sha256": "aaae1b2de2dfca540d863b520070c264055a129044c901187c83ff2af2b81352"
   },
   "Dockerfile.dev": {
     "bytes": 628,
-    "sha256": "445cd42adc46c396e52735298b6dc9f6488ab4c02ed0e66296de976490ad8933"
+    "sha256": "5c9e439eba6452af32b2d76360dbfa392cc143067525e7eec4c7f525741250d3"
   },
   "docs/api/endpoints.md": {
     "bytes": 84,
@@ -156,8 +156,8 @@
     "sha256": "90cace623f9060da64820e7c3f30209513b06f13f12065a847cbeb0815d0de07"
   },
   "docs/guides/deployment.md": {
-    "bytes": 997,
-    "sha256": "1be746fd1cab6ac2b40e392cd409a1cf17182def17cf68a12a0a3e7b187d482f"
+    "bytes": 994,
+    "sha256": "188a1698fc6b76af2d7eb227bc705699d8b6d058628638a75ce6bfb9940d03a7"
   },
   "docs/guides/development-environments.md": {
     "bytes": 1168,
@@ -173,11 +173,11 @@
   },
   "docs/guides/setup.md": {
     "bytes": 764,
-    "sha256": "d1900175f351116c77e51ea41d57cb8cfd9ecb8f28b112c8ed3c472e7ee11592"
+    "sha256": "094896316fd31ab8120d179602a5ace6a36a382d7c22823cae840ecd5b0459c2"
   },
   "docs/guides/toolchain.md": {
     "bytes": 1311,
-    "sha256": "3d228f2c5388e69dc8c02b70934bc97d55082c44b22b46d3a407f56e33fea2d6"
+    "sha256": "0c6bb3dc94f1763ea97f1188a1d8839a466377bdf5f71f52498dbf636d9c1ec5"
   },
   "Makefile": {
     "bytes": 1272,

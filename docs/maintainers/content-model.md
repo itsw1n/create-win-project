@@ -4,12 +4,13 @@ The project separates always-loaded instructions, task-routed standards, generat
 
 | Content | Owner | Include when |
 |---|---|---|
-| Agent commands, workflow triggers, authority limits, definition of done | `templates/agents/*.md` → generated `AGENTS.md` | Every project; keep short |
-| Product status, confirmed goals, generated baseline, decisions, unknowns | generated `CONTEXT.md` | Every project; project-specific |
-| Current phases, tasks, and blockers | generated `PROGRESS.md` | Every project; current execution state |
-| Concern and conditional-workflow routing | definitions → generated `RULES.md` | Selected stack/capability only |
-| Reusable engineering policy and rationale | `playbooks/**/*.md` | A task touches that concern |
-| Setup, API, architecture, deployment for this product | generated `docs/` | Every project, then maintained with code |
+| Agent commands, workflow triggers, authority limits, definition of done | `templates/agents/*.md` → generated `AGENTS.md` | Full project with agent guidance |
+| Product status, confirmed goals, generated baseline, decisions, unknowns | generated `CONTEXT.md` | Full project with agent guidance |
+| Current phases, tasks, and blockers | generated `PROGRESS.md` | Full project with full guidance |
+| Concern and conditional-workflow routing | definitions → generated `RULES.md` | Full project with full guidance |
+| Reusable engineering policy and rationale | `playbooks/**/*.md` | Full project with full guidance |
+| Setup, API, architecture, deployment for this product | generated `docs/` | Full project, then maintained with code |
+| Medium planning anchors and placement rules | generated `ARCHITECTURE.md` | Architecture scaffold |
 | Framework configuration and canonical patterns | `src/stacks/` file contributions plus tests | The capability is selected |
 
 ## Authoring rules

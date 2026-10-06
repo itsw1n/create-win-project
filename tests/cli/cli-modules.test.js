@@ -34,8 +34,17 @@ describe('CLI modules', () => {
     const questions = buildQuestions({ args: parseArguments([]), catalog })
     expect(questions.map((question) => question.name)).toEqual(expect.arrayContaining([
       'applicationShape', 'projectName', 'frontend', 'backend', 'installDependencies',
+      'buildCi', 'securityChecks',
     ]))
     expect(questions.find((question) => question.name === 'docker').default).toBe(false)
+    const buildCi = questions.find((question) => question.name === 'buildCi')
+    const securityChecks = questions.find((question) => question.name === 'securityChecks')
+    expect(buildCi.message).toBe('Include build and test CI?')
+    expect(securityChecks.message).toBe('Include security checks?')
+    expect(buildCi.when({ mode: 'architecture' })).toBe(false)
+    expect(securityChecks.when({ mode: 'architecture' })).toBe(false)
+    expect(buildCi.when({ mode: 'full' })).toBe(true)
+    expect(securityChecks.when({ mode: 'full' })).toBe(true)
   })
 
   it('renders a readable summary through the display boundary', () => {
@@ -61,10 +70,28 @@ describe('CLI modules', () => {
     for (const row of postgresOptions) expect(row.name).not.toContain('\n  ')
     expect(authentication.message({ backend: 'postgres' })).toContain('unavailable')
     expect(authentication.choices({ backend: 'supabase' }).map((choice) => choice.value)).toContain('yes')
-    expect(questions.find((question) => question.name === 'expectedConcerns').message).toContain('no libraries or feature code')
+    expect(questions.find((question) => question.name === 'expectedConcerns').message).toContain('optional capabilities')
   })
 
   it('wraps descriptions for narrow terminals without losing words', () => {
     expect(wrapText('one two three four five', 9)).toBe('one two\n  three\n  four five')
+  })
+})
+
+describe('generation modes', () => {
+  it('parses architecture mode', () => {
+    expect(parseArguments(['--mode=architecture'])).toMatchObject({ mode: 'architecture' })
+  })
+
+  it('rejects an unknown generation mode', () => {
+    expect(() => parseArguments(['--mode=quick'])).toThrow('--mode must be architecture or full')
+  })
+
+  it('shows tooling only for full projects', () => {
+    const catalog = { byId: {} }
+    const questions = buildQuestions({ args: parseArguments([]), catalog })
+    const docker = questions.find((q) => q.name === 'docker')
+    expect(docker.when({ mode: 'architecture', frontend: 'nextjs', backend: 'none' })).toBe(false)
+    expect(docker.when({ mode: 'full', frontend: 'nextjs', backend: 'none' })).toBe(true)
   })
 })

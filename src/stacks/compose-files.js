@@ -10,6 +10,7 @@ import { buildEnvironmentFiles as nextjsEnvironment } from './frontends/nextjs/e
 import { buildEnvironmentFiles as reactEnvironment } from './frontends/react-vite/environment.js'
 import { buildEnvironmentFiles as nativeEnvironment } from './frontends/react-native/environment.js'
 import { renderEnvironment } from './shared/environment.js'
+import { wantsBuildCi, wantsSecurityChecks } from '../shared/ci-options.js'
 
 function json(value) {
   return `${JSON.stringify(value, null, 2)}\n`
@@ -43,7 +44,11 @@ function projectReadme(answers, stack) {
   const backend = stack.backendKey === 'springboot'
     ? `\nThe backend lives in \`backend/\`:\n\n\`\`\`bash\ncd backend\nmvn spring-boot:run\n# verify: curl http://localhost:8080/api/health\n\`\`\`\n`
     : ''
-  return `# ${answers.projectName}\n\n> ${answers.projectDescription}\n\nGenerated with create-win-project. This repository includes a runnable application, tests, CI guidance, and task-routed agent playbooks.\n\n## Start\n\n\`\`\`bash\n${root ? `cd ${root}\n` : ''}cp .env.example .env.local 2>/dev/null || cp .env.example .env\nnpm install\nnpm run dev\n\`\`\`\n${backend}\n## Validate\n\n\`\`\`bash\n${root ? `cd ${root}\n` : ''}${quality}\n\`\`\`\n\nCommit the generated lockfile before enabling CI; CI intentionally uses \`npm ci\`.\n\n## Agent-assisted work\n\n1. Put product goals and boundaries in \`CONTEXT.md\`.\n2. Read \`AGENTS.md\` for commands and authority boundaries.\n3. Use \`RULES.md\` to open only the relevant playbook section.\n4. Treat tests and application behavior as the source of truth when prose drifts.\n\n## Important files\n\n- \`AGENTS.md\`: small always-on operating contract.\n- \`RULES.md\`: concern-to-playbook router.\n- \`CONTEXT.md\`: project-specific intent and decisions.\n- \`docs/\`: architecture, API, setup, and deployment documentation.\n`
+  const guidance = answers.guidance || 'full'
+  const guidanceSection = guidance === 'none' ? '' : guidance === 'compact'
+    ? '\n## Agent-assisted work\n\nRecord product goals in `CONTEXT.md` and read `AGENTS.md` for project commands and authority boundaries.\n'
+    : '\n## Agent-assisted work\n\n1. Put product goals and boundaries in `CONTEXT.md`.\n2. Read `AGENTS.md` for commands and authority boundaries.\n3. Use `RULES.md` to open only the relevant playbook section.\n4. Treat tests and application behavior as the source of truth when prose drifts.\n'
+  return `# ${answers.projectName}\n\n> ${answers.projectDescription}\n\nGenerated with create-win-project.\n\n## Start\n\n\`\`\`bash\n${root ? `cd ${root}\n` : ''}cp .env.example .env.local 2>/dev/null || cp .env.example .env\nnpm install\nnpm run dev\n\`\`\`\n${backend}\n## Validate\n\n\`\`\`bash\n${root ? `cd ${root}\n` : ''}${quality}\n\`\`\`\n\nCommit the generated lockfile before enabling CI; CI uses \`npm ci\`.\n${guidanceSection}\n## Important files\n\n- \`README.md\`: start and validation instructions.\n- \`docs/\`: architecture, API, setup, and deployment documentation.\n`
 }
 
 function testingPackage(stack, level) {
@@ -275,6 +280,7 @@ export function buildRunnableFiles(answers, stack, vars) {
   Object.assign(files, capabilityPackFiles(answers, stack))
   files['create-win-project.profile.json'] = json({
     schemaVersion: 2,
+    mode: answers.mode || 'full',
     applicationShape: stack.applicationShape,
     compatibilityProfile: {
       id: stack.profile.id,
@@ -292,8 +298,9 @@ export function buildRunnableFiles(answers, stack, vars) {
     },
     stack: stack.key,
     productionBaseline: {
-      tests: true,
-      continuousIntegration: true,
+      tests: (answers.testing || 'basic') !== 'none',
+      continuousIntegration: Boolean(wantsBuildCi(answers)),
+      securityChecks: Boolean(wantsSecurityChecks(answers)),
       productionBuild: !stack.isMobile,
       securityRules: true,
       operationsDocumentation: true,

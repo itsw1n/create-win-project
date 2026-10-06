@@ -64,6 +64,9 @@ const verifiesContainers = (entry) => entry.profile === current && containerSele
 const smoke = currentFull.filter(matchesSmoke)
 // A complete run exhaustively verifies the current profile and keeps every
 // retained profile alive through the same representative compatibility lanes.
+// Native installs and container builds run on the current profile only:
+// retained profiles are verified through the metadata contract so upstream
+// patch drift in their pinned runtimes cannot fail the release gate.
 const full = [...currentFull, ...allProfiles.filter((entry) => entry.profile !== current && matchesSmoke(entry))]
 
 function belongsToStack(caseName, stackName) {
@@ -79,7 +82,7 @@ const stack = [...new Map([...stackCases, ...smoke].map((entry) => [JSON.stringi
 const selected = (scope === 'full' ? full : scope === 'stack' ? stack : smoke)
   .map((entry) => ({
     ...entry,
-    native: scope === 'smoke' || matchesSmoke(entry),
+    native: (scope === 'smoke' || matchesSmoke(entry)) && entry.profile === current,
     containers: verifiesContainers(entry),
   }))
 const shards = Array.from({ length: 4 }, (_, index) => ({ shard: index + 1, cases: [] }))

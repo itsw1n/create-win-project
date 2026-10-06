@@ -25,6 +25,7 @@ export const reactViteAdapter = defineStackAdapter({
     files: ({ answers, stack, shared }) => Object.entries(buildReactViteFiles(answers, stack, shared)),
     environment: ({ backend }) => backend.id === 'none' ? [] : ['API_URL'],
     install: () => [{ cwd: 'frontend', command: 'npm', args: ['install'] }],
+    architecture: () => ['frontend/src/app', 'frontend/src/pages', 'frontend/src/components/common', 'frontend/src/components/layout', 'frontend/src/features', 'frontend/src/lib', 'frontend/src/config'],
     docker: dockerContributions,
     ci: ciContributions,
     verification: () => verificationCases,

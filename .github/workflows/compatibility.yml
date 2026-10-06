@@ -94,7 +94,7 @@ jobs:
       - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
         if: contains(toJSON(matrix.cases), 'laravel')
         with:
-          php-version: '8.5.10'
+          php-version: '8.5.11'
           extensions: pdo_pgsql
           coverage: none
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5

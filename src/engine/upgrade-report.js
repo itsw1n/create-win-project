@@ -13,8 +13,10 @@ export async function createUpgradeReport(projectPath, compatibilityFile) {
   for (const [runtime, version] of Object.entries(current.runtimes)) {
     if (existing.runtimes?.[runtime] !== version) differences.push({ area: `runtime.${runtime}`, current: existing.runtimes?.[runtime], supported: version })
   }
-  for (const contract of ['tests', 'continuousIntegration', 'securityRules', 'operationsDocumentation']) {
-    if (existing.productionBaseline?.[contract] !== true) differences.push({ area: `security-contract.${contract}`, current: existing.productionBaseline?.[contract], supported: true })
+  if (existing.mode !== 'architecture') {
+    for (const contract of ['tests', 'continuousIntegration', 'securityRules', 'operationsDocumentation']) {
+      if (existing.productionBaseline?.[contract] !== true) differences.push({ area: `security-contract.${contract}`, current: existing.productionBaseline?.[contract], supported: true })
+    }
   }
   return { readOnly: true, project: path.resolve(projectPath), stack: existing.stack, profile: previousId, supportedProfile: current.id, differences }
 }

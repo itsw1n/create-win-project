@@ -19,6 +19,7 @@ export const supabaseAdapter = defineStackAdapter({
     files: ({ stack }) => Object.entries(buildSupabaseProjectFiles(stack)),
     environment: environmentContributions,
     install: () => [{ cwd: '.', command: 'npm', args: ['run', 'supabase:start'] }],
+    architecture: () => ['supabase/migrations', 'supabase/tests'],
     docker: dockerContributions,
     ci: ciContributions,
     verification: () => [

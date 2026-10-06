@@ -53,7 +53,16 @@ function validationError(problem, recovery) {
 export function buildQuestions({ args, catalog }) {
   return [
     {
-      type: 'list', name: 'applicationShape', message: 'Application shape',
+      type: 'list', name: 'mode', message: 'What do you want to create?',
+      choices: [
+        choice('Architecture scaffold', 'architecture', { hint: 'Medium folders and ARCHITECTURE.md for planning' }),
+        choice('Full project', 'full', { hint: 'Runnable application with selected tools' }),
+        footerMarker('The scaffold asks for your stack so its folders match the intended technology.'),
+      ],
+      default: 'full', when: () => !args.mode,
+    },
+    {
+      type: 'list', name: 'applicationShape', message: 'What kind of application are you building?',
       choices: describeExisting(
         applicationShapeChoices(),
         'Choose the runtime layout that matches how this application will be deployed.',
@@ -90,7 +99,7 @@ export function buildQuestions({ args, catalog }) {
     },
     {
       type: 'list', name: 'architecture',
-      message: 'Architecture depth',
+      message: 'How much application structure should the runnable project use?',
       choices: (answers) => {
         const supported = architectureChoicesFor(catalog, answers.frontend, answers.backend)
         return [
@@ -102,13 +111,13 @@ export function buildQuestions({ args, catalog }) {
           footerMarker('Clear feature boundaries for most long-term applications; fewer layers for prototypes; enforced boundaries for complex domains.'),
         ]
       },
-      default: 'medium', when: () => !args.architecture,
+      default: 'medium', when: (answers) => (answers.mode || args.mode) === 'full' && !args.architecture,
     },
     {
       type: 'list', name: 'authentication',
       message: (answers) => ['supabase', 'springboot', 'laravel', 'fastapi'].includes(answers.backend)
-        ? 'User authentication'
-        : `User authentication ${chalk.yellow(`(generation unavailable for ${answers.backend === 'none' ? 'a frontend-only project' : 'a PostgreSQL-only backend'})`)}`,
+        ? 'Will users need to sign in?'
+        : `Will users need to sign in? ${chalk.yellow(`(generation unavailable for ${answers.backend === 'none' ? 'a frontend-only project' : 'a PostgreSQL-only backend'})`)}`,
       choices: (answers) => {
         const choices = []
         if (['supabase', 'springboot', 'laravel', 'fastapi'].includes(answers.backend)) {
@@ -124,7 +133,7 @@ export function buildQuestions({ args, catalog }) {
       default: 'not-yet', when: () => !args.authentication,
     },
     {
-      type: 'list', name: 'authAudience', message: 'Where will users access the application?',
+      type: 'list', name: 'authAudience', message: 'Who will access the application?',
       choices: [
         { name: 'Website only — use a secure server-managed browser session', value: 'website' },
         { name: 'Website and mobile — use a trusted identity provider for every client', value: 'multi-client' },
@@ -134,33 +143,52 @@ export function buildQuestions({ args, catalog }) {
         (args.authentication || answers.authentication) === 'yes' && !args.authAudience,
     },
     {
-      type: 'list', name: 'uploads', message: 'User-provided file uploads',
+      type: 'list', name: 'uploads', message: 'Will users upload files?',
       choices: [{ name: 'None', value: 'none' }, { name: 'Private object storage', value: 'object-storage' }],
       default: 'none', when: () => !args.uploads,
     },
     {
-      type: 'list', name: 'backgroundJobs', message: 'Background work',
+      type: 'list', name: 'backgroundJobs', message: 'Does the project need background jobs?',
       choices: [{ name: 'None', value: 'none' }, { name: 'Durable queue', value: 'queue' }],
       default: 'none', when: (answers) => catalog.byId[answers.frontend]?.platform !== 'mobile' && !args.backgroundJobs,
     },
     {
-      type: 'list', name: 'offline', message: 'Offline behavior',
+      type: 'list', name: 'offline', message: 'Should the mobile app work offline?',
       choices: [{ name: 'None', value: 'none' }, { name: 'Local cache', value: 'cache' }, { name: 'Synchronization', value: 'sync' }],
       default: 'none', when: (answers) => catalog.byId[answers.frontend]?.platform === 'mobile' && !args.offline,
     },
     {
-      type: 'confirm', name: 'docker', message: 'Add optional Docker development files', default: false,
-      when: (answers) => Boolean(catalog.byId[answers.backend]?.needsDocker) || catalog.byId[answers.frontend]?.platform !== 'mobile',
+      type: 'list', name: 'testing', message: 'What level of testing should be included?',
+      choices: [
+        choice('No generated tests', 'none', { hint: 'Keep only framework validation commands' }),
+        choice('Basic tests', 'basic', { hint: 'Unit or component tests for the starter' }),
+        choice('Full tests', 'full', { hint: 'Basic tests plus browser tests where supported', recommended: true }),
+      ],
+      default: 'full', when: (answers) => (answers.mode || args.mode) === 'full',
+    },
+    {
+      type: 'list', name: 'guidance', message: 'How much agent guidance should be included?',
+      choices: [
+        choice('No agent guidance', 'none', { hint: 'Keep README and normal project docs only' }),
+        choice('Compact guidance', 'compact', { hint: 'Generate concise AGENTS.md and project context' }),
+        choice('Full guidance', 'full', { hint: 'Include AGENTS.md, RULES.md, and selected playbooks', recommended: true }),
+      ],
+      default: 'full', when: (answers) => (answers.mode || args.mode) === 'full' && !args.guidance,
+    },
+    {
+      type: 'confirm', name: 'docker', message: 'Include Docker development and deployment files?', default: false,
+      when: (answers) => (answers.mode || args.mode) === 'full' && (Boolean(catalog.byId[answers.backend]?.needsDocker) || catalog.byId[answers.frontend]?.platform !== 'mobile'),
     },
     {
       type: 'confirm', name: 'makefile', message: 'Include Makefile?', default: true,
-      when: (answers) => catalog.byId[answers.frontend]?.platform !== 'mobile',
+      when: (answers) => (answers.mode || args.mode) === 'full' && catalog.byId[answers.frontend]?.platform !== 'mobile',
     },
-    { type: 'confirm', name: 'githubActions', message: 'Include GitHub Actions CI?', default: true },
+    { type: 'confirm', name: 'buildCi', message: 'Include build and test CI?', default: true, when: (answers) => (answers.mode || args.mode) === 'full' },
+    { type: 'confirm', name: 'securityChecks', message: 'Include security checks?', default: true, when: (answers) => (answers.mode || args.mode) === 'full' },
     {
       type: 'confirm', name: 'installDependencies',
       message: 'Install project dependencies and create the lockfile now?', default: true,
-      when: () => !args.install && !args.noInstall,
+      when: (answers) => (answers.mode || args.mode) === 'full' && !args.install && !args.noInstall,
     },
     {
       type: 'input', name: 'packageName', message: 'Java package name? (e.g. com.yourname)', default: 'com.app',
@@ -173,7 +201,7 @@ export function buildQuestions({ args, catalog }) {
     },
     {
       type: 'checkbox', name: 'expectedConcerns',
-      message: 'Planning notes for optional features (advisory only; no libraries or feature code are generated)',
+      message: 'Which optional capabilities should the project plan for?',
       choices: (answers) => {
         const stack = resolveStack({
           ...answers,
@@ -181,7 +209,7 @@ export function buildQuestions({ args, catalog }) {
         }, catalog)
         const notes = [...new Set(stack.concerns.filter((concern) => !concern.required).map((concern) => concern.id))]
           .map((id) => choice(CONCERN_LABELS[id] || id.replaceAll('-', ' '), id))
-        return [...notes, footerMarker('Write selected concerns to CONTEXT.md as planning notes.')]
+        return [...notes, footerMarker('Architecture scaffold records these in ARCHITECTURE.md; full projects also use them for generated capability guidance.')]
       },
     },
   ]

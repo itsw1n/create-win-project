@@ -18,6 +18,7 @@ export const CONTRIBUTION_HOOKS = Object.freeze([
   'files',
   'environment',
   'install',
+  'architecture',
   'docker',
   'ci',
   'verification',
