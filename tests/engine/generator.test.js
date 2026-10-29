@@ -51,6 +51,14 @@ afterEach(async () => {
 })
 
 describe('runnable project contract', () => {
+  it('starts local Supabase before the app and explains the client environment values', async () => {
+    const destination = await generate({ projectName: 'supabase-setup' })
+    const setup = await fs.readFile(path.join(destination, 'docs/guides/setup.md'), 'utf8')
+    expect(setup.indexOf('npm run supabase:start')).toBeLessThan(setup.indexOf('npm run dev'))
+    expect(setup).toContain('NEXT_PUBLIC_SUPABASE_URL')
+    expect(setup).toContain('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY')
+  })
+
   it('keeps an API-only Spring Boot project at the repository root', async () => {
     const destination = await generate({
       frontend: 'no-frontend', backend: 'springboot', applicationShape: 'api',
@@ -308,6 +316,8 @@ describe('runnable project contract', () => {
       projectName: 'fastapi-ci-api',
     })
     const workflow = await fs.readFile(path.join(destination, '.github/workflows/ci-backend.yml'), 'utf8')
+    const environment = await fs.readFile(path.join(destination, '.env.example'), 'utf8')
+    expect(environment).toContain('postgresql+asyncpg://postgres:change-me@localhost:5432/')
     expect(workflow).toContain('working-directory: backend')
     expect(workflow).toContain('python-version: "3.13.15"')
     expect(workflow).toContain('uv sync --frozen')

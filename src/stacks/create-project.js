@@ -339,6 +339,11 @@ async function generateDocs(dest, answers, stack, runnableFilePaths) {
     .replace('PostgreSQL 16, or Docker', `PostgreSQL ${stack.profile.runtimes.postgres}, or Docker`)
     .replace('mvn spring-boot:run', './mvnw spring-boot:run  # use mvnw.cmd on Windows')
   if (stack.backendKey === 'springboot') setupGuide = springSetupGuide(answers, stack, validation)
+  if (stack.backendKey === 'supabase') {
+    const clientEnv = stack.frontendKey === 'react-native' ? '.env' : stack.frontendKey === 'react' ? '.env' : '.env.local'
+    const keyPrefix = stack.isMobile ? 'EXPO_PUBLIC' : stack.frontendKey === 'react' ? 'VITE' : 'NEXT_PUBLIC'
+    setupGuide = `# Local Setup Guide\n\n## Prerequisites\n\n- Node.js ${stack.profile.runtimes.nodeMinimum} or newer with npm ${stack.profile.runtimes.npmMinimum} or newer (tested on Node.js ${stack.profile.runtimes.node})\n- A running Docker-compatible runtime for the local Supabase CLI\n\n## Start Supabase and the app\n\nFrom the project root${frontendRoot ? ', enter frontend/ first' : ''}:\n\n\`\`\`bash\n${frontendRoot ? `cd ${frontendRoot}\n` : ''}npm install\nnpm run supabase:start\nnpm run supabase:status\ncp .env.example ${clientEnv}\n\`\`\`\n\nCopy the local API URL and publishable key shown by supabase:status into ${clientEnv} as ${keyPrefix}_SUPABASE_URL and ${keyPrefix}_SUPABASE_PUBLISHABLE_KEY. Then start the app:\n\n\`\`\`bash\nnpm run dev\n\`\`\`\n\n## Validate\n\n\`\`\`bash\n${validation}\n\`\`\`\n\nCommit the generated package-lock.json; CI uses npm ci.\n`
+  }
   if (stack.backendKey === 'laravel') {
     const laravelDir = stack.frontendKey === 'laravel-ui' || stack.frontendKey === 'no-frontend' ? '' : 'backend/'
     const frontendSetup = stack.frontendKey === 'react'
@@ -349,6 +354,7 @@ async function generateDocs(dest, answers, stack, runnableFilePaths) {
           ? '\nIn another terminal from the repository root:\n\n```bash\nnpm install\nnpm run dev\n```\n'
           : ''
     setupGuide = `# Local Setup Guide\n\n## Default local setup\n\nUse PHP ${stack.profile.runtimes.php}, Composer ${stack.profile.runtimes.composer}, and PostgreSQL ${stack.profile.runtimes.postgres}.${stack.frontendKey === 'laravel-ui' ? ` Use Node.js ${stack.profile.runtimes.nodeMinimum}+ with npm ${stack.profile.runtimes.npmMinimum}+ for Tailwind assets.` : ''}\n\n\`\`\`bash\ncd ${laravelDir || '.'}\ncomposer install\ncp .env.example .env\nphp artisan key:generate\nphp artisan migrate\nphp artisan serve\n\`\`\`\n${frontendSetup}${answers.docker ? `\n## Optional Docker setup\n\nFrom the repository root:\n\n\`\`\`bash\ndocker compose build\ndocker compose up -d\ndocker compose exec backend php artisan key:generate\ndocker compose exec backend php artisan migrate\n\`\`\`\n\nLater runs use \`docker compose up -d\`; rebuilding remains explicit.\n` : ''}\n## Validate\n\n\`\`\`bash\n${laravelDir ? `cd ${laravelDir}\n` : ''}composer check${stack.frontendKey === 'laravel-ui' ? '\nnpm test --if-present\nnpm run build' : ''}\n\`\`\`\n\nCommit \`composer.lock\`${stack.frontendKey === 'laravel-ui' ? ' and `package-lock.json`' : ''}.\n`
+    setupGuide = setupGuide.replace('php artisan migrate\n', `# Start PostgreSQL and check the .env database values before this step\nphp artisan migrate\n`)
   }
   if (stack.backendKey === 'fastapi') {
     const apiDir = stack.frontendKey === 'no-frontend' ? '' : 'backend/'
@@ -359,6 +365,7 @@ async function generateDocs(dest, answers, stack, runnableFilePaths) {
         : ''
     setupGuide = `# Local Setup Guide\n\n## Default local setup\n\nUse Python ${stack.profile.runtimes.python}, uv ${stack.profile.runtimes.uv}, and PostgreSQL ${stack.profile.runtimes.postgres}.\n\n\`\`\`bash\ncd ${apiDir || '.'}\nuv sync\ncp .env.example .env\nalembic upgrade head\nuv run uvicorn app.main:app --reload\n\`\`\`\n${frontendSetup}${answers.docker ? `\n## Optional Docker setup\n\nFrom the repository root:\n\n\`\`\`bash\ndocker compose build\ndocker compose up -d\ndocker compose exec backend uv run alembic upgrade head\n\`\`\`\n\nLater runs use \`docker compose up -d\`; rebuilding remains explicit.\n` : ''}\n## Validate\n\n\`\`\`bash\n${apiDir ? `cd ${apiDir}\n` : ''}uv run ruff check . && uv run ruff format --check . && uv run mypy . && uv run pytest\n\`\`\`\n\nCommit the generated \`uv.lock\`; CI uses \`uv sync --frozen\`.\n`
     setupGuide = setupGuide.replace('\nalembic upgrade head\n', '\nuv run alembic upgrade head\n')
+    setupGuide = setupGuide.replace('uv run alembic upgrade head\n', '# Start PostgreSQL and check the .env database URL before this step\nuv run alembic upgrade head\n')
   }
   await fs.writeFile(setupPath, setupGuide, 'utf8')
   await write(dest, 'docs/guides/toolchain.md', toolchainGuide(answers, stack))

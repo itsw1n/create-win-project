@@ -8,7 +8,7 @@ export function environmentLine(name, answers) {
     VITE_API_URL: `http://localhost:${apiPort}`,
     EXPO_PUBLIC_API_URL: `http://localhost:${apiPort}`,
     DATABASE_URL: isFastApi
-      ? `postgresql+asyncpg://localhost:5432/${answers.projectName.replaceAll('-', '_')}`
+      ? `postgresql+asyncpg://postgres:change-me@localhost:5432/${answers.projectName.replaceAll('-', '_')}`
       : `jdbc:postgresql://localhost:5432/${answers.projectName.replaceAll('-', '_')}`,
     POSTGRES_USER: 'postgres',
     POSTGRES_PASSWORD: 'change-me',

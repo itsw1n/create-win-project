@@ -33,7 +33,7 @@ function envFiles(answers, stack) {
 function projectReadme(answers, stack) {
   if (stack.frontendKey === 'no-frontend') {
     if (stack.backendKey === 'fastapi') {
-      return `# ${answers.projectName}\n\n> ${answers.projectDescription}\n\nGenerated backend-only ${stack.backendLabel} application.\n\n## Start\n\n\`\`\`bash\ncp .env.example .env\nuv sync\nalembic upgrade head\nuv run uvicorn app.main:app --reload\n\`\`\`\n\n## Validate\n\n\`\`\`bash\nuv run ruff check . && uv run ruff format --check . && uv run mypy . && uv run pytest\n\`\`\`\n`
+      return `# ${answers.projectName}\n\n> ${answers.projectDescription}\n\nGenerated backend-only ${stack.backendLabel} application.\n\n## Start\n\nCopy the environment example and start PostgreSQL with those credentials before applying migrations.\n\n\`\`\`bash\ncp .env.example .env\nuv sync\nuv run alembic upgrade head\nuv run uvicorn app.main:app --reload\n\`\`\`\n\n## Validate\n\n\`\`\`bash\nuv run ruff check . && uv run ruff format --check . && uv run mypy . && uv run pytest\n\`\`\`\n`
     }
     return `# ${answers.projectName}\n\n> ${answers.projectDescription}\n\nGenerated backend-only ${stack.backendLabel} application.\n\n## Start\n\n\`\`\`bash\ncp .env.example .env\n# Start PostgreSQL with the credentials in .env.\nset -a; . ./.env; set +a\n./mvnw spring-boot:run  # use mvnw.cmd on Windows\n\`\`\`\n\n## Validate\n\n\`\`\`bash\n./mvnw --batch-mode test\n./mvnw --batch-mode package -DskipTests\n\`\`\`\n`
   }

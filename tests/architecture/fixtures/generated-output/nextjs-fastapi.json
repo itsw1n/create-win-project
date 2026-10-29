@@ -4,8 +4,8 @@
     "sha256": "69f636afed2febd57be9a78adf9c29ded43d2b1fab0064417a5a7ecb5dfce253"
   },
   ".env.example": {
-    "bytes": 371,
-    "sha256": "8043ec331d400b85d6d57f925bd73961b707401c94c419d3246d94cccfdcfa02"
+    "bytes": 390,
+    "sha256": "5bb39e635901253b3bbf084388afce766427e8907ab032893b10a6bf45e26ad4"
   },
   ".github/PULL_REQUEST_TEMPLATE.md": {
     "bytes": 360,
@@ -208,8 +208,8 @@
     "sha256": "1edcf2b3e0124bb0247dd8579602a952a64e380d7b5f8213949a64f9dee505ff"
   },
   "docs/guides/setup.md": {
-    "bytes": 717,
-    "sha256": "36a7f4fe2d5e2bf296c9775b8851d1c73088ea62fa5259aab93fac4a58ed3f86"
+    "bytes": 785,
+    "sha256": "4ed6b7e9a464e10512d04539041228bd2e072d31156c8732847034a5f61eda21"
   },
   "docs/guides/toolchain.md": {
     "bytes": 1330,
