@@ -96,6 +96,7 @@ describe('runnable project contract', () => {
     })
     const laravelRoot = frontend === 'no-frontend' ? destination : path.join(destination, 'backend')
     const composer = await fs.readJson(path.join(laravelRoot, 'composer.json'))
+    expect(composer.require.php).toBe('~8.5.11')
     expect(composer.require['laravel/framework']).toMatch(/^\d+\.\d+\.\d+$/)
     expect(composer['require-dev']['larastan/larastan']).toMatch(/^\d+\.\d+\.\d+$/)
     expect(await fs.pathExists(path.join(laravelRoot, 'artisan'))).toBe(true)

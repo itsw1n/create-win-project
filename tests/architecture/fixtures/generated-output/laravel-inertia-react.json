@@ -80,8 +80,8 @@
     "sha256": "b86adc688e41b9e9e82101c5047e1589c9f56c911ac3806e4484cecbb2d5020e"
   },
   "composer.json": {
-    "bytes": 1319,
-    "sha256": "1cbe53fa056315a030e49f53379b191592db39992e9732c65466f78293819374"
+    "bytes": 1320,
+    "sha256": "8319446363b4651aff3030e033154f5ba63b322e94fdc43d901377a76594024d"
   },
   "config/app.php": {
     "bytes": 259,
@@ -181,7 +181,7 @@
   },
   "package.json": {
     "bytes": 748,
-    "sha256": "6048252784a096b9e51a0ba9b505e797774224f192bf2da5446f8056eb62ca31"
+    "sha256": "6c2789f483f637915c50374324de6050e7d2ba2983c3450e5d0194ed16466f51"
   },
   "phpstan.neon": {
     "bytes": 96,

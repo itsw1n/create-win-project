@@ -197,7 +197,7 @@
   },
   "frontend/package.json": {
     "bytes": 1038,
-    "sha256": "b0a28a407e04b95ec36cea7127c559ab28736510be23c4efdf3cca9bf3e99dcf"
+    "sha256": "8ce67646646a5774aecf6436f320d48911c8111201748c5e5c36cfb38315b018"
   },
   "frontend/src/App.module.css": {
     "bytes": 298,

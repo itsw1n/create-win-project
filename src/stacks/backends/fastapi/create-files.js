@@ -97,9 +97,9 @@ from fastapi.responses import JSONResponse
 
 from ${core}.config import settings
 from ${core}.db import close_engine
+from ${statusModule} import router as status_router
 
 from .routes_health import router as health_router
-from ${statusModule} import router as status_router
 
 logger = logging.getLogger(__name__)
 

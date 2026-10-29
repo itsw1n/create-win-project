@@ -87,6 +87,9 @@ describe('fastapi adapter', () => {
     const p = await profile()
     const answers = { projectName: 'demo-app', projectDescription: 'demo', packageName: 'com.app' }
     const medium = buildFiles(answers, {}, { ...stackFor({ architecture: 'medium' }), profile: p })
+    expect(medium['backend/app/main.py'].indexOf('from app.features.status.router')).toBeLessThan(
+      medium['backend/app/main.py'].indexOf('from .routes_health'),
+    )
     expect(medium['backend/app/features/status/router.py']).toContain('prefix="/api"')
     expect(medium['backend/app/features/status/router.py']).toContain('StatusResponse(status="ok"')
     expect(medium).not.toHaveProperty('backend/app/features/status/repository.py')
