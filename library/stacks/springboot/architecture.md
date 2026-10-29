@@ -4,9 +4,10 @@
 
 ### Small
 
-Use a conventional package per feature with one Controller, Service, Repository, request
-and response DTOs, and entity when persistence exists. Do not add interfaces that have
-only one implementation or split a simple operation into ceremonial layers.
+Use a conventional package per feature. Add a Controller for an HTTP entry point, a
+Service for meaningful application operations, and a Repository and entity when this
+feature owns persistence. Add request and response DTOs for useful transport contracts.
+Do not split a simple operation into ceremonial layers.
 
 ```text
 HTTP → Controller → Service → Repository → PostgreSQL
@@ -15,7 +16,7 @@ HTTP → Controller → Service → Repository → PostgreSQL
 ### Medium (default)
 
 Keep package-by-feature and make API, application service, persistence, DTO, and entity
-ownership explicit. Services own transaction boundaries and reusable operations. Features
+ownership explicit where those responsibilities exist. Services own transaction boundaries and reusable operations. Features
 communicate through clear application APIs rather than reaching into repositories.
 
 ### Large

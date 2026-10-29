@@ -83,17 +83,9 @@
     "bytes": 323,
     "sha256": "0fad9d790f54dd1af11acc6382cd9c6476026ef176f4d6e1fca9005d4d7992d0"
   },
-  "backend/src/main/java/com/example/system/api/SystemStatusController.java": {
-    "bytes": 576,
-    "sha256": "0cc4918fa07cbc7ef11ab6f7b519a26ee12a3f6f2c33da4b89fa40a1b56ce444"
-  },
-  "backend/src/main/java/com/example/system/api/SystemStatusResponse.java": {
-    "bytes": 107,
-    "sha256": "ad26d3c9e822e37564561b1339dd2910cbf050419e9b49d60c0fbaa3377802c4"
-  },
-  "backend/src/main/java/com/example/system/service/SystemStatusService.java": {
-    "bytes": 278,
-    "sha256": "b9b16435acad7b67858fb7613c615325794e4591c916ffabc96f711024b12c24"
+  "backend/src/main/java/com/example/system/SystemStatusController.java": {
+    "bytes": 431,
+    "sha256": "a78a253742faabc5e298a4877794aba0dff9dbdd331ce9c6af7198a9446b1cf0"
   },
   "backend/src/main/resources/application.yml": {
     "bytes": 519,
@@ -144,8 +136,8 @@
     "sha256": "e87327e605c00b80ed691147211c7beec30cc910d86f7c2364d293bdd93aed8c"
   },
   "docs/architecture/overview.md": {
-    "bytes": 3722,
-    "sha256": "5d81299a22f0968fe4bcc9199ba031970ef6c5075665bc9ef763e16263058bce"
+    "bytes": 3505,
+    "sha256": "533235728fe73f1564260fc526d2f7c45cdbd6aac792ef27e9ff9fa012238f00"
   },
   "docs/guides/deployment.md": {
     "bytes": 994,
@@ -408,8 +400,8 @@
     "sha256": "c98624e161d4237c74ae085c439dd44c30c57bb060b00838e495501676467f28"
   },
   "playbooks/stack/springboot/architecture.md": {
-    "bytes": 2022,
-    "sha256": "4fcf6bfb6a053e65a26f92c82f652f83ef984b5736a4767def50e5cefcd3fbd6"
+    "bytes": 2118,
+    "sha256": "b46d1685e56521f9cd9afbdd0d3e9d098f3d8bc712460434c2084e3ad78e376c"
   },
   "playbooks/stack/springboot/runtime.md": {
     "bytes": 1416,
