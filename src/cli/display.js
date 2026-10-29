@@ -180,41 +180,14 @@ export function printNextSteps(answers, stack, output = console.log) {
   output('')
   output(chalk.bold('  Next steps:'))
   output(chalk.gray(`  cd ${answers.projectName}`))
-  if (stack.backendKey === 'laravel') {
-    const laravelDir = ['laravel-ui', 'no-frontend'].includes(stack.frontendKey) ? '' : 'backend/'
-    output(chalk.gray(`  cp ${laravelDir}.env.example ${laravelDir}.env`))
-    if (answers.makefile) {
-      output(chalk.gray('  make setup  # first run only'))
-      output(chalk.gray('  make run    # later runs; never rebuilds'))
-    } else {
-      output(chalk.gray('  docker compose build'))
-      output(chalk.gray('  docker compose up -d'))
-    }
-  } else if (stack.frontendKey === 'react') {
-    if (stack.backendKey === 'springboot') output(chalk.gray('  cp .env.example .env  # Docker/backend values'))
-    output(chalk.gray('  cd frontend'))
-    output(chalk.gray('  cp .env.example .env'))
-    if (!answers.installDependencies) output(chalk.gray('  npm install'))
-  } else {
-    output(chalk.gray(`  cp .env.example ${stack.isMobile ? '.env' : '.env.local'}`))
-    if (!answers.installDependencies) output(chalk.gray('  npm install'))
+  output(chalk.gray('  Follow docs/guides/setup.md to configure the environment, start required services, and run the app.'))
+  if (!answers.installDependencies && !(stack.frontendKey === 'no-frontend' && stack.backendKey === 'springboot')) {
+    output(chalk.gray('  Install the project packages using the commands in that guide.'))
   }
-  if (stack.backendKey !== 'laravel') {
-    if (stack.isMobile) output(chalk.gray('  npx expo start'))
-    else if (answers.makefile) {
-      if (stack.frontendKey === 'react') output(chalk.gray('  cd ..'))
-      output(chalk.gray('  make dev'))
-    } else if (stack.backendKey === 'supabase') {
-      output(chalk.gray('  npm run supabase:start'))
-      output(chalk.gray('  npm run dev'))
-    } else if (stack.frontendKey === 'react') output(chalk.gray('  npm run dev'))
-    else {
-      output(chalk.gray('  docker compose up -d db'))
-      output(chalk.gray('  npm run dev'))
-    }
-  }
+  output(chalk.gray('  Run the validation commands in the same guide before your first change.'))
   output('')
-  output(chalk.cyan('  Read RULES.md before starting — it maps every playbook for this stack.'))
+  if (answers.guidance === 'full') output(chalk.cyan('  For agent-assisted work, read AGENTS.md and use RULES.md to find relevant playbooks.'))
+  else if (answers.guidance === 'compact') output(chalk.cyan('  For agent-assisted work, read AGENTS.md and CONTEXT.md.'))
   output('')
 }
 

@@ -68,10 +68,10 @@ describe('navigable interview', () => {
     const rows = firstChoices.filter((choice) => choice && typeof choice.value !== 'undefined')
     expect(rows.length).toBeGreaterThan(0)
     for (const row of rows) expect(row.name).not.toContain('\n  ')
-    expect(rows[0].name).toContain('(e.g. Next.js or Laravel)')
+    expect(rows[0].name).toContain('One project owns the website and server logic')
     expect(rows[0].name).toContain('Recommended')
     const footers = firstChoices.filter((choice) => choice?.constructor?.name === 'Separator')
-    expect(footers.some((separator) => separator.text.includes('Choose the runtime layout'))).toBe(true)
+    expect(footers.some((separator) => separator.text.includes('Choose whether you need one website'))).toBe(true)
     // No Back on the first prompt (nothing to return to); Back closes later lists.
     expect(firstChoices.some((choice) => choice?.name === '← Back')).toBe(false)
     expect(seen[1].choices.at(-1).name).toBe('← Back')

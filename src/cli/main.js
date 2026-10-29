@@ -98,7 +98,7 @@ answers.guidance = answers.mode === 'architecture' ? 'none' : (guidanceArg || an
 answers.applicationShape = shapeArg || answers.applicationShape
 answers.architecture = answers.mode === 'architecture' ? 'medium' : (architectureArg || answers.architecture || 'medium')
 answers.authentication = authenticationArg || answers.authentication || 'not-yet'
-answers.authAudience = authAudienceArg || answers.authAudience || (catalog.byId[answers.frontend]?.platform === 'mobile' ? 'multi-client' : 'website')
+answers.authAudience = authAudienceArg || answers.authAudience || (catalog.byId[answers.frontend]?.platform === 'mobile' || answers.backend === 'fastapi' ? 'multi-client' : 'website')
 answers.laravelUi = laravelUiArg || answers.laravelUi || (answers.frontend === 'laravel-ui' ? 'blade' : undefined)
 answers.uploads = uploadsArg || answers.uploads || 'none'
 answers.backgroundJobs = backgroundJobsArg || answers.backgroundJobs || 'none'

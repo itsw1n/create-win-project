@@ -34,4 +34,4 @@ docker compose build
 docker compose run --rm app
 ```
 
-After generation, enter the new directory and follow its README. The CLI stages files before moving them into place and refuses to overwrite a non-empty destination.
+After generation, enter the new directory and follow `docs/guides/setup.md` for environment setup, required services, startup, and validation. Use the generated `README.md` for a short overview. The CLI stages files before moving them into place and refuses to overwrite a non-empty destination.
