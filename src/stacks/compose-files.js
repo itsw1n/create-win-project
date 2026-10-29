@@ -198,15 +198,10 @@ function statusFeatureFiles(root, stack) {
   const prefix = root ? `${root}/` : ''
   const files = {
     [`${prefix}src/features/status/types.ts`]: "export interface StarterStatus { heading: string; profile: 'medium' | 'large' }\n",
-    [`${prefix}src/features/status/services/getStarterStatus.ts`]: `import type { StarterStatus } from '../types'\n\nexport function getStarterStatus(): StarterStatus {\n  return { heading: 'Your starter is running', profile: '${stack.architecture}' }\n}\n`,
     [`${prefix}src/features/status/components/StarterStatus.tsx`]: "import type { StarterStatus as Status } from '../types'\n\nexport function StarterStatus({ status }: { status: Status }) {\n  return <><h1>{status.heading}</h1><p>Architecture: {status.profile}</p></>\n}\n",
   }
-  if (stack.backendKey === 'springboot') {
-    const baseUrl = stack.frontendKey === 'nextjs' ? 'process.env.NEXT_PUBLIC_API_URL' : 'import.meta.env.VITE_API_URL'
-    files[`${prefix}src/features/status/api/getBackendStatus.ts`] = `export interface BackendStatus { status: string }\n\nexport async function getBackendStatus(signal?: AbortSignal): Promise<BackendStatus> {\n  const response = await fetch(\`${'${' + baseUrl + '}'}/api/health\`, { signal })\n  if (!response.ok) throw new Error(\`Backend health request failed (${'${response.status}'})\`)\n  return response.json() as Promise<BackendStatus>\n}\n`
-  }
   if (stack.architecture === 'large') {
-    files[`${prefix}src/features/status/index.ts`] = "export { StarterStatus } from './components/StarterStatus'\nexport { getStarterStatus } from './services/getStarterStatus'\nexport type { StarterStatus as StarterStatusModel } from './types'\n"
+    files[`${prefix}src/features/status/index.ts`] = "export { StarterStatus } from './components/StarterStatus'\nexport type { StarterStatus as StarterStatusModel } from './types'\n"
     files[`${prefix}scripts/check-boundaries.mjs`] = boundaryScript(prefix ? 'src' : 'src')
   }
   return files
@@ -216,14 +211,10 @@ function nativeStatusFeatureFiles(stack) {
   if (stack.architecture === 'small') return {}
   const files = {
     'features/status/types.ts': "export interface StarterStatus { heading: string; profile: 'medium' | 'large' }\n",
-    'features/status/services/getStarterStatus.ts': `import type { StarterStatus } from '../types'\n\nexport function getStarterStatus(): StarterStatus {\n  return { heading: 'Your starter is running', profile: '${stack.architecture}' }\n}\n`,
     'features/status/components/StarterStatus.tsx': "import { Text } from 'react-native'\nimport type { StarterStatus as Status } from '../types'\n\nexport function StarterStatus({ status }: { status: Status }) {\n  return <><Text accessibilityRole=\"header\">{status.heading}</Text><Text>Architecture: {status.profile}</Text></>\n}\n",
   }
-  if (stack.backendKey === 'springboot') {
-    files['features/status/api/getBackendStatus.ts'] = "export interface BackendStatus { status: string }\n\nexport async function getBackendStatus(signal?: AbortSignal): Promise<BackendStatus> {\n  const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/health`, { signal })\n  if (!response.ok) throw new Error(`Backend health request failed (${response.status})`)\n  return response.json() as Promise<BackendStatus>\n}\n"
-  }
   if (stack.architecture === 'large') {
-    files['features/status/index.ts'] = "export { StarterStatus } from './components/StarterStatus'\nexport { getStarterStatus } from './services/getStarterStatus'\nexport type { StarterStatus as StarterStatusModel } from './types'\n"
+    files['features/status/index.ts'] = "export { StarterStatus } from './components/StarterStatus'\nexport type { StarterStatus as StarterStatusModel } from './types'\n"
     files['scripts/check-boundaries.mjs'] = boundaryScript('.')
   }
   return files

@@ -48,8 +48,8 @@
     "sha256": "e73c6c1c3fcd276e35ccd68a5ad5ea66dda510c122e53a4484474f3dab507ac0"
   },
   "app/index.tsx": {
-    "bytes": 861,
-    "sha256": "1d7a2a98bda4126cbdab17d65e573f3ac490fb01edf63c3e0db1e69228fd53d1"
+    "bytes": 830,
+    "sha256": "bc39c6a676dd2473cbbd9a4ef00706cd2c1a3468de803f3ddea045d3a7c7330c"
   },
   "app/login.tsx": {
     "bytes": 1319,
@@ -104,8 +104,8 @@
     "sha256": "e87327e605c00b80ed691147211c7beec30cc910d86f7c2364d293bdd93aed8c"
   },
   "docs/architecture/overview.md": {
-    "bytes": 2088,
-    "sha256": "89e512e2fc4f0073120e75f5905bf34bcb4889c49bcfb3eac5aa7556d71f3132"
+    "bytes": 2020,
+    "sha256": "ec1d48612b75c8dc55a9ae1089c89ab34904f82ed229bef7ab1c9bbab8f758ef"
   },
   "docs/guides/deployment.md": {
     "bytes": 1003,
@@ -146,10 +146,6 @@
   "features/status/components/StarterStatus.tsx": {
     "bytes": 620,
     "sha256": "33818afd85c6ebd94c2f59a60d90af77309420842027e8f74b21716037af24aa"
-  },
-  "features/status/services/getStarterStatus.ts": {
-    "bytes": 168,
-    "sha256": "ed08e37c4deed0db23269405c09be5f6f0a9eeb39ab9070c52460814673b31f7"
   },
   "features/status/types.ts": {
     "bytes": 80,

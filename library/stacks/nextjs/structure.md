@@ -15,13 +15,13 @@ src/
 │   └── common/                          Button, Input, Modal
 ├── features/users/
 │   ├── components/                      feature-owned UI
-│   ├── queries/                         server-side reads
-│   ├── actions/                         UI-triggered server entry points
-│   ├── services/                        application operations and policy
-│   ├── repositories/                    Next-owned persistence only
-│   ├── api/                             outgoing HTTP clients only
-│   ├── schemas/                         runtime boundary validation
-│   ├── types.ts
+│   ├── queries.ts                       server-side reads, when useful
+│   ├── actions.ts                       UI-triggered server writes
+│   ├── service.ts                       meaningful application rules
+│   ├── repository.ts                    Next-owned persistence only
+│   ├── api.ts                           outgoing HTTP client only
+│   ├── schema.ts                        runtime boundary validation
+│   ├── types.ts                         feature types when needed
 │   └── index.ts                         Large public feature API
 ├── lib/                                 auth, database, logging, cache
 └── config/                              validated application configuration
@@ -47,12 +47,12 @@ and dependency direction; it does not demand every directory.
 | Structural or page-wide UI | `components/layout/` |
 | Reusable domain-free control | `components/common/` |
 | Feature-specific UI | `features/<feature>/components/` |
-| Server read shaped for application UI | `features/<feature>/queries/` |
-| UI-triggered server write | `features/<feature>/actions/` |
-| Meaningful business/application operation | `features/<feature>/services/` |
-| Next-owned database access | `features/<feature>/repositories/` |
-| Outgoing remote HTTP client | `features/<feature>/api/` |
-| Runtime input or response validation | `features/<feature>/schemas/` |
+| Server read shaped for application UI | `features/<feature>/queries.ts` when useful |
+| UI-triggered server write | `features/<feature>/actions.ts` when needed |
+| Meaningful business/application operation | `features/<feature>/service.ts` when needed |
+| Next-owned database access | `features/<feature>/repository.ts` when needed |
+| Outgoing remote HTTP client | `features/<feature>/api.ts` when needed |
+| Runtime input or response validation | `features/<feature>/schema.ts` when needed |
 
 ## Layout Composition
 
@@ -75,10 +75,10 @@ Outgoing HTTP clients live inside the owning feature's `api` directory.
 
 | Data owner | Feature boundary | Example |
 |---|---|---|
-| Next.js + Prisma | `repositories/` | `userRepository.ts` |
-| Next.js + Supabase | `repositories/` using the server client | `userRepository.ts` |
-| Spring/external API | `api/` | `usersApi.ts` |
-| Browser-only SDK | feature `api/` or `data/` | never server secrets |
+| Next.js + Prisma | `repository.ts` or a secure data function | `listUsers()` |
+| Next.js + Supabase | server-side data access using the server client | `listUsers()` |
+| Spring/external API | `api.ts` | `listUsers()` |
+| Browser-only SDK | feature `api.ts` or `data.ts` | never server secrets |
 
 Do not call a Next Route Handler from a Server Component merely to reach code in the same process.
 

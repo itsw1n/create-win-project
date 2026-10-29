@@ -40,7 +40,7 @@ describe('client stack architecture contracts', () => {
     ))
     expect(fixture).toHaveProperty('frontend/src/components/layout/Container/Container.tsx')
     expect(fixture).toHaveProperty('frontend/src/components/common/Button/Button.tsx')
-    expect(fixture).toHaveProperty('frontend/src/features/status/api/getBackendStatus.ts')
+    expect(fixture).not.toHaveProperty('frontend/src/features/status/api/getBackendStatus.ts')
   })
 
   it('keeps Expo navigation and feature code at established roots', async () => {

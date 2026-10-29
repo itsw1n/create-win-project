@@ -208,7 +208,7 @@ export function StarterStatus({ status }: { status: Status }) {
 .profile { color: var(--color-primary); font-size: 0.875rem; font-weight: 600; }
 `
     if (stack.architecture === 'large') {
-      files['src/features/status/index.ts'] = "export { StarterStatus } from './components/StarterStatus/StarterStatus'\nexport { getStarterStatus } from './services/getStarterStatus'\nexport type { StarterStatus as StarterStatusModel } from './types'\n"
+      files['src/features/status/index.ts'] = "export { StarterStatus } from './components/StarterStatus/StarterStatus'\nexport type { StarterStatus as StarterStatusModel } from './types'\n"
     }
   }
 
@@ -235,11 +235,11 @@ function pageFile(answers, stack, mode) {
   const statusImports = stack.architecture === 'small'
     ? ''
     : stack.architecture === 'large'
-      ? "\nimport { getStarterStatus, StarterStatus } from '@/features/status'"
+      ? "\nimport { StarterStatus } from '@/features/status'"
       : mode === 'tailwind'
-        ? "\nimport { StarterStatus } from '@/features/status/components/StarterStatus'\nimport { getStarterStatus } from '@/features/status/services/getStarterStatus'"
-        : "\nimport { StarterStatus } from '@/features/status/components/StarterStatus/StarterStatus'\nimport { getStarterStatus } from '@/features/status/services/getStarterStatus'"
-  const statusSetup = stack.architecture === 'small' ? '' : '  const status = getStarterStatus()\n'
+        ? "\nimport { StarterStatus } from '@/features/status/components/StarterStatus'"
+        : "\nimport { StarterStatus } from '@/features/status/components/StarterStatus/StarterStatus'"
+  const statusSetup = stack.architecture === 'small' ? '' : `  const status = { heading: 'Your starter is running', profile: '${stack.architecture}' as const }\n`
   const heading = stack.architecture === 'small'
     ? mode === 'tailwind'
       ? '<h1 className="text-4xl font-bold tracking-tight sm:text-5xl">Your starter is running</h1>'

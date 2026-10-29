@@ -110,9 +110,9 @@ function homeScreen(answers, stack) {
   const featureImports = stack.architecture === 'small'
     ? ''
     : stack.architecture === 'large'
-      ? "\nimport { getStarterStatus, StarterStatus } from '@/features/status'"
-      : "\nimport { StarterStatus } from '@/features/status/components/StarterStatus'\nimport { getStarterStatus } from '@/features/status/services/getStarterStatus'"
-  const statusSetup = stack.architecture === 'small' ? '' : '  const status = getStarterStatus()\n'
+      ? "\nimport { StarterStatus } from '@/features/status'"
+      : "\nimport { StarterStatus } from '@/features/status/components/StarterStatus'"
+  const statusSetup = stack.architecture === 'small' ? '' : `  const status = { heading: 'Your starter is running', profile: '${stack.architecture}' as const }\n`
   const heading = stack.architecture === 'small'
     ? '<Text accessibilityRole="header" style={styles.heading}>Your starter is running</Text>'
     : '<StarterStatus status={status} />'
