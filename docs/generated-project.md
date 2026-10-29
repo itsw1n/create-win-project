@@ -59,7 +59,7 @@ layers or placeholder directories.
 | Profile | Generated shape |
 |---|---|
 | Small | Framework entry points and the fewest useful files for a focused application. |
-| Medium | Feature-owned components, services, schemas, and persistence boundaries when applicable. |
+| Medium | Feature-owned code; components, reads, writes, schemas, types, services, and persistence boundaries appear only when used. |
 | Large | Explicit feature or module interfaces plus automated dependency-boundary checks. |
 
 Folders are created only when they contain working code. A Medium project therefore shows the
@@ -85,7 +85,6 @@ my-project/
 │   ├── app/                         Next.js routes and composition
 │   └── features/status/
 │       ├── components/
-│       ├── services/
 │       └── types.ts
 └── backend/
     ├── app/
@@ -124,7 +123,6 @@ my-project/
 ├── app/                              routes and navigation layouts
 ├── features/status/
 │   ├── components/
-│   ├── services/
 │   └── types.ts
 ├── lib/                              platform and service adapters
 └── backend/                          present for a paired API
