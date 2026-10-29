@@ -55,8 +55,8 @@ export function buildQuestions({ args, catalog }) {
     {
       type: 'list', name: 'mode', message: 'What do you want to create?',
       choices: [
-        choice('Architecture scaffold', 'architecture', { hint: 'Medium folders and ARCHITECTURE.md for planning' }),
-        choice('Full project', 'full', { hint: 'Runnable application with selected tools' }),
+        choice('Planning folders only', 'architecture', { hint: 'No runnable application; creates folders and ARCHITECTURE.md' }),
+        choice('Runnable project', 'full', { hint: 'Creates an application you can install and start', recommended: true }),
         footerMarker('The scaffold asks for your stack so its folders match the intended technology.'),
       ],
       default: 'full', when: () => !args.mode,

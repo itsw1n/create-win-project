@@ -8,8 +8,8 @@ npx create-win-project@latest
 
 The interview first asks what you want to create:
 
-- **Architecture scaffold** creates the selected stack's Medium planning folders, `.gitkeep` files, and a concise `ARCHITECTURE.md`. It does not create application code, package files, dependencies, CI, Docker, or agent playbooks.
-- **Full project** creates the runnable application and then adds the selected tests, tools, documentation, and guidance.
+- **Planning folders only** creates the selected stack's Medium planning folders, `.gitkeep` files, and a concise `ARCHITECTURE.md`. It does not create application code, package files, dependencies, CI, Docker, or agent playbooks.
+- **Runnable project** creates an application you can install and start, plus the selected tests, tools, documentation, and guidance. This is the default.
 
 For Full Project, the CI choices are independent:
 
