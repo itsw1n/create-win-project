@@ -17,6 +17,7 @@ import {
 import { writeRenderedFile as writeTemplate } from '../engine/render-templates.js'
 import { laravelCompose } from './backends/laravel/docker.js'
 import { fastapiCompose } from './backends/fastapi/docker.js'
+import { springApiCompose, springApiMakefile, springSetupGuide } from './backends/springboot/project-files.js'
 import { architectureOverview } from './shared/architecture-documentation.js'
 import { architectureScaffoldPaths, emptyScaffoldPaths, architectureScaffoldReadme, architectureScaffoldDocument, architectureScaffoldMetadata } from './architecture-scaffold.js'
 import { wantsBuildCi, wantsSecurityChecks, wantsGitHubAutomation, wantsPullRequestTemplate } from '../shared/ci-options.js'
@@ -158,7 +159,7 @@ async function generateRootFiles(dest, answers, vars, stack, templatesDir) {
   }
   await write(dest,         '.editorconfig', editorconfig())
   await write(dest,         '.prettierrc',   prettierrc())
-  if (stack.backendKey === 'springboot') await write(dest, 'backend/.java-version', `${stack.profile.runtimes.java}\n`)
+  if (stack.backendKey === 'springboot') await write(dest, `${stack.frontendKey === 'no-frontend' ? '' : 'backend/'}.java-version`, `${stack.profile.runtimes.java}\n`)
   if (stack.backendKey === 'fastapi') {
     const apiRoot = stack.frontendKey === 'no-frontend' ? '' : 'backend/'
     await write(dest, `${apiRoot}.python-version`, `${stack.profile.runtimes.python}\n`)
@@ -171,7 +172,11 @@ async function generateRootFiles(dest, answers, vars, stack, templatesDir) {
   // Makefile — template-driven (web only)
   if (answers.makefile && !stack.isMobile) {
     const tpl = await readTemplate(templatesDir, 'makefile', stack.makefileTemplate, '.mk')
-    if (tpl) await writeTemplate(dest, 'Makefile', tpl, vars)
+    if (tpl) {
+      const springApiOnly = stack.backendKey === 'springboot' && stack.frontendKey === 'no-frontend'
+      const makefile = springApiOnly ? springApiMakefile() : tpl
+      await writeTemplate(dest, 'Makefile', makefile, vars)
+    }
   }
 
   // Docker — template-driven
@@ -187,6 +192,7 @@ async function generateRootFiles(dest, answers, vars, stack, templatesDir) {
       composeTpl = fastapiCompose(answers, stack, vars)
     } else if (stack.needsPackage) {
       composeTpl = await readTemplate(templatesDir, 'docker/compose', 'springboot', '.yml')
+      if (composeTpl && stack.frontendKey === 'no-frontend') composeTpl = springApiCompose(composeTpl)
     } else if (stack.backendKey === 'supabase') {
       composeTpl = await readTemplate(templatesDir, 'docker/compose', 'supabase', '.yml')
     } else {
@@ -207,12 +213,12 @@ async function generateRootFiles(dest, answers, vars, stack, templatesDir) {
     // docker-compose.prod.yml — only for springboot
     if (stack.needsPackage) {
       const prodTpl = await readTemplate(templatesDir, 'docker/compose-prod', 'springboot', '.yml')
-      if (prodTpl) await writeTemplate(dest, 'docker-compose.prod.yml', prodTpl, vars)
+      if (prodTpl) await writeTemplate(dest, 'docker-compose.prod.yml', stack.frontendKey === 'no-frontend' ? springApiCompose(prodTpl) : prodTpl, vars)
 
       const beDev = await readTemplate(templatesDir, 'docker/dockerfile', 'springboot.dev', '.dockerfile')
-      if (beDev) await writeTemplate(dest, 'backend/Dockerfile.dev', beDev, vars)
+      if (beDev) await writeTemplate(dest, `${stack.frontendKey === 'no-frontend' ? '' : 'backend/'}Dockerfile.dev`, beDev, vars)
       const beProd = await readTemplate(templatesDir, 'docker/dockerfile', 'springboot.prod', '.dockerfile')
-      if (beProd) await writeTemplate(dest, 'backend/Dockerfile', beProd, vars)
+      if (beProd) await writeTemplate(dest, `${stack.frontendKey === 'no-frontend' ? '' : 'backend/'}Dockerfile`, beProd, vars)
     }
 
     if (stack.backendKey === 'fastapi') {
@@ -269,8 +275,9 @@ function toolchainGuide(answers, stack) {
     rows.push(`| npm | ${stack.profile.runtimes.npmMinimum}+ | Local package scripts | \`${javascriptRoot}package.json#packageManager\`, \`${javascriptRoot}.npmrc\` |`)
   }
   if (stack.backendKey === 'springboot') {
-    rows.push(`| Java | ${stack.profile.runtimes.java} | Host-run backend | \`backend/.java-version\`, \`backend/pom.xml\` |`)
-    rows.push(`| Maven | ${stack.profile.runtimes.maven} | Optional globally; prefer the generated wrapper | \`backend/mvnw\` or \`backend/mvnw.cmd\` |`)
+    const springRoot = stack.frontendKey === 'no-frontend' ? '' : 'backend/'
+    rows.push(`| Java | ${stack.profile.runtimes.java} | Host-run backend | \`${springRoot}.java-version\`, \`${springRoot}pom.xml\` |`)
+    rows.push(`| Maven | ${stack.profile.runtimes.maven} | Optional globally; prefer the generated wrapper | \`${springRoot}mvnw\` or \`${springRoot}mvnw.cmd\` |`)
   }
   if (stack.backendKey === 'laravel') {
     const root = stack.frontendKey === 'laravel-ui' || stack.frontendKey === 'no-frontend' ? '' : 'backend/'
@@ -331,8 +338,11 @@ async function generateDocs(dest, answers, stack, runnableFilePaths) {
     .replace('Java 21 and Maven 3.9, or Docker', `Java ${stack.profile.runtimes.java}; Maven ${stack.profile.runtimes.maven} or Docker is used through the generated launcher`)
     .replace('PostgreSQL 16, or Docker', `PostgreSQL ${stack.profile.runtimes.postgres}, or Docker`)
     .replace('mvn spring-boot:run', './mvnw spring-boot:run  # use mvnw.cmd on Windows')
-  if (stack.backendKey === 'springboot' && !answers.docker) {
-    setupGuide = setupGuide.replace('docker compose up -d db', '# Start PostgreSQL on the host, then configure DATABASE_URL')
+  if (stack.backendKey === 'springboot') setupGuide = springSetupGuide(answers, stack, validation)
+  if (stack.backendKey === 'supabase') {
+    const clientEnv = stack.frontendKey === 'react-native' ? '.env' : stack.frontendKey === 'react' ? '.env' : '.env.local'
+    const keyPrefix = stack.isMobile ? 'EXPO_PUBLIC' : stack.frontendKey === 'react' ? 'VITE' : 'NEXT_PUBLIC'
+    setupGuide = `# Local Setup Guide\n\n## Prerequisites\n\n- Node.js ${stack.profile.runtimes.nodeMinimum} or newer with npm ${stack.profile.runtimes.npmMinimum} or newer (tested on Node.js ${stack.profile.runtimes.node})\n- A running Docker-compatible runtime for the local Supabase CLI\n\n## Start Supabase and the app\n\nFrom the project root${frontendRoot ? ', enter frontend/ first' : ''}:\n\n\`\`\`bash\n${frontendRoot ? `cd ${frontendRoot}\n` : ''}npm install\nnpm run supabase:start\nnpm run supabase:status\ncp .env.example ${clientEnv}\n\`\`\`\n\nCopy the local API URL and publishable key shown by supabase:status into ${clientEnv} as ${keyPrefix}_SUPABASE_URL and ${keyPrefix}_SUPABASE_PUBLISHABLE_KEY. Then start the app:\n\n\`\`\`bash\nnpm run dev\n\`\`\`\n\n## Validate\n\n\`\`\`bash\n${validation}\n\`\`\`\n\nCommit the generated package-lock.json; CI uses npm ci.\n`
   }
   if (stack.backendKey === 'laravel') {
     const laravelDir = stack.frontendKey === 'laravel-ui' || stack.frontendKey === 'no-frontend' ? '' : 'backend/'
@@ -344,6 +354,7 @@ async function generateDocs(dest, answers, stack, runnableFilePaths) {
           ? '\nIn another terminal from the repository root:\n\n```bash\nnpm install\nnpm run dev\n```\n'
           : ''
     setupGuide = `# Local Setup Guide\n\n## Default local setup\n\nUse PHP ${stack.profile.runtimes.php}, Composer ${stack.profile.runtimes.composer}, and PostgreSQL ${stack.profile.runtimes.postgres}.${stack.frontendKey === 'laravel-ui' ? ` Use Node.js ${stack.profile.runtimes.nodeMinimum}+ with npm ${stack.profile.runtimes.npmMinimum}+ for Tailwind assets.` : ''}\n\n\`\`\`bash\ncd ${laravelDir || '.'}\ncomposer install\ncp .env.example .env\nphp artisan key:generate\nphp artisan migrate\nphp artisan serve\n\`\`\`\n${frontendSetup}${answers.docker ? `\n## Optional Docker setup\n\nFrom the repository root:\n\n\`\`\`bash\ndocker compose build\ndocker compose up -d\ndocker compose exec backend php artisan key:generate\ndocker compose exec backend php artisan migrate\n\`\`\`\n\nLater runs use \`docker compose up -d\`; rebuilding remains explicit.\n` : ''}\n## Validate\n\n\`\`\`bash\n${laravelDir ? `cd ${laravelDir}\n` : ''}composer check${stack.frontendKey === 'laravel-ui' ? '\nnpm test --if-present\nnpm run build' : ''}\n\`\`\`\n\nCommit \`composer.lock\`${stack.frontendKey === 'laravel-ui' ? ' and `package-lock.json`' : ''}.\n`
+    setupGuide = setupGuide.replace('php artisan migrate\n', `# Start PostgreSQL and check the .env database values before this step\nphp artisan migrate\n`)
   }
   if (stack.backendKey === 'fastapi') {
     const apiDir = stack.frontendKey === 'no-frontend' ? '' : 'backend/'
@@ -354,6 +365,7 @@ async function generateDocs(dest, answers, stack, runnableFilePaths) {
         : ''
     setupGuide = `# Local Setup Guide\n\n## Default local setup\n\nUse Python ${stack.profile.runtimes.python}, uv ${stack.profile.runtimes.uv}, and PostgreSQL ${stack.profile.runtimes.postgres}.\n\n\`\`\`bash\ncd ${apiDir || '.'}\nuv sync\ncp .env.example .env\nalembic upgrade head\nuv run uvicorn app.main:app --reload\n\`\`\`\n${frontendSetup}${answers.docker ? `\n## Optional Docker setup\n\nFrom the repository root:\n\n\`\`\`bash\ndocker compose build\ndocker compose up -d\ndocker compose exec backend uv run alembic upgrade head\n\`\`\`\n\nLater runs use \`docker compose up -d\`; rebuilding remains explicit.\n` : ''}\n## Validate\n\n\`\`\`bash\n${apiDir ? `cd ${apiDir}\n` : ''}uv run ruff check . && uv run ruff format --check . && uv run mypy . && uv run pytest\n\`\`\`\n\nCommit the generated \`uv.lock\`; CI uses \`uv sync --frozen\`.\n`
     setupGuide = setupGuide.replace('\nalembic upgrade head\n', '\nuv run alembic upgrade head\n')
+    setupGuide = setupGuide.replace('uv run alembic upgrade head\n', '# Start PostgreSQL and check the .env database URL before this step\nuv run alembic upgrade head\n')
   }
   await fs.writeFile(setupPath, setupGuide, 'utf8')
   await write(dest, 'docs/guides/toolchain.md', toolchainGuide(answers, stack))
@@ -462,6 +474,9 @@ async function generateCI(dest, stack, ciDir, answers, vars) {
       if (answers.testing === 'none') {
         content = content.replace('      - name: Run tests\n        run: ./mvnw --batch-mode test\n', '')
       }
+      if (stack.frontendKey === 'no-frontend') {
+        content = content.replaceAll('      - backend/**', "      - '**'").replace('working-directory: backend', 'working-directory: .')
+      }
       await write(dest, `.github/workflows/ci-backend.yml`, render(content, vars))
     }
   }
@@ -502,7 +517,7 @@ async function generateCI(dest, stack, ciDir, answers, vars) {
 async function generateRunnableFiles(dest, answers, stack, vars) {
   const files = buildRunnableFiles(answers, stack, vars)
   for (const [filePath, content] of Object.entries(files)) await write(dest, filePath, content)
-  if (stack.backendKey === 'springboot') await fs.chmod(path.join(dest, 'backend/mvnw'), 0o755)
+  if (stack.backendKey === 'springboot') await fs.chmod(path.join(dest, stack.frontendKey === 'no-frontend' ? 'mvnw' : 'backend/mvnw'), 0o755)
   if (stack.backendKey === 'laravel') {
     const artisan = stack.frontendKey === 'laravel-ui' || stack.frontendKey === 'no-frontend' ? 'artisan' : 'backend/artisan'
     await fs.chmod(path.join(dest, artisan), 0o755)

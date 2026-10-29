@@ -55,8 +55,8 @@ export function buildQuestions({ args, catalog }) {
     {
       type: 'list', name: 'mode', message: 'What do you want to create?',
       choices: [
-        choice('Architecture scaffold', 'architecture', { hint: 'Medium folders and ARCHITECTURE.md for planning' }),
-        choice('Full project', 'full', { hint: 'Runnable application with selected tools' }),
+        choice('Planning folders only', 'architecture', { hint: 'No runnable application; creates folders and ARCHITECTURE.md' }),
+        choice('Runnable project', 'full', { hint: 'Creates an application you can install and start', recommended: true }),
         footerMarker('The scaffold asks for your stack so its folders match the intended technology.'),
       ],
       default: 'full', when: () => !args.mode,
@@ -65,11 +65,8 @@ export function buildQuestions({ args, catalog }) {
       type: 'list', name: 'applicationShape', message: 'What kind of application are you building?',
       choices: describeExisting(
         applicationShapeChoices(),
-        'Choose the runtime layout that matches how this application will be deployed.',
-        (shape) => {
-          const example = exampleForShape(shape)
-          return example ? `e.g. ${example}` : undefined
-        },
+        'Choose whether you need one website, a website plus an API, only an API, or a mobile app.',
+        (shape) => APPLICATION_SHAPES[shape]?.description,
       ), default: 'fullstack', when: () => !args.shape,
     },
     {
@@ -104,11 +101,11 @@ export function buildQuestions({ args, catalog }) {
         const supported = architectureChoicesFor(catalog, answers.frontend, answers.backend)
         return [
           ...[
-            choice('Medium', 'medium', { recommended: true }),
-            choice('Small', 'small'),
-            choice('Large', 'large'),
+            choice('Medium', 'medium', { hint: 'Group code by feature; add layers only when needed', recommended: true }),
+            choice('Small', 'small', { hint: 'Fewer starter files for a focused project' }),
+            choice('Large', 'large', { hint: 'Medium plus enforced feature boundaries' }),
           ].filter((choice) => supported.includes(choice.value)),
-          footerMarker('Clear feature boundaries for most long-term applications; fewer layers for prototypes; enforced boundaries for complex domains.'),
+          footerMarker('This controls the starter structure, not the size your project may grow to.'),
         ]
       },
       default: 'medium', when: (answers) => (answers.mode || args.mode) === 'full' && !args.architecture,
@@ -121,40 +118,40 @@ export function buildQuestions({ args, catalog }) {
       choices: (answers) => {
         const choices = []
         if (['supabase', 'springboot', 'laravel', 'fastapi'].includes(answers.backend)) {
-          choices.push(choice('Yes', 'yes'))
+          choices.push(choice('Yes', 'yes', { hint: 'Generate sign-in for this stack' }))
         }
         choices.push(
-          choice('Not yet', 'not-yet', { recommended: true }),
-          choice('No', 'none'),
-          footerMarker('Generate working authentication for this stack, record guidance without pretending login exists, or stay intentionally public.'),
+          choice('Decide later', 'not-yet', { hint: 'No login yet; protected backend access stays closed', recommended: true }),
+          choice('Public app', 'none', { hint: 'No sign-in planned' }),
+          footerMarker('You can add sign-in later in the generated project; do not rerun the generator over it.'),
         )
         return choices
       },
       default: 'not-yet', when: () => !args.authentication,
     },
     {
-      type: 'list', name: 'authAudience', message: 'Who will access the application?',
+      type: 'list', name: 'authAudience', message: 'Which clients need sign-in?',
       choices: [
         { name: 'Website only — use a secure server-managed browser session', value: 'website' },
         { name: 'Website and mobile — use a trusted identity provider for every client', value: 'multi-client' },
       ],
       default: 'website',
-      when: (answers) => ['springboot', 'laravel', 'fastapi'].includes(answers.backend) && answers.frontend !== 'laravel-ui' &&
+      when: (answers) => ['springboot', 'laravel'].includes(answers.backend) && !['laravel-ui', 'react-native'].includes(answers.frontend) &&
         (args.authentication || answers.authentication) === 'yes' && !args.authAudience,
     },
     {
       type: 'list', name: 'uploads', message: 'Will users upload files?',
-      choices: [{ name: 'None', value: 'none' }, { name: 'Private object storage', value: 'object-storage' }],
+      choices: [{ name: 'No file uploads', value: 'none' }, { name: 'Yes — private files stored outside the app server', value: 'object-storage' }],
       default: 'none', when: () => !args.uploads,
     },
     {
-      type: 'list', name: 'backgroundJobs', message: 'Does the project need background jobs?',
-      choices: [{ name: 'None', value: 'none' }, { name: 'Durable queue', value: 'queue' }],
+      type: 'list', name: 'backgroundJobs', message: 'Will work need to continue after a request ends?',
+      choices: [{ name: 'No background jobs', value: 'none' }, { name: 'Yes — queued work such as email or processing', value: 'queue' }],
       default: 'none', when: (answers) => catalog.byId[answers.frontend]?.platform !== 'mobile' && !args.backgroundJobs,
     },
     {
       type: 'list', name: 'offline', message: 'Should the mobile app work offline?',
-      choices: [{ name: 'None', value: 'none' }, { name: 'Local cache', value: 'cache' }, { name: 'Synchronization', value: 'sync' }],
+      choices: [{ name: 'No offline support', value: 'none' }, { name: 'Read previously saved data offline', value: 'cache' }, { name: 'Edit offline and sync changes later', value: 'sync' }],
       default: 'none', when: (answers) => catalog.byId[answers.frontend]?.platform === 'mobile' && !args.offline,
     },
     {
@@ -167,7 +164,7 @@ export function buildQuestions({ args, catalog }) {
       default: 'full', when: (answers) => (answers.mode || args.mode) === 'full',
     },
     {
-      type: 'list', name: 'guidance', message: 'How much agent guidance should be included?',
+      type: 'list', name: 'guidance', message: 'Include instructions for AI coding agents?',
       choices: [
         choice('No agent guidance', 'none', { hint: 'Keep README and normal project docs only' }),
         choice('Compact guidance', 'compact', { hint: 'Generate concise AGENTS.md and project context' }),
@@ -176,19 +173,19 @@ export function buildQuestions({ args, catalog }) {
       default: 'full', when: (answers) => (answers.mode || args.mode) === 'full' && !args.guidance,
     },
     {
-      type: 'confirm', name: 'docker', message: 'Include Docker development and deployment files?', default: false,
+      type: 'confirm', name: 'docker', message: 'Add optional Docker files to run the project in containers?', default: false,
       when: (answers) => (answers.mode || args.mode) === 'full' && (Boolean(catalog.byId[answers.backend]?.needsDocker) || catalog.byId[answers.frontend]?.platform !== 'mobile'),
     },
     {
-      type: 'confirm', name: 'makefile', message: 'Include Makefile?', default: true,
+      type: 'confirm', name: 'makefile', message: 'Add a Makefile with shortcut commands?', default: true,
       when: (answers) => (answers.mode || args.mode) === 'full' && catalog.byId[answers.frontend]?.platform !== 'mobile',
     },
-    { type: 'confirm', name: 'buildCi', message: 'Include build and test CI?', default: true, when: (answers) => (answers.mode || args.mode) === 'full' },
-    { type: 'confirm', name: 'securityChecks', message: 'Include security checks?', default: true, when: (answers) => (answers.mode || args.mode) === 'full' },
+    { type: 'confirm', name: 'buildCi', message: 'Add GitHub Actions to build and test each change?', default: true, when: (answers) => (answers.mode || args.mode) === 'full' },
+    { type: 'confirm', name: 'securityChecks', message: 'Add GitHub Actions for dependency and secret checks?', default: true, when: (answers) => (answers.mode || args.mode) === 'full' },
     {
       type: 'confirm', name: 'installDependencies',
-      message: 'Install project dependencies and create the lockfile now?', default: true,
-      when: (answers) => (answers.mode || args.mode) === 'full' && !args.install && !args.noInstall,
+      message: 'Download project packages now? This also creates package lockfiles.', default: true,
+      when: (answers) => (answers.mode || args.mode) === 'full' && !(answers.frontend === 'no-frontend' && answers.backend === 'springboot') && !args.install && !args.noInstall,
     },
     {
       type: 'input', name: 'packageName', message: 'Java package name? (e.g. com.yourname)', default: 'com.app',
@@ -201,7 +198,7 @@ export function buildQuestions({ args, catalog }) {
     },
     {
       type: 'checkbox', name: 'expectedConcerns',
-      message: 'Which optional capabilities should the project plan for?',
+      message: 'Any optional topics for project guidance? Leave empty if unsure.',
       choices: (answers) => {
         const stack = resolveStack({
           ...answers,

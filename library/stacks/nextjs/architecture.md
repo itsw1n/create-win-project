@@ -30,7 +30,7 @@ Page → Query → Repository → Next-owned database
 Page/Action → Service when useful → API client → Spring or external API
 ```
 
-A Repository means owned persistence. A remote HTTP client belongs in `api/`; do not
+A Repository means owned persistence. A remote HTTP client belongs in feature `api.ts` (or `api/` when it grows); do not
 rename transport code to make every diagram look identical.
 
 ### Large
@@ -78,7 +78,7 @@ belongs in a Service, not React, an Action, or a Route Handler.
 | Initial data for a Server Component | Direct feature Query; do not call the project's own HTTP route |
 | Interaction owned by this Next.js UI | Server Action or Server Function |
 | Incoming request from an external consumer | `app/api/**/route.ts` |
-| Outgoing request to a remote backend | Feature `api/` client |
+| Outgoing request to a remote backend | Feature `api.ts` client, split when needed |
 | Complex or reused read | Query, optionally backed by a Repository |
 | Meaningful or shared mutation policy | Service, called by the entry point |
 

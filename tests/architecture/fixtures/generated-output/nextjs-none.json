@@ -80,8 +80,8 @@
     "sha256": "e87327e605c00b80ed691147211c7beec30cc910d86f7c2364d293bdd93aed8c"
   },
   "docs/architecture/overview.md": {
-    "bytes": 2181,
-    "sha256": "0490d4d2ab81a730a0e515a0bf726375193b0177d737e987d18f10c6288cce50"
+    "bytes": 2105,
+    "sha256": "912dcd933e971c4c6ddb202c713357e44472961efe7c25db1ca40a6b69e9d02c"
   },
   "docs/guides/deployment.md": {
     "bytes": 994,
@@ -184,8 +184,8 @@
     "sha256": "9fd82f2d1ed95139033b4ccf701c8a35c7d02d91d147abdbde40ca28831b01c6"
   },
   "playbooks/stack/nextjs/architecture.md": {
-    "bytes": 4299,
-    "sha256": "ce20ddbc62914e09b3b8e22291dd2d37668caa9dc179c37d76d06f241369e07a"
+    "bytes": 4356,
+    "sha256": "5178ca0e63d177da68e0ebf6e6c0c3bac990c205a079a07e8931c271ff50d33e"
   },
   "playbooks/stack/nextjs/runtime.md": {
     "bytes": 1563,
@@ -196,8 +196,8 @@
     "sha256": "5b1f4c6cca1f78b0f981b064ba2fa868911adf8cc22db0853ff7674adac63bab"
   },
   "playbooks/stack/nextjs/structure.md": {
-    "bytes": 4892,
-    "sha256": "6fcae6f9c1a8c4cb22507b647955ca5840ce118269e520f6f542d3254b5b7876"
+    "bytes": 5051,
+    "sha256": "619ed3c62a3fbd309cd0eabf58de3bdee73e81f962f6c38ca3bc6ad9edb072fb"
   },
   "playbooks/stack/nextjs/testing.md": {
     "bytes": 894,
@@ -308,8 +308,8 @@
     "sha256": "d96d1d1cd494db74185e0fa4f157fe0f09b99034ecf98889b50324b40a3dd65a"
   },
   "src/app/page.tsx": {
-    "bytes": 790,
-    "sha256": "f99a589f26a93740fe21a5e14e77a134362d4dc091a40f5047c93e4c15f5bcb0"
+    "bytes": 759,
+    "sha256": "ec75d6324aac7ab6b88cab1942eb8804c9b883dc847025e9de02f01783528f66"
   },
   "src/components/common/Button.test.tsx": {
     "bytes": 297,
@@ -330,10 +330,6 @@
   "src/features/status/components/StarterStatus.tsx": {
     "bytes": 356,
     "sha256": "d58573b0ba489ee987eb2d08fff5f10b3300ec5649e452c0f276637d075a6717"
-  },
-  "src/features/status/services/getStarterStatus.ts": {
-    "bytes": 168,
-    "sha256": "ed08e37c4deed0db23269405c09be5f6f0a9eeb39ab9070c52460814673b31f7"
   },
   "src/features/status/types.ts": {
     "bytes": 80,

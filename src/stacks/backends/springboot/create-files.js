@@ -67,13 +67,10 @@ export function buildSpringBootFiles(answers, vars, stack) {
 
   if (stack.architecture !== 'small') {
     if (isLarge) {
-      files[`backend/src/main/java/${pkgPath}/system/SystemStatus.java`] = `package ${pkg}.system;\n\npublic interface SystemStatus { Status current(); record Status(String status, String architecture) {} }\n`
-      files[`backend/src/main/java/${pkgPath}/system/internal/SystemStatusService.java`] = `package ${pkg}.system.internal;\n\nimport org.springframework.stereotype.Service;\nimport ${pkg}.system.SystemStatus;\n\n@Service\nclass SystemStatusService implements SystemStatus {\n    public Status current() { return new Status("ok", "large"); }\n}\n`
-      files[`backend/src/main/java/${pkgPath}/system/internal/SystemStatusController.java`] = `package ${pkg}.system.internal;\n\nimport ${pkg}.system.SystemStatus;\nimport ${pkg}.system.SystemStatus.Status;\nimport org.springframework.web.bind.annotation.GetMapping;\nimport org.springframework.web.bind.annotation.RequestMapping;\nimport org.springframework.web.bind.annotation.RestController;\n\n@RestController\n@RequestMapping("/api/status")\nclass SystemStatusController {\n    private final SystemStatus status;\n    SystemStatusController(SystemStatus status) { this.status = status; }\n    @GetMapping Status current() { return status.current(); }\n}\n`
+      files[`backend/src/main/java/${pkgPath}/system/SystemStatus.java`] = `package ${pkg}.system;\n\npublic record SystemStatus(String status, String architecture) {}\n`
+      files[`backend/src/main/java/${pkgPath}/system/internal/SystemStatusController.java`] = `package ${pkg}.system.internal;\n\nimport ${pkg}.system.SystemStatus;\nimport org.springframework.web.bind.annotation.GetMapping;\nimport org.springframework.web.bind.annotation.RequestMapping;\nimport org.springframework.web.bind.annotation.RestController;\n\n@RestController\n@RequestMapping("/api/status")\nclass SystemStatusController {\n    @GetMapping SystemStatus current() { return new SystemStatus("ok", "large"); }\n}\n`
     } else {
-      files[`backend/src/main/java/${pkgPath}/system/api/SystemStatusResponse.java`] = `package ${pkg}.system.api;\n\npublic record SystemStatusResponse(String status, String architecture) {}\n`
-      files[`backend/src/main/java/${pkgPath}/system/service/SystemStatusService.java`] = `package ${pkg}.system.service;\n\nimport ${pkg}.system.api.SystemStatusResponse;\nimport org.springframework.stereotype.Service;\n\n@Service\npublic class SystemStatusService {\n    public SystemStatusResponse current() { return new SystemStatusResponse("ok", "medium"); }\n}\n`
-      files[`backend/src/main/java/${pkgPath}/system/api/SystemStatusController.java`] = `package ${pkg}.system.api;\n\nimport ${pkg}.system.service.SystemStatusService;\nimport org.springframework.web.bind.annotation.GetMapping;\nimport org.springframework.web.bind.annotation.RequestMapping;\nimport org.springframework.web.bind.annotation.RestController;\n\n@RestController\n@RequestMapping("/api/status")\npublic class SystemStatusController {\n    private final SystemStatusService service;\n    public SystemStatusController(SystemStatusService service) { this.service = service; }\n    @GetMapping SystemStatusResponse current() { return service.current(); }\n}\n`
+      files[`backend/src/main/java/${pkgPath}/system/SystemStatusController.java`] = `package ${pkg}.system;\n\nimport java.util.Map;\nimport org.springframework.web.bind.annotation.GetMapping;\nimport org.springframework.web.bind.annotation.RequestMapping;\nimport org.springframework.web.bind.annotation.RestController;\n\n@RestController\n@RequestMapping("/api/status")\npublic class SystemStatusController {\n    @GetMapping Map<String, String> current() { return Map.of("status", "ok", "architecture", "medium"); }\n}\n`
     }
   }
 
@@ -85,6 +82,12 @@ export function buildSpringBootFiles(answers, vars, stack) {
     if (withFullTests) {
       files[`backend/src/test/java/${pkgPath}/PostgresIntegrationTest.java`] = `package ${pkg};\n\nimport static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;\nimport static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;${integrationSecurityImports}\nimport org.junit.jupiter.api.Test;\nimport org.springframework.beans.factory.annotation.Autowired;\nimport org.springframework.boot.test.context.SpringBootTest;\nimport org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;\nimport org.springframework.test.context.DynamicPropertyRegistry;\nimport org.springframework.test.context.DynamicPropertySource;\nimport org.springframework.test.web.servlet.MockMvc;\nimport org.testcontainers.containers.PostgreSQLContainer;\nimport org.testcontainers.junit.jupiter.Container;\nimport org.testcontainers.junit.jupiter.Testcontainers;\n\n@SpringBootTest\n@AutoConfigureMockMvc\n@Testcontainers\nclass PostgresIntegrationTest {\n    @Container static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("${vars.POSTGRES_IMAGE}");\n    @Autowired MockMvc mvc;${integrationSecurityFields}\n    @DynamicPropertySource static void database(DynamicPropertyRegistry registry) {\n        registry.add("spring.datasource.url", postgres::getJdbcUrl);\n        registry.add("spring.datasource.username", postgres::getUsername);\n        registry.add("spring.datasource.password", postgres::getPassword);\n    }\n    @Test void migrationsAndPostgresContextStart() {}${integrationSecurityTests}\n}\n`
     }
+  }
+  if (stack.frontendKey === 'no-frontend') {
+    return Object.fromEntries(Object.entries(files).map(([filePath, content]) => [
+      filePath.startsWith('backend/') ? filePath.slice('backend/'.length) : filePath,
+      content,
+    ]))
   }
   return files
 }

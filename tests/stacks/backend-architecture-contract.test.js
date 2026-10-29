@@ -31,15 +31,14 @@ describe('backend stack architecture contracts', () => {
     ]).then((fixtures) => fixtures.map(JSON.parse))
 
     expect(fastapi).toHaveProperty('backend/app/features/status/router.py')
-    expect(fastapi).toHaveProperty('backend/app/features/status/service.py')
-    expect(fastapi).toHaveProperty('backend/app/features/status/repository.py')
+    expect(fastapi).toHaveProperty('backend/app/features/status/schemas.py')
+    expect(fastapi).not.toHaveProperty('backend/app/features/status/service.py')
+    expect(fastapi).not.toHaveProperty('backend/app/features/status/repository.py')
     expect(spring).toHaveProperty(
-      'backend/src/main/java/com/example/system/api/SystemStatusController.java',
+      'backend/src/main/java/com/example/system/SystemStatusController.java',
     )
-    expect(spring).toHaveProperty(
-      'backend/src/main/java/com/example/system/service/SystemStatusService.java',
-    )
-    expect(laravel).toHaveProperty('app/Actions/GetSystemStatus.php')
+    expect(spring).not.toHaveProperty('backend/src/main/java/com/example/system/service/SystemStatusService.java')
+    expect(laravel).not.toHaveProperty('app/Actions/GetSystemStatus.php')
     expect(laravel).toHaveProperty('app/Http/Controllers/HealthController.php')
   })
 

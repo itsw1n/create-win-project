@@ -18,7 +18,7 @@ export const springbootAdapter = defineStackAdapter({
   contributes: {
     files: ({ answers, stack, vars }) => Object.entries(buildSpringBootFiles(answers, vars, stack)),
     environment: environmentContributions,
-    install: () => [{ cwd: 'backend', command: './mvnw', args: ['dependency:go-offline'] }],
+    install: ({ stack } = {}) => [{ cwd: stack?.frontendKey === 'no-frontend' ? '.' : 'backend', command: './mvnw', args: ['dependency:go-offline'] }],
     architecture: ({ stack, answers }) => { const root = stack.frontendKey === 'no-frontend' ? '' : 'backend/'; const pkg = (answers.packageName || 'com.app').replaceAll('.', '/'); return [`${root}src/main/java/${pkg}`, `${root}src/main/java/${pkg}/config`, `${root}src/main/java/${pkg}/common`, `${root}src/main/resources`, `${root}src/main/resources/db/migration`, `${root}src/test/java/${pkg}`] },
     docker: dockerContributions,
     ci: ciContributions,

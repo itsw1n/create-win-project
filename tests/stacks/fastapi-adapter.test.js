@@ -87,8 +87,12 @@ describe('fastapi adapter', () => {
     const p = await profile()
     const answers = { projectName: 'demo-app', projectDescription: 'demo', packageName: 'com.app' }
     const medium = buildFiles(answers, {}, { ...stackFor({ architecture: 'medium' }), profile: p })
+    expect(medium['backend/app/main.py'].indexOf('from app.features.status.router')).toBeLessThan(
+      medium['backend/app/main.py'].indexOf('from .routes_health'),
+    )
     expect(medium['backend/app/features/status/router.py']).toContain('prefix="/api"')
-    expect(medium['backend/app/features/status/service.py']).toContain('StatusService')
+    expect(medium['backend/app/features/status/router.py']).toContain('StatusResponse(status="ok"')
+    expect(medium).not.toHaveProperty('backend/app/features/status/repository.py')
     expect(medium['backend/app/core/security.py']).toContain('require_auth')
     expect(medium['backend/app/core/security.py']).toContain('from app.core.config import settings')
     expect(medium['backend/app/core/db.py']).toContain('from app.core.config import settings')
@@ -96,6 +100,7 @@ describe('fastapi adapter', () => {
 
     const large = buildFiles(answers, {}, { ...stackFor({ architecture: 'large' }), profile: p })
     expect(large['backend/app/modules/status/__init__.py']).toContain('__all__')
+    expect(large['backend/app/modules/status/__init__.py']).toContain('from .schemas import StatusResponse\n\n__all__')
     expect(large['backend/tests/test_boundaries.py']).toContain('public interface')
   })
 

@@ -147,15 +147,15 @@ export function Button({ className, variant = 'primary', size = 'medium', type =
 
 function featureImports(stack, mode) {
   if (stack.architecture === 'small') return ''
-  if (stack.architecture === 'large') return "\nimport { getStarterStatus, StarterStatus } from '@/features/status'"
+  if (stack.architecture === 'large') return "\nimport { StarterStatus } from '@/features/status'"
   const component = mode === 'tailwind'
     ? '@/features/status/components/StarterStatus'
     : '@/features/status/components/StarterStatus/StarterStatus'
-  return `\nimport { StarterStatus } from '${component}'\nimport { getStarterStatus } from '@/features/status/services/getStarterStatus'`
+  return `\nimport { StarterStatus } from '${component}'`
 }
 
 function tailwindApp(answers, stack) {
-  const statusSetup = stack.architecture === 'small' ? '' : '  const status = getStarterStatus()\n'
+  const statusSetup = stack.architecture === 'small' ? '' : `  const status = { heading: 'Your starter is running', profile: '${stack.architecture}' as const }\n`
   const heading = stack.architecture === 'small'
     ? '<h1 className="text-4xl font-bold tracking-tight sm:text-5xl">Your starter is running</h1>'
     : '<StarterStatus status={status} />'
@@ -164,7 +164,7 @@ function tailwindApp(answers, stack) {
 }
 
 function moduleApp(answers, stack) {
-  const statusSetup = stack.architecture === 'small' ? '' : '  const status = getStarterStatus()\n'
+  const statusSetup = stack.architecture === 'small' ? '' : `  const status = { heading: 'Your starter is running', profile: '${stack.architecture}' as const }\n`
   const heading = stack.architecture === 'small'
     ? '<h1 className={styles.heading}>Your starter is running</h1>'
     : '<StarterStatus status={status} />'
@@ -196,7 +196,7 @@ export function StarterStatus({ status }: { status: Status }) {
 .profile { color: var(--color-primary); font-size: 0.875rem; font-weight: 600; }
 `
   if (stack.architecture === 'large') {
-    files['src/features/status/index.ts'] = "export { StarterStatus } from './components/StarterStatus/StarterStatus'\nexport { getStarterStatus } from './services/getStarterStatus'\nexport type { StarterStatus as StarterStatusModel } from './types'\n"
+    files['src/features/status/index.ts'] = "export { StarterStatus } from './components/StarterStatus/StarterStatus'\nexport type { StarterStatus as StarterStatusModel } from './types'\n"
   }
 }
 

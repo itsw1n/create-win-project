@@ -51,6 +51,36 @@ afterEach(async () => {
 })
 
 describe('runnable project contract', () => {
+  it('starts local Supabase before the app and explains the client environment values', async () => {
+    const destination = await generate({ projectName: 'supabase-setup' })
+    const setup = await fs.readFile(path.join(destination, 'docs/guides/setup.md'), 'utf8')
+    expect(setup.indexOf('npm run supabase:start')).toBeLessThan(setup.indexOf('npm run dev'))
+    expect(setup).toContain('NEXT_PUBLIC_SUPABASE_URL')
+    expect(setup).toContain('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY')
+  })
+
+  it('keeps an API-only Spring Boot project at the repository root', async () => {
+    const destination = await generate({
+      frontend: 'no-frontend', backend: 'springboot', applicationShape: 'api',
+      packageName: 'com.example', projectName: 'spring-api-only', docker: true, makefile: true,
+    })
+    expect(await fs.pathExists(path.join(destination, 'pom.xml'))).toBe(true)
+    expect(await fs.pathExists(path.join(destination, 'mvnw'))).toBe(true)
+    expect(await fs.pathExists(path.join(destination, 'backend'))).toBe(false)
+    expect(await fs.pathExists(path.join(destination, 'Dockerfile.dev'))).toBe(true)
+    const compose = await fs.readFile(path.join(destination, 'docker-compose.yml'), 'utf8')
+    expect(compose).toContain('context: .')
+    expect(compose).not.toContain('  frontend:')
+    const productionCompose = await fs.readFile(path.join(destination, 'docker-compose.prod.yml'), 'utf8')
+    expect(productionCompose).not.toContain('  frontend:')
+    const workflow = await fs.readFile(path.join(destination, '.github/workflows/ci-backend.yml'), 'utf8')
+    expect(workflow).toContain('working-directory: .')
+    const setup = await fs.readFile(path.join(destination, 'docs/guides/setup.md'), 'utf8')
+    expect(setup).toContain('./mvnw spring-boot:run')
+    expect(setup).not.toContain('npm install')
+    expect(setup).toContain('set -a; . ./.env; set +a')
+  })
+
   it.each([
     ['no-frontend', 'api', 'medium'],
     ['react', 'separate', 'small'],
@@ -66,6 +96,7 @@ describe('runnable project contract', () => {
     })
     const laravelRoot = frontend === 'no-frontend' ? destination : path.join(destination, 'backend')
     const composer = await fs.readJson(path.join(laravelRoot, 'composer.json'))
+    expect(composer.require.php).toBe('~8.5.11')
     expect(composer.require['laravel/framework']).toMatch(/^\d+\.\d+\.\d+$/)
     expect(composer['require-dev']['larastan/larastan']).toMatch(/^\d+\.\d+\.\d+$/)
     expect(await fs.pathExists(path.join(laravelRoot, 'artisan'))).toBe(true)
@@ -286,6 +317,8 @@ describe('runnable project contract', () => {
       projectName: 'fastapi-ci-api',
     })
     const workflow = await fs.readFile(path.join(destination, '.github/workflows/ci-backend.yml'), 'utf8')
+    const environment = await fs.readFile(path.join(destination, '.env.example'), 'utf8')
+    expect(environment).toContain('postgresql+asyncpg://postgres:change-me@localhost:5432/')
     expect(workflow).toContain('working-directory: backend')
     expect(workflow).toContain('python-version: "3.13.15"')
     expect(workflow).toContain('uv sync --frozen')

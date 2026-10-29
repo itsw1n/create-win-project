@@ -25,7 +25,7 @@ function rulesFor() {
     'src/app': ['Own routes, layouts, metadata, loading/error UI, and route handlers.', 'Keep route files thin; call feature operations instead of putting business logic here.'],
     'src/components/common': ['Own reusable domain-free controls.', 'Do not put feature services, authentication, or database rules here.'],
     'src/components/layout': ['Own structural page composition and spacing.', 'Do not implement feature workflows or import feature internals.'],
-    'src/features': ['Own product behavior by feature.', 'Add queries, actions, services, repositories, api, schemas, and types only when a real responsibility exists.'],
+    'src/features': ['Own product behavior by feature.', 'Add queries, actions, services, repositories, API clients, schemas, and types only when a real responsibility exists. Start with flat files; split into folders when related files grow.'],
     'src/lib': ['Own shared technical adapters such as clients, logging, and configuration.', 'Do not use lib as a dumping ground for feature business logic.'],
     'frontend/src/features': ['Own browser product behavior by feature.', 'Keep API, data, schemas, and services separate from visual components when those responsibilities exist.'],
     'app': ['Own Expo Router screens and navigation layouts.', 'Do not move this project into src or put backend authorization in mobile code.'],
@@ -54,7 +54,7 @@ function displayRules(paths, stack) {
   }
   sections.push({
     key: 'Feature internals',
-    do: 'Create queries, actions, repositories, jobs, policies, and similar folders only when the first real feature needs that responsibility.',
+    do: 'Create queries, actions, repositories, jobs, policies, and similar files only when the first real feature needs that responsibility. Start flat; add subfolders for several related files.',
     dont: 'Do not create placeholder implementation files or empty layers only to imitate a reference tree.',
   })
   if (stack.backendKey === 'springboot') sections.push({
@@ -91,7 +91,7 @@ export function architectureScaffoldReadme(answers, stack) {
 export function architectureScaffoldDocument(answers, stack, paths) {
   const tree = paths.map((entry) => `- \`${entry}/\``).join('\n')
   const notes = answers.expectedConcerns?.length ? answers.expectedConcerns.map((item) => `- ${item}`).join('\n') : '- None selected'
-  return `# Architecture\n\n## Selected baseline\n\n- Application shape: ${stack.applicationShape}\n- Frontend: ${stack.frontendLabel}\n- Backend/data: ${stack.backendLabel}\n- Architecture baseline: Medium\n- Styling: ${stack.styleId || 'none'}\n- Authentication intent: ${answers.authentication || 'not-yet'}\n- Planned uploads: ${answers.uploads || 'none'}\n- Planned background jobs: ${answers.backgroundJobs || 'none'}\n- Planned offline behavior: ${answers.offline || 'none'}\n\n## Planning anchors\n\n${tree}\n\nThese directories are ownership boundaries. Empty directories contain \`.gitkeep\` so Git preserves the planned structure. Delete \`.gitkeep\` when real files are added.\n\n## Directory rules\n\n${displayRules(paths, stack)}\n\n## Optional planning notes\n\n${notes}\n\n## Folder creation rule\n\nCreate a folder when a real responsibility needs it. Do not create placeholder implementation files. Feature-specific folders such as queries, actions, repositories, jobs, policies, and schemas belong beside the feature that owns them and should be added when their responsibility is real.\n`
+  return `# Architecture\n\n## Selected baseline\n\n- Application shape: ${stack.applicationShape}\n- Frontend: ${stack.frontendLabel}\n- Backend/data: ${stack.backendLabel}\n- Architecture baseline: Medium\n- Styling: ${stack.styleId || 'none'}\n- Authentication intent: ${answers.authentication || 'not-yet'}\n- Planned uploads: ${answers.uploads || 'none'}\n- Planned background jobs: ${answers.backgroundJobs || 'none'}\n- Planned offline behavior: ${answers.offline || 'none'}\n\n## Planning anchors\n\n${tree}\n\nThese directories are ownership boundaries. Empty directories contain \`.gitkeep\` so Git preserves the planned structure. Delete \`.gitkeep\` when real files are added.\n\n## Directory rules\n\n${displayRules(paths, stack)}\n\n## Optional planning notes\n\n${notes}\n\n## Folder creation rule\n\nCreate a file when a real responsibility needs it. In Next.js, components, queries, actions, schemas, and types are normal feature vocabulary; service, repository, and API files have distinct jobs. No file is a mandatory placeholder. Start with flat feature files and add subfolders when several related files or a public boundary make them useful. Preserve each framework's native conventions.\n`
 }
 
 export function architectureScaffoldMetadata(answers, stack) {

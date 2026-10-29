@@ -305,13 +305,13 @@ final class AppServiceProvider extends ServiceProvider
 
 namespace App\\Http\\Controllers;
 
-${stack.architecture === 'small' ? '' : 'use App\\Actions\\GetSystemStatus;\n'}use Illuminate\\Http\\JsonResponse;
+use Illuminate\\Http\\JsonResponse;
 
 final class HealthController
 {
     public function __invoke(): JsonResponse
     {
-        ${stack.architecture === 'small' ? "return response()->json(['status' => 'ok']);" : 'return response()->json(app(GetSystemStatus::class)->handle());'}
+        return response()->json(['status' => 'ok'${stack.architecture === 'small' ? '' : `, 'architecture' => '${stack.architecture}'`}]);
     }
 }`),
     [at('routes/api.php')]: apiRoutes(stack),

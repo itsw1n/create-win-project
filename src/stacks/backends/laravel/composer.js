@@ -7,7 +7,7 @@ import { getLaravelUi } from './ui/index.js'
 export function buildLaravelComposer(answers, stack) {
   const version = (name) => composerPackageVersion(stack.profile, name, 'laravel scaffold')
   const require = {
-    php: stack.profile.runtimes.php,
+    php: `~${stack.profile.runtimes.php}`,
     'laravel/framework': version('laravel/framework'),
   }
   if (isSanctumSpa(stack.authentication)) {

@@ -40,6 +40,7 @@ describe('Next.js architecture contract', () => {
     expect(fixture).toHaveProperty('src/components/layout/Container.tsx')
     expect(fixture).toHaveProperty('src/components/common/Button.tsx')
     expect(fixture).toHaveProperty('src/features/status/components/StarterStatus.tsx')
-    expect(fixture).toHaveProperty('src/features/status/services/getStarterStatus.ts')
+    expect(fixture).toHaveProperty('src/features/status/types.ts')
+    expect(fixture).not.toHaveProperty('src/features/status/services/getStarterStatus.ts')
   })
 })
