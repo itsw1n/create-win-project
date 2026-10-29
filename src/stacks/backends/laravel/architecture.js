@@ -6,9 +6,9 @@ export function buildLaravelArchitectureFiles(stack) {
   if (stack.architecture === 'large') {
     files['tests/Architecture/BoundariesTest.php'] = php(`<?php
 
-arch('controllers do not depend on Eloquent models')
-    ->expect('App\\Http\\Controllers')
-    ->not->toUse('App\\Models');`)
+arch('models do not depend on HTTP controllers')
+    ->expect('App\\Models')
+    ->not->toUse('App\\Http\\Controllers');`)
   }
   return files
 }
