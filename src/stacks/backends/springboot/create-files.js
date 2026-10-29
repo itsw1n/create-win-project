@@ -83,6 +83,12 @@ export function buildSpringBootFiles(answers, vars, stack) {
       files[`backend/src/test/java/${pkgPath}/PostgresIntegrationTest.java`] = `package ${pkg};\n\nimport static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;\nimport static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;${integrationSecurityImports}\nimport org.junit.jupiter.api.Test;\nimport org.springframework.beans.factory.annotation.Autowired;\nimport org.springframework.boot.test.context.SpringBootTest;\nimport org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;\nimport org.springframework.test.context.DynamicPropertyRegistry;\nimport org.springframework.test.context.DynamicPropertySource;\nimport org.springframework.test.web.servlet.MockMvc;\nimport org.testcontainers.containers.PostgreSQLContainer;\nimport org.testcontainers.junit.jupiter.Container;\nimport org.testcontainers.junit.jupiter.Testcontainers;\n\n@SpringBootTest\n@AutoConfigureMockMvc\n@Testcontainers\nclass PostgresIntegrationTest {\n    @Container static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("${vars.POSTGRES_IMAGE}");\n    @Autowired MockMvc mvc;${integrationSecurityFields}\n    @DynamicPropertySource static void database(DynamicPropertyRegistry registry) {\n        registry.add("spring.datasource.url", postgres::getJdbcUrl);\n        registry.add("spring.datasource.username", postgres::getUsername);\n        registry.add("spring.datasource.password", postgres::getPassword);\n    }\n    @Test void migrationsAndPostgresContextStart() {}${integrationSecurityTests}\n}\n`
     }
   }
+  if (stack.frontendKey === 'no-frontend') {
+    return Object.fromEntries(Object.entries(files).map(([filePath, content]) => [
+      filePath.startsWith('backend/') ? filePath.slice('backend/'.length) : filePath,
+      content,
+    ]))
+  }
   return files
 }
 

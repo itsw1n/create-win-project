@@ -29,6 +29,7 @@ const cases = {
   'nextjs-fastapi': { frontend: 'nextjs', backend: 'fastapi', styling: 'tailwind' },
   'react-fastapi': { frontend: 'react', backend: 'fastapi', styling: 'tailwind', applicationShape: 'separate' },
   'fastapi-api': { frontend: 'no-frontend', backend: 'fastapi', applicationShape: 'api' },
+  'springboot-api': { frontend: 'no-frontend', backend: 'springboot', applicationShape: 'api', packageName: 'com.example' },
   'laravel-api': { frontend: 'no-frontend', backend: 'laravel', applicationShape: 'api' },
   'laravel-blade': { frontend: 'laravel-ui', backend: 'laravel', applicationShape: 'fullstack', laravelUi: 'blade', styling: 'tailwind' },
   'laravel-livewire': { frontend: 'laravel-ui', backend: 'laravel', applicationShape: 'fullstack', laravelUi: 'livewire', styling: 'tailwind' },
@@ -137,7 +138,7 @@ try {
   }
 
   if (selected.backend === 'springboot') {
-    const backendRoot = path.join(projectRoot, 'backend')
+    const backendRoot = selected.frontend === 'no-frontend' ? projectRoot : path.join(projectRoot, 'backend')
     run('./mvnw', ['--batch-mode', 'test'], backendRoot)
     run('./mvnw', ['--batch-mode', 'package', '-DskipTests'], backendRoot)
   }
