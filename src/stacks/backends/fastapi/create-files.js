@@ -405,6 +405,7 @@ from __future__ import annotations
 
 from .router import router
 from .schemas import StatusResponse
+
 __all__ = ["StatusResponse", "router"]
 `
 }

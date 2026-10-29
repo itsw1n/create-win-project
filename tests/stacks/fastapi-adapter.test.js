@@ -100,6 +100,7 @@ describe('fastapi adapter', () => {
 
     const large = buildFiles(answers, {}, { ...stackFor({ architecture: 'large' }), profile: p })
     expect(large['backend/app/modules/status/__init__.py']).toContain('__all__')
+    expect(large['backend/app/modules/status/__init__.py']).toContain('from .schemas import StatusResponse\n\n__all__')
     expect(large['backend/tests/test_boundaries.py']).toContain('public interface')
   })
 
