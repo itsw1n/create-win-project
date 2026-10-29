@@ -88,7 +88,8 @@ describe('fastapi adapter', () => {
     const answers = { projectName: 'demo-app', projectDescription: 'demo', packageName: 'com.app' }
     const medium = buildFiles(answers, {}, { ...stackFor({ architecture: 'medium' }), profile: p })
     expect(medium['backend/app/features/status/router.py']).toContain('prefix="/api"')
-    expect(medium['backend/app/features/status/service.py']).toContain('StatusService')
+    expect(medium['backend/app/features/status/router.py']).toContain('StatusResponse(status="ok"')
+    expect(medium).not.toHaveProperty('backend/app/features/status/repository.py')
     expect(medium['backend/app/core/security.py']).toContain('require_auth')
     expect(medium['backend/app/core/security.py']).toContain('from app.core.config import settings')
     expect(medium['backend/app/core/db.py']).toContain('from app.core.config import settings')

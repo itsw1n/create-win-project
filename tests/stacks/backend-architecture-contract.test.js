@@ -31,8 +31,9 @@ describe('backend stack architecture contracts', () => {
     ]).then((fixtures) => fixtures.map(JSON.parse))
 
     expect(fastapi).toHaveProperty('backend/app/features/status/router.py')
-    expect(fastapi).toHaveProperty('backend/app/features/status/service.py')
-    expect(fastapi).toHaveProperty('backend/app/features/status/repository.py')
+    expect(fastapi).toHaveProperty('backend/app/features/status/schemas.py')
+    expect(fastapi).not.toHaveProperty('backend/app/features/status/service.py')
+    expect(fastapi).not.toHaveProperty('backend/app/features/status/repository.py')
     expect(spring).toHaveProperty(
       'backend/src/main/java/com/example/system/api/SystemStatusController.java',
     )

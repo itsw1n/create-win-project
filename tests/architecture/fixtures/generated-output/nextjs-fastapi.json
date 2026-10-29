@@ -95,33 +95,21 @@
     "bytes": 0,
     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
   },
-  "backend/app/features/status/repository.py": {
-    "bytes": 212,
-    "sha256": "683fbb14ea6bcc5e4d7ed71138a5dafd1427fce75bd30c6eba79282d8857bc92"
-  },
   "backend/app/features/status/router.py": {
-    "bytes": 405,
-    "sha256": "07ad283dd7033373111e09d68cf9973f23006d35a65ad58e37ab68fe079a28ac"
+    "bytes": 446,
+    "sha256": "761b24086a3e580d963a119d59f192afbbaa43988099130b627ba0f0e4d544a3"
   },
   "backend/app/features/status/schemas.py": {
     "bytes": 189,
     "sha256": "da226006ea70f4fc87181f68fe602e547259e2fe46504418b782bf1b2b682eb1"
   },
-  "backend/app/features/status/service.py": {
-    "bytes": 428,
-    "sha256": "969e7ddac09a39676746ec1af295a79c98f42c70dd6138428dcf0adf2b5e250c"
-  },
   "backend/app/main.py": {
-    "bytes": 2179,
-    "sha256": "7448e4c55f4a0dcd3634aeb58d2987cf9d1a833ad17a2bec9fb34302e3481a87"
+    "bytes": 2191,
+    "sha256": "0f5d6dafb43b0acef8a0f680a33e6060ac9b2cc67282472fc65c7561a9169755"
   },
   "backend/app/routes_health.py": {
     "bytes": 489,
     "sha256": "2844b265c85369d1bf422228b4725a6ffe2e0bfa3c06625d4386818f3e945587"
-  },
-  "backend/app/status_router.py": {
-    "bytes": 143,
-    "sha256": "289de281a932f56bcda0a5de53a2dc7088aa2a187c7fe95d3dca14b0af0a910b"
   },
   "backend/Dockerfile": {
     "bytes": 422,
@@ -200,8 +188,8 @@
     "sha256": "e87327e605c00b80ed691147211c7beec30cc910d86f7c2364d293bdd93aed8c"
   },
   "docs/architecture/overview.md": {
-    "bytes": 3271,
-    "sha256": "1ebc80affad431a3e85173a6ed3187f5b7e21e55a0f688df97037d8ff84de5d4"
+    "bytes": 3139,
+    "sha256": "c24b402ee97e8e453b471d239d49ce12ffee9347d334b760be024476f96f9fb6"
   },
   "docs/guides/deployment.md": {
     "bytes": 994,
@@ -312,8 +300,8 @@
     "sha256": "9fd82f2d1ed95139033b4ccf701c8a35c7d02d91d147abdbde40ca28831b01c6"
   },
   "playbooks/stack/fastapi/architecture.md": {
-    "bytes": 2018,
-    "sha256": "e6e24996b46be244c644741c283a39b50ea45562101c430f64b5cbd21c0a51de"
+    "bytes": 2081,
+    "sha256": "38f241f9ed4ab390e484bd063bc48ea78d0cde53424567aa203db586fb80563d"
   },
   "playbooks/stack/fastapi/runtime.md": {
     "bytes": 1209,

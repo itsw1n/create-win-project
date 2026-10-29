@@ -14,8 +14,9 @@ HTTP → Router → Service function → AsyncSession → PostgreSQL
 
 ### Medium (default)
 
-Keep feature-oriented routers, services, repositories, schemas, and shared core
-infrastructure explicit. Services own transaction boundaries and reusable operations.
+Keep feature-oriented routers, schemas, and shared core infrastructure explicit. Add
+services for meaningful operations and repositories for owned persistence queries.
+Services own transaction boundaries and reusable operations.
 Features communicate through clear service APIs rather than reaching into repositories.
 
 ### Large

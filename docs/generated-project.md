@@ -92,8 +92,6 @@ my-project/
     │   ├── core/
     │   └── features/status/
     │       ├── router.py
-    │       ├── service.py
-    │       ├── repository.py
     │       └── schemas.py
     └── tests/
 ```
@@ -147,8 +145,6 @@ my-api/
 │   ├── core/
 │   └── features/status/
 │       ├── router.py
-│       ├── service.py
-│       ├── repository.py
 │       └── schemas.py
 ├── alembic/                          database migrations
 └── tests/

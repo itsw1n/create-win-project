@@ -81,6 +81,7 @@ repository documentation to develop, test, and operate the service.
 }
 
 function mainPy(stack, core) {
+  const statusModule = stack.architecture === 'large' ? 'app.modules.status' : 'app.features.status.router'
   return `"""Application entrypoint for ${stack.architecture} profile."""
 
 from __future__ import annotations
@@ -98,7 +99,7 @@ from ${core}.config import settings
 from ${core}.db import close_engine
 
 from .routes_health import router as health_router
-from .status_router import router as status_router
+from ${statusModule} import router as status_router
 
 logger = logging.getLogger(__name__)
 
@@ -377,30 +378,6 @@ class StatusResponse(BaseModel):
     status: str
     architecture: str
 `,
-    [`${prefix}/repository.py`]: `"""Persistence boundary for the status feature."""
-
-from __future__ import annotations
-
-
-class StatusRepository:
-    def current(self) -> dict[str, str]:
-        return {"status": "ok", "architecture": "${architecture}"}
-`,
-    [`${prefix}/service.py`]: `"""Application operations for the status feature."""
-
-from __future__ import annotations
-
-from .repository import StatusRepository
-from .schemas import StatusResponse
-
-
-class StatusService:
-    def __init__(self, repository: StatusRepository | None = None) -> None:
-        self._repository = repository or StatusRepository()
-
-    def current(self) -> StatusResponse:
-        return StatusResponse(**self._repository.current())
-`,
     [`${prefix}/router.py`]: `"""HTTP adapter for the status feature."""
 
 from __future__ import annotations
@@ -409,14 +386,14 @@ from fastapi import APIRouter, Depends
 
 from app.core.security import require_auth
 
-from .service import StatusService
+from .schemas import StatusResponse
 
 router = APIRouter(prefix="/api", tags=["status"])
 
 
-@router.get("/status", dependencies=[Depends(require_auth)])
-async def status() -> dict[str, object]:
-    return StatusService().current().model_dump()
+@router.get("/status", response_model=StatusResponse, dependencies=[Depends(require_auth)])
+async def status() -> StatusResponse:
+    return StatusResponse(status="ok", architecture="${architecture}")
 `,
   }
 }
@@ -428,9 +405,7 @@ from __future__ import annotations
 
 from .router import router
 from .schemas import StatusResponse
-from .service import StatusService
-
-__all__ = ["StatusService", "StatusResponse", "router"]
+__all__ = ["StatusResponse", "router"]
 `
 }
 
@@ -442,15 +417,14 @@ from __future__ import annotations
 import pathlib
 
 MODULE = pathlib.Path(__file__).resolve().parents[1] / "app" / "modules" / "status"
-PUBLIC = {"__init__.py", "router.py", "service.py", "schemas.py"}
+PUBLIC = {"__init__.py", "router.py", "schemas.py"}
 
 
 def test_module_keeps_implementation_internal() -> None:
     assert MODULE.is_dir()
-    internals = {"repository.py"}
-    assert internals <= {p.name for p in MODULE.iterdir()}
+    assert "repository.py" not in {p.name for p in MODULE.iterdir()}
     init = (MODULE / "__init__.py").read_text()
-    assert "StatusService" in init and "router" in init
+    assert "StatusResponse" in init and "router" in init
 
 
 def test_only_public_modules_are_imported() -> None:
@@ -717,12 +691,6 @@ export function buildFastApiFiles(answers, vars, stack) {
     files[`${root}app/__init__.py`] = ''
     files[`${root}app/main.py`] = mainPy(stack, 'app.core')
     files[`${root}app/routes_health.py`] = healthRouterCore()
-    files[`${root}app/status_router.py`] = `"""Status router alias for the medium profile."""
-
-from __future__ import annotations
-
-from app.features.status.router import router as router
-`
     files[`${root}app/core/__init__.py`] = ''
     files[`${root}app/core/config.py`] = configPy()
     files[`${root}app/core/db.py`] = dbPy('app.core.config')
@@ -748,12 +716,6 @@ def configure_logging() -> None:
     files[`${root}app/__init__.py`] = ''
     files[`${root}app/main.py`] = mainPy(stack, 'app.core')
     files[`${root}app/routes_health.py`] = healthRouterCore()
-    files[`${root}app/status_router.py`] = `"""Status router alias for the large profile."""
-
-from __future__ import annotations
-
-from app.modules.status import router as router
-`
     files[`${root}app/core/__init__.py`] = ''
     files[`${root}app/core/config.py`] = configPy()
     files[`${root}app/core/db.py`] = dbPy('app.core.config')
@@ -783,14 +745,14 @@ from fastapi import APIRouter, Depends
 
 from app.core.security import require_auth
 
-from .service import StatusService
+from .schemas import StatusResponse
 
 router = APIRouter(prefix="/api", tags=["status"])
 
 
-@router.get("/status", dependencies=[Depends(require_auth)])
-async def status() -> dict[str, object]:
-    return StatusService().current().model_dump()
+@router.get("/status", response_model=StatusResponse, dependencies=[Depends(require_auth)])
+async def status() -> StatusResponse:
+    return StatusResponse(status="ok", architecture="large")
 `
     files[`${root}tests/test_boundaries.py`] = boundaryTest()
     files[`${root}alembic/env.py`] = alembicEnv('app.core.config', 'app.core.db')
