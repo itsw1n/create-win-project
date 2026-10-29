@@ -43,17 +43,13 @@
     "bytes": 57,
     "sha256": "759b844a4513ef3875d1d358ab7d95941c878e2af431cf66d9a9cb3f1333a8d6"
   },
-  "app/Actions/GetSystemStatus.php": {
-    "bytes": 237,
-    "sha256": "078c6220d503f9fffeaabcd197a2bfd804aaae46bff19dcedf18877abf33e060"
-  },
   "app/Http/Controllers/AuthController.php": {
     "bytes": 1457,
     "sha256": "6e27929f7640fd08aa8c1300e44d1be8044ba8b9d5442c18c1252c7548b4d956"
   },
   "app/Http/Controllers/HealthController.php": {
-    "bytes": 270,
-    "sha256": "caa1e765f821bea697153891dddb8601ab0952e21e67cb74863c45262748060b"
+    "bytes": 246,
+    "sha256": "c162154c02e6f064cbffc93aa54753df07b5eb083ed3038d8a81e235d266f18f"
   },
   "app/Http/Middleware/HandleInertiaRequests.php": {
     "bytes": 154,
@@ -152,8 +148,8 @@
     "sha256": "e87327e605c00b80ed691147211c7beec30cc910d86f7c2364d293bdd93aed8c"
   },
   "docs/architecture/overview.md": {
-    "bytes": 3463,
-    "sha256": "90cace623f9060da64820e7c3f30209513b06f13f12065a847cbeb0815d0de07"
+    "bytes": 3396,
+    "sha256": "c7cad65a27e22cb347fe02ae85ed19ff71c4aa60f5c0055fa37646ca2f8da12b"
   },
   "docs/guides/deployment.md": {
     "bytes": 994,

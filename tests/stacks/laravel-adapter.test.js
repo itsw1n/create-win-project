@@ -40,7 +40,7 @@ describe('Laravel core adapter', () => {
 
     expect(files).toHaveProperty('artisan')
     expect(files).toHaveProperty('composer.json')
-    expect(files).toHaveProperty('app/Actions/GetSystemStatus.php')
+    expect(files).not.toHaveProperty('app/Actions/GetSystemStatus.php')
     expect(files['routes/api.php']).toContain("Route::get('/health'")
     expect(files['routes/api.php']).toContain('Authentication is not configured.')
     expect(JSON.parse(files['composer.json']).require['laravel/framework']).toMatch(/^\d+\.\d+\.\d+$/)
@@ -58,13 +58,13 @@ describe('Laravel core adapter', () => {
   })
 
   it.each([
-    ['small', false, false],
-    ['medium', true, false],
-    ['large', true, true],
-  ])('preserves the %s architecture files', async (architecture, hasAction, hasBoundary) => {
+    ['small', false],
+    ['medium', false],
+    ['large', true],
+  ])('preserves the %s architecture files', async (architecture, hasBoundary) => {
     const files = buildLaravelFiles(answers, await laravelStack({ architecture }))
 
-    expect('app/Actions/GetSystemStatus.php' in files).toBe(hasAction)
+    expect('app/Actions/GetSystemStatus.php' in files).toBe(false)
     expect('tests/Architecture/BoundariesTest.php' in files).toBe(hasBoundary)
   })
 })

@@ -40,7 +40,7 @@ describe('backend stack architecture contracts', () => {
     expect(spring).toHaveProperty(
       'backend/src/main/java/com/example/system/service/SystemStatusService.java',
     )
-    expect(laravel).toHaveProperty('app/Actions/GetSystemStatus.php')
+    expect(laravel).not.toHaveProperty('app/Actions/GetSystemStatus.php')
     expect(laravel).toHaveProperty('app/Http/Controllers/HealthController.php')
   })
 
